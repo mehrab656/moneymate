@@ -17,6 +17,8 @@ import {
     faListAlt,
     faMailBulk,
     faMoneyBill,
+    faMoneyBill1Wave,
+    faMoneyBillTrendUp,
     faMoneyCheck,
     faTachometerAlt,
     faWallet,
@@ -162,6 +164,14 @@ export default function DefaultLayout() {
                                 className={isActive('/debts') ? 'active' : ''}>
                                 <span className="aside-menu-icon"><FontAwesomeIcon icon={faMailBulk}/></span>
                                 <span className="aside-menu-text"> Debts/Loans</span>
+                            </Link>
+                        </li>
+                        <li className="aside-menu-item">
+                            <Link
+                                to="/investments"
+                                className={isActive('/investments') ? 'active' : ''}>
+                                <span className="aside-menu-icon"><FontAwesomeIcon icon={faMoneyBillTrendUp}/></span>
+                                <span className="aside-menu-text"> Investments</span>
                             </Link>
                         </li>
                         <li className="aside-menu-item">

@@ -26,6 +26,8 @@ import Transfers from "./views/Transfers.jsx";
 import Calendar from "./views/Calendar.jsx";
 import SubscriptionHistory from "./views/SubscriptionHistory.jsx";
 import WarningMessage from "./views/WarningMessage.jsx";
+import InvestmentForm from "./views/InvestmentForm.jsx";
+import Investment from "./views/Investment.jsx";
 
 const router = createBrowserRouter([
 
@@ -87,6 +89,14 @@ const router = createBrowserRouter([
             {
                 path: '/debts',
                 element: <Debts/>
+            },
+            {
+                path: '/investments',
+                element: <Investment/>
+            },
+            {
+                path: '/investments/new',
+                element: <InvestmentForm key="investmentCreate"/>
             },
             {
                 path: '/manage-debt/:id',
