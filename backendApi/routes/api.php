@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\DebtController;
 use App\Http\Controllers\Api\ExpenseController;
 use App\Http\Controllers\Api\FileDownloadController;
 use App\Http\Controllers\Api\IncomeController;
+use App\Http\Controllers\Api\InvestmentController;
 use App\Http\Controllers\Api\LendController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\SubscriptionController;
@@ -152,6 +153,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/bank-accounts/transfer-amount', [AccountTransferController::class, 'transferAmount']);
 
     Route::get('/get-user-role', [UserController::class, 'getUserRole']);
+
+	// Investment Api
+	Route::get('/investments', [ InvestmentController::class, 'index']);
+	Route::post('/investment/add', [InvestmentController::class, 'add']);
+	Route::delete('/investment/{investment}', [InvestmentController::class, 'destroy']);
+	Route::get('investment/{investment}', [InvestmentController::class, 'show']);
+	Route::post('/investment/{investment}', [InvestmentController::class, 'update']);
+	Route::get('/export-investment-csv', [InvestmentController::class, 'exportInvestmentCsv']);
+	Route::get('/investment/graph', [InvestmentController::class, 'getInvestmentGraph']);
 
 });
 
