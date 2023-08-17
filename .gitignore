@@ -1,0 +1,44 @@
+#--------------------------
+# Assets Files
+---------------------------
+assets
+
+#--------------------------
+# Backend Api Files
+---------------------------
+backendApi/vendor
+backendApi/tests
+backendApi/storage
+backendApi/public
+backendApi/.env
+backendApi/_ide_helper.php
+backendApi/artisan
+backendApi/composer.lock
+backendApi/vite.config.js
+backendApi/package-lock.json
+
+
+
+#-------------------------
+# React Folder
+#-------------------------
+react/dist/assets
+react/node_modules
+react/config.js
+react/package-lock.json
+react/vite.config.js
+react/yarn.lock
+
+
+#-------------------------
+# Root File
+#-------------------------
+.htaccess
+config.js
+LICENSE
+vite.svg
+package-lock.json
+
+
+backendApi/.env
+

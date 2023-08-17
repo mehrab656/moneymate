@@ -122,7 +122,11 @@ export default function InvestmentForm() {
             formData.append('note', note);
             formData.append('investment_date', investment_date);
 
+<<<<<<< HEAD
             axiosClient.post(`/investment/${investment.id}`, formData, {
+=======
+            axiosClient.post(`/investments/${investment.id}`, formData, {
+>>>>>>> 02dee6d3f9f1bc669edf57b36c5d444cd486b4df
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -146,7 +150,11 @@ export default function InvestmentForm() {
             formData.append('note', note);
             formData.append('investment_date', investment_date);
 
+<<<<<<< HEAD
             axiosClient.post('/investment/add', formData, {
+=======
+            axiosClient.post('/investments/add', formData, {
+>>>>>>> 02dee6d3f9f1bc669edf57b36c5d444cd486b4df
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
