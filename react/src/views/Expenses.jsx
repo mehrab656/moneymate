@@ -11,6 +11,7 @@ import DownloadAttachment from "../components/DownloadAttachment";
 import {SettingsContext} from "../contexts/SettingsContext";
 import {Button, Modal} from "react-bootstrap";
 import Dropdown from "react-bootstrap/Dropdown"
+import ActionButtonHelpers from "../helper/ActionButtonHelpers";
 
 export default function Expenses() {
 
@@ -141,7 +142,13 @@ export default function Expenses() {
         });
     };
 
-
+    const actionParams = {
+        route:{
+            editRoute:'/expense/',
+            viewRoute:'',
+            deleteRoute:''
+        },
+    }
     return (
         <div>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
@@ -200,26 +207,11 @@ export default function Expenses() {
 
                                         <td>{expense.expense_date}</td>
                                         <td>
-                                            <Dropdown>
-                                                <Dropdown.Toggle variant="success" id="expense-actions">
-                                                    Actions
-                                                </Dropdown.Toggle>
-
-                                                <Dropdown.Menu>
-                                                    <Dropdown.Item className="text-warning"
-                                                                   href={"/expense/" + expense.id}>
-                                                        <FontAwesomeIcon icon={faEdit}/> Edit
-                                                    </Dropdown.Item>
-                                                    <Dropdown.Item className="text-info"
-                                                                   onClick={() => showExpense(expense)}>
-                                                        <FontAwesomeIcon icon={faThList}/> View
-                                                    </Dropdown.Item>
-                                                    <Dropdown.Item className="text-danger"
-                                                                   onClick={() => onDelete(expense)}>
-                                                        <FontAwesomeIcon icon={faTrash}/> Delete
-                                                    </Dropdown.Item>
-                                                </Dropdown.Menu>
-                                            </Dropdown>
+                                            <ActionButtonHelpers module={expense}
+                                                                 showModule={showExpense}
+                                                                 deleteFunc={onDelete}
+                                                                 params={actionParams}
+                                            />
                                         </td>
                                     </tr>
                                 ))
