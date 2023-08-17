@@ -10,8 +10,8 @@ import Pagination from "react-bootstrap/Pagination";
 import DownloadAttachment from "../components/DownloadAttachment.jsx";
 import {SettingsContext} from "../contexts/SettingsContext.jsx";
 
-export default function Investment() {
 
+export default function Investment() {
     const [loading, setLoading] = useState(false);
     const [expenses, setExpenses] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
@@ -28,15 +28,15 @@ export default function Investment() {
     const totalPages = Math.ceil(totalCount / pageSize);
 
     useEffect(() => {
-        document.title = "Manage Expenses";
+        document.title = "Manage Investments";
         getExpenses(currentPage, pageSize);
     }, [currentPage, pageSize]);
 
     const getExpenses = (page, pageSize) => {
         setLoading(true);
-        axiosClient.get('/expenses', {params: {page, pageSize}})
+        axiosClient.get('/investments', {params: {page, pageSize}})
             .then(({data}) => {
-                //console.log(data.data);
+                console.log(data.data);
                 setLoading(false);
                 setExpenses(data.data);
                 setTotalCount(data.total);
