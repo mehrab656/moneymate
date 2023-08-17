@@ -309,7 +309,11 @@ export default function Expenses() {
                                 {expense.expense_date}
                             </td>
                         </tr>
+
                         <tr>
+                            <td width="50%">
+                                <strong>Attachments :</strong>
+                            </td>
                             <td>{expense.attachment &&
                                 <DownloadAttachment filename={expense.attachment}/>}</td>
                         </tr>
