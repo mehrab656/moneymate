@@ -162,7 +162,6 @@ Route::middleware('auth:sanctum')->group(function () {
 	Route::post('/investment/{investment}', [InvestmentController::class, 'update']);
 	Route::get('/export-investment-csv', [InvestmentController::class, 'exportInvestmentCsv']);
 	Route::get('/investment/graph', [InvestmentController::class, 'getInvestmentGraph']);
-
 });
 
 

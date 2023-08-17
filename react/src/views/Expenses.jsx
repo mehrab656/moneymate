@@ -5,10 +5,13 @@ import Swal from "sweetalert2";
 import ExpenseExportButton from "../components/ExpenseExportButton.jsx";
 import WizCard from "../components/WizCard";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faEdit, faMinus, faTrash} from "@fortawesome/free-solid-svg-icons";
+import {faEdit, faList12, faListOl, faMinus, faThList, faTrash} from "@fortawesome/free-solid-svg-icons";
 import Pagination from "react-bootstrap/Pagination";
 import DownloadAttachment from "../components/DownloadAttachment";
 import {SettingsContext} from "../contexts/SettingsContext";
+import {Button, Modal} from "react-bootstrap";
+import Dropdown from "react-bootstrap/Dropdown"
+import ActionButtonHelpers from "../helper/ActionButtonHelpers";
 
 export default function Expenses() {
 
@@ -17,7 +20,30 @@ export default function Expenses() {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
+    const [showModal, setShowModal] = useState(false);
 
+    const [expense, setExpense] = useState({
+        id: null,
+        user_id: null,
+        account_id: '', // Set default value to an empty string
+        amount: '', // Set default value to an empty string
+        refundable_amount: '', // Set default value to an empty string
+        refunded_amount: '',
+        category_id: null,
+        description: '',
+        reference: '',
+        expense_date: '',
+        note: '',
+        attachment: ''
+    });
+    const showExpense = (expense) => {
+        setExpense(expense);
+        setShowModal(true);
+        console.log(expense)
+    }
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
     const {applicationSettings} = useContext(SettingsContext);
     const {
         num_data_per_page,
@@ -116,7 +142,13 @@ export default function Expenses() {
         });
     };
 
-
+    const actionParams = {
+        route:{
+            editRoute:'/expense/',
+            viewRoute:'',
+            deleteRoute:''
+        },
+    }
     return (
         <div>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
@@ -138,14 +170,11 @@ export default function Expenses() {
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr className={'text-center'}>
-                            <th>Expense By</th>
-                            <th>Payment Method</th>
+                            <th>Details</th>
                             <th>Sector</th>
                             <th>Amount</th>
                             <th>Refundable amount</th>
                             <th>Refunded amount</th>
-                            <th>Attached</th>
-                            <th>Description</th>
                             <th>Date</th>
                             <th width="20%">Action</th>
                         </tr>
@@ -170,24 +199,19 @@ export default function Expenses() {
                             ) : (
                                 filteredExpenses.map((expense) => (
                                     <tr className={'text-center'} key={expense.id}>
-                                        <td>{expense.user_name}</td>
-                                        <td>{expense.account_number}</td>
+                                        <td>{expense.description}</td>
                                         <td>{expense.category_name}</td>
                                         <td>{default_currency + expense.amount}</td>
                                         <td>{default_currency + expense.refundable_amount}</td>
                                         <td className={"text-" + expense.refunded_txt_clr}>{default_currency + expense.refunded_amount}</td>
-                                        <td>{expense.attachment &&
-                                            <DownloadAttachment filename={expense.attachment}/>}</td>
 
-                                        <td>{expense.description !== 'null' ? expense.description : ''}</td>
                                         <td>{expense.expense_date}</td>
                                         <td>
-                                            <Link className="btn-edit" to={"/expense/" + expense.id}>
-                                                <FontAwesomeIcon icon={faEdit}/> Edit
-                                            </Link>
-                                            &nbsp;
-                                            <a onClick={() => onDelete(expense)} className="btn-delete"><FontAwesomeIcon
-                                                icon={faTrash}/> Delete</a>
+                                            <ActionButtonHelpers module={expense}
+                                                                 showModule={showExpense}
+                                                                 deleteFunc={onDelete}
+                                                                 params={actionParams}
+                                            />
                                         </td>
                                     </tr>
                                 ))
@@ -212,6 +236,93 @@ export default function Expenses() {
                 )}
 
             </WizCard>
+
+            <Modal show={showModal} centered onHide={handleCloseModal} className="custom-modal">
+                <Modal.Header closeButton>
+                    <Modal.Title>
+                        <span>Expense Details</span>
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <table className="footable table table-bordered table-striped mb-0">
+                        <thead></thead>
+                        <tbody>
+                        <tr>
+                            <td width="50%">
+                                <strong>User Name :</strong>
+                            </td>
+                            <td>{expense.user_name}</td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <strong>Account Number :</strong>
+                            </td>
+                            <td> {expense.account_number}</td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <strong>Bank Name :</strong>
+                            </td>
+                            <td> {expense.bank_name}  </td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <strong>Expense Amount :</strong>
+                            </td>
+                            <td> {expense.amount}</td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <strong>Refundable Amount :</strong>
+                            </td>
+                            <td> {expense.refundable_amount}</td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <strong>Refunded Amount :</strong>
+                            </td>
+                            <td> {expense.refunded_amount}</td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <strong>Description :</strong>
+                            </td>
+                            <td> {expense.description}</td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <strong>Note :</strong>
+                            </td>
+                            <td> {expense.note}</td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <strong>Reference :</strong>
+                            </td>
+                            <td> {expense.reference}</td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <strong>Date :</strong>
+                            </td>
+                            <td>
+                                {expense.expense_date}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{expense.attachment &&
+                                <DownloadAttachment filename={expense.attachment}/>}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </Modal.Body>
+                <Modal.Footer>
+                    <button className="btn btn-primary" onClick={handleCloseModal}>
+                        Close
+                    </button>
+                </Modal.Footer>
+            </Modal>
+
         </div>
     )
 }

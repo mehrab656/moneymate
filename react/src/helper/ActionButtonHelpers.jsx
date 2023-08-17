@@ -1,0 +1,31 @@
+import React, {memo} from "react";
+import Dropdown from "react-bootstrap/Dropdown";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faEdit, faThList, faTrash} from "@fortawesome/free-solid-svg-icons";
+
+
+const ActionButtonHelpers =({module,showModule, deleteFunc, params})=>{
+return (
+    <Dropdown>
+        <Dropdown.Toggle variant="success" id="expense-actions">
+            Actions
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu>
+            <Dropdown.Item className="text-warning"
+                           href={params.route.editRoute + module.id}>
+                <FontAwesomeIcon icon={faEdit}/> Edit
+            </Dropdown.Item>
+            <Dropdown.Item className="text-info"
+                           onClick={() => showModule(module)}>
+                <FontAwesomeIcon icon={faThList}/> View
+            </Dropdown.Item>
+            <Dropdown.Item className="text-danger"
+                           onClick={() => deleteFunc(module)}>
+                <FontAwesomeIcon icon={faTrash}/> Delete
+            </Dropdown.Item>
+        </Dropdown.Menu>
+    </Dropdown>
+)
+}
+export default memo(ActionButtonHelpers);
