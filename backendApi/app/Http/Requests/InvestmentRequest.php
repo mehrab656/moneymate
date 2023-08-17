@@ -19,21 +19,22 @@ class InvestmentRequest extends FormRequest {
 	 */
 	public function rules(): array {
 		return [
-			'user_id' => 'required',
-			'amount'  => 'required|numeric',
-			'note'    => 'nullable',
-			'investment_date'    => 'nullable'
+			'user_id'         => 'required',
+			'account_id'      => 'required',
+			'amount'          => 'required|numeric',
+			'note'            => 'nullable',
+			'investment_date' => 'nullable'
 		];
 	}
 
 	/**
 	 * @return string[]
 	 */
-	public function messages(): array
-	{
+	public function messages(): array {
 		return [
-			'user_id.required' => 'Please select an Investment',
-			'amount.required' => 'Please add the investment amount',
+			'user_id.required'    => 'Please select an Investment',
+			'account_id.required' => 'Please select an adjustment account',
+			'amount.required'     => 'Please add the investment amount',
 		];
 	}
 }

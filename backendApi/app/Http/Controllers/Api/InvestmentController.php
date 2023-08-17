@@ -3,11 +3,20 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\InvestmentRequest;
 use App\Http\Resources\IncomeResource;
+use App\Models\BankAccount;
 use App\Models\Investment;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use App\Models\Expense;
+use Carbon\Carbon;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 class InvestmentController extends Controller
 {
     /**
@@ -18,7 +27,7 @@ class InvestmentController extends Controller
 	    $page     = $request->query( 'page', 1 );
 	    $pageSize = $request->query( 'pageSize', 10 );
 
-	    $expenses = Investment::skip( ( $page - 1 ) * $pageSize )
+	    $invests = Investment::skip( ( $page - 1 ) * $pageSize )
 	                       ->take( $pageSize )
 	                       ->orderBy( 'id', 'desc' )
 	                       ->get();
@@ -26,7 +35,7 @@ class InvestmentController extends Controller
 	    $totalCount = Investment::count();
 
 	    return response()->json( [
-		    'data'  => IncomeResource::collection( $expenses ),
+		    'data'  => IncomeResource::collection( $invests ),
 		    'total' => $totalCount,
 	    ] );
     }
@@ -34,12 +43,30 @@ class InvestmentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        //
-    }
+	public function add( InvestmentRequest $request ): JsonResponse {
+		$invest  = $request->validated();
+		
 
-    /**
+		$investDate = Carbon::parse( $invest['investment_date'] )->format( 'Y-m-d' );
+		$invest     = Investment::create( [
+			'user_id'           => $invest['user_id'],
+			'amount'            => $invest['amount'],
+			'note'              => $invest['note'],
+			'investment_date'      => $investDate,
+		] );
+
+		// Update the balance of the bank account
+		$bankAccount          = BankAccount::find( $request->account_id );
+		$bankAccount->balance += $request->amount;
+		$bankAccount->save();
+
+		return response()->json( [
+			'invest'  => $invest,
+		] );
+	}
+
+
+	/**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
@@ -74,8 +101,20 @@ class InvestmentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Investment $investor)
-    {
-        //
-    }
+	public function destroy( Investment $invest ): Response {
+		$invest->delete();
+
+		/**
+		 * Adjust bank account
+		 */
+
+		$bankAccount = BankAccount::find( $invest->account_id );
+		if ( $invest->amount > 0 ) {
+			$bankAccount->balance -= $invest->amount;
+			$bankAccount->save();
+		}
+
+		return response()->noContent();
+	}
+
 }
