@@ -95,7 +95,7 @@ const router = createBrowserRouter([
                 element: <Investment/>
             },
             {
-                path: '/investments/new',
+                path: '/investment/new',
                 element: <InvestmentForm key="investmentCreate"/>
             },
             {
