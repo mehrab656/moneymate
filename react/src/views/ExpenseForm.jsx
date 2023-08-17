@@ -80,7 +80,6 @@ export default function ExpenseForm() {
                     setSelectedCategoryId(data.category_id);
                     setSelectedAccountId(data.account_id);
                     setSelectedUserId(data.user_id);
-                    console.log({data})
 
                     setExpense((prevExpense) => ({
                         ...prevExpense,
@@ -312,6 +311,7 @@ export default function ExpenseForm() {
                                            type="number"
                                            step="any"
                                            value={expense.refundable_amount}
+                                           onChange={ev => setExpense({...expense, refundable_amount: ev.target.value})}
                                            placeholder="Refundable Amount"/>
                                     {errors.refundable_amount && <p className="error-message mt-2">{errors.refundable_amount[0]}</p>}
                                 </div>
