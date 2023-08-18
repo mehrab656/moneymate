@@ -837,3 +837,7 @@ select option:focus {
 .react-datepicker-wrapper {
     width: 100% !important;
 }
+
+.table-responsive {
+    overflow-x: initial !important;
+}

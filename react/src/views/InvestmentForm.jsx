@@ -12,6 +12,8 @@ export default function InvestmentForm() {
 
     let {id} = useParams();
 
+    console.log('params id', id)
+
     const [investment, setInvestment] = useState({
         id: null,
         amount: '',
@@ -97,10 +99,11 @@ export default function InvestmentForm() {
     useEffect(() => {
         if (id) {
             setLoading(true)
-            axiosClient.get(`/investments/${id}`)
+            axiosClient.get(`/investment/${id}`)
                 .then(({data}) => {
                     setLoading(false);
                     setInvestment(data);
+                    console.log('single investment' , data)
                 })
                 .catch(() => {
                     setLoading(false)

@@ -9,14 +9,20 @@ import {faEdit, faMinus, faTrash} from "@fortawesome/free-solid-svg-icons";
 import Pagination from "react-bootstrap/Pagination";
 import DownloadAttachment from "../components/DownloadAttachment.jsx";
 import {SettingsContext} from "../contexts/SettingsContext.jsx";
+import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
+import { Modal } from "react-bootstrap";
 
 
 export default function Investment() {
     const [loading, setLoading] = useState(false);
-    const [expenses, setExpenses] = useState([]);
+    const [investments, setInvestments] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
+    const [modalInvest, setModalInvest] = useState(false)
+    const [showModal, setShowModal] = useState(false);
+
+    const [name, setName] = useState(null) 
 
     const {applicationSettings} = useContext(SettingsContext);
     const {
@@ -27,18 +33,27 @@ export default function Investment() {
     const pageSize = num_data_per_page;
     const totalPages = Math.ceil(totalCount / pageSize);
 
+    const showInvestment = (invest) => {
+        setModalInvest(invest);
+        setShowModal(true);
+        console.log(invest)
+    }
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
+
     useEffect(() => {
         document.title = "Manage Investments";
-        getExpenses(currentPage, pageSize);
+        getInvestments(currentPage, pageSize);
     }, [currentPage, pageSize]);
 
-    const getExpenses = (page, pageSize) => {
+    const getInvestments = (page, pageSize) => {
         setLoading(true);
         axiosClient.get('/investments', {params: {page, pageSize}})
             .then(({data}) => {
                 console.log(data.data);
                 setLoading(false);
-                setExpenses(data.data);
+                setInvestments(data.data);
                 setTotalCount(data.total);
             })
             .catch(() => {
@@ -63,58 +78,77 @@ export default function Investment() {
         );
     }
 
-    const filteredExpenses = expenses.filter((expense) => {
+    // const filteredInvestments = investments.filter((investment) => {
+
+    //     return investment.user_id.toLowerCase().includes(searchTerm.toLowerCase())
+    //         || investment.account_id.toLowerCase().includes(searchTerm.toLowerCase())
+    //         || investment.amount.toLowerCase().includes(searchTerm.toLowerCase())
+    // });
 
 
-        if (expense.refundable_amount > 0) {
-            if (expense.refunded_amount === expense.refundable_amount) {
-                expense.refunded_txt_clr = 'success';
-            } else {
-                expense.refunded_txt_clr = 'danger';
-            }
-        } else {
-            expense.refunded_txt_clr = 'dark';
-        }
-
-        return expense.user_name.toLowerCase().includes(searchTerm.toLowerCase())
-            || expense.account_number.toLowerCase().includes(searchTerm.toLowerCase())
-            || expense.category_name.toLowerCase().includes(searchTerm.toLowerCase())
-            || expense.amount.toLowerCase().includes(searchTerm.toLowerCase())
-            || expense.refundable_amount.toLowerCase().includes(searchTerm.toLowerCase())
-            || expense.refunded_amount.toLowerCase().includes(searchTerm.toLowerCase())
-            || expense.description.toLowerCase().includes(searchTerm.toLowerCase())
-            || expense.bank_name.toLowerCase().includes(searchTerm.toLowerCase())
-    });
-
-
-    const onDelete = (expense) => {
+    const onDelete = (investment) => {
         Swal.fire({
             title: 'Are you sure?',
-            text: `You will not be able to recover the expense !`,
+            text: `You will not be able to recover the investment !`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Yes, delete it!',
             cancelButtonText: 'Cancel',
         }).then((result) => {
             if (result.isConfirmed) {
-                axiosClient.delete(`expense/${expense.id}`).then(() => {
-                    getExpenses();
+                axiosClient.delete(`investment/${investment.id}`).then((res) => {
+                    console.log('ress', res)
+                    getInvestments();
                     Swal.fire({
                         title: 'Deleted!',
-                        text: 'Expense has been deleted.',
+                        text: 'investment has been deleted.',
                         icon: 'success',
                     });
                 }).catch((error) => {
                     console.log(error);
                     Swal.fire({
                         title: 'Error!',
-                        text: 'Expense could not be deleted.',
+                        text: 'investment could not be deleted.',
                         icon: 'error',
                     });
                 });
             }
         });
     };
+
+    // get all users
+    useEffect(()=>{
+        if(name ===null){
+            setLoading(true)
+            axiosClient.get('/get-all-users')
+            .then(({data}) => {
+                setLoading(false)
+                setUsers(data.data);
+                if(data.data.length>0){
+                    data.data.forEach(element => {
+                        
+                    });
+                }
+            })
+            .catch(error => {
+                setLoading(false)
+                console.error('Error loading investment user:', error);
+                // handle error, e.g., show an error message to the user
+            });
+        }
+    },[])
+
+    const actionParams = {
+        route:{
+            editRoute:'/investment/',
+            viewRoute:'',
+            deleteRoute:''
+        },
+    }
+
+    console.log('modal invest', modalInvest)
+
+    console.log('investments', investments)
 
 
     return (
@@ -157,33 +191,35 @@ export default function Investment() {
                         )}
                         {!loading && (
                             <tbody>
-                            {filteredExpenses.length === 0 ? (
+                            {investments.length === 0 ? (
                                 <tr>
                                     <td colSpan={8} className="text-center">
                                         No Investments found
                                     </td>
                                 </tr>
                             ) : (
-                                filteredExpenses.map((expense) => (
-                                    <tr className={'text-center'} key={expense.id}>
-                                        <td>{expense.user_name}</td>
-                                        <td>{expense.account_number}</td>
-                                        <td>{expense.category_name}</td>
-                                        <td>{default_currency + expense.amount}</td>
-                                        <td>{default_currency + expense.refundable_amount}</td>
-                                        <td className={"text-" + expense.refunded_txt_clr}>{default_currency + expense.refunded_amount}</td>
-                                        <td>{expense.attachment &&
-                                            <DownloadAttachment filename={expense.attachment}/>}</td>
-
-                                        <td>{expense.description !== 'null' ? expense.description : ''}</td>
-                                        <td>{expense.expense_date}</td>
-                                        <td>
-                                            <Link className="btn-edit" to={"/expense/" + expense.id}>
+                                investments.map((investment) => (
+                                    <tr className={'text-center'} key={investment.id}>
+                                        <td>{investment.id}</td>
+                                        <td>{investment.user_id}</td>
+                                        <td>{investment.amount}</td>
+                                        <td>{investment.investment_date}</td>
+                                        <td>{investment.user_id}</td>
+                                        {/* <td>
+                                            <Link className="btn-edit" to={"/investment/" + investment.id}>
                                                 <FontAwesomeIcon icon={faEdit}/> Edit
                                             </Link>
                                             &nbsp;
-                                            <a onClick={() => onDelete(expense)} className="btn-delete"><FontAwesomeIcon
+                                            <a onClick={() => onDelete(investment)} className="btn-delete"><FontAwesomeIcon
                                                 icon={faTrash}/> Delete</a>
+                                        </td> */}
+
+                                        <td>
+                                            <ActionButtonHelpers module={investment}
+                                                                 showModule={showInvestment}
+                                                                 deleteFunc={onDelete}
+                                                                 params={actionParams}
+                                            />
                                         </td>
                                     </tr>
                                 ))
@@ -208,6 +244,61 @@ export default function Investment() {
                 )}
 
             </WizCard>
+
+
+            
+            <Modal show={showModal} centered onHide={handleCloseModal} className="custom-modal">
+                <Modal.Header closeButton>
+                    <Modal.Title>
+                        <span>Investment Details</span>
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <table className="footable table table-bordered table-striped mb-0">
+                        <thead></thead>
+                        <tbody>
+                        <tr>
+                            <td width="50%">
+                                <strong>Investor Name :</strong>
+                            </td>
+                            <td>{modalInvest?.user_id}</td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <strong>Account Number :</strong>
+                            </td>
+                            <td> {modalInvest?.account_id}</td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <strong>Investment Amount :</strong>
+                            </td>
+                            <td> ${modalInvest?.amount}</td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <strong>Note :</strong>
+                            </td>
+                            <td>{modalInvest?.note}</td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <strong>Date :</strong>
+                            </td>
+                            <td>
+                              {modalInvest?.investment_date}
+                            </td>
+                        </tr>
+                       
+                        </tbody>
+                    </table>
+                </Modal.Body>
+                <Modal.Footer>
+                    <button className="btn btn-primary" onClick={handleCloseModal}>
+                        Close
+                    </button>
+                </Modal.Footer>
+            </Modal>
         </div>
     )
 }
