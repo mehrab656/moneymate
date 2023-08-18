@@ -109,6 +109,14 @@ export default function Debts() {
         setShowModal(true);
     }
 
+
+    // set default date(today)
+     useEffect(()=>{
+        if(date ===null){
+            setDate(new Date())
+             }
+     },[date])
+
     const debtSubmit = (e) => {
         e.preventDefault();
 

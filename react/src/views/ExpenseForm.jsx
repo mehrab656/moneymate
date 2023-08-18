@@ -108,6 +108,16 @@ export default function ExpenseForm() {
         }
     }, [id]);
 
+ // set default date(today)
+     useEffect(()=>{
+         if(expense?.expense_date ===''){
+             setExpense({
+                ...expense,
+                expense_date: new Date().toISOString().split('T')[0]
+               });
+             }
+        },[expense?.expense_date])
+
 
     const expenseSubmit = (event) => {
         event.preventDefault();
@@ -155,6 +165,8 @@ export default function ExpenseForm() {
             formData.append('reference', reference);
             formData.append('expense_date', expense_date);
             formData.append('attachment', attachment);
+
+            console.log('adasa', expense_date)
 
             axiosClient.post('/expense/add', formData, {
                 headers: {
@@ -260,7 +272,7 @@ export default function ExpenseForm() {
                                     <label className="custom-form-label" htmlFor="expense_date">Date</label>
                                     <DatePicker
                                         className="custom-form-control"
-                                        selected={expense.expense_date ? new Date(expense.expense_date) : '' }
+                                        selected={expense.expense_date ? new Date(expense.expense_date) : new Date() }
                                         onChange={(date) => {
                                             const selectedDate = date ? new Date(date) : null;
                                             const updatedDate = selectedDate && !expense.expense_date ? new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000) : selectedDate;

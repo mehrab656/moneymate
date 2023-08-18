@@ -67,6 +67,19 @@ export default function BudgetForm() {
         setSelectedCategories(selectedOptions);
     };
 
+     // set default date(today)
+     useEffect(()=>{
+        if(budget?.start_date ===""){
+            setBudget({
+               ...budget,
+               start_date: new Date().toISOString().split('T')[0]
+              });
+            }
+       },[budget?.start_date])
+
+
+
+
     const budgetSubmit = (e) => {
         e.preventDefault();
 
@@ -155,7 +168,7 @@ export default function BudgetForm() {
                             <label className="custom-form-label" htmlFor="start_date">Start Date</label>
                             <DatePicker
                                 className="custom-form-control"
-                                selected={budget.start_date ? new Date(budget.start_date) : null}
+                                selected={budget.start_date ? new Date(budget.start_date) : new Date()}
                                 onChange={(date) =>
                                     setBudget({...budget, start_date: date ? date.toISOString().split("T")[0] : ""})
                                 }

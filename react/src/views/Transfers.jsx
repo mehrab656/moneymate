@@ -43,6 +43,8 @@ export default function Transfers() {
 
     const [showModal, setShowModal] = useState(false);
 
+    console.log('t date', transferDate)
+
     const showCreateModal = () => {
         setTransfer({
             from_account_id: '',
@@ -122,6 +124,13 @@ export default function Transfers() {
             </Pagination.Item>
         );
     }
+
+     // set default date(today)
+     useEffect(()=>{
+        if(transferDate ===null){
+            setTransferDate(new Date())
+            }
+       },[transferDate])
 
     const transferSubmit = (e) => {
         e.preventDefault();

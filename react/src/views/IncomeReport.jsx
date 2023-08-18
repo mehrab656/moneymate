@@ -15,6 +15,13 @@ export default function IncomeReport() {
         default_currency
     } = applicationSettings;
 
+    // set default date(today)
+    useEffect(()=>{
+        if(startDate ===null){
+            setStartDate(new Date())
+             }
+       },[startDate])
+
     const getIncomeReport = () => {
         setLoading(true);
         axiosClient

@@ -130,6 +130,13 @@ export default function Budgets() {
         setSelectedCategories(selectedOptions);
     };
 
+     // set default date(today)
+     useEffect(()=>{
+        if(startDate ===null){
+            setStartDate(new Date())
+            }
+       },[startDate])
+
 
     const budgetSubmit = (e) => {
         e.preventDefault();

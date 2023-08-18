@@ -95,6 +95,16 @@ export default function IncomeForm() {
         }
     }, [id]);
 
+     // set default date(today)
+     useEffect(()=>{
+        if(income?.income_date ===null){
+            setIncome({
+               ...income,
+               income_date: new Date().toISOString().split('T')[0]
+              });
+            }
+       },[income?.income_date])
+
 
     const incomeSubmit = (event) => {
         event.preventDefault();
@@ -137,6 +147,8 @@ export default function IncomeForm() {
             formData.append('reference', reference);
             formData.append('income_date', income_date);
             formData.append('attachment', attachment);
+
+            console.log('date', income_date)
 
             axiosClient.post('/income/add', formData, {
                 headers: {
@@ -246,7 +258,7 @@ export default function IncomeForm() {
                                     <label className="custom-form-label" htmlFor="income_date">Date</label>
                                     <DatePicker
                                         className="custom-form-control"
-                                        selected={income.income_date ? new Date(income.income_date) : null}
+                                        selected={income.income_date ? new Date(income.income_date) : new Date()}
                                         onChange={(date) => {
                                             const selectedDate = date ? new Date(date) : null;
                                             const updatedDate = selectedDate && !income.income_date ? new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000) : selectedDate;
