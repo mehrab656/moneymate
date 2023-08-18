@@ -7,7 +7,6 @@ import WizCard from "../components/WizCard.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEdit, faMinus, faTrash} from "@fortawesome/free-solid-svg-icons";
 import Pagination from "react-bootstrap/Pagination";
-import DownloadAttachment from "../components/DownloadAttachment.jsx";
 import {SettingsContext} from "../contexts/SettingsContext.jsx";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 import { Modal } from "react-bootstrap";
@@ -80,7 +79,7 @@ export default function Investment() {
 
     // const filteredInvestments = investments.filter((investment) => {
 
-    //     return investment.user_id.toLowerCase().includes(searchTerm.toLowerCase())
+    //     return investment.investor_id.toLowerCase().includes(searchTerm.toLowerCase())
     //         || investment.account_id.toLowerCase().includes(searchTerm.toLowerCase())
     //         || investment.amount.toLowerCase().includes(searchTerm.toLowerCase())
     // });
@@ -123,7 +122,6 @@ export default function Investment() {
             axiosClient.get('/get-all-users')
             .then(({data}) => {
                 setLoading(false)
-                setUsers(data.data);
                 if(data.data.length>0){
                     data.data.forEach(element => {
                         
@@ -201,10 +199,10 @@ export default function Investment() {
                                 investments.map((investment) => (
                                     <tr className={'text-center'} key={investment.id}>
                                         <td>{investment.id}</td>
-                                        <td>{investment.user_id}</td>
+                                        <td>{investment.investor_name}</td>
                                         <td>{investment.amount}</td>
                                         <td>{investment.investment_date}</td>
-                                        <td>{investment.user_id}</td>
+                                        <td>{investment.added_by_name}</td>
                                         {/* <td>
                                             <Link className="btn-edit" to={"/investment/" + investment.id}>
                                                 <FontAwesomeIcon icon={faEdit}/> Edit
@@ -261,13 +259,7 @@ export default function Investment() {
                             <td width="50%">
                                 <strong>Investor Name :</strong>
                             </td>
-                            <td>{modalInvest?.user_id}</td>
-                        </tr>
-                        <tr>
-                            <td width="50%">
-                                <strong>Account Number :</strong>
-                            </td>
-                            <td> {modalInvest?.account_id}</td>
+                            <td>{modalInvest?.investor_name}</td>
                         </tr>
                         <tr>
                             <td width="50%">

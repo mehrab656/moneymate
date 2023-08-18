@@ -12,10 +12,10 @@ export default function InvestmentForm() {
 
     let {id} = useParams();
 
-    console.log('params id', id)
-
     const [investment, setInvestment] = useState({
         id: null,
+        investor_id: null,
+        account_id: null,
         amount: '',
         investment_date: '',
         note: '',
@@ -28,7 +28,7 @@ export default function InvestmentForm() {
     const [users, setUsers] = useState([]);
     const {setNotification} = useStateContext();
     const [selectedAccountId, setSelectedAccountId] = useState('');
-    const [selectedUserId, setSelectedUserId] = useState('');
+    const [selectedInvestorId, setSelectedInvestorId] = useState('');
     const navigate = useNavigate();
     const [insufficientBalanceForCategory, setInsufficientBalanceForCategory] = useState(null);
 
@@ -69,17 +69,18 @@ export default function InvestmentForm() {
 
     // set default user-> current user
     useEffect(()=>{
-        if(user.id){
-            setSelectedUserId(user.id)
+        if(investment.investor_id){
+            setSelectedInvestorId(investment.investor_id);
+
         }
-    },[user])
+    },[investment])
 
     // set default bank accout
     useEffect(()=>{
-        if(bankAccounts.length>0){
-            setSelectedAccountId(bankAccounts[0].id)
-        }
-    },[bankAccounts])
+        setSelectedAccountId(investment.account_id)
+    },[investment])
+
+    console.log(selectedAccountId)
 
 
 
@@ -103,7 +104,6 @@ export default function InvestmentForm() {
                 .then(({data}) => {
                     setLoading(false);
                     setInvestment(data);
-                    console.log('single investment' , data)
                 })
                 .catch(() => {
                     setLoading(false)
@@ -121,7 +121,7 @@ export default function InvestmentForm() {
             const formData = new FormData();
             formData.append('account_id', selectedAccountId);
             formData.append('amount', amount);
-            formData.append('user_id', selectedUserId);
+            formData.append('investor_id', selectedInvestorId);
             formData.append('note', note);
             formData.append('investment_date', investment_date);
 
@@ -145,7 +145,7 @@ export default function InvestmentForm() {
             const formData = new FormData();
             formData.append('account_id', selectedAccountId);
             formData.append('amount', amount);
-            formData.append('user_id', selectedUserId);
+            formData.append('investor_id', selectedInvestorId);
             formData.append('note', note);
             formData.append('investment_date', investment_date);
 
@@ -171,7 +171,6 @@ export default function InvestmentForm() {
         }
     };
 
-    console.log('exsdsd', selectedAccountId)
 
     return (
         <>
@@ -195,15 +194,15 @@ export default function InvestmentForm() {
                         <div className="row">
                             <div className="col-md-6">
                                 <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="investment_users">User (*)</label>
+                                    <label className="custom-form-label" htmlFor="investment_users">Investor (*)</label>
                                     <select
                                         className="custom-form-control"
-                                        value={selectedUserId}
+                                        value={selectedInvestorId}
                                         id="investment-user"
                                         name="investment-user"
                                         onChange={(event) => {
                                             const value = event.target.value || '';
-                                            setSelectedUserId(value);
+                                            setSelectedInvestorId(value);
                                         }}>
                                          <option defaultValue value={user.id}>{user.name}</option>
                                         {users.map(singleUser => (
@@ -212,7 +211,7 @@ export default function InvestmentForm() {
                                             </option>
                                         ))}
                                     </select>
-                                    {/* {selectedUserId ===''  && <p className="error-message mt-2">user Required</p>} */}
+                                    {/* {selectedInvestorId ===''  && <p className="error-message mt-2">user Required</p>} */}
                                 </div>
                               
                                 <div className="form-group">
@@ -279,7 +278,7 @@ export default function InvestmentForm() {
 
                             </div>
                         </div>
-                        {(selectedUserId !=='' 
+                        {(selectedInvestorId !==''
                         && investment?.amount !==''
                         && selectedAccountId !=='')
                         ? <button className={investment.id ? "btn btn-warning" : "custom-btn btn-add"}>

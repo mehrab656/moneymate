@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InvestmentRequest;
+use App\Http\Requests\UpdateInvestmentRequest;
 use App\Http\Resources\IncomeResource;
 use App\Http\Resources\InvestmentResource;
 use App\Models\BankAccount;
@@ -16,6 +17,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Nette\Schema\ValidationException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -45,11 +47,12 @@ class InvestmentController extends Controller {
 	 */
 	public function add( InvestmentRequest $request ): JsonResponse {
 		$invest = $request->validated();
-
+		$user   = Auth::user();
 
 		$investDate = Carbon::parse( $invest['investment_date'] )->format( 'Y-m-d' );
 		$invest     = Investment::create( [
-			'user_id'         => $invest['user_id'],
+			'investor_id'     => $invest['investor_id'],
+			'added_by'        => $user->id, //current user
 			'amount'          => $invest['amount'],
 			'note'            => $invest['note'],
 			'account_id'      => $invest['account_id'],
@@ -66,19 +69,11 @@ class InvestmentController extends Controller {
 		] );
 	}
 
-
-	/**
-	 * Store a newly created resource in storage.
-	 */
-	public function store( Request $request ) {
-		//
-	}
-
 	/**
 	 * Display the specified resource.
 	 */
-	public function show( Investment $investor ) {
-		//
+	public function show( Investment $investment ) {
+		return new InvestmentResource($investment);
 	}
 
 	/**
@@ -91,8 +86,40 @@ class InvestmentController extends Controller {
 	/**
 	 * Update the specified resource in storage.
 	 */
-	public function update( Request $request, Investment $investor ) {
-		//
+	public function update( UpdateInvestmentRequest $request, Investment $investment ) {
+		$data = $request->validated();
+		$user   = Auth::user();
+
+		DB::beginTransaction();
+		try{
+			//first handel bank
+			$bankAccount          = BankAccount::find( $investment->account_id );
+			$bankAccount->balance = $bankAccount->balance - $investment->amount;
+			$bankAccount->save();
+
+			// now update other data
+			$investDate = Carbon::parse( $data['investment_date'] )->format( 'Y-m-d' );
+			$invest     = Investment::create( [
+				'investor_id'     => $data['investor_id'],
+				'added_by'        => $user->id, //current user
+				'amount'          => $data['amount'],
+				'note'            => $data['note'],
+				'account_id'      => $data['account_id'],
+				'investment_date' => $investDate,
+			] );
+
+			//now again update bank with the new amount.
+			$bankAccount          = BankAccount::find( $request->account_id );
+			$bankAccount->balance += $request->amount;
+			$bankAccount->save();
+
+		}catch(ValidationException $e){
+			DB::rollBack();
+			return redirect()->back()->withErrors($e->getMessages())->withInput();
+		}
+		DB::commit();
+
+		return new InvestmentResource($investment);
 	}
 
 	/**
