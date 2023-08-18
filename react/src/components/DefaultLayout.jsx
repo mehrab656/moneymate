@@ -168,7 +168,7 @@ export default function DefaultLayout() {
                         </li>
                         <li className="aside-menu-item">
                             <Link
-                                to="/investment"
+                                to="/investments"
                                 className={isActive('/investments') ? 'active' : ''}>
                                 <span className="aside-menu-icon"><FontAwesomeIcon icon={faMoneyBillTrendUp}/></span>
                                 <span className="aside-menu-text"> Investments</span>

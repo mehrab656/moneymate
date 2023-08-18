@@ -7,5 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Investment extends Model
 {
-    use HasFactory;
+	use HasFactory;
+
+	protected $table = 'investments';
+	protected $primaryKey = 'id';
+	protected $guarded = [];
 }
