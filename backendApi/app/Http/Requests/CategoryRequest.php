@@ -28,13 +28,14 @@ class CategoryRequest extends FormRequest
         return [
             'name' => [
                 'required',
-                Rule::unique('categories')->where(function ($query) use ($category) {
-                    $query->where('user_id', auth()->user()->id);
-
-                    if ($category) {
-                        $query->where('id', '!=', $category->id);
-                    }
-                }),
+	            //no need to make it unique
+//                Rule::unique('categories')->where(function ($query) use ($category) {
+//                    $query->where('user_id', auth()->user()->id);
+//
+//                    if ($category) {
+//                        $query->where('id', '!=', $category->id);
+//                    }
+//                }),
             ],
             'type' => 'required|in:income,expense',
         ];

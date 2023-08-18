@@ -90,7 +90,7 @@ export default function DefaultLayout() {
         // <div className={`wrapper ${isCollapsed ? 'collapsed' : ''}`} id="defaultLayout">
         <div className={`wrapper`}
              id="wrappingContent">
-            <aside className="wrapping-aside">
+            <aside className="wrapping-aside overflow-auto h-100">
                 <div className="aside-content">
                     <ul className="aside-menu">
                         <li className="aside-menu-item">
