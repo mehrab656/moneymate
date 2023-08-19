@@ -138,4 +138,6 @@ class InvestmentController extends Controller {
 		return response()->noContent();
 	}
 
+
+
 }

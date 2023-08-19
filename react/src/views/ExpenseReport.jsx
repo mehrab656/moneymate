@@ -66,7 +66,6 @@ export default function ExpenseReport() {
                                 />
                             </div>
                         </div>
-
                         <div className="col-6">
                             <div className="form-group">
                                 <label className="custom-form-label" htmlFor="end_date">End Date:</label>

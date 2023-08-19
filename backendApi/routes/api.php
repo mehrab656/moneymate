@@ -100,6 +100,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/export-expense-csv', [ExpenseController::class, 'exportExpenseCsv']);
     Route::get('/expenses/graph', [ExpenseController::class, 'getCategoryExpensesGraphForCurrentMonth']);
 
+	// Returns from market api
+	Route::get('returns',[ExpenseController::class, 'getReturns']);
+	Route::post('/return/{return}', [ExpenseController::class, 'updateReturn']);
 
     // Application Settings Api
 
@@ -118,6 +121,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/report/income', [ReportController::class, 'incomeReport']);
     Route::get('/report/expense', [ReportController::class, 'expenseReport']);
+    Route::get('/report/investment', [ReportController::class, 'investmentReport']);
 
 
     // Debt Api

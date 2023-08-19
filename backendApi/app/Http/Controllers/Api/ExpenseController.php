@@ -20,6 +20,8 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use mysql_xdevapi\Exception;
+use Nette\Schema\ValidationException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -176,7 +178,7 @@ class ExpenseController extends Controller {
 	 * @return IncomeResource
 	 */
 
-	public function update( UpdateExpenseRequest $request, Expense $expense ): IncomeResource {
+	public function update( UpdateExpenseRequest $request, Expense $expense ): ExpenseResource {
 		$data = $request->validated();
 
 		if ( $request->hasFile( 'attachment' ) ) {
@@ -225,7 +227,7 @@ class ExpenseController extends Controller {
 		}
 
 
-		return new IncomeResource( $expense );
+		return new ExpenseResource( $expense );
 	}
 
 
@@ -349,6 +351,51 @@ class ExpenseController extends Controller {
 		if ( ! empty( $expense->attachment ) ) {
 			Storage::delete( $expense->attachment );
 		}
+	}
+
+	public function getReturns( Request $request ): JsonResponse {
+
+		$page     = $request->query( 'page', 1 );
+		$pageSize = $request->query( 'pageSize', 10 );
+
+		$expenses = Expense::where( 'refundable_amount', '>', 0 )->skip( ( $page - 1 ) * $pageSize )
+		                   ->take( $pageSize )
+		                   ->orderBy( 'id', 'desc' )
+		                   ->get();
+
+		$totalCount = Expense::where( 'refundable_amount', '>', 0 )->count();
+
+		return response()->json( [
+			'data'  => ExpenseResource::collection( $expenses ),
+			'total' => $totalCount,
+		] );
+	}
+
+	public function updateReturn( UpdateExpenseRequest $request, Expense $return ) {
+		$data = $request->validated();
+
+		DB::beginTransaction();
+		try {
+			//first update bank account to adjust the balance from return
+			$bankAccount          = BankAccount::find( $return->account_id );
+			$bankAccount->balance += $request->return_amount;
+			$bankAccount->save();
+			// now time to update the expense field refunded amount.
+
+			$refunded_amount = $return->refunded_amount + $request->return_amount;
+			$return->update( [ 'refunded_amount' => $refunded_amount ] );
+			$return->save();
+		} catch ( ValidationException $e ) {
+			DB::rollBack();
+
+			return redirect()->back()->withErrors( $e->getMessages() )->withInput();
+		}
+
+		DB::commit();
+
+		return response()->json( [
+			'data' => $return
+		] );
 	}
 
 

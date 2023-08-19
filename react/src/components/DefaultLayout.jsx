@@ -181,6 +181,12 @@ export default function DefaultLayout() {
                             </Link>
                         </li>
                         <li className="aside-menu-item">
+                            <Link to="/returns" className={isActive('/returns') ? 'active' : ''}>
+                                <span className="aside-menu-icon"><FontAwesomeIcon icon={faDollar}/></span>
+                                <span className="aside-menu-text"> Returns</span>
+                            </Link>
+                        </li>
+                        <li className="aside-menu-item">
                             <Link to="/expenses" className={isActive('/expenses') ? 'active' : ''}>
                                 <span className="aside-menu-icon"><FontAwesomeIcon icon={faMoneyBill}/></span>
                                 <span className="aside-menu-text"> Expenses</span>
@@ -202,6 +208,12 @@ export default function DefaultLayout() {
                             <Link to="/expense-report" className={isActive('/expense-report') ? 'active' : ''}>
                                 <span className="aside-menu-icon"><FontAwesomeIcon icon={faChartPie}/></span>
                                 <span className="aside-menu-text"> Expense Report</span>
+                            </Link>
+                        </li>
+                        <li className="aside-menu-item">
+                            <Link to="/investment-report" className={isActive('/investment-report') ? 'active' : ''}>
+                                <span className="aside-menu-icon"><FontAwesomeIcon icon={faMoneyBillTrendUp}/></span>
+                                <span className="aside-menu-text"> Investment Report</span>
                             </Link>
                         </li>
 

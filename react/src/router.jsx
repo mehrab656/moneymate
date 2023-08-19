@@ -28,6 +28,8 @@ import SubscriptionHistory from "./views/SubscriptionHistory.jsx";
 import WarningMessage from "./views/WarningMessage.jsx";
 import InvestmentForm from "./views/InvestmentForm.jsx";
 import Investment from "./views/Investment.jsx";
+import InvestmentReport from "./views/InvestmentReport";
+import Return from "./views/Return";
 
 const router = createBrowserRouter([
 
@@ -50,6 +52,10 @@ const router = createBrowserRouter([
             {
                 path: '/categories',
                 element: <Categories/>
+            },
+            {
+                path: '/returns',
+                element: <Return/>
             },
             {
                 path: '/incomes',
@@ -144,6 +150,10 @@ const router = createBrowserRouter([
             {
                 path: '/expense-report',
                 element: <ExpenseReport key="expenseReportListing"/>
+            },
+            {
+                path: '/investment-report',
+                element: <InvestmentReport/>
             },
             {
                 path: '/calendar',
