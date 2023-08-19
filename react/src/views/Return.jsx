@@ -21,7 +21,8 @@ export default function Return() {
 
     const [marketReturn, setMarketReturn] = useState({});
 
-    const {applicationSettings} = useContext(SettingsContext);
+    const {applicationSettings, userRole} = useContext(SettingsContext);
+    console.log(userRole)
     const {
         num_data_per_page,
         default_currency
@@ -43,11 +44,11 @@ export default function Return() {
 
     const submitForUpdate = (event) => {
         event.preventDefault();
-        if (parseFloat(marketReturn.return_amount) > (parseFloat(marketReturn.refundable_amount)-parseFloat(marketReturn.refunded_amount))){
+        if (parseFloat(marketReturn.return_amount) > (parseFloat(marketReturn.refundable_amount) - parseFloat(marketReturn.refunded_amount))) {
             setErrors({
-                type:['Return amount can\'t exceed the remaining refundable amount.']
+                type: ['Return amount can\'t exceed the remaining refundable amount.']
             });
-        }else{
+        } else {
             setErrors(null);
 
             axiosClient.post(`/return/${marketReturn.id}`, marketReturn)
@@ -132,7 +133,10 @@ export default function Return() {
                             <th className="text-center">Refundable Amount</th>
                             <th className="text-center">Refunded Amount</th>
                             <th className="text-center">Remaining</th>
-                            <th className="text-center">Action</th>
+                            {
+                                userRole === 'admin'&&
+                                <th className="text-center">Action</th>
+                            }
                         </tr>
                         </thead>
                         {loading && (
@@ -160,8 +164,10 @@ export default function Return() {
                                         <td className="text-right">{default_currency + marketReturn.refundable_amount}</td>
                                         <td className="text-right">{default_currency + marketReturn.refunded_amount}</td>
                                         <td className="text-right">{default_currency + (marketReturn.refundable_amount - marketReturn.refunded_amount).toString()}</td>
-                                        <td className="text-center w-auto">
-                                            <div className="d-flex flex-wrap justify-content-center gap-2">
+                                        {
+                                            userRole === 'admin' &&
+                                            <td className="text-center w-auto">
+                                                <div className="d-flex flex-wrap justify-content-center gap-2">
                                               <span>
                                                 <Link
                                                     className="btn-edit"
@@ -169,8 +175,9 @@ export default function Return() {
                                                     onClick={() => edit(marketReturn)}>
                                                   <FontAwesomeIcon icon={faEdit}/> Edit</Link>
                                               </span>
-                                            </div>
-                                        </td>
+                                                </div>
+                                            </td>
+                                        }
                                     </tr>
                                 ))
                             )}
@@ -225,13 +232,15 @@ export default function Return() {
                                 readOnly={true}
                             />
                         </div>
-
                         <div className="form-group">
                             <label htmlFor="return_amount" className="custom-form-label">Return Amount</label>
                             <input
                                 className="custom-form-control"
                                 type="number"
-                                onBlur={e => setMarketReturn({ ...marketReturn, return_amount: parseFloat(e.target.value).toFixed(2) })}
+                                onBlur={e => setMarketReturn({
+                                    ...marketReturn,
+                                    return_amount: parseFloat(e.target.value).toFixed(2)
+                                })}
                                 placeholder="Return Amount"
                             />
                             {errors && errors.type && (
