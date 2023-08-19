@@ -35,7 +35,6 @@ export default function Investment() {
     const showInvestment = (invest) => {
         setModalInvest(invest);
         setShowModal(true);
-        console.log(invest)
     }
     const handleCloseModal = () => {
         setShowModal(false);
@@ -50,7 +49,6 @@ export default function Investment() {
         setLoading(true);
         axiosClient.get('/investments', {params: {page, pageSize}})
             .then(({data}) => {
-                console.log(data.data);
                 setLoading(false);
                 setInvestments(data.data);
                 setTotalCount(data.total);
@@ -96,7 +94,6 @@ export default function Investment() {
         }).then((result) => {
             if (result.isConfirmed) {
                 axiosClient.delete(`investment/${investment.id}`).then((res) => {
-                    console.log('ress', res)
                     getInvestments();
                     Swal.fire({
                         title: 'Deleted!',
@@ -104,7 +101,6 @@ export default function Investment() {
                         icon: 'success',
                     });
                 }).catch((error) => {
-                    console.log(error);
                     Swal.fire({
                         title: 'Error!',
                         text: 'investment could not be deleted.',
@@ -143,11 +139,6 @@ export default function Investment() {
             deleteRoute:''
         },
     }
-
-    console.log('modal invest', modalInvest)
-
-    console.log('investments', investments)
-
 
     return (
         <div>

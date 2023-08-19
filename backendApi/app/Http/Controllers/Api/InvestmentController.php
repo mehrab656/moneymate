@@ -99,14 +99,11 @@ class InvestmentController extends Controller {
 
 			// now update other data
 			$investDate = Carbon::parse( $data['investment_date'] )->format( 'Y-m-d' );
-			$invest     = Investment::create( [
-				'investor_id'     => $data['investor_id'],
-				'added_by'        => $user->id, //current user
-				'amount'          => $data['amount'],
-				'note'            => $data['note'],
-				'account_id'      => $data['account_id'],
-				'investment_date' => $investDate,
-			] );
+			$data['added_by'] = $user->id;
+			$data['investment_date'] = $investDate;
+
+			$investment->update($data);
+			$investment->save();
 
 			//now again update bank with the new amount.
 			$bankAccount          = BankAccount::find( $request->account_id );
@@ -125,16 +122,16 @@ class InvestmentController extends Controller {
 	/**
 	 * Remove the specified resource from storage.
 	 */
-	public function destroy( Investment $invest ): Response {
-		$invest->delete();
+	public function destroy( Investment $investment ): Response {
+		$investment->delete();
 
 		/**
 		 * Adjust bank account
 		 */
 
-		$bankAccount = BankAccount::find( $invest->account_id );
-		if ( $invest->amount > 0 ) {
-			$bankAccount->balance -= $invest->amount;
+		$bankAccount = BankAccount::find( $investment->account_id );
+		if ( $investment->amount > 0 ) {
+			$bankAccount->balance -= $investment->amount;
 			$bankAccount->save();
 		}
 

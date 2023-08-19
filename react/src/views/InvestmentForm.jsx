@@ -62,7 +62,6 @@ export default function InvestmentForm() {
                 setBankAccounts(data.data);
             })
             .catch(error => {
-                // console.log('Error fetching bank accounts:', error)
             });
     }, [setUsers, setBankAccounts]);
 
@@ -79,10 +78,6 @@ export default function InvestmentForm() {
     useEffect(()=>{
         setSelectedAccountId(investment.account_id)
     },[investment])
-
-    console.log(selectedAccountId)
-
-
 
     // set default date(today)
     useEffect(()=>{
@@ -216,7 +211,7 @@ export default function InvestmentForm() {
                               
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="investment_amount">Amount(*)</label>
-                                    <input className="custom-form-control" type="number" step="any" value={investment.amount || ""}
+                                    <input className="custom-form-control" type="number" value={investment.amount || ""}
                                            onChange={ev => setInvestment({...investment, amount: ev.target.value})}
                                            placeholder="Amount"/>
                                     {/* {errors.amount && <p className="error-message mt-2">{errors.amount[0]}</p>} */}
