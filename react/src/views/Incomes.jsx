@@ -18,7 +18,7 @@ export default function Incomes() {
     const [totalCount, setTotalCount] = useState(0);
     const [searchTerm, setSearchTerm] = useState("");
 
-    const {applicationSettings} = useContext(SettingsContext);
+    const {applicationSettings, userRole} = useContext(SettingsContext);
     const {
         num_data_per_page,
         default_currency
@@ -105,8 +105,9 @@ export default function Incomes() {
         <div>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Income Histories</h1>
-                <Link className="btn-add align-right mr-3" to="/income/new"><FontAwesomeIcon icon={faDollar}/> Add New
-                    Income</Link>
+                {userRole ==='admin' && <Link className="btn-add align-right mr-3" to="/income/new"><FontAwesomeIcon icon={faDollar}/> Add New
+                    Income</Link>}
+              
                 <IncomeExportButton/>
             </div>
 
@@ -131,7 +132,8 @@ export default function Incomes() {
                             <th>Attachment</th>
                             <th>Description</th>
                             <th>Date</th>
-                            <th width="20%">Action</th>
+                            {userRole==='admin' && <th width="20%">Action</th>}
+                            
                         </tr>
                         </thead>
                         {loading && (
@@ -163,13 +165,16 @@ export default function Incomes() {
                                         <td>{income.description !== 'null' ? income.description : ''}</td>
 
                                         <td>{income.income_date}</td>
-                                        <td>
-                                            <Link className="btn-edit" to={"/income/" + income.id}> <FontAwesomeIcon
-                                                icon={faEdit}/> Edit</Link>
-                                            &nbsp;
-                                            <a onClick={() => onDelete(income)} className="btn-delete"><FontAwesomeIcon
-                                                icon={faTrash}/> Delete</a>
-                                        </td>
+                                        {userRole ==='admin' &&
+                                            <td>
+                                                <Link className="btn-edit" to={"/income/" + income.id}> <FontAwesomeIcon
+                                                    icon={faEdit}/> Edit</Link>
+                                                &nbsp;
+                                                <a onClick={() => onDelete(income)} className="btn-delete"><FontAwesomeIcon
+                                                    icon={faTrash}/> Delete</a>
+                                            </td>
+                                        }
+                                       
                                     </tr>
                                 ))
                             )}

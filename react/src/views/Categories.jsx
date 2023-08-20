@@ -25,7 +25,7 @@ export default function Categories() {
         type: 'income'
     });
 
-    const { applicationSettings } = useContext(SettingsContext);
+    const { applicationSettings, userRole } = useContext(SettingsContext);
     const {
         num_data_per_page
     } = applicationSettings;
@@ -170,11 +170,14 @@ export default function Categories() {
         <div>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Income & Expense Categories</h1>
+                {userRole =='admin' && 
                 <div>
                     <a className="custom-btn btn-add" onClick={showCreateModal}>
                         <FontAwesomeIcon icon={faCoins} /> Add New
                     </a>
                 </div>
+                }
+               
             </div>
             <WizCard className="animated fadeInDown">
                 <div className="mb-4">
@@ -192,7 +195,8 @@ export default function Categories() {
                         <tr>
                             <th>CATEGORY NAME</th>
                             <th className="text-center">CATEGORY TYPE</th>
-                            <th className="text-center">ACTIONS</th>
+                            {userRole ==='admin' && <th className="text-center">ACTIONS</th>}
+                            
                         </tr>
                         </thead>
                         {loading && (
@@ -217,27 +221,28 @@ export default function Categories() {
                                     <tr key={category.id}>
                                         <td>{category.name}</td>
                                         <td className="text-center">{category.type}</td>
-                                        <td className="text-center w-auto">
+                                        {userRole ==='admin' &&  <td className="text-center w-auto">
                                             <div className="d-flex flex-wrap justify-content-center gap-2">
-                          <span>
-                            <Link
-                                className="btn-edit"
-                                to={`#`}
-                                onClick={() => edit(category)}
-                            >
-                              <FontAwesomeIcon icon={faEdit} /> Edit
-                            </Link>
-                          </span>
                                                 <span>
-                            <a
-                                onClick={(e) => onDelete(category)}
-                                className="btn-delete"
-                            >
-                              <FontAwesomeIcon icon={faTrash} /> Delete
-                            </a>
-                          </span>
+                                                    <Link
+                                                        className="btn-edit"
+                                                        to={`#`}
+                                                        onClick={() => edit(category)}
+                                                    >
+                                                    <FontAwesomeIcon icon={faEdit} /> Edit
+                                                    </Link>
+                                                </span>
+                                                 <span>
+                                                    <a
+                                                        onClick={(e) => onDelete(category)}
+                                                        className="btn-delete"
+                                                    >
+                                                    <FontAwesomeIcon icon={faTrash} /> Delete
+                                                    </a>
+                                                </span>
                                             </div>
-                                        </td>
+                                        </td>}
+                                       
                                     </tr>
                                 ))
                             )}

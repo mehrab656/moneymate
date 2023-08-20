@@ -21,7 +21,7 @@ export default function Budgets() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
 
-    const {applicationSettings} = useContext(SettingsContext);
+    const {applicationSettings,userRole} = useContext(SettingsContext);
     const {
         num_data_per_page,
         default_currency
@@ -275,7 +275,8 @@ export default function Budgets() {
                             <th>UPDATED BUDGET AMOUNT</th>
                             <th>BUDGET START DATE</th>
                             <th>BUDGET END DATE</th>
-                            <th width="20%">ACTIONS</th>
+                            {userRole ==='admin' && <th width="20%">ACTIONS</th>}
+                            
                         </tr>
                         </thead>
                         {loading && (
@@ -304,6 +305,7 @@ export default function Budgets() {
                                         <td>{default_currency + budget.updated_amount}</td>
                                         <td>{budget.start_date}</td>
                                         <td>{budget.end_date}</td>
+                                        {userRole ==='admin' && 
                                         <td>
                                             <Link className="btn-edit" to={`#`} onClick={() => edit(budget)}>
                                                 <FontAwesomeIcon icon={faEdit}/> Edit
@@ -313,6 +315,8 @@ export default function Budgets() {
                                                 <FontAwesomeIcon icon={faTrash}/> Delete
                                             </a>
                                         </td>
+                                        }
+                                       
                                     </tr>
                                 ))
                             )}

@@ -44,7 +44,7 @@ export default function Expenses() {
     const handleCloseModal = () => {
         setShowModal(false);
     };
-    const {applicationSettings} = useContext(SettingsContext);
+    const {applicationSettings, userRole} = useContext(SettingsContext);
     const {
         num_data_per_page,
         default_currency
@@ -153,8 +153,9 @@ export default function Expenses() {
         <div>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Expense Histories</h1>
-                <Link className="btn-add align-right mr-3" to="/expense/new"><FontAwesomeIcon icon={faMinus}/> Add
-                    New</Link>
+                {userRole ==='admin' && <Link className="btn-add align-right mr-3" to="/expense/new"><FontAwesomeIcon icon={faMinus}/> Add
+                    New</Link>}
+             
                 <ExpenseExportButton/>
             </div>
 
@@ -176,7 +177,8 @@ export default function Expenses() {
                             <th>Refundable amount</th>
                             <th>Refunded amount</th>
                             <th>Date</th>
-                            <th width="20%">Action</th>
+                           <th width="20%">Action</th>
+                            
                         </tr>
                         </thead>
                         {loading && (
@@ -206,13 +208,17 @@ export default function Expenses() {
                                         <td className={"text-" + expense.refunded_txt_clr}>{default_currency + expense.refunded_amount}</td>
 
                                         <td>{expense.expense_date}</td>
-                                        <td>
-                                            <ActionButtonHelpers module={expense}
-                                                                 showModule={showExpense}
-                                                                 deleteFunc={onDelete}
-                                                                 params={actionParams}
+
+                                      
+                                          <td>
+                                            <ActionButtonHelpers
+                                               module={expense}
+                                               showModule={showExpense}
+                                               deleteFunc={onDelete}
+                                               params={actionParams}
                                             />
                                         </td>
+                                       
                                     </tr>
                                 ))
                             )}

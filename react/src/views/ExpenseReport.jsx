@@ -10,24 +10,43 @@ export default function ExpenseReport() {
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
 
+    const [expenseCategories, setExpenseCategories] = useState([]);
+    const [selectedCategoryId, setSelectedCategoryId] = useState('');
+    
     const {applicationSettings} = useContext(SettingsContext);
     const {
         default_currency
     } = applicationSettings;
 
     // set default date(today)
-     useEffect(()=>{
-        if(startDate ===null){
-            setStartDate(new Date())
-         }
-     },[startDate])
+    //  useEffect(()=>{
+    //     if(startDate ===null){
+    //         setStartDate(new Date())
+    //      }
+    //  },[startDate])
+
+    useEffect(() => {
+        axiosClient.get('/expense-categories')
+            .then(({data}) => {
+                setExpenseCategories(data.categories);
+                if(data?.categories.length>0){
+                    setSelectedCategoryId(data?.categories[0].id)
+                }
+            })
+            .catch(error => {
+                console.error('Error loading expense categories:', error);
+                // handle error, e.g., show an error message to the user
+            });
+    }, [setExpenseCategories]);
+
+
     
 
     const getIncomeReport = () => {
         setLoading(true);
         axiosClient
             .get("/report/expense", {
-                params: {start_date: startDate, end_date: endDate},
+                params: {start_date: startDate, end_date: endDate, cat_id:selectedCategoryId},
             })
             .then(({data}) => {
                 //console.log('Loading expense data', data.data);
@@ -54,7 +73,28 @@ export default function ExpenseReport() {
             <WizCard className="animated fadeInDown wiz-card-mh">
                 <div className="row">
                     <form onSubmit={handleSubmit}>
-                        <div className="col-6">
+                        <div className="col-3">
+                            <div className="form-group">
+                                    <label className="custom-form-label" htmlFor="expense_category">Expense Category</label>
+                                    <select
+                                        className="custom-form-control"
+                                        value={selectedCategoryId}
+                                        id="expense-category"
+                                        name="expense-category"
+                                        onChange={(event) => {
+                                            const value = event.target.value || '';
+                                            setSelectedCategoryId(value);
+                                        }}>
+                                        <option defaultValue>Expense category</option>
+                                        {expenseCategories.map(category => (
+                                            <option key={category.id} value={category.id}>
+                                                {category.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                        </div>
+                        <div className="col-3">
                             <div className="form-group">
                                 <label className="custom-form-label" htmlFor="start_date">Start Date</label>
                                 <DatePicker
@@ -66,7 +106,7 @@ export default function ExpenseReport() {
                                 />
                             </div>
                         </div>
-                        <div className="col-6">
+                        <div className="col-3">
                             <div className="form-group">
                                 <label className="custom-form-label" htmlFor="end_date">End Date:</label>
                                 <DatePicker
@@ -78,8 +118,8 @@ export default function ExpenseReport() {
                                 />
                             </div>
                         </div>
-                        <div className="col-12">
-                            <button className={'btn-add right'} type="submit">Filter</button>
+                        <div className="col-3 mt-4">
+                            <button className={'btn-add right mt-2'} type="submit">Filter</button>
                         </div>
                     </form>
                 </div>

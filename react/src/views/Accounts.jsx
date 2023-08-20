@@ -22,7 +22,7 @@ export default function Accounts() {
     const [banks, setBanks] = useState([]);
 
 
-    const {applicationSettings} = useContext(SettingsContext);
+    const {applicationSettings, userRole} = useContext(SettingsContext);
     const {
         num_data_per_page,
         default_currency
@@ -270,7 +270,8 @@ export default function Accounts() {
                             <th className="text-center">BANK NAME</th>
                             <th className="text-center">ACCOUNT NUMBER</th>
                             <th className="text-center">AVAILABLE BALANCE</th>
-                            <th className="text-center" width="20%">ACTIONS</th>
+                            {userRole ==='admin' && <th className="text-center" width="20%">ACTIONS</th>}
+                            
                         </tr>
                         </thead>
 
@@ -299,19 +300,22 @@ export default function Accounts() {
                                         <td className="text-center">{account.bank_name}</td>
                                         <td className="text-center">{account.account_number}</td>
                                         <td className="text-center">{default_currency}{account.balance}</td>
+                                        {userRole ==='admin' && 
                                         <td className="text-center">
                                             <div className="d-flex flex-wrap justify-content-center gap-2">
                                             <span>
-                                        <Link className="btn-edit" to={`#`} onClick={() => edit(account)}>
-                                           <FontAwesomeIcon icon={faEdit}/> Edit
-                                        </Link>
-                                            </span>
-                                                <span>
-                                                <a className="btn-delete"
-                                                   onClick={(e) => onDelete(account)}><FontAwesomeIcon icon={faTrash}/> Delete</a>
-                                            </span>
-                                            </div>
-                                        </td>
+                                            <Link className="btn-edit" to={`#`} onClick={() => edit(account)}>
+                                            <FontAwesomeIcon icon={faEdit}/> Edit
+                                            </Link>
+                                                </span>
+                                                    <span>
+                                                    <a className="btn-delete"
+                                                    onClick={(e) => onDelete(account)}><FontAwesomeIcon icon={faTrash}/> Delete</a>
+                                                </span>
+                                                </div>
+                                            </td>
+                                        }
+                                       
                                     </tr>
                                 ))
                             )}

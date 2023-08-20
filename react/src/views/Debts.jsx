@@ -25,7 +25,7 @@ export default function Debts() {
     const [selectedAccountId, setSelectedAccountId] = useState('');
     const [bankAccounts, setBankAccounts] = useState([]);
 
-    const {applicationSettings} = useContext(SettingsContext);
+    const {applicationSettings, userRole} = useContext(SettingsContext);
     const {
         num_data_per_page,
         default_currency
@@ -226,9 +226,12 @@ export default function Debts() {
         <div>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Debts/Loans</h1>
+                {userRole ==='admin' && 
                 <div>
                     <Link className="custom-btn btn-add" onClick={showCreateModal}><FontAwesomeIcon icon={faMoneyCheck}/> Add New</Link>
                 </div>
+                }
+              
             </div>
 
 
@@ -251,7 +254,8 @@ export default function Debts() {
                             <th className="text-center">PERSON</th>
                             <th className="text-center">DATE</th>
                             <th className="text-center">NOTE</th>
-                            <th className="text-center">ACTIONS</th>
+                            {userRole ==='admin' && <th className="text-center">ACTIONS</th>}
+                            
                         </tr>
                         </thead>
                         {loading && (
@@ -280,6 +284,7 @@ export default function Debts() {
                                         <td className="text-center">{debt.type === 'borrow' ? "Borrowed from " : "Lend to "} {debt.person}</td>
                                         <td className="text-center">{debt.date}</td>
                                         <td className="text-center">{debt.note}</td>
+                                        {userRole ==='admin' && 
                                         <td className="text-center">
                                             <div className="d-flex flex-wrap justify-content-center gap-2">
                                             <span>
@@ -300,6 +305,8 @@ export default function Debts() {
                                             </span>
                                             </div>
                                         </td>
+                                        }
+                                       
                                     </tr>
                                 ))
                             )}

@@ -23,7 +23,7 @@ export default function Investment() {
 
     const [name, setName] = useState(null) 
 
-    const {applicationSettings} = useContext(SettingsContext);
+    const {applicationSettings, userRole} = useContext(SettingsContext);
     const {
         num_data_per_page,
         default_currency
@@ -111,27 +111,6 @@ export default function Investment() {
         });
     };
 
-    // get all users
-    useEffect(()=>{
-        if(name ===null){
-            setLoading(true)
-            axiosClient.get('/get-all-users')
-            .then(({data}) => {
-                setLoading(false)
-                if(data.data.length>0){
-                    data.data.forEach(element => {
-                        
-                    });
-                }
-            })
-            .catch(error => {
-                setLoading(false)
-                console.error('Error loading investment user:', error);
-                // handle error, e.g., show an error message to the user
-            });
-        }
-    },[])
-
     const actionParams = {
         route:{
             editRoute:'/investment/',
@@ -144,8 +123,9 @@ export default function Investment() {
         <div>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Investments Histories</h1>
-                <Link className="btn-add align-right mr-3" to="/investments/new"><FontAwesomeIcon icon={faMinus}/> Add
-                    New</Link>
+                {userRole ==='admin' &&   <Link className="btn-add align-right mr-3" to="/investments/new"><FontAwesomeIcon icon={faMinus}/> Add
+                    New</Link>}
+              
                 <ExpenseExportButton/>
             </div>
 
@@ -166,7 +146,8 @@ export default function Investment() {
                             <th>Amount</th>
                             <th>Date</th>
                             <th>Added By</th>
-                            <th width="20%">Action</th>
+                          <th width="20%">Action</th>
+                            
                         </tr>
                         </thead>
                         {loading && (

@@ -29,6 +29,7 @@ export default function InvestmentForm() {
     const {setNotification} = useStateContext();
     const [selectedAccountId, setSelectedAccountId] = useState('');
     const [selectedInvestorId, setSelectedInvestorId] = useState('');
+
     const navigate = useNavigate();
     const [insufficientBalanceForCategory, setInsufficientBalanceForCategory] = useState(null);
 
@@ -45,6 +46,11 @@ export default function InvestmentForm() {
                     data.data.forEach(element => {
                         if(element.id !== user.id){
                             updatedUser.push(element)
+                        }else{
+                            if(id===undefined){
+                                console.log('find')
+                                setSelectedInvestorId(element.id);
+                            }
                         }
                     });
                 }
@@ -60,6 +66,9 @@ export default function InvestmentForm() {
         axiosClient.get('/all-bank-account')
             .then(({data}) => {
                 setBankAccounts(data.data);
+                if(data.data.length>0 && id ===undefined){
+                    setSelectedAccountId(data.data[0].id)
+                }
             })
             .catch(error => {
             });
@@ -68,20 +77,16 @@ export default function InvestmentForm() {
 
     // set default user-> current user
     useEffect(()=>{
-        if(investment.investor_id){
-            setSelectedInvestorId(investment.investor_id);
-
+        if(user && id ===undefined){
+            setSelectedInvestorId(selectedInvestorId);
         }
-    },[investment])
+       
+    },[user])
 
-    // set default bank accout
-    useEffect(()=>{
-        setSelectedAccountId(investment.account_id)
-    },[investment])
 
     // set default date(today)
     useEffect(()=>{
-        if(investment?.investment_date ===''){
+        if(investment?.investment_date ==='' && id ===undefined){
             setInvestment({
                 ...investment,
                 investment_date: new Date().toISOString().split('T')[0]
@@ -90,21 +95,31 @@ export default function InvestmentForm() {
     },[investment?.investment_date])
 
 
-
-
     useEffect(() => {
         if (id) {
             setLoading(true)
             axiosClient.get(`/investment/${id}`)
                 .then(({data}) => {
+                    console.log('data', data)
                     setLoading(false);
                     setInvestment(data);
                 })
                 .catch(() => {
                     setLoading(false)
                 })
+
         }
     }, [id]);
+
+    useEffect(()=>{
+        if(investment.account_id !=='' && id !==undefined){
+            setSelectedAccountId(investment.account_id)
+        }
+        if(investment.investor_id !=='' && id !==undefined){
+            setSelectedInvestorId(investment.investor_id )
+        }
+    },[investment])
+
 
 
     const investmentSubmit = (event) => {

@@ -29,6 +29,7 @@ class InvestmentController extends Controller {
 		$page     = $request->query( 'page', 1 );
 		$pageSize = $request->query( 'pageSize', 10 );
 
+
 		$invests = Investment::skip( ( $page - 1 ) * $pageSize )
 		                     ->take( $pageSize )
 		                     ->orderBy( 'id', 'desc' )

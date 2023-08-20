@@ -90,11 +90,12 @@ export default function Users() {
         <div>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">List of users</h1>
-                <div>
+                {userRole ==='admin' && <div>
                     <Link className="custom-btn btn-add" to="/users/new">
                         <FontAwesomeIcon icon={faUser}/> Add New
                     </Link>
-                </div>
+                </div>}
+                
             </div>
 
             <WizCard className="animated fadeInDown">
@@ -115,7 +116,8 @@ export default function Users() {
                             <th>NAME</th>
                             <th className="text-center">EMAIL</th>
                             <th className="text-center">DATE CREATED</th>
-                            <th className="text-center">ACTIONS</th>
+                            {userRole ==='admin' && <th className="text-center">ACTIONS</th>}
+                            
                         </tr>
                         </thead>
 
@@ -136,6 +138,7 @@ export default function Users() {
                                     <td>{u.name}</td>
                                     <td className="text-center">{u.email}</td>
                                     <td className="text-center">{u.created_at}</td>
+                                    {userRole ==='admin' &&
                                     <td className="text-center">
                                         <div className="d-flex flex-wrap justify-content-center gap-2">
                                             <span><Link className="btn-edit" to={'/users/' + u.id}><FontAwesomeIcon
@@ -150,6 +153,8 @@ export default function Users() {
 
                                         </div>
                                     </td>
+                                    }
+                                  
                                 </tr>
                             ))}
                             </tbody>

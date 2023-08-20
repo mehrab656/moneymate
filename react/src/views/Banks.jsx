@@ -24,7 +24,7 @@ export default function Banks() {
     });
     const {setNotification} = useStateContext();
 
-    const {applicationSettings} = useContext(SettingsContext);
+    const {applicationSettings, userRole} = useContext(SettingsContext);
     const {
         num_data_per_page
     } = applicationSettings;
@@ -192,7 +192,8 @@ export default function Banks() {
                         <thead>
                         <tr>
                             <th className="text-center">BANK NAME</th>
-                            <th className={'text-center'}>ACTIONS</th>
+                            {userRole ==='admin' && <th className={'text-center'}>ACTIONS</th>}
+                            
                         </tr>
                         </thead>
                         {loading && (
@@ -216,6 +217,7 @@ export default function Banks() {
                                 filteredBank.map((bank) => (
                                     <tr className={'text-center'} key={bank.id}>
                                         <td>{bank.bank_name}</td>
+                                        {userRole ==='admin' && 
                                         <td className="text-center w-auto">
                                             <div className="d-flex flex-wrap justify-content-center gap-2">
                                             <span>
@@ -230,6 +232,8 @@ export default function Banks() {
                                             </span>
                                             </div>
                                         </td>
+                                        }
+                                       
                                     </tr>
                                 ))
                             )}
