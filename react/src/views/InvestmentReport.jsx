@@ -6,6 +6,7 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import WizCard from "../components/WizCard";
 import {SettingsContext} from "../contexts/SettingsContext";
 import DatePicker from "react-datepicker";
+import InvestmentReportChart from "../components/InvestmentReportChart.jsx";
 
 export default function InvestmentReport() {
 
@@ -122,7 +123,9 @@ export default function InvestmentReport() {
 
                     <div>
                         <WizCard className="animated fadeInDown">
-                            <MonthlyExpenseChart title="Investment chart"/>
+                            <InvestmentReportChart totalInvestment={getTotalInvestments}
+                                                   investors={investments}
+                                                   title="Investment chart"/>
                         </WizCard>
                     </div>
                 </div>
