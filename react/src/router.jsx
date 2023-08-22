@@ -30,6 +30,8 @@ import InvestmentForm from "./views/InvestmentForm.jsx";
 import Investment from "./views/Investment.jsx";
 import InvestmentReport from "./views/InvestmentReport";
 import Return from "./views/Return";
+import InvestmentPlan from "./views/InvestmentPlan.jsx";
+import InvestmentPlanForm from "./views/InvestmentPlanForm.jsx";
 
 const router = createBrowserRouter([
 
@@ -107,6 +109,18 @@ const router = createBrowserRouter([
             {
                 path: '/investment/:id',
                 element: <InvestmentForm key="investmentUpdate"/>
+            },
+            {
+                path: '/investment-plan',
+                element: <InvestmentPlan/>
+            },
+            {
+                path: '/investment-plan/new',
+                element: <InvestmentPlanForm key="investmentPlanCreate"/>
+            },
+            {
+                path: '/investment-plan/:id',
+                element: <InvestmentPlanForm key="investmentPlanUpdate"/>
             },
             {
                 path: '/manage-debt/:id',

@@ -175,6 +175,12 @@ export default function DefaultLayout() {
                             </Link>
                         </li>
                         <li className="aside-menu-item">
+                            <Link to="/investment-plan" className={isActive('/investment-plan') ? 'active' : ''}>
+                                <span className="aside-menu-icon"><FontAwesomeIcon icon={faExchange}/></span>
+                                <span className="aside-menu-text">Investment Plan</span>
+                            </Link>
+                        </li>
+                        <li className="aside-menu-item">
                             <Link to="/incomes" className={isActive('/incomes') ? 'active' : ''}>
                                 <span className="aside-menu-icon"><FontAwesomeIcon icon={faDollar}/></span>
                                 <span className="aside-menu-text"> Incomes</span>
