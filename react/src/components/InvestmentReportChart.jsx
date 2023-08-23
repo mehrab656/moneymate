@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {Pie} from 'react-chartjs-2';
 
-export default function InvestmentReportChart({totalInvestment, investors, title}) {
+export default function InvestmentReportChart({totalInvestment, investors, title, checkLoading}) {
 
     const [expenseData, setExpenseData] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(checkLoading?checkLoading:false); 
 
     const fetchExpenseData = () => {
         setLoading(true);
@@ -39,11 +39,13 @@ export default function InvestmentReportChart({totalInvestment, investors, title
         ],
     };
 
+
+
     return (
         <div style={{width: '100%'}}>
             <h1 className="title-text mb-0 text-center">{title}</h1>
             <br/>
-            {loading ? (
+            {checkLoading ? (
                 <p className="text-center">Loading...</p>
             ) : sortedExpenseData.length > 0 ? (
                 <div style={{display: 'flex', justifyContent: 'center'}}>

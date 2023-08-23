@@ -125,6 +125,7 @@ export default function InvestmentReport() {
                         <WizCard className="animated fadeInDown">
                             <InvestmentReportChart totalInvestment={getTotalInvestments}
                                                    investors={investments}
+                                                   checkLoading={loading}
                                                    title="Investment chart"/>
                         </WizCard>
                     </div>
