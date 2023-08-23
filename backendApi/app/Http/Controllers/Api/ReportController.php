@@ -17,10 +17,11 @@ use Illuminate\Support\Facades\DB;
 
 
 class ReportController extends Controller {
-	public function incomeReport( Request $request ): AnonymousResourceCollection {
+	public function incomeReport( Request $request ): \Illuminate\Http\JsonResponse {
 		// Get the optional start_date and end_date parameters from the request
 		$startDate = $request->input( 'start_date' );
 		$endDate   = $request->input( 'end_date' );
+		$cat_id    = $request->input( 'cat_id' );
 
 		// Calculate the default date range (last 3 months)
 		if ( empty( $startDate ) ) {
@@ -37,23 +38,37 @@ class ReportController extends Controller {
 		                 ->where( 'income_date', '<=', $endDate )
 		                 ->whereHas( 'category', function ( $query ) {
 			                 $query->where( 'type', 'income' );
-		                 } )
-		                 ->get();
+		                 } );
+		if ( $cat_id ) {
+			$incomes = $incomes->where( 'category_id', $cat_id );
+		}
 
 		// Return the income report as a collection of IncomeReportResource
-		return IncomeReportResource::collection( $incomes );
+		$incomesRes =  IncomeReportResource::collection( $incomes->get() );
+		$sum = 0;
+		foreach ( $incomesRes as $key => $income ) {
+			if ( isset( $income->amount ) ) {
+				$sum += $income->amount;
+			}
+		}
+
+		return response()->json( [
+			'totalIncome' => $sum,
+			'incomes'     => $incomesRes,
+		] );
 	}
 
 
 	/**
 	 * @param Request $request
 	 *
-	 * @return AnonymousResourceCollection
+	 * @return \Illuminate\Http\JsonResponse
 	 */
 
-	public function expenseReport( Request $request ): AnonymousResourceCollection {
+	public function expenseReport( Request $request ) {
 		$startDate = $request->start_date;
 		$endDate   = $request->end_date;
+		$cat_id    = $request->cat_id;
 
 		if ( empty( $startDate ) || empty( $endDate ) ) {
 			$endDate   = Carbon::now()->toDateString();
@@ -65,9 +80,26 @@ class ReportController extends Controller {
 		                   ->where( 'expense_date', '<=', $endDate )
 		                   ->whereHas( 'category', function ( $query ) {
 			                   $query->where( 'type', 'expense' );
-		                   } )->get();
+		                   } );
 
-		return ExpenseReportResource::collection( $expenses );
+		if ( $cat_id ) {
+			$expenses = $expenses->where( 'category_id', $cat_id );
+		}
+
+		$expensesRes = ExpenseReportResource::collection( $expenses->get() );
+
+
+		$sum = 0;
+		foreach ( $expensesRes as $key => $expense ) {
+			if ( isset( $expense->amount ) ) {
+				$sum += $expense->amount;
+			}
+		}
+
+		return response()->json( [
+			'totalExpense' => $sum,
+			'expenses'     => $expensesRes,
+		] );
 	}
 
 	public function investmentReport( Request $request ) {
@@ -79,8 +111,8 @@ class ReportController extends Controller {
 			$endDate   = Carbon::parse( $endDate )->format( 'Y-m-d' );
 			$startDate = Carbon::parse( $startDate )->format( 'Y-m-d' );
 		}
-		if ( $startDate && !$endDate){
-			$endDate   = Carbon::now()->toDateString();
+		if ( $startDate && ! $endDate ) {
+			$endDate = Carbon::now()->toDateString();
 
 		}
 		$investments = DB::table( 'investments' )->selectRaw( 'sum(amount) as amount, investor_id, name' )
@@ -90,8 +122,8 @@ class ReportController extends Controller {
 		$totalInvestment = DB::table( 'investments' );
 		//filter investments
 		if ( $startDate || $endDate ) {
-			$investments = $investments->whereBetween('investment_date',[$startDate,$endDate]);
-			$totalInvestment = $totalInvestment->whereBetween('investment_date',[$startDate,$endDate]);
+			$investments     = $investments->whereBetween( 'investment_date', [ $startDate, $endDate ] );
+			$totalInvestment = $totalInvestment->whereBetween( 'investment_date', [ $startDate, $endDate ] );
 		}
 		$totalInvestment = $totalInvestment->sum( 'amount' );
 

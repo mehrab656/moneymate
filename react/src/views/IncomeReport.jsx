@@ -12,21 +12,25 @@ export default function IncomeReport() {
 
     const [incomeCategories, setIncomeCategories] = useState([]);
     const [selectedCategoryId, setSelectedCategoryId] = useState('');
+    const [totalIncome,setTotalIncome]=useState(parseFloat(0).toFixed(2))
 
 
     const {applicationSettings} = useContext(SettingsContext);
-    const {
+    let {
         default_currency
     } = applicationSettings;
 
+    if (default_currency === undefined){
+        default_currency = 'AED ';
+    }
 
     useEffect(() => {
         axiosClient.get('/income-categories')
             .then(({data}) => {
                 setIncomeCategories(data.categories);
-                if(data?.categories.length>0){
-                    setSelectedCategoryId(data?.categories[0].id)
-                }
+                // if(data?.categories.length>0){
+                //     setSelectedCategoryId(data?.categories[0].id)
+                // }
             })
             .catch(error => {
                 console.error('Error loading income categories:', error);
@@ -42,7 +46,8 @@ export default function IncomeReport() {
             })
             .then(({data}) => {
                 //console.log('Loading income data', data.data);
-                setIncomeReport(data.data);
+                setIncomeReport(data.incomes);
+                setTotalIncome(data.totalIncome);
                 setLoading(false);
             });
     };
@@ -56,7 +61,12 @@ export default function IncomeReport() {
         e.preventDefault();
         getIncomeReport();
     };
-
+    const resetFilterParameter = () => {
+        setStartDate(null);
+        setEndDate(null);
+        setSelectedCategoryId('');
+        getIncomeReport();
+    };
     return (
         <>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
@@ -65,7 +75,7 @@ export default function IncomeReport() {
             <WizCard className="animated fadeInDown wiz-card-mh">
                 <div className="row">
                     <form onSubmit={handleIncomeFilterSubmit}>
-                        <div className="col-3">
+                        <div className="col-4">
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="income_category">Income Category</label>
                                     <select
@@ -77,7 +87,7 @@ export default function IncomeReport() {
                                             const value = event.target.value || '';
                                             setSelectedCategoryId(value);
                                         }}>
-                                        <option defaultValue>Select an income category</option>
+                                        <option defaultValue>Filter by income category</option>
                                         {incomeCategories.map(category => (
                                             <option key={category.id} value={category.id}>
                                                 {category.name}
@@ -98,7 +108,6 @@ export default function IncomeReport() {
                                 />
                             </div>
                         </div>
-
                         <div className="col-3">
                             <div className="form-group">
                                 <label className="custom-form-label" htmlFor="end_date">End Date:</label>
@@ -111,8 +120,9 @@ export default function IncomeReport() {
                                 />
                             </div>
                         </div>
-                        <div className="col-3 mt-4">
+                        <div className="col-2 mt-4">
                             <button className={'btn-add right mt-2'} type="submit">Filter</button>
+                            <button className="btn btn-warning ml-2" onClick={resetFilterParameter}>Reset</button>
                         </div>
                     </form>
                 </div>
@@ -123,28 +133,46 @@ export default function IncomeReport() {
                         <table className="table table-bordered custom-table">
                             <thead>
                             <tr className={'text-center'}>
+                                <th>Income Date</th>
                                 <th>Income Category</th>
                                 <th>Income Amount</th>
-                                <th>Income Date</th>
                             </tr>
                             </thead>
-                            <tbody>
-                            {loading ? (
+                            {loading && (
+                                <tbody>
                                 <tr className={'text-center'}>
                                     <td colSpan={3} className="text-center">
                                         Loading...
                                     </td>
                                 </tr>
-                            ) : (
-                                incomeReport.map(income => (
-                                    <tr key={income.id} className={'text-center'}>
-                                        <td>{income.category_name}</td>
-                                        <td>{default_currency + income.amount}</td>
-                                        <td>{income.income_date}</td>
-                                    </tr>
-                                ))
+                                </tbody>
                             )}
-                            </tbody>
+                            {!loading && (
+                                <tbody>
+                                {incomeReport.length===0?(
+                                    <tr>
+                                        <td colSpan={3} className="text-center">
+                                            Nothing found !
+                                        </td>
+                                    </tr>
+                                ):(
+                                    incomeReport.map(income => (
+                                        <tr key={income.id} className={'text-center'}>
+                                            <td>{income.income_date}</td>
+                                            <td>{income.category_name}</td>
+                                            <td className={'text-end'}>{default_currency + income.amount}</td>
+                                        </tr>
+                                    ))
+                                )}
+                                </tbody>
+                            )}
+
+                            <tfoot>
+                            <tr>
+                                <td className={'text-center fw-bold'} colSpan={2}>Total Income</td>
+                                <td className={'text-end fw-bold'}>{default_currency + parseFloat(totalIncome).toFixed(2)}</td>
+                            </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>

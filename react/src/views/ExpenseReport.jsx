@@ -12,26 +12,25 @@ export default function ExpenseReport() {
 
     const [expenseCategories, setExpenseCategories] = useState([]);
     const [selectedCategoryId, setSelectedCategoryId] = useState('');
+    const [totalExpense,setTotalExpense] = useState(parseFloat(0).toFixed(2));
     
     const {applicationSettings} = useContext(SettingsContext);
-    const {
+    let {
         default_currency
     } = applicationSettings;
 
-    // set default date(today)
-    //  useEffect(()=>{
-    //     if(startDate ===null){
-    //         setStartDate(new Date())
-    //      }
-    //  },[startDate])
+    if (default_currency===undefined){
+        default_currency = 'AED ';
+    }
 
     useEffect(() => {
         axiosClient.get('/expense-categories')
             .then(({data}) => {
                 setExpenseCategories(data.categories);
-                if(data?.categories.length>0){
-                    setSelectedCategoryId(data?.categories[0].id)
-                }
+                //no need to select the first one. it's confusing.
+                // if(data?.categories.length>0){
+                //     setSelectedCategoryId(data?.categories[0].id)
+                // }
             })
             .catch(error => {
                 console.error('Error loading expense categories:', error);
@@ -42,27 +41,36 @@ export default function ExpenseReport() {
 
     
 
-    const getIncomeReport = () => {
+    const getExpenseReport = () => {
         setLoading(true);
+        setTotalExpense(0);
         axiosClient
             .get("/report/expense", {
                 params: {start_date: startDate, end_date: endDate, cat_id:selectedCategoryId},
             })
             .then(({data}) => {
                 //console.log('Loading expense data', data.data);
-                setExpenseReport(data.data);
+                setExpenseReport(data.expenses);
+                setTotalExpense(data.totalExpense);
                 setLoading(false);
             });
     };
 
     useEffect(() => {
         document.title = "Expenses Report";
-        getIncomeReport();
+        getExpenseReport();
     }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        getIncomeReport();
+        getExpenseReport();
+    };
+    
+    const resetFilterParameter = () => {
+        setStartDate(null);
+        setEndDate(null);
+        setSelectedCategoryId('');
+        getExpenseReport();
     };
 
     return (
@@ -73,7 +81,7 @@ export default function ExpenseReport() {
             <WizCard className="animated fadeInDown wiz-card-mh">
                 <div className="row">
                     <form onSubmit={handleSubmit}>
-                        <div className="col-3">
+                        <div className="col-4">
                             <div className="form-group">
                                     <label className="custom-form-label" htmlFor="expense_category">Expense Category</label>
                                     <select
@@ -85,7 +93,7 @@ export default function ExpenseReport() {
                                             const value = event.target.value || '';
                                             setSelectedCategoryId(value);
                                         }}>
-                                        <option defaultValue>Expense category</option>
+                                        <option defaultValue>Filter By Category</option>
                                         {expenseCategories.map(category => (
                                             <option key={category.id} value={category.id}>
                                                 {category.name}
@@ -118,8 +126,9 @@ export default function ExpenseReport() {
                                 />
                             </div>
                         </div>
-                        <div className="col-3 mt-4">
+                        <div className="col-2 mt-4">
                             <button className={'btn-add right mt-2'} type="submit">Filter</button>
+                            <button className="btn btn-warning ml-2" onClick={resetFilterParameter}>Reset</button>
                         </div>
                     </form>
                 </div>
@@ -130,28 +139,46 @@ export default function ExpenseReport() {
                         <table className="table table-bordered custom-table">
                             <thead>
                             <tr className={'text-center'}>
+                                <th>Expense Date</th>
                                 <th>Expense Category</th>
                                 <th>Expense Amount</th>
-                                <th>Expense Date</th>
                             </tr>
                             </thead>
-                            <tbody>
-                            {loading ? (
+                            {loading && (
+                                <tbody>
                                 <tr className={'text-center'}>
                                     <td colSpan={3} className="text-center">
                                         Loading...
                                     </td>
                                 </tr>
-                            ) : (
-                                expenseReport.map(expense => (
-                                    <tr key={expense.id} className={'text-center'}>
-                                        <td>{expense.category_name}</td>
-                                        <td>{default_currency + expense.amount}</td>
-                                        <td>{expense.expense_date}</td>
-                                    </tr>
-                                ))
+                                </tbody>
                             )}
-                            </tbody>
+                            {!loading && (
+                                <tbody>
+                                {expenseReport.length===0?(
+                                    <tr>
+                                        <td colSpan={3} className="text-center">
+                                            Nothing found !
+                                        </td>
+                                    </tr>
+                                ):(
+                                    expenseReport.map(expense => (
+                                        <tr key={expense.id} className={'text-center'}>
+                                            <td>{expense.expense_date}</td>
+                                            <td>{expense.category_name}</td>
+                                            <td className={'text-end'}>{default_currency + expense.amount}</td>
+                                        </tr>
+                                    ))
+                                )}
+                                </tbody>
+                            )}
+
+                            <tfoot>
+                            <tr>
+                                <td className={'text-center fw-bold'} colSpan={2}>Total Expense</td>
+                                <td className={'text-end fw-bold'}>{default_currency + parseFloat(totalExpense).toFixed(2)}</td>
+                            </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
