@@ -13,11 +13,11 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
--- Dumping database structure for moneymate
-CREATE DATABASE IF NOT EXISTS `moneymate` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `moneymate`;
+-- Dumping database structure for homeqwpi_sarah.finance
+CREATE DATABASE IF NOT EXISTS `homeqwpi_sarah.finance` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `homeqwpi_sarah.finance`;
 
--- Dumping structure for table moneymate.account_transfers
+-- Dumping structure for table homeqwpi_sarah.finance.account_transfers
 CREATE TABLE IF NOT EXISTS `account_transfers` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `user_id` bigint unsigned NOT NULL,
@@ -37,11 +37,11 @@ CREATE TABLE IF NOT EXISTS `account_transfers` (
   CONSTRAINT `account_transfers_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.account_transfers: ~2 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.account_transfers: ~2 rows (approximately)
 /*!40000 ALTER TABLE `account_transfers` DISABLE KEYS */;
 /*!40000 ALTER TABLE `account_transfers` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.bank_accounts
+-- Dumping structure for table homeqwpi_sarah.finance.bank_accounts
 CREATE TABLE IF NOT EXISTS `bank_accounts` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `user_id` bigint unsigned NOT NULL,
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS `bank_accounts` (
   CONSTRAINT `bank_accounts_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.bank_accounts: ~3 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.bank_accounts: ~3 rows (approximately)
 /*!40000 ALTER TABLE `bank_accounts` DISABLE KEYS */;
 INSERT INTO `bank_accounts` (`id`, `user_id`, `bank_name_id`, `account_name`, `account_number`, `balance`, `created_at`, `updated_at`) VALUES
 	(9, 1, 23, 'Mehrab Hossain', '10102121323203232121', 50000.00, '2023-08-18 10:31:08', '2023-08-18 23:23:59'),
@@ -66,7 +66,7 @@ INSERT INTO `bank_accounts` (`id`, `user_id`, `bank_name_id`, `account_name`, `a
 	(11, 1, 25, 'Eden Springs Homes Rental LLC', '34123314123123', 0.00, '2023-08-18 10:31:56', '2023-08-18 23:23:40');
 /*!40000 ALTER TABLE `bank_accounts` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.bank_names
+-- Dumping structure for table homeqwpi_sarah.finance.bank_names
 CREATE TABLE IF NOT EXISTS `bank_names` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `user_id` bigint unsigned NOT NULL,
@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS `bank_names` (
   CONSTRAINT `bank_names_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.bank_names: ~3 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.bank_names: ~3 rows (approximately)
 /*!40000 ALTER TABLE `bank_names` DISABLE KEYS */;
 INSERT INTO `bank_names` (`id`, `user_id`, `bank_name`, `created_at`, `updated_at`) VALUES
 	(23, 1, 'Emirate NBD(Personal current account)', '2023-08-18 10:29:57', '2023-08-18 10:29:57'),
@@ -86,7 +86,7 @@ INSERT INTO `bank_names` (`id`, `user_id`, `bank_name`, `created_at`, `updated_a
 	(25, 1, 'Mashreq NEO(Business account)', '2023-08-18 10:30:32', '2023-08-18 10:30:32');
 /*!40000 ALTER TABLE `bank_names` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.borrows
+-- Dumping structure for table homeqwpi_sarah.finance.borrows
 CREATE TABLE IF NOT EXISTS `borrows` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `amount` decimal(10,2) NOT NULL,
@@ -102,11 +102,11 @@ CREATE TABLE IF NOT EXISTS `borrows` (
   CONSTRAINT `borrows_debt_id_foreign` FOREIGN KEY (`debt_id`) REFERENCES `debts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.borrows: ~0 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.borrows: ~0 rows (approximately)
 /*!40000 ALTER TABLE `borrows` DISABLE KEYS */;
 /*!40000 ALTER TABLE `borrows` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.budgets
+-- Dumping structure for table homeqwpi_sarah.finance.budgets
 CREATE TABLE IF NOT EXISTS `budgets` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `budget_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -122,13 +122,13 @@ CREATE TABLE IF NOT EXISTS `budgets` (
   CONSTRAINT `budgets_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.budgets: ~1 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.budgets: ~1 rows (approximately)
 /*!40000 ALTER TABLE `budgets` DISABLE KEYS */;
 INSERT INTO `budgets` (`id`, `budget_name`, `amount`, `updated_amount`, `start_date`, `end_date`, `created_at`, `updated_at`, `user_id`) VALUES
 	(2, 'First Year Budget', 200000.00, 200000.00, '2023-07-01', '2024-06-30', '2023-08-18 13:50:08', '2023-08-18 23:30:38', 1);
 /*!40000 ALTER TABLE `budgets` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.budget_category
+-- Dumping structure for table homeqwpi_sarah.finance.budget_category
 CREATE TABLE IF NOT EXISTS `budget_category` (
   `budget_id` bigint unsigned NOT NULL,
   `category_id` bigint unsigned NOT NULL,
@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS `budget_category` (
   CONSTRAINT `budget_category_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.budget_category: ~1 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.budget_category: ~1 rows (approximately)
 /*!40000 ALTER TABLE `budget_category` DISABLE KEYS */;
 INSERT INTO `budget_category` (`budget_id`, `category_id`) VALUES
 	(2, 24),
@@ -148,7 +148,7 @@ INSERT INTO `budget_category` (`budget_id`, `category_id`) VALUES
 	(2, 31);
 /*!40000 ALTER TABLE `budget_category` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.budget_expenses
+-- Dumping structure for table homeqwpi_sarah.finance.budget_expenses
 CREATE TABLE IF NOT EXISTS `budget_expenses` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `user_id` bigint unsigned NOT NULL,
@@ -166,13 +166,13 @@ CREATE TABLE IF NOT EXISTS `budget_expenses` (
   CONSTRAINT `budget_expenses_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.budget_expenses: ~1 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.budget_expenses: ~1 rows (approximately)
 /*!40000 ALTER TABLE `budget_expenses` DISABLE KEYS */;
 INSERT INTO `budget_expenses` (`id`, `user_id`, `budget_id`, `category_id`, `amount`, `created_at`, `updated_at`) VALUES
 	(1, 1, 2, 24, 2130.00, '2023-08-18 13:50:13', '2023-08-18 13:50:13');
 /*!40000 ALTER TABLE `budget_expenses` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.categories
+-- Dumping structure for table homeqwpi_sarah.finance.categories
 CREATE TABLE IF NOT EXISTS `categories` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `user_id` bigint unsigned NOT NULL,
@@ -185,7 +185,7 @@ CREATE TABLE IF NOT EXISTS `categories` (
   CONSTRAINT `categories_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.categories: ~6 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.categories: ~6 rows (approximately)
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
 INSERT INTO `categories` (`id`, `user_id`, `name`, `type`, `created_at`, `updated_at`) VALUES
 	(24, 1, 'Pantheon Elysee-1 (121)', 'expense', '2023-08-17 10:40:14', '2023-08-18 10:37:11'),
@@ -198,7 +198,7 @@ INSERT INTO `categories` (`id`, `user_id`, `name`, `type`, `created_at`, `update
 	(31, 1, 'Hor Al Anaz Villa', 'expense', '2023-08-18 23:23:07', '2023-08-18 23:23:07');
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.debts
+-- Dumping structure for table homeqwpi_sarah.finance.debts
 CREATE TABLE IF NOT EXISTS `debts` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `user_id` bigint unsigned NOT NULL,
@@ -217,11 +217,11 @@ CREATE TABLE IF NOT EXISTS `debts` (
   CONSTRAINT `debts_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.debts: ~0 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.debts: ~0 rows (approximately)
 /*!40000 ALTER TABLE `debts` DISABLE KEYS */;
 /*!40000 ALTER TABLE `debts` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.debt_collections
+-- Dumping structure for table homeqwpi_sarah.finance.debt_collections
 CREATE TABLE IF NOT EXISTS `debt_collections` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `amount` decimal(10,2) NOT NULL,
@@ -237,11 +237,11 @@ CREATE TABLE IF NOT EXISTS `debt_collections` (
   CONSTRAINT `debt_collections_debt_id_foreign` FOREIGN KEY (`debt_id`) REFERENCES `debts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.debt_collections: ~0 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.debt_collections: ~0 rows (approximately)
 /*!40000 ALTER TABLE `debt_collections` DISABLE KEYS */;
 /*!40000 ALTER TABLE `debt_collections` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.expenses
+-- Dumping structure for table homeqwpi_sarah.finance.expenses
 CREATE TABLE IF NOT EXISTS `expenses` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `user_id` bigint unsigned NOT NULL,
@@ -266,11 +266,11 @@ CREATE TABLE IF NOT EXISTS `expenses` (
   CONSTRAINT `expenses_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.expenses: ~1 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.expenses: ~1 rows (approximately)
 /*!40000 ALTER TABLE `expenses` DISABLE KEYS */;
 /*!40000 ALTER TABLE `expenses` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.failed_jobs
+-- Dumping structure for table homeqwpi_sarah.finance.failed_jobs
 CREATE TABLE IF NOT EXISTS `failed_jobs` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `uuid` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -283,11 +283,11 @@ CREATE TABLE IF NOT EXISTS `failed_jobs` (
   UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.failed_jobs: ~0 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.failed_jobs: ~0 rows (approximately)
 /*!40000 ALTER TABLE `failed_jobs` DISABLE KEYS */;
 /*!40000 ALTER TABLE `failed_jobs` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.incomes
+-- Dumping structure for table homeqwpi_sarah.finance.incomes
 CREATE TABLE IF NOT EXISTS `incomes` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `user_id` bigint unsigned NOT NULL,
@@ -310,11 +310,11 @@ CREATE TABLE IF NOT EXISTS `incomes` (
   CONSTRAINT `incomes_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.incomes: ~1 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.incomes: ~1 rows (approximately)
 /*!40000 ALTER TABLE `incomes` DISABLE KEYS */;
 /*!40000 ALTER TABLE `incomes` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.investments
+-- Dumping structure for table homeqwpi_sarah.finance.investments
 CREATE TABLE IF NOT EXISTS `investments` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `investor_id` bigint unsigned NOT NULL,
@@ -328,11 +328,11 @@ CREATE TABLE IF NOT EXISTS `investments` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.investments: ~0 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.investments: ~0 rows (approximately)
 /*!40000 ALTER TABLE `investments` DISABLE KEYS */;
 /*!40000 ALTER TABLE `investments` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.lends
+-- Dumping structure for table homeqwpi_sarah.finance.lends
 CREATE TABLE IF NOT EXISTS `lends` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `amount` decimal(10,2) NOT NULL,
@@ -348,11 +348,11 @@ CREATE TABLE IF NOT EXISTS `lends` (
   CONSTRAINT `lends_debt_id_foreign` FOREIGN KEY (`debt_id`) REFERENCES `debts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.lends: ~0 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.lends: ~0 rows (approximately)
 /*!40000 ALTER TABLE `lends` DISABLE KEYS */;
 /*!40000 ALTER TABLE `lends` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.migrations
+-- Dumping structure for table homeqwpi_sarah.finance.migrations
 CREATE TABLE IF NOT EXISTS `migrations` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `migration` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -360,7 +360,7 @@ CREATE TABLE IF NOT EXISTS `migrations` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.migrations: ~33 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.migrations: ~33 rows (approximately)
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 	(1, '2014_10_12_000000_create_users_table', 1),
@@ -400,7 +400,7 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 	(38, '2023_08_18_184054_refactor_investment_table', 5);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.model_has_roles
+-- Dumping structure for table homeqwpi_sarah.finance.model_has_roles
 CREATE TABLE IF NOT EXISTS `model_has_roles` (
   `role_id` bigint unsigned NOT NULL,
   `model_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -410,7 +410,7 @@ CREATE TABLE IF NOT EXISTS `model_has_roles` (
   CONSTRAINT `model_has_roles_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.model_has_roles: ~21 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.model_has_roles: ~21 rows (approximately)
 /*!40000 ALTER TABLE `model_has_roles` DISABLE KEYS */;
 INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
 	(1, 'App\\Models\\User', 1),
@@ -436,7 +436,7 @@ INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
 	(1, 'App\\Models\\User', 28);
 /*!40000 ALTER TABLE `model_has_roles` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.options
+-- Dumping structure for table homeqwpi_sarah.finance.options
 CREATE TABLE IF NOT EXISTS `options` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -446,7 +446,7 @@ CREATE TABLE IF NOT EXISTS `options` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.options: ~13 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.options: ~13 rows (approximately)
 /*!40000 ALTER TABLE `options` DISABLE KEYS */;
 INSERT INTO `options` (`id`, `key`, `value`, `created_at`, `updated_at`) VALUES
 	(1, 'company_name', 'EDEN SPRINGS HOMES RENTAL L.L.C', '2023-06-14 02:29:57', '2023-08-18 23:22:19'),
@@ -464,7 +464,7 @@ INSERT INTO `options` (`id`, `key`, `value`, `created_at`, `updated_at`) VALUES
 	(13, 'product_id', '', '2023-07-04 22:41:17', '2023-07-04 22:41:17');
 /*!40000 ALTER TABLE `options` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.password_resets
+-- Dumping structure for table homeqwpi_sarah.finance.password_resets
 CREATE TABLE IF NOT EXISTS `password_resets` (
   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -472,11 +472,11 @@ CREATE TABLE IF NOT EXISTS `password_resets` (
   KEY `password_resets_email_index` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.password_resets: ~0 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.password_resets: ~0 rows (approximately)
 /*!40000 ALTER TABLE `password_resets` DISABLE KEYS */;
 /*!40000 ALTER TABLE `password_resets` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.password_reset_tokens
+-- Dumping structure for table homeqwpi_sarah.finance.password_reset_tokens
 CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -484,11 +484,11 @@ CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
   PRIMARY KEY (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.password_reset_tokens: ~0 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.password_reset_tokens: ~0 rows (approximately)
 /*!40000 ALTER TABLE `password_reset_tokens` DISABLE KEYS */;
 /*!40000 ALTER TABLE `password_reset_tokens` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.personal_access_tokens
+-- Dumping structure for table homeqwpi_sarah.finance.personal_access_tokens
 CREATE TABLE IF NOT EXISTS `personal_access_tokens` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `tokenable_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -505,7 +505,7 @@ CREATE TABLE IF NOT EXISTS `personal_access_tokens` (
   KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.personal_access_tokens: ~7 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.personal_access_tokens: ~7 rows (approximately)
 /*!40000 ALTER TABLE `personal_access_tokens` DISABLE KEYS */;
 INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `name`, `token`, `abilities`, `last_used_at`, `expires_at`, `created_at`, `updated_at`) VALUES
 	(1, 'App\\Models\\User', 1, 'AdminToken', 'a481b39912951902a01f64843d3f8be1cbb0e58657bd2002b1b39bcf1001bad2', '["admin"]', '2023-07-16 15:54:58', NULL, '2023-07-16 12:40:45', '2023-07-16 15:54:58'),
@@ -518,7 +518,7 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 	(13, 'App\\Models\\User', 1, 'AdminToken', '8b319778e52b601490b30c0153322e028aba8ff9871a3ec4547ba9fdd508da0d', '["admin"]', '2023-08-18 23:34:24', NULL, '2023-08-18 22:14:50', '2023-08-18 23:34:24');
 /*!40000 ALTER TABLE `personal_access_tokens` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.repayments
+-- Dumping structure for table homeqwpi_sarah.finance.repayments
 CREATE TABLE IF NOT EXISTS `repayments` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `amount` decimal(10,2) NOT NULL,
@@ -534,11 +534,11 @@ CREATE TABLE IF NOT EXISTS `repayments` (
   CONSTRAINT `repayments_debt_id_foreign` FOREIGN KEY (`debt_id`) REFERENCES `debts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.repayments: ~0 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.repayments: ~0 rows (approximately)
 /*!40000 ALTER TABLE `repayments` DISABLE KEYS */;
 /*!40000 ALTER TABLE `repayments` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.subscriptions
+-- Dumping structure for table homeqwpi_sarah.finance.subscriptions
 CREATE TABLE IF NOT EXISTS `subscriptions` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `user_id` bigint unsigned NOT NULL,
@@ -555,11 +555,11 @@ CREATE TABLE IF NOT EXISTS `subscriptions` (
   CONSTRAINT `subscriptions_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.subscriptions: ~0 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.subscriptions: ~0 rows (approximately)
 /*!40000 ALTER TABLE `subscriptions` DISABLE KEYS */;
 /*!40000 ALTER TABLE `subscriptions` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.users
+-- Dumping structure for table homeqwpi_sarah.finance.users
 CREATE TABLE IF NOT EXISTS `users` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -575,7 +575,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `users_email_unique` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.users: ~5 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.users: ~5 rows (approximately)
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
 INSERT INTO `users` (`id`, `name`, `email`, `profile_picture`, `email_verified_at`, `password`, `role_as`, `remember_token`, `created_at`, `updated_at`) VALUES
 	(1, 'Mehrab Hossain', 'hossainmehraab@gmail.com', NULL, NULL, '$2y$10$DJ.ePHwlgLkxtoWMziN9sufoBVbz4EFyoYraO.x7kaNfp5X69TymC', 'admin', NULL, '2023-06-12 14:47:21', '2023-08-18 10:36:30'),
@@ -585,7 +585,7 @@ INSERT INTO `users` (`id`, `name`, `email`, `profile_picture`, `email_verified_a
 	(5, 'Jashim', 'jashim@eden.com', NULL, NULL, '$2y$10$ZB6EwY2i1cIRm35DfgRdQOWh6MHJGrVuAGbospodqYfjcpAx2MSMS', 'user', NULL, '2023-08-18 10:35:57', '2023-08-18 10:35:57');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 
--- Dumping structure for table moneymate.wallets
+-- Dumping structure for table homeqwpi_sarah.finance.wallets
 CREATE TABLE IF NOT EXISTS `wallets` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `user_id` bigint unsigned NOT NULL,
@@ -598,7 +598,7 @@ CREATE TABLE IF NOT EXISTS `wallets` (
   CONSTRAINT `wallets_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table moneymate.wallets: ~0 rows (approximately)
+-- Dumping data for table homeqwpi_sarah.finance.wallets: ~0 rows (approximately)
 /*!40000 ALTER TABLE `wallets` DISABLE KEYS */;
 /*!40000 ALTER TABLE `wallets` ENABLE KEYS */;
 
