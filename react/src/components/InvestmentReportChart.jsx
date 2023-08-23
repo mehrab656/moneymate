@@ -7,6 +7,8 @@ export default function InvestmentReportChart({totalInvestment, investors, title
     const [loading, setLoading] = useState(true);
 
     const fetchExpenseData = () => {
+        setLoading(true);
+
         const coloredData = investors.map((investor) => ({
             label: investor.name,
             value: parseFloat((investor.amount/totalInvestment)*100).toFixed(2),
@@ -18,7 +20,7 @@ export default function InvestmentReportChart({totalInvestment, investors, title
 
     useEffect(() => {
         fetchExpenseData();
-    }, []);
+    }, [totalInvestment]);
 
     const getRandomColor = () => {
          // Generate a random hexadecimal color code

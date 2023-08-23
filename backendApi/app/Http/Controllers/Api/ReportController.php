@@ -10,6 +10,7 @@ use App\Http\Resources\InvestmentResource;
 use App\Models\Expense;
 use App\Models\Income;
 use App\Models\Investment;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -61,8 +62,8 @@ class ReportController extends Controller {
 		return response()->json( [
 			'totalIncome' => $sum,
 			'incomes'     => $incomesRes,
-			'startDate'=>$startDate,
-			'endDate'=>$endDate
+			'startDate'=>date('y-m-d',strtotime($request->start_date)),
+			'endDate'=>date('y-m-d',strtotime($request->end_date))
 		] );
 	}
 
@@ -125,7 +126,7 @@ class ReportController extends Controller {
 		}
 		$investments = DB::table( 'investments' )->selectRaw( 'sum(amount) as amount, investor_id, name' )
 		                 ->join( 'users', 'investments.investor_id', '=', 'users.id' )
-		                 ->groupBy( 'investor_id' );
+		                 ->groupBy(['investor_id','name'] );
 
 		$totalInvestment = DB::table( 'investments' );
 		//filter investments
