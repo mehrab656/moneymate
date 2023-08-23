@@ -49,7 +49,6 @@ export default function ExpenseReport() {
                 params: {start_date: startDate, end_date: endDate, cat_id:selectedCategoryId},
             })
             .then(({data}) => {
-                //console.log('Loading expense data', data.data);
                 setExpenseReport(data.expenses);
                 setTotalExpense(data.totalExpense);
                 setLoading(false);

@@ -210,7 +210,6 @@ export default function Accounts() {
                         icon: 'success',
                     });
                 }).catch((error) => {
-                    console.log(error);
                     Swal.fire({
                         title: 'Error!',
                         text: 'Bank Account could not be deleted.',

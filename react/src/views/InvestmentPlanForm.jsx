@@ -10,16 +10,14 @@ export default function InvestmentPlanForm() {
     const {user} = useStateContext();
     let {id} = useParams();
 
-    console.log('user', user)
-
     const [plan, setPlan] = useState({
         id: null,
-        userId: user&& user?.id,
-        name:null,
-        date:null,
-        startDate:null,
-        endDate:null
-      
+        userId: user && user?.id,
+        name: null,
+        date: null,
+        startDate: null,
+        endDate: null
+
     });
 
     const [errors, setErrors] = useState({});
@@ -30,35 +28,35 @@ export default function InvestmentPlanForm() {
     // for nested table row
     const [tableData, setTableData] = useState([
         {
-          purpose: '',
-          paymentTerms: '',
-          amount: '',
-          refundableAmount: '',
-          remarks: ''
+            purpose: '',
+            paymentTerms: '',
+            amount: '',
+            refundableAmount: '',
+            remarks: ''
         }
-      ]);
+    ]);
 
-      const addRow = () => {
+    const addRow = () => {
         setTableData([...tableData, {
-          purpose: '',
-          paymentTerms: '',
-          amount: '',
-          refundableAmount: '',
-          remarks: ''
+            purpose: '',
+            paymentTerms: '',
+            amount: '',
+            refundableAmount: '',
+            remarks: ''
         }]);
-      };
-    
-      const removeRow = (index) => {
+    };
+
+    const removeRow = (index) => {
         const updatedData = [...tableData];
         updatedData.splice(index, 1);
         setTableData(updatedData);
-      };
-    
-      const handleInputChange = (event, index, columnName) => {
+    };
+
+    const handleInputChange = (event, index, columnName) => {
         const updatedData = [...tableData];
         updatedData[index][columnName] = event.target.value;
         setTableData(updatedData);
-      };
+    };
 
 
 // get single detials and update fields
@@ -76,29 +74,29 @@ export default function InvestmentPlanForm() {
     //     }
     // }, [id]);
 
-     // set default date(today)
-     useEffect(()=>{
-        if(plan?.date ===null){
+    // set default date(today)
+    useEffect(() => {
+        if (plan?.date === null) {
             setPlan({
-               ...plan,
-               date: new Date().toISOString().split('T')[0],
-               startDate:new Date().toISOString().split('T')[0],
-              });
-            }
-       },[plan?.date, plan?.startDate])
+                ...plan,
+                date: new Date().toISOString().split('T')[0],
+                startDate: new Date().toISOString().split('T')[0],
+            });
+        }
+    }, [plan?.date, plan?.startDate])
 
 
     const planSubmit = (event) => {
         event.preventDefault();
 
         if (plan.id) {
-            const {userId,date,startDate,endDate} = plan;
+            const {userId, date, startDate, endDate} = plan;
             const formData = new FormData();
             formData.append('user_id', userId);
             formData.append('date', date);
             formData.append('start_date', startDate);
             formData.append('end_date', endDate);
-           
+
 
             axiosClient.post(`/investment-plan/${plan.id}`, formData, {
                 headers: {
@@ -115,7 +113,7 @@ export default function InvestmentPlanForm() {
                     }
                 });
         } else {
-            const {userId,date,startDate,endDate} = plan;
+            const {userId, date, startDate, endDate} = plan;
             const formData = new FormData();
             formData.append('user_id', userId);
             formData.append('date', date);
@@ -139,10 +137,6 @@ export default function InvestmentPlanForm() {
         }
     };
 
-    console.log('plan', plan)
-    console.log('tableData', tableData)
-
-
     return (
         <>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
@@ -162,12 +156,14 @@ export default function InvestmentPlanForm() {
                             <div className="col-md-6">
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="income_amount">Plan Name</label>
-                                    <input className="custom-form-control" type="text" step="any" value={plan.name || ""}
+                                    <input className="custom-form-control" type="text" step="any"
+                                           value={plan.name || ""}
                                            onChange={ev => setPlan({...plan, name: ev.target.value})}
                                            placeholder="Plan Name"/>
                                 </div>
                                 <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="income_date">Start Date(Contact Period)</label>
+                                    <label className="custom-form-label" htmlFor="income_date">Start Date(Contact
+                                        Period)</label>
                                     <DatePicker
                                         className="custom-form-control"
                                         selected={plan.startDate ? new Date(plan.startDate) : new Date()}
@@ -203,7 +199,8 @@ export default function InvestmentPlanForm() {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="income_date">End Date(Contact Period)</label>
+                                    <label className="custom-form-label" htmlFor="income_date">End Date(Contact
+                                        Period)</label>
                                     <DatePicker
                                         className="custom-form-control"
                                         selected={plan.endDate ? new Date(plan.endDate) : new Date()}
@@ -223,40 +220,102 @@ export default function InvestmentPlanForm() {
                         </div>
 
 
-                {/* infiniti rows */}
-                <div className="row mt-3">
-                    <div className="col-md-12">
-                        <table>
-                            <thead>
-                            <tr>
-                                <th>Purpose</th>
-                                <th>Payment Terms</th>
-                                <th>Amount</th>
-                                <th>Refundable Amount</th>
-                                <th>Remarks</th>
-                                <th>Actions</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {tableData.map((row, index) => (
-                                <tr key={index}>
-                                <td><input type="text" value={row.purpose} onChange={(e) => handleInputChange(e, index, 'purpose')} /></td>
-                                <td><input type="text" value={row.paymentTerms} onChange={(e) => handleInputChange(e, index, 'paymentTerms')} /></td>
-                                <td><input type="number" value={row.amount} onChange={(e) => handleInputChange(e, index, 'amount')} /></td>
-                                <td><input type="number" value={row.refundableAmount} onChange={(e) => handleInputChange(e, index, 'refundableAmount')} /></td>
-                                <td><input type="text" value={row.remarks} onChange={(e) => handleInputChange(e, index, 'remarks')} /></td>
-                                <td>
-                                    <button className="btn btn-danger p-2 m-1" onClick={() => removeRow(index)}>Remove</button>
-                                    <button className="btn btn-info p-2 m-1" onClick={addRow}>Add</button>
-                                </td>
+                        {/* infiniti rows */}
+                        <div className="row mt-3">
+                            <div className="col-md-12">
+                                <table>
+                                    <thead>
+                                    <tr>
+                                        <th>Purpose</th>
+                                        <th>Payment Terms</th>
+                                        <th>Amount</th>
+                                        <th>Refundable Amount</th>
+                                        <th>Remarks</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {tableData.map((row, index) => (
+                                        <tr key={index}>
+                                            <td><input type="text" value={row.purpose}
+                                                       onChange={(e) => handleInputChange(e, index, 'purpose')}/></td>
+                                            <td><input type="text" value={row.paymentTerms}
+                                                       onChange={(e) => handleInputChange(e, index, 'paymentTerms')}/>
+                                            </td>
+                                            <td><input type="number" value={row.amount}
+                                                       onChange={(e) => handleInputChange(e, index, 'amount')}/></td>
+                                            <td><input type="number" value={row.refundableAmount}
+                                                       onChange={(e) => handleInputChange(e, index, 'refundableAmount')}/>
+                                            </td>
+                                            <td><input type="text" value={row.remarks}
+                                                       onChange={(e) => handleInputChange(e, index, 'remarks')}/></td>
+                                            <td>
+                                                <button className="btn btn-sm btn-danger"
+                                                        onClick={() => removeRow(index)}>Remove
+                                                </button>
+                                                <button className="btn btn-sm btn-info" onClick={addRow}>Add</button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+
+
+                        <button className={plan.id ? "btn btn-info mt:3" : "custom-btn btn-add mt:3"}>
+                            {plan.id ? "Update Plan Record" : "Add Plan"}
+                        </button>
+
+                    </form>
+                )}
+            </WizCard>
+            <WizCard className="animated fadeInDown wiz-card-mh">
+
+                {!loading && (
+                    <form onSubmit={planSubmit}>
+
+                        {/* infiniti rows */}
+                        <div className="col-md-12">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>Purpose</th>
+                                    <th>Payment Terms</th>
+                                    <th>Amount</th>
+                                    <th>Refundable Amount</th>
+                                    <th>Remarks</th>
+                                    <th>Actions</th>
                                 </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                      
-                    </div>
-                </div>
-              
+                                </thead>
+                                <tbody>
+                                {tableData.map((row, index) => (
+                                    <tr key={index}>
+                                        <td><input type="text" value={row.purpose}
+                                                   onChange={(e) => handleInputChange(e, index, 'purpose')}/></td>
+                                        <td><input type="text" value={row.paymentTerms}
+                                                   onChange={(e) => handleInputChange(e, index, 'paymentTerms')}/></td>
+                                        <td><input type="number" value={row.amount}
+                                                   onChange={(e) => handleInputChange(e, index, 'amount')}/></td>
+                                        <td><input type="number" value={row.refundableAmount}
+                                                   onChange={(e) => handleInputChange(e, index, 'refundableAmount')}/>
+                                        </td>
+                                        <td><input type="text" value={row.remarks}
+                                                   onChange={(e) => handleInputChange(e, index, 'remarks')}/></td>
+                                        <td>
+                                            <button className="btn btn-sm btn-danger"
+                                                    onClick={() => removeRow(index)}>Remove
+                                            </button>
+                                            <button className="btn btn-sm btn-info" onClick={addRow}>Add</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+
+                        </div>
+
 
                         <button className={plan.id ? "btn btn-info mt:3" : "custom-btn btn-add mt:3"}>
                             {plan.id ? "Update Plan Record" : "Add Plan"}

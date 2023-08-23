@@ -39,8 +39,6 @@ export default function UserForm() {
                 .get(`/users/${id}`)
                 .then(({data}) => {
                     setLoading(false);
-                    console.log(data.subscriptions.length);
-                    setSubscriptions(data.subscriptions);
                     setUser(data);
                 })
                 .catch(() => {

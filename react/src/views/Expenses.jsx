@@ -39,7 +39,6 @@ export default function Expenses() {
     const showExpense = (expense) => {
         setExpense(expense);
         setShowModal(true);
-        console.log(expense)
     }
     const handleCloseModal = () => {
         setShowModal(false);
@@ -62,7 +61,6 @@ export default function Expenses() {
         setLoading(true);
         axiosClient.get('/expenses', {params: {page, pageSize}})
             .then(({data}) => {
-                //console.log(data.data);
                 setLoading(false);
                 setExpenses(data.data);
                 setTotalCount(data.total);

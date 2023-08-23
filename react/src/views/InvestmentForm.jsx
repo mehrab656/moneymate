@@ -48,7 +48,6 @@ export default function InvestmentForm() {
                             updatedUser.push(element)
                         }else{
                             if(id===undefined){
-                                console.log('find')
                                 setSelectedInvestorId(element.id);
                             }
                         }
@@ -100,7 +99,6 @@ export default function InvestmentForm() {
             setLoading(true)
             axiosClient.get(`/investment/${id}`)
                 .then(({data}) => {
-                    console.log('data', data)
                     setLoading(false);
                     setInvestment(data);
                 })

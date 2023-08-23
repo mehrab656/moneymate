@@ -45,7 +45,6 @@ export default function Dashboard() {
                     setLoading(false);
                 })
         } catch (error) {
-            // console.log(error);
         }
     }, []);
 

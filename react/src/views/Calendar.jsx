@@ -77,7 +77,6 @@ export default function Calendar() {
 
     const handleEventClick = (event) => {
         const eventData = event.event._def.extendedProps;
-        console.log(eventData);
         setSelectedEvent(eventData);
         setShowModal(true);
     };

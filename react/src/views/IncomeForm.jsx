@@ -36,10 +36,9 @@ export default function IncomeForm() {
     useEffect(() => {
         axiosClient.get('/all-bank-account')
             .then(({data}) => {
-                //console.log(data);
+                setSelectedAccountId(data.data[0].id)
                 setBankAccounts(data.data);
-            })
-            .catch(error => {
+            }).catch(error => {
                 console.log('Error fetching bank accounts:', error)
             });
 
@@ -95,15 +94,15 @@ export default function IncomeForm() {
         }
     }, [id]);
 
-     // set default date(today)
-     useEffect(()=>{
-        if(income?.income_date ===null){
+    // set default date(today)
+    useEffect(() => {
+        if (income?.income_date === null) {
             setIncome({
-               ...income,
-               income_date: new Date().toISOString().split('T')[0]
-              });
-            }
-       },[income?.income_date])
+                ...income,
+                income_date: new Date().toISOString().split('T')[0]
+            });
+        }
+    }, [income?.income_date])
 
 
     const incomeSubmit = (event) => {
@@ -148,7 +147,6 @@ export default function IncomeForm() {
             formData.append('income_date', income_date);
             formData.append('attachment', attachment);
 
-            console.log('date', income_date)
 
             axiosClient.post('/income/add', formData, {
                 headers: {
@@ -168,7 +166,6 @@ export default function IncomeForm() {
 
     const handleFileInputChange = (event) => {
         const file = event.target.files[0];
-        console.log(file);
         setIncome((prevIncome) => {
             return {...prevIncome, attachment: file};
         });
@@ -192,7 +189,16 @@ export default function IncomeForm() {
                         <div className="row">
                             <div className="col-md-6">
                                 <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="income_category">Income Category</label>
+                                    <label className="custom-form-label"
+                                           htmlFor="income_description">Description</label>
+                                    <input className="custom-form-control"
+                                           value={income.description !== 'null' ? income.description : ''}
+                                           onChange={ev => setIncome({...income, description: ev.target.value})}
+                                           placeholder="Description"/>
+                                </div>
+                                <div className="form-group">
+                                    <label className="custom-form-label" htmlFor="income_category">Income
+                                        Category</label>
                                     <select
                                         className="custom-form-control"
                                         value={selectedCategoryId}
@@ -210,21 +216,16 @@ export default function IncomeForm() {
                                             </option>
                                         ))}
                                     </select>
-                                    {errors.category_id && <p className="error-message mt-2">{errors.category_id[0]}</p>}
+                                    {errors.category_id &&
+                                        <p className="error-message mt-2">{errors.category_id[0]}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="income_amount">Amount</label>
-                                    <input className="custom-form-control" type="number" step="any" value={income.amount || ""}
+                                    <input className="custom-form-control" type="number" step="any"
+                                           value={income.amount || ""}
                                            onChange={ev => setIncome({...income, amount: ev.target.value})}
                                            placeholder="Amount"/>
                                     {errors.amount && <p className="error-message mt-2">{errors.amount[0]}</p>}
-                                </div>
-                                <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="income_description">Description</label>
-                                    <input className="custom-form-control"
-                                           value={income.description !== 'null' ? income.description : ''}
-                                           onChange={ev => setIncome({...income, description: ev.target.value})}
-                                           placeholder="Description"/>
                                 </div>
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="income_reference">Reference</label>
@@ -234,26 +235,6 @@ export default function IncomeForm() {
                                 </div>
                             </div>
                             <div className="col-md-6">
-                                <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="bank_account">Select Bank Account</label>
-                                    <select className="custom-form-control"
-                                            value={selectedAccountId}
-                                            id="bank-account"
-                                            name="bank-account"
-                                            onChange={(event) => {
-                                                const value = event.target.value || '';
-                                                setSelectedAccountId(value);
-                                                setIncome({...income, account_id: parseInt(value)});
-                                            }}>
-                                        <option defaultValue>Select a bank account</option>
-                                        {bankAccounts.map(account => (
-                                            <option key={account.id} value={account.id}>
-                                                {account.bank_name} - {account.account_number} - Balance ({account.balance})
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {errors.account_id && <p className="error-message mt-2">{errors.account_id[0]}</p>}
-                                </div>
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="income_date">Date</label>
                                     <DatePicker
@@ -270,11 +251,35 @@ export default function IncomeForm() {
                                         dateFormat="yyyy-MM-dd"
                                         placeholderText="Income Date"
                                     />
-                                    {errors.income_date && <p className="error-message mt-2">{errors.income_date[0]}</p>}
+                                    {errors.income_date &&
+                                        <p className="error-message mt-2">{errors.income_date[0]}</p>}
+                                </div>
+                                <div className="form-group">
+                                    <label className="custom-form-label" htmlFor="bank_account">Select Bank
+                                        Account</label>
+                                    <select className="custom-form-control"
+                                            value={selectedAccountId}
+                                            id="bank-account"
+                                            name="bank-account"
+                                            onChange={(event) => {
+                                                const value = event.target.value || '';
+                                                setSelectedAccountId(value);
+                                                setIncome({...income, account_id: parseInt(value)});
+                                            }}>
+                                        <option defaultValue>Select a bank account</option>
+                                        {bankAccounts.map(account => (
+                                            <option key={account.id} value={account.id}>
+                                                {account.bank_name} - {account.account_number} - Balance
+                                                ({account.balance})
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.account_id && <p className="error-message mt-2">{errors.account_id[0]}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="note">Note</label>
-                                    <input className="custom-form-control" value={income.note !== 'null' ? income.note : ''}
+                                    <input className="custom-form-control"
+                                           value={income.note !== 'null' ? income.note : ''}
                                            onChange={ev => setIncome({...income, note: ev.target.value})}
                                            placeholder="Additional Note"/>
                                 </div>
@@ -285,12 +290,6 @@ export default function IncomeForm() {
                                 </div>
                             </div>
                         </div>
-
-
-
-
-
-
 
 
                         <button className={income.id ? "btn btn-info" : "custom-btn btn-add"}>

@@ -37,7 +37,6 @@ export default function Wallets() {
                         });
                     })
                     .catch((error) => {
-                        console.log(error);
                         Swal.fire({
                             title: "Error!",
                             text: "Wallet could not be deleted.",

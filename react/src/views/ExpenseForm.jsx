@@ -15,7 +15,7 @@ export default function ExpenseForm() {
         user_id: null,
         account_id: '', // Set default value to an empty string
         amount: '', // Set default value to an empty string
-        refundable_amount: '', // Set default value to an empty string
+        refundable_amount: 0, // Set default value to an empty string
         category_id: null,
         description: '',
         reference: '',
@@ -39,7 +39,9 @@ export default function ExpenseForm() {
     useEffect(() => {
         axiosClient.get('/all-bank-account')
             .then(({data}) => {
-                //  console.log(data);
+                if (data.data.length>0){
+                    setSelectedAccountId(data.data[0].id)
+                }
                 setBankAccounts(data.data);
             })
             .catch(error => {
@@ -57,6 +59,9 @@ export default function ExpenseForm() {
 
         axiosClient.get('/get-all-users')
             .then(({data}) => {
+                if (data.data.length>0){
+                    setSelectedUserId(data.data[0].id)
+                }
                 setUsers(data.data);
             })
             .catch(error => {
@@ -166,8 +171,6 @@ export default function ExpenseForm() {
             formData.append('expense_date', expense_date);
             formData.append('attachment', attachment);
 
-            console.log('adasa', expense_date)
-
             axiosClient.post('/expense/add', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -192,7 +195,6 @@ export default function ExpenseForm() {
 
     const handleFileInputChange = (event) => {
         const file = event.target.files[0];
-        console.log(file);
         setExpense((prevExpense) => {
             return {...prevExpense, attachment: file};
         });
@@ -220,6 +222,13 @@ export default function ExpenseForm() {
                         <div className="row">
                             <div className="col-md-6">
                                 <div className="form-group">
+                                    <label className="custom-form-label" htmlFor="expense_description">Description</label>
+                                    <input className="custom-form-control"
+                                           value={expense.description !== 'null' ? expense.description : ''}
+                                           onChange={ev => setExpense({...expense, description: ev.target.value})}
+                                           placeholder="Description"/>
+                                </div>
+                                <div className="form-group">
                                     <label className="custom-form-label" htmlFor="expense_category">Expense Category</label>
                                     <select
                                         className="custom-form-control"
@@ -239,6 +248,13 @@ export default function ExpenseForm() {
                                         ))}
                                     </select>
                                     {errors.category_id && <p className="error-message mt-2">{errors.category_id[0]}</p>}
+                                </div>
+                                <div className="form-group">
+                                    <label className="custom-form-label" htmlFor="expense_amount">Amount</label>
+                                    <input className="custom-form-control" type="number" step="any" value={expense.amount || ""}
+                                           onChange={ev => setExpense({...expense, amount: ev.target.value})}
+                                           placeholder="Amount"/>
+                                    {errors.amount && <p className="error-message mt-2">{errors.amount[0]}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="expense_user">Expense By</label>
@@ -262,12 +278,15 @@ export default function ExpenseForm() {
                                     {errors.user_id && <p className="error-message mt-2">{errors.user_id[0]}</p>}
                                 </div>
                                 <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="expense_amount">Amount</label>
-                                    <input className="custom-form-control" type="number" step="any" value={expense.amount || ""}
-                                           onChange={ev => setExpense({...expense, amount: ev.target.value})}
-                                           placeholder="Amount"/>
-                                    {errors.amount && <p className="error-message mt-2">{errors.amount[0]}</p>}
+                                    <label className="custom-form-label" htmlFor="note">Note</label>
+                                    <input className="custom-form-control"
+                                           value={expense.note !== 'null' ? expense.note : ''}
+                                           onChange={ev => setExpense({...expense, note: ev.target.value})}
+                                           placeholder="Additional Note"/>
                                 </div>
+                            </div>
+
+                            <div className="col-md-6">
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="expense_date">Date</label>
                                     <DatePicker
@@ -286,16 +305,6 @@ export default function ExpenseForm() {
                                     />
                                     {errors.start_date && <p className="error-message mt-2">{errors.start_date[0]}</p>}
                                 </div>
-                                <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="expense_description">Description</label>
-                                    <input className="custom-form-control"
-                                           value={expense.description !== 'null' ? expense.description : ''}
-                                           onChange={ev => setExpense({...expense, description: ev.target.value})}
-                                           placeholder="Description"/>
-                                </div>
-                            </div>
-
-                            <div className="col-md-6">
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="bank_account">Bank Account</label>
                                     <select
@@ -334,20 +343,10 @@ export default function ExpenseForm() {
                                            onChange={(e) => setExpense({...expense, reference: e.target.value})}/>
                                 </div>
                                 <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="note">Note</label>
-                                    <input className="custom-form-control"
-                                           value={expense.note !== 'null' ? expense.note : ''}
-                                           onChange={ev => setExpense({...expense, note: ev.target.value})}
-                                           placeholder="Additional Note"/>
+                                    <label className="custom-form-label" htmlFor="account_name">Add Attachment</label>
+                                    <input className="custom-form-control" type="file" onChange={handleFileInputChange}
+                                           placeholder="Attachment"/>
                                 </div>
-
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="form-group">
-                                <label className="custom-form-label" htmlFor="account_name">Add Attachment</label>
-                                <input className="custom-form-control" type="file" onChange={handleFileInputChange}
-                                       placeholder="Attachment"/>
                             </div>
                         </div>
 

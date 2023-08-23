@@ -119,7 +119,6 @@ export default function Categories() {
                         });
                     })
                     .catch((error) => {
-                        console.log(error);
                         Swal.fire({
                             title: "Error!",
                             text: "Category could not be deleted.",

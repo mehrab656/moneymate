@@ -224,6 +224,13 @@ export default function DefaultLayout() {
                         </li>
 
                         <li className="aside-menu-item">
+                            <Link to="/all-report"
+                                  className={isActive('/all-report') ? 'active' : ''}>
+                                <span className="aside-menu-icon"><FontAwesomeIcon icon={faDollar}/></span>
+                                <span className="aside-menu-text"> Overall Report</span>
+                            </Link>
+                        </li>
+                        <li className="aside-menu-item">
                             <Link to="/calendar" className={isActive('/calendar') ? 'active' : ''}>
                                 <span className="aside-menu-icon"><FontAwesomeIcon icon={faCalendar}/></span>
                                 <span className="aside-menu-text"> Calendar</span>

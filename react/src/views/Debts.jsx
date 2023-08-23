@@ -195,7 +195,6 @@ export default function Debts() {
                         });
                     })
                     .catch((error) => {
-                        console.log(error);
                         Swal.fire({
                             title: "Error!",
                             text: "debt could not be deleted.",

@@ -22,7 +22,6 @@ export default function Return() {
     const [marketReturn, setMarketReturn] = useState({});
 
     const {applicationSettings, userRole} = useContext(SettingsContext);
-    console.log(userRole)
     const {
         num_data_per_page,
         default_currency

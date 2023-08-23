@@ -23,6 +23,12 @@ class ReportController extends Controller {
 		$endDate   = $request->input( 'end_date' );
 		$cat_id    = $request->input( 'cat_id' );
 
+		if ($startDate){
+			$startDate = Carbon::parse( $request->start_date,'Asia/Dubai' )->format( 'Y-m-d' );
+		}
+		if ($endDate){
+			$endDate = Carbon::parse( $request->input()['end_date'] )->format( 'Y-m-d' );
+		}
 		// Calculate the default date range (last 3 months)
 		if ( empty( $startDate ) ) {
 			$startDate = Carbon::now()->subMonths( 3 )->toDateString();
@@ -55,6 +61,8 @@ class ReportController extends Controller {
 		return response()->json( [
 			'totalIncome' => $sum,
 			'incomes'     => $incomesRes,
+			'startDate'=>$startDate,
+			'endDate'=>$endDate
 		] );
 	}
 

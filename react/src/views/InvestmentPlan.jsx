@@ -37,7 +37,6 @@ export default function InvestmentPlan() {
         setLoading(true);
         axiosClient.get('/incomes', {params: {page, pageSize}})
             .then(({data}) => {
-                console.log(data);
                 setLoading(false);
                 setIncomes(data.data);
                 setTotalCount(data.total);

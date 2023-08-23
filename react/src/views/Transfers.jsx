@@ -43,8 +43,6 @@ export default function Transfers() {
 
     const [showModal, setShowModal] = useState(false);
 
-    console.log('t date', transferDate)
-
     const showCreateModal = () => {
         setTransfer({
             from_account_id: '',
@@ -65,7 +63,6 @@ export default function Transfers() {
     const getBankAccount = () => {
         axiosClient.get('/all-bank-account')
             .then(({data}) => {
-               // console.log(data);
                 setBankAccounts(data.data);
             })
             .catch(error => {

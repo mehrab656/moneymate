@@ -37,7 +37,6 @@ export default function Incomes() {
         setLoading(true);
         axiosClient.get('/incomes', {params: {page, pageSize}})
             .then(({data}) => {
-                console.log(data);
                 setLoading(false);
                 setIncomes(data.data);
                 setTotalCount(data.total);
@@ -90,7 +89,6 @@ export default function Incomes() {
                         icon: 'success',
                     });
                 }).catch((error) => {
-                    //console.log(error);
                     Swal.fire({
                         title: 'Error!',
                         text: 'Income could not be deleted.',
@@ -105,9 +103,11 @@ export default function Incomes() {
         <div>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Income Histories</h1>
-                {userRole ==='admin' && <Link className="btn-add align-right mr-3" to="/income/new"><FontAwesomeIcon icon={faDollar}/> Add New
-                    Income</Link>}
-              
+                {userRole === 'admin' &&
+                    <Link className="btn-add align-right mr-3" to="/income/new"><FontAwesomeIcon icon={faDollar}/> Add
+                        New
+                        Income</Link>}
+
                 <IncomeExportButton/>
             </div>
 
@@ -125,15 +125,12 @@ export default function Incomes() {
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr className={'text-center'}>
-                            <th>User Name</th>
-                            <th>Account Number</th>
+                            <th>Date</th>
+                            <th>Description</th>
                             <th>Category</th>
                             <th>Amount</th>
-                            <th>Attachment</th>
-                            <th>Description</th>
-                            <th>Date</th>
-                            {userRole==='admin' && <th width="20%">Action</th>}
-                            
+                            {userRole === 'admin' && <th width="20%">Action</th>}
+
                         </tr>
                         </thead>
                         {loading && (
@@ -156,25 +153,21 @@ export default function Incomes() {
                             ) : (
                                 filteredIncomes.map((income) => (
                                     <tr className={'text-center'} key={income.id}>
-                                        <td>{income.user_name}</td>
-                                        <td>{income.account_number}</td>
-                                        <td>{income.category_name}</td>
-                                        <td>{default_currency}{income.amount}</td>
-                                        <td>{income.attachment &&
-                                            <DownloadAttachment filename={income.attachment}/>}</td>
-                                        <td>{income.description !== 'null' ? income.description : ''}</td>
-
                                         <td>{income.income_date}</td>
-                                        {userRole ==='admin' &&
+                                        <td>{income.description !== 'null' ? income.description : ''}</td>
+                                        <td>{income.category_name}</td>
+                                        <td>{default_currency + ' ' + income.amount}</td>
+                                        {userRole === 'admin' &&
                                             <td>
                                                 <Link className="btn-edit" to={"/income/" + income.id}> <FontAwesomeIcon
                                                     icon={faEdit}/> Edit</Link>
                                                 &nbsp;
-                                                <a onClick={() => onDelete(income)} className="btn-delete"><FontAwesomeIcon
+                                                <a onClick={() => onDelete(income)}
+                                                   className="btn-delete"><FontAwesomeIcon
                                                     icon={faTrash}/> Delete</a>
                                             </td>
                                         }
-                                       
+
                                     </tr>
                                 ))
                             )}

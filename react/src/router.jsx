@@ -32,6 +32,7 @@ import InvestmentReport from "./views/InvestmentReport";
 import Return from "./views/Return";
 import InvestmentPlan from "./views/InvestmentPlan.jsx";
 import InvestmentPlanForm from "./views/InvestmentPlanForm.jsx";
+import OverallReport from "./views/OverallReport";
 
 const router = createBrowserRouter([
 
@@ -177,6 +178,10 @@ const router = createBrowserRouter([
             {
                 path: '/subscription-history',
                 element: <SubscriptionHistory/>
+            },
+            {
+                path: '/all-report',
+                element: <OverallReport/>
             },
 
             {

@@ -156,7 +156,6 @@ export default function Banks() {
                         icon: 'success',
                     });
                 }).catch((error) => {
-                    console.log(error);
                     Swal.fire({
                         title: 'Error!',
                         text: 'Bank could not be deleted.',
