@@ -223,31 +223,14 @@ export default function ExpenseForm() {
                             <div className="col-md-6">
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="expense_description">Description</label>
-                                    <input className="custom-form-control"
-                                           value={expense.description !== 'null' ? expense.description : ''}
-                                           onChange={ev => setExpense({...expense, description: ev.target.value})}
-                                           placeholder="Description"/>
-                                </div>
-                                <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="expense_category">Expense Category</label>
-                                    <select
-                                        className="custom-form-control"
-                                        value={selectedCategoryId}
-                                        id="expense-category"
-                                        name="expense-category"
-                                        onChange={(event) => {
-                                            const value = event.target.value || '';
-                                            setSelectedCategoryId(value);
-                                            setExpense({...expense, category_id: parseInt(value)});
-                                        }}>
-                                        <option defaultValue>Expense category</option>
-                                        {expenseCategories.map(category => (
-                                            <option key={category.id} value={category.id}>
-                                                {category.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {errors.category_id && <p className="error-message mt-2">{errors.category_id[0]}</p>}
+                                    <textarea
+                                        style={{height:130}}
+                                        className="form-control"
+                                        id="expense_description"
+                                        rows="3"
+                                        value={expense.description !== 'null' ? expense.description : ''}
+                                        onChange={ev => setExpense({...expense, description: ev.target.value})}
+                                        placeholder="Description"/>
                                 </div>
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="expense_amount">Amount</label>
@@ -257,32 +240,25 @@ export default function ExpenseForm() {
                                     {errors.amount && <p className="error-message mt-2">{errors.amount[0]}</p>}
                                 </div>
                                 <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="expense_user">Expense By</label>
-                                    <select
-                                        className="custom-form-control"
-                                        value={selectedUserId}
-                                        id="expense-by"
-                                        name="expense-by"
-                                        onChange={(event) => {
-                                            const value = event.target.value || '';
-                                            setSelectedUserId(value);
-                                            setExpense({...expense, user_id: parseInt(value)});
-                                        }}>
-                                        <option defaultValue>Expense By</option>
-                                        {selectUserID.map(user => (
-                                            <option key={user.id} value={user.id}>
-                                                {user.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {errors.user_id && <p className="error-message mt-2">{errors.user_id[0]}</p>}
+                                    <label className="custom-form-label" htmlFor="refundable_amount">Refundable Amount</label>
+                                    <input className="custom-form-control"
+                                           type="number"
+                                           step="any"
+                                           value={expense.refundable_amount}
+                                           onChange={ev => setExpense({...expense, refundable_amount: ev.target.value})}
+                                           placeholder="Refundable Amount"/>
+                                    {errors.refundable_amount && <p className="error-message mt-2">{errors.refundable_amount[0]}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="note">Note</label>
-                                    <input className="custom-form-control"
-                                           value={expense.note !== 'null' ? expense.note : ''}
-                                           onChange={ev => setExpense({...expense, note: ev.target.value})}
-                                           placeholder="Additional Note"/>
+                                    <textarea
+                                        style={{height:130}}
+                                        className="form-control"
+                                        id="expense_note"
+                                        rows="3"
+                                        value={expense.note !== 'null' ? expense.note : ''}
+                                        onChange={ev => setExpense({...expense, note: ev.target.value})}
+                                        placeholder="Additional Note"/>
                                 </div>
                             </div>
 
@@ -306,6 +282,49 @@ export default function ExpenseForm() {
                                     {errors.start_date && <p className="error-message mt-2">{errors.start_date[0]}</p>}
                                 </div>
                                 <div className="form-group">
+                                    <label className="custom-form-label" htmlFor="expense_user">Expense By</label>
+                                    <select
+                                        className="custom-form-control"
+                                        value={selectedUserId}
+                                        id="expense-by"
+                                        name="expense-by"
+                                        onChange={(event) => {
+                                            const value = event.target.value || '';
+                                            setSelectedUserId(value);
+                                            setExpense({...expense, user_id: parseInt(value)});
+                                        }}>
+                                        <option defaultValue>Expense By</option>
+                                        {selectUserID.map(user => (
+                                            <option key={user.id} value={user.id}>
+                                                {user.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.user_id && <p className="error-message mt-2">{errors.user_id[0]}</p>}
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="custom-form-label" htmlFor="expense_category">Expense Category</label>
+                                    <select
+                                        className="custom-form-control"
+                                        value={selectedCategoryId}
+                                        id="expense-category"
+                                        name="expense-category"
+                                        onChange={(event) => {
+                                            const value = event.target.value || '';
+                                            setSelectedCategoryId(value);
+                                            setExpense({...expense, category_id: parseInt(value)});
+                                        }}>
+                                        <option defaultValue>Expense category</option>
+                                        {expenseCategories.map(category => (
+                                            <option key={category.id} value={category.id}>
+                                                {category.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.category_id && <p className="error-message mt-2">{errors.category_id[0]}</p>}
+                                </div>
+                                <div className="form-group">
                                     <label className="custom-form-label" htmlFor="bank_account">Bank Account</label>
                                     <select
                                         className="custom-form-control"
@@ -325,16 +344,6 @@ export default function ExpenseForm() {
                                         ))}
                                     </select>
                                     {errors.account_id && <p className="error-message mt-2">{errors.account_id[0]}</p>}
-                                </div>
-                                <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="refundable_amount">Refundable Amount</label>
-                                    <input className="custom-form-control"
-                                           type="number"
-                                           step="any"
-                                           value={expense.refundable_amount}
-                                           onChange={ev => setExpense({...expense, refundable_amount: ev.target.value})}
-                                           placeholder="Refundable Amount"/>
-                                    {errors.refundable_amount && <p className="error-message mt-2">{errors.refundable_amount[0]}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="expense_reference">Reference</label>

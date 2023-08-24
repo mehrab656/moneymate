@@ -9,7 +9,7 @@ import {faEdit, faList12, faListOl, faMinus, faThList, faTrash} from "@fortaweso
 import Pagination from "react-bootstrap/Pagination";
 import DownloadAttachment from "../components/DownloadAttachment";
 import {SettingsContext} from "../contexts/SettingsContext";
-import {Button, Modal} from "react-bootstrap";
+import {Button, Image, Modal} from "react-bootstrap";
 import Dropdown from "react-bootstrap/Dropdown"
 import ActionButtonHelpers from "../helper/ActionButtonHelpers";
 
@@ -89,7 +89,6 @@ export default function Expenses() {
 
     const filteredExpenses = expenses.filter((expense) => {
 
-
         if (expense.refundable_amount > 0) {
             if (expense.refunded_amount === expense.refundable_amount) {
                 expense.refunded_txt_clr = 'success';
@@ -141,19 +140,20 @@ export default function Expenses() {
     };
 
     const actionParams = {
-        route:{
-            editRoute:'/expense/',
-            viewRoute:'',
-            deleteRoute:''
+        route: {
+            editRoute: '/expense/',
+            viewRoute: '',
+            deleteRoute: ''
         },
     }
     return (
         <div>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Expense Histories</h1>
-                {userRole ==='admin' && <Link className="btn-add align-right mr-3" to="/expense/new"><FontAwesomeIcon icon={faMinus}/> Add
-                    New</Link>}
-             
+                {userRole === 'admin' &&
+                    <Link className="btn-add align-right mr-3" to="/expense/new"><FontAwesomeIcon icon={faMinus}/> Add
+                        New</Link>}
+
                 <ExpenseExportButton/>
             </div>
 
@@ -175,8 +175,8 @@ export default function Expenses() {
                             <th>Refundable amount</th>
                             <th>Refunded amount</th>
                             <th>Date</th>
-                           <th width="20%">Action</th>
-                            
+                            <th width="20%">Action</th>
+
                         </tr>
                         </thead>
                         {loading && (
@@ -207,16 +207,16 @@ export default function Expenses() {
 
                                         <td>{expense.expense_date}</td>
 
-                                      
-                                          <td>
+
+                                        <td>
                                             <ActionButtonHelpers
-                                               module={expense}
-                                               showModule={showExpense}
-                                               deleteFunc={onDelete}
-                                               params={actionParams}
+                                                module={expense}
+                                                showModule={showExpense}
+                                                deleteFunc={onDelete}
+                                                params={actionParams}
                                             />
                                         </td>
-                                       
+
                                     </tr>
                                 ))
                             )}
@@ -241,7 +241,7 @@ export default function Expenses() {
 
             </WizCard>
 
-            <Modal show={showModal} centered onHide={handleCloseModal} className="custom-modal">
+            <Modal show={showModal} centered onHide={handleCloseModal} className="custom-modal modal-lg">
                 <Modal.Header closeButton>
                     <Modal.Title>
                         <span>Expense Details</span>
@@ -318,8 +318,12 @@ export default function Expenses() {
                             <td width="50%">
                                 <strong>Attachments :</strong>
                             </td>
+
                             <td>{expense.attachment &&
-                                <DownloadAttachment filename={expense.attachment}/>}</td>
+                                // <Image src={window.URL.createObjectURL(expense.attachment)} fluid/>
+                                <DownloadAttachment filename={expense.attachment}/>
+                            }
+                            </td>
                         </tr>
                         </tbody>
                     </table>
