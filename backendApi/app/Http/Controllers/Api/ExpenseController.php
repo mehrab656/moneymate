@@ -13,6 +13,7 @@ use App\Models\BudgetCategory;
 use App\Models\BudgetExpense;
 use App\Models\Category;
 use App\Models\Expense;
+use App\Models\Option;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -37,14 +38,14 @@ class ExpenseController extends Controller {
 		$page     = $request->query( 'page', 1 );
 		$pageSize = $request->query( 'pageSize', 10 );
 
-		$expenses = Expense::where( 'user_id', $user->id )->whereHas( 'category', function ( $query ) {
+		$expenses = Expense::whereHas( 'category', function ( $query ) {
 			$query->where( 'type', 'expense' );
 		} )->skip( ( $page - 1 ) * $pageSize )
 		                   ->take( $pageSize )
-		                   ->orderBy( 'id', 'desc' )
+		                   ->orderBy( 'expense_date', 'desc' )
 		                   ->get();
 
-		$totalCount = Expense::where( 'user_id', $user->id )->whereHas( 'category', function ( $query ) {
+		$totalCount = Expense::whereHas( 'category', function ( $query ) {
 			$query->where( 'type', 'expense' );
 		} )->count();
 
@@ -129,6 +130,24 @@ class ExpenseController extends Controller {
 		$bankAccount->balance -= $request->amount;
 		$bankAccount->save();
 
+
+		//add some data to be remembered on options' table
+		//last_expense_cat_id
+		//last_expense_date
+		//last_expense_account_id
+
+		$option = Option::firstOrCreate(['key' => 'last_expense_cat_id']);
+		$option->value = $expense['category_id'];
+		$option->save();
+
+		$option = Option::firstOrCreate(['key' => 'last_expense_account_id']);
+		$option->value = $expense['account_id'];
+		$option->save();
+
+		$option = Option::firstOrCreate(['key' => 'last_expense_date']);
+		$option->value = $expenseDate;
+		$option->save();
+
 		return response()->json( [
 			'expense'  => $expense,
 			'category' => $category,
@@ -143,7 +162,7 @@ class ExpenseController extends Controller {
 	 */
 	public function categories(): JsonResponse {
 		$user       = Auth::user();
-		$categories = Category::where( 'type', 'expense' )->where( 'user_id', $user->id )->get();
+		$categories = Category::where( 'type', 'expense' )->get();
 
 		return response()->json( [ 'categories' => $categories ] );
 	}

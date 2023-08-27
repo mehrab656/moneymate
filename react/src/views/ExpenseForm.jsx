@@ -1,10 +1,11 @@
 import {useNavigate, useParams} from "react-router-dom";
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import axiosClient from "../axios-client.js";
 import {useStateContext} from "../contexts/ContextProvider.jsx";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import WizCard from "../components/WizCard";
+import {SettingsContext} from "../contexts/SettingsContext.jsx";
 
 export default function ExpenseForm() {
 
@@ -35,13 +36,22 @@ export default function ExpenseForm() {
     const [selectedUserId, setSelectedUserId] = useState('');
     const navigate = useNavigate();
     const [insufficientBalanceForCategory, setInsufficientBalanceForCategory] = useState(null);
+    const {applicationSettings, userRole} = useContext(SettingsContext);
+    const {
+        num_data_per_page,
+        default_currency,
+        last_expense_cat_id,
+        last_expense_account_id,
+        last_expense_date,
+    } = applicationSettings;
 
     useEffect(() => {
         axiosClient.get('/all-bank-account')
             .then(({data}) => {
-                if (data.data.length>0){
-                    setSelectedAccountId(data.data[0].id)
-                }
+                //by default select the last bank account used for expense purpose
+                // if (data.data.length > 0) {
+                //     setSelectedAccountId(data.data[0].id)
+                // }
                 setBankAccounts(data.data);
             })
             .catch(error => {
@@ -50,6 +60,9 @@ export default function ExpenseForm() {
 
         axiosClient.get('/expense-categories')
             .then(({data}) => {
+                if (data.categories.length > 0) {
+                    setSelectedCategoryId(data.categories[0].id)
+                }
                 setExpenseCategories(data.categories);
             })
             .catch(error => {
@@ -59,7 +72,7 @@ export default function ExpenseForm() {
 
         axiosClient.get('/get-all-users')
             .then(({data}) => {
-                if (data.data.length>0){
+                if (data.data.length > 0) {
                     setSelectedUserId(data.data[0].id)
                 }
                 setUsers(data.data);
@@ -113,16 +126,40 @@ export default function ExpenseForm() {
         }
     }, [id]);
 
- // set default date(today)
-     useEffect(()=>{
-         if(expense?.expense_date ===''){
-             setExpense({
+    // set some default data
+    useEffect(() => {
+
+        // select default date
+        if (expense?.expense_date === '') {
+            // if (last_expense_date) {
+            //     setExpense({
+            //         ...expense,
+            //         expense_date: new Date(last_expense_date).toISOString().split('T')[0]
+            //     });
+            // } else {
+            //     setExpense({
+            //         ...expense,
+            //         expense_date: new Date().toISOString().split('T')[0]
+            //     });
+            // }
+
+            setExpense({
                 ...expense,
                 expense_date: new Date().toISOString().split('T')[0]
-               });
-             }
-        },[expense?.expense_date])
+            });
+        }
 
+        // //select default category
+        // if (last_expense_cat_id) {
+        //     setSelectedCategoryId(last_expense_cat_id)
+        // }
+        //
+        // //set last used bank account
+        // if (last_expense_account_id) {
+        //     setSelectedAccountId(last_expense_account_id)
+        // }
+
+    }, [expense?.expense_date, last_expense_cat_id, last_expense_account_id])
 
     const expenseSubmit = (event) => {
         event.preventDefault();
@@ -222,9 +259,10 @@ export default function ExpenseForm() {
                         <div className="row">
                             <div className="col-md-6">
                                 <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="expense_description">Description</label>
+                                    <label className="custom-form-label"
+                                           htmlFor="expense_description">Description</label>
                                     <textarea
-                                        style={{height:130}}
+                                        style={{height: 130}}
                                         className="form-control"
                                         id="expense_description"
                                         rows="3"
@@ -234,25 +272,28 @@ export default function ExpenseForm() {
                                 </div>
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="expense_amount">Amount</label>
-                                    <input className="custom-form-control" type="number" step="any" value={expense.amount || ""}
+                                    <input className="custom-form-control" type="number" step="any"
+                                           value={expense.amount || ""}
                                            onChange={ev => setExpense({...expense, amount: ev.target.value})}
                                            placeholder="Amount"/>
                                     {errors.amount && <p className="error-message mt-2">{errors.amount[0]}</p>}
                                 </div>
                                 <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="refundable_amount">Refundable Amount</label>
+                                    <label className="custom-form-label" htmlFor="refundable_amount">Refundable
+                                        Amount</label>
                                     <input className="custom-form-control"
                                            type="number"
                                            step="any"
                                            value={expense.refundable_amount}
                                            onChange={ev => setExpense({...expense, refundable_amount: ev.target.value})}
                                            placeholder="Refundable Amount"/>
-                                    {errors.refundable_amount && <p className="error-message mt-2">{errors.refundable_amount[0]}</p>}
+                                    {errors.refundable_amount &&
+                                        <p className="error-message mt-2">{errors.refundable_amount[0]}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="note">Note</label>
                                     <textarea
-                                        style={{height:130}}
+                                        style={{height: 130}}
                                         className="form-control"
                                         id="expense_note"
                                         rows="3"
@@ -267,7 +308,7 @@ export default function ExpenseForm() {
                                     <label className="custom-form-label" htmlFor="expense_date">Date</label>
                                     <DatePicker
                                         className="custom-form-control"
-                                        selected={expense.expense_date ? new Date(expense.expense_date) : new Date() }
+                                        selected={expense.expense_date ? new Date(expense.expense_date) : new Date()}
                                         onChange={(date) => {
                                             const selectedDate = date ? new Date(date) : null;
                                             const updatedDate = selectedDate && !expense.expense_date ? new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000) : selectedDate;
@@ -304,7 +345,8 @@ export default function ExpenseForm() {
                                 </div>
 
                                 <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="expense_category">Expense Category</label>
+                                    <label className="custom-form-label" htmlFor="expense_category">Expense
+                                        Category</label>
                                     <select
                                         className="custom-form-control"
                                         value={selectedCategoryId}
@@ -322,7 +364,8 @@ export default function ExpenseForm() {
                                             </option>
                                         ))}
                                     </select>
-                                    {errors.category_id && <p className="error-message mt-2">{errors.category_id[0]}</p>}
+                                    {errors.category_id &&
+                                        <p className="error-message mt-2">{errors.category_id[0]}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="bank_account">Bank Account</label>
@@ -339,7 +382,8 @@ export default function ExpenseForm() {
                                         <option defaultValue>Bank account</option>
                                         {bankAccounts.map(account => (
                                             <option key={account.id} value={account.id}>
-                                                {account.bank_name} - {account.account_number} - Balance ({account.balance})
+                                                {account.bank_name} - {account.account_number} - Balance
+                                                ({account.balance})
                                             </option>
                                         ))}
                                     </select>

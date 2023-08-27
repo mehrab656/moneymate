@@ -13,64 +13,67 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class CategoryController extends Controller
-{
+class CategoryController extends Controller {
 
 
-    private CategoryRepositoryInterface $categoryRepository;
+	private CategoryRepositoryInterface $categoryRepository;
 
-    public function __construct(CategoryRepositoryInterface $categoryRepository)
-    {
-        $this->categoryRepository = $categoryRepository;
-    }
+	public function __construct( CategoryRepositoryInterface $categoryRepository ) {
+		$this->categoryRepository = $categoryRepository;
+	}
 
-    public function index(Request $request): JsonResponse
-    {
-        $user = Auth::user();
-        $page = $request->query('page', 1);
-        $pageSize = $request->query('pageSize', 10);
-        $categories = $this->categoryRepository->getByUserId($user->id, $page, $pageSize);
-        $totalCount = $this->categoryRepository->getTotalCountByUserId($user->id);
+	public function index( Request $request ): JsonResponse {
+		$user     = Auth::user();
+		$page     = $request->query( 'page', 1 );
+		$pageSize = $request->query( 'pageSize', 10 );
+		//No need to depend Category on User ID.
+//        $categories = $this->categoryRepository->getByUserId($user->id, $page, $pageSize);
+//        $totalCount = $this->categoryRepository->getTotalCountByUserId($user->id);
 
-        return response()->json([
-            'data' => CategoryResource::collection($categories),
-            'total' => $totalCount,
-        ]);
-    }
+		$categories = Category::skip( ( $page - 1 ) * $pageSize )
+		                      ->take( $pageSize )
+		                      ->get();
 
-    public function create(CategoryRequest $request): JsonResponse
-    {
-        $categoryData = $request->validated();
-        $categoryData['user_id'] = auth()->user()->id;
+		$totalCount = Category::count();
 
-        $category = $this->categoryRepository->create($categoryData);
+		return response()->json( [
+			'data'  => CategoryResource::collection( $categories ),
+			'total' => $totalCount,
+		] );
+	}
 
-        return response()->json(['category' => $category]);
-    }
+	public function create( CategoryRequest $request ): JsonResponse {
+		$categoryData            = $request->validated();
+		$categoryData['user_id'] = auth()->user()->id;
 
-    public function show(Category $category): CategoryResource
-    {
-        return new CategoryResource($category);
-    }
+		$category = $this->categoryRepository->create( $categoryData );
 
-    public function update(UpdateCategoryRequest $request, Category $category): CategoryResource
-    {
-        $data = $request->validated();
-        $category = $this->categoryRepository->update($category, $data);
-        return new CategoryResource($category);
-    }
+		return response()->json( [ 'category' => $category ] );
+	}
+
+	public function show( Category $category ): CategoryResource {
+		return new CategoryResource( $category );
+	}
+
+	public function update( UpdateCategoryRequest $request, Category $category ): CategoryResource {
+		$data     = $request->validated();
+		$category = $this->categoryRepository->update( $category, $data );
+
+		return new CategoryResource( $category );
+	}
 
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param Category $category
-     * @return JsonResponse
-     */
-    public function destroy(Category $category): JsonResponse
-    {
-        $this->categoryRepository->delete($category);
-        return response()->json(['message' => 'Category deleted']);
-    }
+	/**
+	 * Remove the specified resource from storage.
+	 *
+	 * @param Category $category
+	 *
+	 * @return JsonResponse
+	 */
+	public function destroy( Category $category ): JsonResponse {
+		$this->categoryRepository->delete( $category );
+
+		return response()->json( [ 'message' => 'Category deleted' ] );
+	}
 
 }

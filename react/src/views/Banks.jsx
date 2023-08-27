@@ -191,6 +191,8 @@ export default function Banks() {
                         <thead>
                         <tr>
                             <th className="text-center">BANK NAME</th>
+                            <th className="text-center">ADDED BY</th>
+                            <th className="text-center">ADDED On</th>
                             {userRole ==='admin' && <th className={'text-center'}>ACTIONS</th>}
                             
                         </tr>
@@ -198,7 +200,7 @@ export default function Banks() {
                         {loading && (
                             <tbody>
                             <tr>
-                                <td colSpan={6} className="text-center">
+                                <td colSpan={3} className="text-center">
                                     Loading...
                                 </td>
                             </tr>
@@ -208,7 +210,7 @@ export default function Banks() {
                             <tbody>
                             {filteredBank.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="text-center">
+                                    <td colSpan={3} className="text-center">
                                         No bank found
                                     </td>
                                 </tr>
@@ -216,7 +218,9 @@ export default function Banks() {
                                 filteredBank.map((bank) => (
                                     <tr className={'text-center'} key={bank.id}>
                                         <td>{bank.bank_name}</td>
-                                        {userRole ==='admin' && 
+                                        <td>{bank.user_name}</td>
+                                        <td>{new Date(bank.created_at).toDateString()}</td>
+                                        {userRole ==='admin' &&
                                         <td className="text-center w-auto">
                                             <div className="d-flex flex-wrap justify-content-center gap-2">
                                             <span>

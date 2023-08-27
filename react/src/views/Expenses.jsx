@@ -199,15 +199,12 @@ export default function Expenses() {
                             ) : (
                                 filteredExpenses.map((expense) => (
                                     <tr className={'text-center'} key={expense.id}>
-                                        <td>{expense.description}</td>
-                                        <td>{expense.category_name}</td>
-                                        <td>{default_currency + expense.amount}</td>
-                                        <td>{default_currency + expense.refundable_amount}</td>
-                                        <td className={"text-" + expense.refunded_txt_clr}>{default_currency + expense.refunded_amount}</td>
-
+                                        <td className={'text-start'}>{expense.description}</td>
+                                        <td className={'text-start'}>{expense.category_name}</td>
+                                        <td className={'text-end'}>{default_currency + expense.amount}</td>
+                                        <td className={'text-end'}>{default_currency + expense.refundable_amount}</td>
+                                        <td className={"text-end text-" + expense.refunded_txt_clr}>{default_currency + expense.refunded_amount}</td>
                                         <td>{expense.expense_date}</td>
-
-
                                         <td>
                                             <ActionButtonHelpers
                                                 module={expense}
@@ -216,7 +213,6 @@ export default function Expenses() {
                                                 params={actionParams}
                                             />
                                         </td>
-
                                     </tr>
                                 ))
                             )}

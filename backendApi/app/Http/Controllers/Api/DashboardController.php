@@ -24,24 +24,19 @@ class DashboardController extends Controller
     {
         $incomeOfThisMonth = Income::whereMonth('income_date', date('m'))
             ->whereYear('income_date', date('Y'))
-            ->where('user_id', auth()->user()->id)
             ->sum('amount');
 
         $expenseOfThisMonth = Expense::whereMonth('expense_date', date('m'))
             ->whereYear('expense_date', date('Y'))
-            ->where('user_id', auth()->user()->id)
             ->sum('amount');
 
-        $totalBalance = BankAccount::where('user_id', auth()->user()->id)
-            ->sum('balance');
+        $totalBalance = BankAccount::sum('balance');
 
         $totalLend = Lend::sum('amount');
 
         $userId = auth()->user()->id;
 
-        $totalBorrow = Borrow::whereHas('account', function ($query) use ($userId) {
-            $query->where('user_id', $userId);
-        })->sum('amount');
+        $totalBorrow = Borrow::sum('amount');
 
         $numberOfBankAccount = BankAccount::count();
 

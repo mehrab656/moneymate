@@ -23,8 +23,7 @@ class UserResource extends JsonResource
         $registrationType = get_option('registration_type');
 
         if ($registrationType === 'subscription') {
-            $subscription = Subscription::where('user_id', $this->id)
-                ->where('status', 'active')
+            $subscription = Subscription::where('status', 'active')
                 ->where('current_period_end', '>', now())
                 ->first();
             if ($subscription)
