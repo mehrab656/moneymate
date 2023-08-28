@@ -119,6 +119,16 @@ export default function Investment() {
         },
     }
 
+    function initialName(words) {
+        'use strict'
+        return words
+            .replace(/\b(\w)\w+/g, '$1')
+            .replace(/\s/g, '')
+            .replace(/\.$/, '')
+            .toUpperCase();
+    }
+
+
     return (
         <div>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
@@ -141,7 +151,7 @@ export default function Investment() {
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr className={'text-center'}>
-                            <th>ID</th>
+                            <th>Investor ID</th>
                             <th>Investor Name</th>
                             <th>Amount</th>
                             <th>Date</th>
@@ -170,7 +180,7 @@ export default function Investment() {
                             ) : (
                                 investments.map((investment) => (
                                     <tr className={'text-center'} key={investment.id}>
-                                        <td>{investment.id}</td>
+                                        <td>{initialName(investment.investor_name)+'-'+investment.id}</td>
                                         <td>{investment.investor_name}</td>
                                         <td>{investment.amount}</td>
                                         <td>{investment.investment_date}</td>

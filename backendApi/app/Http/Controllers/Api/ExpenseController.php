@@ -43,6 +43,7 @@ class ExpenseController extends Controller {
 		} )->skip( ( $page - 1 ) * $pageSize )
 		                   ->take( $pageSize )
 		                   ->orderBy( 'expense_date', 'desc' )
+		                   ->orderBy( 'id', 'desc' )
 		                   ->get();
 
 		$totalCount = Expense::whereHas( 'category', function ( $query ) {

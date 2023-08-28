@@ -111,15 +111,14 @@ export default function Debts() {
 
 
     // set default date(today)
-     useEffect(()=>{
-        if(date ===null){
+    useEffect(() => {
+        if (date === null) {
             setDate(new Date())
-             }
-     },[date])
+        }
+    }, [date])
 
     const debtSubmit = (e) => {
         e.preventDefault();
-
 
 
         if (debt.id) {
@@ -225,12 +224,13 @@ export default function Debts() {
         <div>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Debts/Loans</h1>
-                {userRole ==='admin' && 
-                <div>
-                    <Link className="custom-btn btn-add" onClick={showCreateModal}><FontAwesomeIcon icon={faMoneyCheck}/> Add New</Link>
-                </div>
+                {userRole === 'admin' &&
+                    <div>
+                        <Link className="custom-btn btn-add" onClick={showCreateModal}><FontAwesomeIcon
+                            icon={faMoneyCheck}/> Add New</Link>
+                    </div>
                 }
-              
+
             </div>
 
 
@@ -247,14 +247,13 @@ export default function Debts() {
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr>
-                            <th>AMOUNT</th>
-                            <th className="text-center">TYPE</th>
-                            <th className="text-center">ACCOUNT</th>
-                            <th className="text-center">PERSON</th>
                             <th className="text-center">DATE</th>
+                            <th className="text-center">PERSON</th>
+                            <th className="text-center">ACCOUNT</th>
+                            <th className={'text-center'}>AMOUNT</th>
+                            <th className="text-center">TYPE</th>
                             <th className="text-center">NOTE</th>
-                            {userRole ==='admin' && <th className="text-center">ACTIONS</th>}
-                            
+                            {userRole === 'admin' && <th className="text-center">ACTIONS</th>}
                         </tr>
                         </thead>
                         {loading && (
@@ -277,35 +276,35 @@ export default function Debts() {
                             ) : (
                                 filterDebts.map((debt) => (
                                     <tr key={debt.id}>
+                                        <td className="text-center">{debt.date}</td>
+                                        <td className="text-center">{debt.type === 'borrow' ? "Borrowed from " : "Lend to "} {debt.person}</td>
+                                        <td className="text-center">{debt.account}</td>
                                         <td>{default_currency}{debt.amount}</td>
                                         <td className="text-center">{debt.type.toUpperCase()}</td>
-                                        <td className="text-center">{debt.account}</td>
-                                        <td className="text-center">{debt.type === 'borrow' ? "Borrowed from " : "Lend to "} {debt.person}</td>
-                                        <td className="text-center">{debt.date}</td>
                                         <td className="text-center">{debt.note}</td>
-                                        {userRole ==='admin' && 
-                                        <td className="text-center">
-                                            <div className="d-flex flex-wrap justify-content-center gap-2">
+                                        {userRole === 'admin' &&
+                                            <td className="text-center">
+                                                <div className="d-flex flex-wrap justify-content-center gap-2">
                                             <span>
                                                 <Link className="btn-edit"
                                                       to={"/manage-debt/" + debt.id}><FontAwesomeIcon icon={faEdit}/> Manage</Link>
                                             </span>
-                                                <span>
+                                                    <span>
                                                {/* <Link className="btn-info"*/}
-                                                    {/*       to={`#`} onClick={ () => edit(debt) } >*/}
-                                                    {/*    Edit*/}
-                                                    {/*</Link>*/}
+                                                        {/*       to={`#`} onClick={ () => edit(debt) } >*/}
+                                                        {/*    Edit*/}
+                                                        {/*</Link>*/}
                                             </span>
-                                                <span>
+                                                    <span>
                                                <a onClick={(e) => onDelete(debt)}
                                                   className="btn-delete">
                                                   <FontAwesomeIcon icon={faTrash}/> Delete
                                                </a>
                                             </span>
-                                            </div>
-                                        </td>
+                                                </div>
+                                            </td>
                                         }
-                                       
+
                                     </tr>
                                 ))
                             )}

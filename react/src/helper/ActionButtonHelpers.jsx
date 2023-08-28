@@ -20,18 +20,15 @@ return (
                            href={params.route.editRoute + module.id}>
                 <FontAwesomeIcon icon={faEdit}/> Edit
             </Dropdown.Item>}
-            
             <Dropdown.Item className="text-info"
                            onClick={() => showModule(module)}>
                 <FontAwesomeIcon icon={faThList}/> View
             </Dropdown.Item>
-             {userRole === 'admin'&&
              <Dropdown.Item className="text-danger"
                            onClick={() => deleteFunc(module)}>
                 <FontAwesomeIcon icon={faTrash}/> Delete
             </Dropdown.Item>
-            }
-          
+
         </Dropdown.Menu>
     </Dropdown>
 )

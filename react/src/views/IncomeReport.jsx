@@ -135,6 +135,7 @@ export default function IncomeReport() {
                             <thead>
                             <tr className={'text-center'}>
                                 <th>Income Date</th>
+                                <th>Income Description</th>
                                 <th>Income Category</th>
                                 <th>Income Amount</th>
                             </tr>
@@ -142,7 +143,7 @@ export default function IncomeReport() {
                             {loading && (
                                 <tbody>
                                 <tr className={'text-center'}>
-                                    <td colSpan={3} className="text-center">
+                                    <td colSpan={4} className="text-center">
                                         Loading...
                                     </td>
                                 </tr>
@@ -152,7 +153,7 @@ export default function IncomeReport() {
                                 <tbody>
                                 {incomeReport.length===0?(
                                     <tr>
-                                        <td colSpan={3} className="text-center">
+                                        <td colSpan={4} className="text-center">
                                             Nothing found !
                                         </td>
                                     </tr>
@@ -160,6 +161,7 @@ export default function IncomeReport() {
                                     incomeReport.map(income => (
                                         <tr key={income.id} className={'text-center'}>
                                             <td>{income.income_date}</td>
+                                            <td>{income.description}</td>
                                             <td>{income.category_name}</td>
                                             <td className={'text-end'}>{default_currency + income.amount}</td>
                                         </tr>
@@ -170,7 +172,7 @@ export default function IncomeReport() {
 
                             <tfoot>
                             <tr>
-                                <td className={'text-center fw-bold'} colSpan={2}>Total Income</td>
+                                <td className={'text-center fw-bold'} colSpan={3}>Total Income</td>
                                 <td className={'text-end fw-bold'}>{default_currency + parseFloat(totalIncome).toFixed(2)}</td>
                             </tr>
                             </tfoot>

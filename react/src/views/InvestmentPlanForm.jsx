@@ -12,12 +12,11 @@ export default function InvestmentPlanForm() {
 
     const [plan, setPlan] = useState({
         id: null,
+        plan_name: null,
         userId: user && user?.id,
-        name: null,
         date: null,
         startDate: null,
-        endDate: null
-
+        endDate: null,
     });
 
     const [errors, setErrors] = useState({});
@@ -113,20 +112,22 @@ export default function InvestmentPlanForm() {
                     }
                 });
         } else {
-            const {userId, date, startDate, endDate} = plan;
+            const {userId, plan_name, date, startDate, endDate, purposes} = plan;
             const formData = new FormData();
             formData.append('user_id', userId);
+            formData.append('plan_name', plan_name);
             formData.append('date', date);
             formData.append('start_date', startDate);
             formData.append('end_date', endDate);
+            formData.append('purposes', tableData);
 
-            axiosClient.post(`/investment-plan`, formData, {
+            axiosClient.post(`/investments/add-new-plan`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             }).then(({data}) => {
                 setNotification('Plan data has been added')
-                navigate('/investment-plan');
+                // navigate('/investment-plan');
             })
                 .catch(err => {
                     const response = err.response;
@@ -155,14 +156,14 @@ export default function InvestmentPlanForm() {
                         <div className="row">
                             <div className="col-md-6">
                                 <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="income_amount">Plan Name</label>
+                                    <label className="custom-form-label" htmlFor="plan_name">Plan Name</label>
                                     <input className="custom-form-control" type="text" step="any"
-                                           value={plan.name || ""}
-                                           onChange={ev => setPlan({...plan, name: ev.target.value})}
+                                           value={plan.plan_name || ""}
+                                           onChange={ev => setPlan({...plan, plan_name: ev.target.value})}
                                            placeholder="Plan Name"/>
                                 </div>
                                 <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="income_date">Start Date(Contact
+                                    <label className="custom-form-label" htmlFor="plan_start_date">Start Date(Contact
                                         Period)</label>
                                     <DatePicker
                                         className="custom-form-control"
@@ -182,7 +183,7 @@ export default function InvestmentPlanForm() {
                             </div>
                             <div className="col-md-6">
                                 <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="income_date">Plan Date</label>
+                                    <label className="custom-form-label" htmlFor="plan_date">Plan Date</label>
                                     <DatePicker
                                         className="custom-form-control"
                                         selected={plan.date ? new Date(plan.date) : new Date()}
@@ -199,7 +200,7 @@ export default function InvestmentPlanForm() {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="income_date">End Date(Contact
+                                    <label className="custom-form-label" htmlFor="plan_end_date">End Date(Contact
                                         Period)</label>
                                     <DatePicker
                                         className="custom-form-control"
@@ -207,8 +208,8 @@ export default function InvestmentPlanForm() {
                                         onChange={(date) => {
                                             const selectedDate = date ? new Date(date) : null;
                                             const updatedDate = selectedDate && !plan.endDate ? new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000) : selectedDate;
-                                            setIncome({
-                                                ...income,
+                                            setPlan({
+                                                ...plan,
                                                 endDate: updatedDate ? updatedDate.toISOString().split('T')[0] : ''
                                             });
                                         }}
@@ -237,23 +238,36 @@ export default function InvestmentPlanForm() {
                                     <tbody>
                                     {tableData.map((row, index) => (
                                         <tr key={index}>
-                                            <td><input type="text" value={row.purpose}
-                                                       onChange={(e) => handleInputChange(e, index, 'purpose')}/></td>
-                                            <td><input type="text" value={row.paymentTerms}
+                                            <td>
+                                                <input type="text" value={row.purpose}
+                                                       onChange={(e) => handleInputChange(e, index, 'purpose')}/>
+                                            </td>
+                                            <td>
+                                                <input type="text" value={row.paymentTerms}
                                                        onChange={(e) => handleInputChange(e, index, 'paymentTerms')}/>
                                             </td>
-                                            <td><input type="number" value={row.amount}
-                                                       onChange={(e) => handleInputChange(e, index, 'amount')}/></td>
-                                            <td><input type="number" value={row.refundableAmount}
+                                            <td>
+                                                <input type="number" value={row.amount}
+                                                       onChange={(e) => handleInputChange(e, index, 'amount')}/>
+                                            </td>
+                                            <td>
+                                                <input type="number" value={row.refundableAmount}
                                                        onChange={(e) => handleInputChange(e, index, 'refundableAmount')}/>
                                             </td>
-                                            <td><input type="text" value={row.remarks}
-                                                       onChange={(e) => handleInputChange(e, index, 'remarks')}/></td>
                                             <td>
-                                                <button className="btn btn-sm btn-danger"
-                                                        onClick={() => removeRow(index)}>Remove
-                                                </button>
-                                                <button className="btn btn-sm btn-info" onClick={addRow}>Add</button>
+                                                <input type="text" value={row.remarks}
+                                                       onChange={(e) => handleInputChange(e, index, 'remarks')}/>
+                                            </td>
+                                            <td>
+                                                <div className="d-grid gap-2 d-md-flex">
+                                                    <button className="btn btn-sm btn-danger"
+                                                            onClick={() => removeRow(index)}
+                                                            title={'Remove this row'}>{'-'}
+                                                    </button>
+                                                    <button className="btn btn-sm btn-info" onClick={addRow}
+                                                            title={'Add a new row'}>{'+'}
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
@@ -262,65 +276,9 @@ export default function InvestmentPlanForm() {
 
                             </div>
                         </div>
-
-
-                        <button className={plan.id ? "btn btn-info mt:3" : "custom-btn btn-add mt:3"}>
+                        <button className={plan.id ? "btn btn-info float-right mt:3" : "custom-btn btn-add mt:3"}>
                             {plan.id ? "Update Plan Record" : "Add Plan"}
                         </button>
-
-                    </form>
-                )}
-            </WizCard>
-            <WizCard className="animated fadeInDown wiz-card-mh">
-
-                {!loading && (
-                    <form onSubmit={planSubmit}>
-
-                        {/* infiniti rows */}
-                        <div className="col-md-12">
-                            <table>
-                                <thead>
-                                <tr>
-                                    <th>Purpose</th>
-                                    <th>Payment Terms</th>
-                                    <th>Amount</th>
-                                    <th>Refundable Amount</th>
-                                    <th>Remarks</th>
-                                    <th>Actions</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {tableData.map((row, index) => (
-                                    <tr key={index}>
-                                        <td><input type="text" value={row.purpose}
-                                                   onChange={(e) => handleInputChange(e, index, 'purpose')}/></td>
-                                        <td><input type="text" value={row.paymentTerms}
-                                                   onChange={(e) => handleInputChange(e, index, 'paymentTerms')}/></td>
-                                        <td><input type="number" value={row.amount}
-                                                   onChange={(e) => handleInputChange(e, index, 'amount')}/></td>
-                                        <td><input type="number" value={row.refundableAmount}
-                                                   onChange={(e) => handleInputChange(e, index, 'refundableAmount')}/>
-                                        </td>
-                                        <td><input type="text" value={row.remarks}
-                                                   onChange={(e) => handleInputChange(e, index, 'remarks')}/></td>
-                                        <td>
-                                            <button className="btn btn-sm btn-danger"
-                                                    onClick={() => removeRow(index)}>Remove
-                                            </button>
-                                            <button className="btn btn-sm btn-info" onClick={addRow}>Add</button>
-                                        </td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
-
-                        </div>
-
-
-                        <button className={plan.id ? "btn btn-info mt:3" : "custom-btn btn-add mt:3"}>
-                            {plan.id ? "Update Plan Record" : "Add Plan"}
-                        </button>
-
                     </form>
                 )}
             </WizCard>

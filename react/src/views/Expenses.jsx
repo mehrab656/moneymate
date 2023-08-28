@@ -111,32 +111,42 @@ export default function Expenses() {
 
 
     const onDelete = (expense) => {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: `You will not be able to recover the expense !`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'Cancel',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                axiosClient.delete(`expense/${expense.id}`).then(() => {
-                    getExpenses();
-                    Swal.fire({
-                        title: 'Deleted!',
-                        text: 'Expense has been deleted.',
-                        icon: 'success',
+        if (userRole !== 'admin') {
+            Swal.fire({
+                title: 'Permission Denied!',
+                text: 'Investors are not permitted to delete any data!',
+                icon: 'danger',
+            });
+        }else{
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `You will not be able to recover the expense !`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axiosClient.delete(`expense/${expense.id}`).then(() => {
+                        getExpenses();
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: 'Expense has been deleted.',
+                            icon: 'success',
+                        });
+                    }).catch((error) => {
+                        console.log(error);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Expense could not be deleted.',
+                            icon: 'error',
+                        });
                     });
-                }).catch((error) => {
-                    console.log(error);
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Expense could not be deleted.',
-                        icon: 'error',
-                    });
-                });
-            }
-        });
+                }
+            });
+        }
+
+
     };
 
     const actionParams = {
@@ -169,12 +179,12 @@ export default function Expenses() {
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr className={'text-center'}>
+                            <th>Date</th>
                             <th>Details</th>
                             <th>Sector</th>
                             <th>Amount</th>
                             <th>Refundable amount</th>
                             <th>Refunded amount</th>
-                            <th>Date</th>
                             <th width="20%">Action</th>
 
                         </tr>
@@ -199,12 +209,12 @@ export default function Expenses() {
                             ) : (
                                 filteredExpenses.map((expense) => (
                                     <tr className={'text-center'} key={expense.id}>
+                                        <td>{expense.expense_date}</td>
                                         <td className={'text-start'}>{expense.description}</td>
                                         <td className={'text-start'}>{expense.category_name}</td>
                                         <td className={'text-end'}>{default_currency + expense.amount}</td>
                                         <td className={'text-end'}>{default_currency + expense.refundable_amount}</td>
                                         <td className={"text-end text-" + expense.refunded_txt_clr}>{default_currency + expense.refunded_amount}</td>
-                                        <td>{expense.expense_date}</td>
                                         <td>
                                             <ActionButtonHelpers
                                                 module={expense}
