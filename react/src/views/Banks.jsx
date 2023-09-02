@@ -227,6 +227,8 @@ export default function Banks() {
                                 filteredBank.map((bank) => (
                                     <tr className={'text-center'} key={bank.id}>
                                         <td>{bank.bank_name}</td>
+                                        <td></td>
+                                        <td></td>
                                         {userRole ==='admin' && 
                                          <td>
                                             <ActionButtonHelpers
