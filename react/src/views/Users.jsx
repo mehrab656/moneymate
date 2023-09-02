@@ -7,6 +7,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faEdit, faTrash, faUser} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
 import Pagination from "react-bootstrap/Pagination";
+import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 
 export default function Users() {
     const [users, setUsers] = useState([]);
@@ -16,6 +17,14 @@ export default function Users() {
     const [totalCount, setTotalCount] = useState(0);
     const {applicationSettings, userRole} = useContext(SettingsContext);
     const {num_data_per_page} = applicationSettings;
+
+    const [modalUser, setModalUser] = useState(false)
+    const [showModal, setShowModal] = useState(false);
+
+    const showInvestment = (user) => {
+        setModalUser(user);
+    }
+  
 
     const navigate = useNavigate();
 
@@ -86,6 +95,14 @@ export default function Users() {
         }
     }, [userRole, navigate]);
 
+    const actionParams = {
+        route:{
+            editRoute:'/users/',
+            viewRoute:'',
+            deleteRoute:''
+        },
+    }
+
     return (
         <div>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
@@ -138,23 +155,14 @@ export default function Users() {
                                     <td>{u.name}</td>
                                     <td className="text-center">{u.email}</td>
                                     <td className="text-center">{u.created_at}</td>
-                                    {userRole ==='admin' &&
-                                    <td className="text-center">
-                                        <div className="d-flex flex-wrap justify-content-center gap-2">
-                                            <span><Link className="btn-edit" to={'/users/' + u.id}><FontAwesomeIcon
-                                                icon={faEdit}/> Edit</Link></span>
-
-                                            {u.is_active_membership === 'no' && u.role_as === 'user' &&
-
-                                            <span><a onClick={e => onDelete(u)} className="btn-delete"><FontAwesomeIcon
-                                                icon={faTrash}/> Delete </a></span>
-                                            }
-
-
-                                        </div>
-                                    </td>
-                                    }
-                                  
+                                    {userRole ==='admin' && 
+                                     <td>
+                                        <ActionButtonHelpers
+                                          module={u}
+                                          deleteFunc={onDelete}
+                                           params={actionParams}
+                                        />
+                                    </td>}
                                 </tr>
                             ))}
                             </tbody>

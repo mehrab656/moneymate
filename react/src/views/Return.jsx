@@ -9,6 +9,7 @@ import {useStateContext} from "../contexts/ContextProvider";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCoins, faEdit, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
+import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 
 export default function Return() {
     const [loading, setLoading] = useState(false);
@@ -108,6 +109,13 @@ export default function Return() {
         );
     }
 
+    const actionParams = {
+        route:{
+            viewRoute:'',
+            deleteRoute:''
+        },
+    }
+
     return (
         <div>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
@@ -163,7 +171,7 @@ export default function Return() {
                                         <td className="text-right">{default_currency + marketReturn.refundable_amount}</td>
                                         <td className="text-right">{default_currency + marketReturn.refunded_amount}</td>
                                         <td className="text-right">{default_currency + (marketReturn.refundable_amount - marketReturn.refunded_amount).toString()}</td>
-                                        {
+                                        {/* {
                                             userRole === 'admin' &&
                                             <td className="text-center w-auto">
                                                 <div className="d-flex flex-wrap justify-content-center gap-2">
@@ -176,7 +184,17 @@ export default function Return() {
                                               </span>
                                                 </div>
                                             </td>
-                                        }
+                                        } */}
+                                        {userRole ==='admin' && 
+                                         <td>
+                                            <ActionButtonHelpers
+                                                module={marketReturn}
+                                                deleteFunc={onDelete}
+                                                showEditDropdown={edit}
+                                                editDropdown={true}
+                                                params={actionParams}
+                                            />
+                                        </td>}
                                     </tr>
                                 ))
                             )}

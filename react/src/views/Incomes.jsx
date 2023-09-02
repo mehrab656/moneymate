@@ -9,6 +9,7 @@ import {faDollar, faEdit, faTrash} from "@fortawesome/free-solid-svg-icons";
 import Pagination from "react-bootstrap/Pagination";
 import DownloadAttachment from "../components/DownloadAttachment.jsx";
 import {SettingsContext} from "../contexts/SettingsContext";
+import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 
 export default function Incomes() {
 
@@ -99,6 +100,14 @@ export default function Incomes() {
         });
     };
 
+    const actionParams = {
+        route:{
+            editRoute:'/income/',
+            viewRoute:'',
+            deleteRoute:''
+        },
+    }
+
     return (
         <div>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
@@ -158,14 +167,11 @@ export default function Incomes() {
                                         <td>{income.category_name}</td>
                                         <td>{default_currency + ' ' + income.amount}</td>
                                         {userRole === 'admin' &&
-                                            <td>
-                                                <Link className="btn-edit" to={"/income/" + income.id}> <FontAwesomeIcon
-                                                    icon={faEdit}/> Edit</Link>
-                                                &nbsp;
-                                                <a onClick={() => onDelete(income)}
-                                                   className="btn-delete"><FontAwesomeIcon
-                                                    icon={faTrash}/> Delete</a>
-                                            </td>
+                                            <ActionButtonHelpers 
+                                              module={income}
+                                              deleteFunc={onDelete}
+                                              params={actionParams}
+                                            />
                                         }
 
                                     </tr>

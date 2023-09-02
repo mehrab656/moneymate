@@ -9,6 +9,7 @@ import Pagination from "react-bootstrap/Pagination";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faBank, faEdit, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
+import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 
 export default function Accounts() {
 
@@ -233,6 +234,14 @@ export default function Accounts() {
             account.balance.toString().includes(searchText)
     );
 
+    const actionParams = {
+        route:{
+            viewRoute:'',
+            deleteRoute:''
+        },
+    }
+
+
 
     return (
         <div>
@@ -299,7 +308,7 @@ export default function Accounts() {
                                         <td className="text-center">{account.bank_name}</td>
                                         <td className="text-center">{account.account_number}</td>
                                         <td className="text-center">{default_currency}{account.balance}</td>
-                                        {userRole ==='admin' && 
+                                        {/* {userRole ==='admin' && 
                                         <td className="text-center">
                                             <div className="d-flex flex-wrap justify-content-center gap-2">
                                             <span>
@@ -313,7 +322,17 @@ export default function Accounts() {
                                                 </span>
                                                 </div>
                                             </td>
-                                        }
+                                        } */}
+                                        {userRole ==='admin' && 
+                                         <td>
+                                            <ActionButtonHelpers
+                                                module={account}
+                                                deleteFunc={onDelete}
+                                                showEditDropdown={edit}
+                                                editDropdown={true}
+                                                params={actionParams}
+                                            />
+                                        </td>}
                                        
                                     </tr>
                                 ))

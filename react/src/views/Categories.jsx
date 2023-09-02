@@ -9,6 +9,7 @@ import { useStateContext } from "../contexts/ContextProvider";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCoins, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { SettingsContext } from "../contexts/SettingsContext";
+import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 
 export default function Categories() {
     const [loading, setLoading] = useState(false);
@@ -165,6 +166,13 @@ export default function Categories() {
         );
     }
 
+    const actionParams = {
+        route:{
+            viewRoute:'',
+            deleteRoute:''
+        },
+    }
+
     return (
         <div>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
@@ -220,26 +228,16 @@ export default function Categories() {
                                     <tr key={category.id}>
                                         <td>{category.name}</td>
                                         <td className="text-center">{category.type}</td>
-                                        {userRole ==='admin' &&  <td className="text-center w-auto">
-                                            <div className="d-flex flex-wrap justify-content-center gap-2">
-                                                <span>
-                                                    <Link
-                                                        className="btn-edit"
-                                                        to={`#`}
-                                                        onClick={() => edit(category)}
-                                                    >
-                                                    <FontAwesomeIcon icon={faEdit} /> Edit
-                                                    </Link>
-                                                </span>
-                                                 <span>
-                                                    <a
-                                                        onClick={(e) => onDelete(category)}
-                                                        className="btn-delete"
-                                                    >
-                                                    <FontAwesomeIcon icon={faTrash} /> Delete
-                                                    </a>
-                                                </span>
-                                            </div>
+
+                                        {userRole ==='admin' && 
+                                        <td>
+                                            <ActionButtonHelpers
+                                                module={category}
+                                                deleteFunc={onDelete}
+                                                showEditDropdown={edit}
+                                                editDropdown={true}
+                                                params={actionParams}
+                                            />
                                         </td>}
                                        
                                     </tr>

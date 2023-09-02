@@ -11,6 +11,7 @@ import Select from "react-select";
 import DatePicker from "react-datepicker";
 import {useStateContext} from "../contexts/ContextProvider";
 import {SettingsContext} from "../contexts/SettingsContext";
+import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 
 export default function Budgets() {
 
@@ -251,6 +252,14 @@ export default function Budgets() {
         });
     };
 
+    
+
+    const actionParams = {
+        route:{
+            viewRoute:'',
+            deleteRoute:''
+        },
+    }
     return (
         <>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
@@ -306,16 +315,15 @@ export default function Budgets() {
                                         <td>{budget.start_date}</td>
                                         <td>{budget.end_date}</td>
                                         {userRole ==='admin' && 
-                                        <td>
-                                            <Link className="btn-edit" to={`#`} onClick={() => edit(budget)}>
-                                                <FontAwesomeIcon icon={faEdit}/> Edit
-                                            </Link>
-                                            &nbsp;
-                                            <a onClick={(e) => onDelete(budget)} className="btn-delete">
-                                                <FontAwesomeIcon icon={faTrash}/> Delete
-                                            </a>
-                                        </td>
-                                        }
+                                         <td>
+                                            <ActionButtonHelpers
+                                                module={budget}
+                                                deleteFunc={onDelete}
+                                                showEditDropdown={edit}
+                                                editDropdown={true}
+                                                params={actionParams}
+                                            />
+                                        </td>}
                                        
                                     </tr>
                                 ))
