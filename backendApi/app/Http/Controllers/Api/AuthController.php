@@ -187,7 +187,7 @@ class AuthController extends Controller
 
             if ($subscription->status === 'active')
             {
-                \App\Models\Subscription::where('user_id', $user->id)->where('status', 'active')->update(['status' => 'expired']);
+                \App\Models\Subscription::where('status', 'active')->update(['status' => 'expired']);
                 $localSubscription = new \App\Models\Subscription();
                 $localSubscription->user_id = $user->id;
                 $localSubscription->stripe_id = $subscription->id;

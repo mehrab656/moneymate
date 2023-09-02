@@ -29,13 +29,12 @@ class BudgetController extends Controller
         $page = $request->query('page', 1);
         $pageSize = $request->query('pageSize', 10);
 
-        $budgets = Budget::where('user_id', $user->id)
-            ->skip(($page - 1) * $pageSize)
+        $budgets = Budget::skip(($page - 1) * $pageSize)
             ->take($pageSize)
             ->orderBy('id', 'desc')
             ->get();
 
-        $totalCount = Budget::where('user_id', $user->id)->count();
+        $totalCount = Budget::count();
 
         return response()->json([
             'data' => BudgetResource::collection($budgets),
@@ -155,7 +154,6 @@ class BudgetController extends Controller
         $userId = auth()->user()->id;
         $activeBudgets = Budget::where('start_date', '<=', $currentDate)
             ->where('end_date', '>=', $currentDate)
-            ->where('user_id', $userId)
             ->get();
 
         $activeBudgetCount = $activeBudgets->count();
@@ -190,7 +188,6 @@ class BudgetController extends Controller
         $currentBudget = DB::table('budgets')
             ->whereMonth('start_date', $currentMonth)
             ->whereYear('start_date', $currentYear)
-            ->where('user_id', $userId)
             ->value('id');
 
         if (!$currentBudget) {

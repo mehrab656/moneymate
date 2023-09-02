@@ -42,7 +42,14 @@ class ApplicationSettingsController extends Controller
             'registration_type',
             'subscription_price',
             'product_api_id',
-            'target_price_api_id' // Specify the API ID of the target price
+            'target_price_api_id', // Specify the API ID of the target price
+	        'last_expense_account_id',
+	        'last_expense_cat_id',
+	        'last_expense_date',
+	        'last_income_account_id',
+	        'last_income_date',
+	        'last_income_cat_id',
+
         ];
 
         $applicationSettings = Option::whereIn('key', $keys)->pluck('value', 'key');

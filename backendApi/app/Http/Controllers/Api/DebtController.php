@@ -30,13 +30,12 @@ class DebtController extends Controller
         $page = $request->query('page', 1);
         $pageSize = $request->query('pageSize', 10);
 
-        $debts = Debt::where('user_id', $user->id)
-            ->skip(($page - 1) * $pageSize)
+        $debts = Debt::skip(($page - 1) * $pageSize)
             ->take($pageSize)
             ->orderBy('id', 'desc')
             ->get();
 
-        $totalCount = Debt::where('user_id', $user->id)->count();
+        $totalCount = Debt::count();
 
         return response()->json([
             'debts' => DebtResource::collection($debts),

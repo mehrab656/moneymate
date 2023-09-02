@@ -39,9 +39,8 @@ return (
              <Dropdown.Item className="text-danger"
                            onClick={() => deleteFunc(module)}>
                 <FontAwesomeIcon icon={faTrash}/> Delete
-            </Dropdown.Item>
-            }
-          
+            </Dropdown.Item>}
+
         </Dropdown.Menu>
     </Dropdown>
 )

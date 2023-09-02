@@ -86,6 +86,7 @@ export default function ExpenseReport() {
                                     <select
                                         className="custom-form-control"
                                         value={selectedCategoryId}
+                                        filter={true}
                                         id="expense-category"
                                         name="expense-category"
                                         onChange={(event) => {
@@ -140,13 +141,14 @@ export default function ExpenseReport() {
                             <tr className={'text-center'}>
                                 <th>Expense Date</th>
                                 <th>Expense Category</th>
+                                <th>Description</th>
                                 <th>Expense Amount</th>
                             </tr>
                             </thead>
                             {loading && (
                                 <tbody>
                                 <tr className={'text-center'}>
-                                    <td colSpan={3} className="text-center">
+                                    <td colSpan={4} className="text-center">
                                         Loading...
                                     </td>
                                 </tr>
@@ -156,16 +158,17 @@ export default function ExpenseReport() {
                                 <tbody>
                                 {expenseReport.length===0?(
                                     <tr>
-                                        <td colSpan={3} className="text-center">
+                                        <td colSpan={4} className="text-center">
                                             Nothing found !
                                         </td>
                                     </tr>
                                 ):(
                                     expenseReport.map(expense => (
-                                        <tr key={expense.id} className={'text-center'}>
+                                        <tr key={expense.id} className={'text-start'}>
                                             <td>{expense.expense_date}</td>
                                             <td>{expense.category_name}</td>
-                                            <td className={'text-end'}>{default_currency + expense.amount}</td>
+                                            <td >{expense.description}</td>
+                                            <td className={'text-end'}>{default_currency +' '+ expense.amount}</td>
                                         </tr>
                                     ))
                                 )}
@@ -174,8 +177,8 @@ export default function ExpenseReport() {
 
                             <tfoot>
                             <tr>
-                                <td className={'text-center fw-bold'} colSpan={2}>Total Expense</td>
-                                <td className={'text-end fw-bold'}>{default_currency + parseFloat(totalExpense).toFixed(2)}</td>
+                                <td className={'text-center fw-bold'} colSpan={3}>Total Expense</td>
+                                <td className={'text-end fw-bold'}>{default_currency +' ' + parseFloat(totalExpense).toFixed(2)}</td>
                             </tr>
                             </tfoot>
                         </table>

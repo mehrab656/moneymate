@@ -41,7 +41,6 @@ class ReportController extends Controller {
 
 		// Query the incomes based on the date range
 		$incomes = Income::where( 'income_date', '>=', $startDate )
-		                 ->where( 'user_id', auth()->user()->id )
 		                 ->where( 'income_date', '<=', $endDate )
 		                 ->whereHas( 'category', function ( $query ) {
 			                 $query->where( 'type', 'income' );
@@ -85,7 +84,6 @@ class ReportController extends Controller {
 		}
 
 		$expenses = Expense::where( 'expense_date', '>=', $startDate )
-		                   ->where( 'user_id', auth()->user()->id )
 		                   ->where( 'expense_date', '<=', $endDate )
 		                   ->whereHas( 'category', function ( $query ) {
 			                   $query->where( 'type', 'expense' );
@@ -143,3 +141,4 @@ class ReportController extends Controller {
 
 	}
 }
+

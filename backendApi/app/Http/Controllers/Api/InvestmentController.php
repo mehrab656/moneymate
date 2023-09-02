@@ -139,6 +139,8 @@ class InvestmentController extends Controller {
 		return response()->noContent();
 	}
 
-
-
+	public function addPlan(Request $request){
+		$s = $request->purposes;
+		return $s;
+	}
 }

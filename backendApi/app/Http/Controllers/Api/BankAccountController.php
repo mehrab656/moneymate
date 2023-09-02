@@ -23,13 +23,12 @@ class BankAccountController extends Controller
         $user = Auth::user();
         $page = $request->query('page', 1);
         $pageSize = $request->query('pageSize', 10);
-        $bankAccounts = BankAccount::where('user_id', $user->id)
-            ->skip(($page - 1) * $pageSize)
+        $bankAccounts = BankAccount::skip(($page - 1) * $pageSize)
             ->take($pageSize)
             ->orderBy('id', 'desc')
             ->get();
 
-        $totalCount = BankAccount::where('user_id', $user->id)->count();
+        $totalCount = BankAccount::count();
 
         return response()->json([
             'data' => BankAccountResource::collection($bankAccounts),
@@ -41,7 +40,7 @@ class BankAccountController extends Controller
     public function allBankAccount(): JsonResponse
     {
         $user = Auth::user();
-        $bankAccounts = BankAccount::where('user_id', $user->id)->get();
+        $bankAccounts = BankAccount::get();
         return response()->json([
             'data' => BankAccountResource::collection($bankAccounts)
         ]);

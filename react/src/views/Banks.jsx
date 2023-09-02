@@ -200,6 +200,8 @@ export default function Banks() {
                         <thead>
                         <tr>
                             <th className="text-center">BANK NAME</th>
+                            <th className="text-center">ADDED BY</th>
+                            <th className="text-center">ADDED On</th>
                             {userRole ==='admin' && <th className={'text-center'}>ACTIONS</th>}
                             
                         </tr>
@@ -207,7 +209,7 @@ export default function Banks() {
                         {loading && (
                             <tbody>
                             <tr>
-                                <td colSpan={6} className="text-center">
+                                <td colSpan={3} className="text-center">
                                     Loading...
                                 </td>
                             </tr>
@@ -217,7 +219,7 @@ export default function Banks() {
                             <tbody>
                             {filteredBank.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="text-center">
+                                    <td colSpan={3} className="text-center">
                                         No bank found
                                     </td>
                                 </tr>

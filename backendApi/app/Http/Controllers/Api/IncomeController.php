@@ -32,14 +32,14 @@ class IncomeController extends Controller
         $page = $request->query('page', 1);
         $pageSize = $request->query('pageSize', 10);
 
-        $incomes = Income::where('user_id', $user->id)->whereHas('category', function ($query) {
+        $incomes = Income::whereHas('category', function ($query) {
             $query->where('type', 'income');
         })->skip(($page - 1) * $pageSize)
             ->take($pageSize)
             ->orderBy('id', 'desc')
             ->get();
 
-        $totalCount = Income::where('user_id', $user->id)->whereHas('category', function ($query) {
+        $totalCount = Income::whereHas('category', function ($query) {
             $query->where('type', 'income');
         })->count();
 
@@ -213,7 +213,7 @@ class IncomeController extends Controller
     public function categories(): JsonResponse
     {
         $user = Auth::user();
-        $categories = Category::where('type', 'income')->where('user_id', $user->id)->get();
+        $categories = Category::where('type', 'income')->get();
         return response()->json(['categories' => $categories]);
     }
 

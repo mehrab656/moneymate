@@ -118,7 +118,7 @@ class UserController extends Controller
     public function delete($id): JsonResponse
     {
         $user = User::find($id);
-        BankName::where('user_id', $user->id)->delete();
+        BankName::delete();
         $user->delete();
         return response()->json(['message' => 'User deleted']);
     }

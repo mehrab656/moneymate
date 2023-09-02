@@ -280,8 +280,7 @@ export default function InvestmentForm() {
                                             rows="3"
                                             value={investment.note !== 'null' ? investment.note : ''}
                                             onChange={ev => setInvestment({...investment, note: ev.target.value})}
-                                            placeholder="Additional Note"></textarea>
-                                 
+                                            placeholder="Additional Note"/>
                                 </div>
 
                             </div>
