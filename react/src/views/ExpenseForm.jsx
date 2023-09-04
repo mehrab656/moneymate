@@ -7,6 +7,11 @@ import 'react-datepicker/dist/react-datepicker.css';
 import WizCard from "../components/WizCard";
 import {SettingsContext} from "../contexts/SettingsContext.jsx";
 
+import {
+    TextField,
+    Autocomplete,
+  } from "@mui/material";
+
 export default function ExpenseForm() {
 
     let {id} = useParams();
@@ -37,6 +42,13 @@ export default function ExpenseForm() {
     const navigate = useNavigate();
     const [insufficientBalanceForCategory, setInsufficientBalanceForCategory] = useState(null);
     const {applicationSettings, userRole} = useContext(SettingsContext);
+
+    const [categoryValue, setCategoryValue] = useState(null);
+    const [storeCategoryValue, setStoreCategoryValue] = useState(null);
+
+
+
+
     const {
         num_data_per_page,
         default_currency,
@@ -83,6 +95,19 @@ export default function ExpenseForm() {
             });
     }, [setExpenseCategories, setBankAccounts, setUsers]);
 
+    console.log('storeCategoryValue',storeCategoryValue)
+    //set default category value
+    useEffect(()=>{
+        if(expenseCategories && expenseCategories.length>0 && !id){
+            setCategoryValue(expenseCategories[0])
+        }
+        if(storeCategoryValue !==null && id){
+            setCategoryValue(storeCategoryValue)
+        }
+    },[expenseCategories,storeCategoryValue])
+
+
+
 
     const handleCategoryChange = (event) => {
         setSelectedCategoryId(event.target.value);
@@ -94,22 +119,29 @@ export default function ExpenseForm() {
             setLoading(true);
             axiosClient.get(`/expense/${id}`)
                 .then(({data}) => {
-                    setLoading(false);
                     setSelectedCategoryId(data.category_id);
                     setSelectedAccountId(data.account_id);
                     setSelectedUserId(data.user_id);
+                    if(expenseCategories.length>0){
+                        expenseCategories.forEach(element => {
+                            if(element.id===data.category_id){
+                                setStoreCategoryValue(element)
+                            }
+                        });
+                    }
 
                     setExpense((prevExpense) => ({
                         ...prevExpense,
                         ...data,
                         expense_date: data.expense_date || '', // Set to empty string if the value is null or undefined
                     }));
+                    setLoading(false);
                 })
                 .catch(() => {
                     setLoading(false);
                 });
         }
-    }, [id]);
+    }, [id,expenseCategories]);
 
 
     useEffect(() => {
@@ -161,7 +193,7 @@ export default function ExpenseForm() {
 
     }, [expense?.expense_date, last_expense_cat_id, last_expense_account_id])
 
-    const expenseSubmit = (event) => {
+    const expenseSubmit = (event, stay) => {
         event.preventDefault();
 
         if (expense.id) {
@@ -171,7 +203,7 @@ export default function ExpenseForm() {
             formData.append('account_id', selectedAccountId);
             formData.append('amount', amount);
             formData.append('refundable_amount', refundable_amount);
-            formData.append('category_id', selectedCategoryId);
+            formData.append('category_id', categoryValue.id);
             formData.append('user_id', selectedUserId);
             formData.append('description', description);
             formData.append('note', note);
@@ -185,7 +217,12 @@ export default function ExpenseForm() {
                 },
             }).then(() => {
                 setNotification('expense data has been updated')
-                navigate('/expenses');
+                if(stay ===true){
+                    window.location.reload()
+                }else{
+                    navigate('/expenses');
+                }
+               
             })
                 .catch(err => {
                     const response = err.response;
@@ -200,7 +237,7 @@ export default function ExpenseForm() {
             formData.append('account_id', selectedAccountId);
             formData.append('amount', amount);
             formData.append('refundable_amount', refundable_amount);
-            formData.append('category_id', selectedCategoryId);
+            formData.append('category_id', categoryValue.id);
             formData.append('user_id', selectedUserId);
             formData.append('description', description);
             formData.append('note', note);
@@ -218,7 +255,11 @@ export default function ExpenseForm() {
                         setInsufficientBalanceForCategory(data.message);
                     } else {
                         setNotification('expense has been added.');
-                        navigate('/expenses');
+                        if(stay ===true){
+                            window.location.reload()
+                        }else{
+                            navigate('/expenses');
+                        }
                     }
 
 
@@ -237,6 +278,9 @@ export default function ExpenseForm() {
         });
     };
 
+
+
+
     return (
         <>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
@@ -251,7 +295,7 @@ export default function ExpenseForm() {
                 )}
 
                 {!loading && (
-                    <form onSubmit={expenseSubmit}>
+                    <form >
                         {insufficientBalanceForCategory && (
                             <div className="text-danger mt-2 mb-3">{insufficientBalanceForCategory}</div>
                         )}
@@ -343,29 +387,27 @@ export default function ExpenseForm() {
                                     </select>
                                     {errors.user_id && <p className="error-message mt-2">{errors.user_id[0]}</p>}
                                 </div>
-
-                                <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="expense_category">Expense
-                                        Category</label>
-                                    <select
-                                        className="custom-form-control"
-                                        value={selectedCategoryId}
-                                        id="expense-category"
-                                        name="expense-category"
-                                        onChange={(event) => {
-                                            const value = event.target.value || '';
-                                            setSelectedCategoryId(value);
-                                            setExpense({...expense, category_id: parseInt(value)});
-                                        }}>
-                                        <option defaultValue>Expense category</option>
-                                        {expenseCategories.map(category => (
-                                            <option key={category.id} value={category.id}>
-                                                {category.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {errors.category_id &&
-                                        <p className="error-message mt-2">{errors.category_id[0]}</p>}
+                                <div className="">
+                                    <Autocomplete
+                                        // value={expenseCategories[0]}
+                                        options={expenseCategories}
+                                        getOptionLabel={(option) => option.name}
+                                        id="parentCategory"
+                                        value={categoryValue}
+                                        onChange={(event, newValue) => {
+                                            if (newValue) {
+                                            setCategoryValue(newValue);
+                                            }
+                                    }}
+                                    renderInput={(params) => (
+                                        <TextField
+                                        {...params}
+                                        label='Expense Category'
+                                        margin="normal"
+                                        placeholder="Expense Category"
+                                        />
+                                    )}
+                                    />
                                 </div>
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="bank_account">Bank Account</label>
@@ -403,9 +445,16 @@ export default function ExpenseForm() {
                             </div>
                         </div>
 
-                        <button className={expense.id ? "btn btn-warning" : "custom-btn btn-add"}>
+                        <button onClick={(e)=>expenseSubmit(e,true)} className={expense.id ? "btn btn-warning" : "custom-btn btn-add"}>
                             {expense.id ? "Update Expense Record" : "Add New Expense"}
                         </button>
+                        {expense.id && <button onClick={(e)=>expenseSubmit(e,false)} className={"custom-btn btn-add ml-3"}>
+                            Update Expense & Exist
+                        </button>}
+                        {!expense.id && <button onClick={(e)=>expenseSubmit(e,false)} className={"custom-btn btn-add ml-3"}>
+                            Add New Expense & Exist
+                        </button>}
+                        
 
                     </form>
                 )}
