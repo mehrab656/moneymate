@@ -18,7 +18,6 @@ export default function Categories() {
     const [totalCount, setTotalCount] = useState(0);
     const [showModal, setShowModal] = useState(false);
     const [errors, setErrors] = useState(null);
-
     const [category, setCategory] = useState({
         id: null,
         name: '',
@@ -29,7 +28,6 @@ export default function Categories() {
     const {
         num_data_per_page
     } = applicationSettings;
-
     const pageSize = num_data_per_page;
     const totalPages = Math.ceil(totalCount / pageSize);
 
@@ -38,6 +36,7 @@ export default function Categories() {
             category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             category.type.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
 
     const showCreateModal = () => {
         setErrors(null);
@@ -169,7 +168,7 @@ export default function Categories() {
         <div>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Income & Expense Categories</h1>
-                {userRole =='admin' && 
+                {userRole ==='admin' &&
                 <div>
                     <a className="custom-btn btn-add" onClick={showCreateModal}>
                         <FontAwesomeIcon icon={faCoins} /> Add New
@@ -301,6 +300,9 @@ export default function Categories() {
                             {errors && errors.type && (
                                 <div className="text-danger mt-2">{errors.type[0]}</div>
                             )}
+                        </div>
+                        <div className="form-group">
+
                         </div>
                     </form>
                 </Modal.Body>
