@@ -145,7 +145,7 @@ export default function DefaultLayout() {
                                 to="/accounts"
                                 className={isActive('/accounts') ? 'active' : ''}>
                                 <span className="aside-menu-icon"><FontAwesomeIcon icon={faMoneyCheck}/></span>
-                                <span className="aside-menu-text"> Bank Accounts</span>
+                                <span className="aside-menu-text"> Accounts</span>
                             </Link>
                         </li>
 

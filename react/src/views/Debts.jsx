@@ -10,6 +10,7 @@ import Pagination from "react-bootstrap/Pagination";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEdit, faMoneyCheck, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
+import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 
 export default function Debts() {
 
@@ -220,6 +221,16 @@ export default function Debts() {
         );
     }
 
+
+
+    const actionParams = {
+        route:{
+            editRoute:'/manage-debt/',
+            viewRoute:'',
+            deleteRoute:''
+        },
+    }
+
     return (
         <div>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
@@ -282,27 +293,15 @@ export default function Debts() {
                                         <td>{default_currency}{debt.amount}</td>
                                         <td className="text-center">{debt.type.toUpperCase()}</td>
                                         <td className="text-center">{debt.note}</td>
-                                        {userRole === 'admin' &&
-                                            <td className="text-center">
-                                                <div className="d-flex flex-wrap justify-content-center gap-2">
-                                            <span>
-                                                <Link className="btn-edit"
-                                                      to={"/manage-debt/" + debt.id}><FontAwesomeIcon icon={faEdit}/> Manage</Link>
-                                            </span>
-                                                    <span>
-                                               {/* <Link className="btn-info"*/}
-                                                        {/*       to={`#`} onClick={ () => edit(debt) } >*/}
-                                                        {/*    Edit*/}
-                                                        {/*</Link>*/}
-                                            </span>
-                                                    <span>
-                                               <a onClick={(e) => onDelete(debt)}
-                                                  className="btn-delete">
-                                                  <FontAwesomeIcon icon={faTrash}/> Delete
-                                               </a>
-                                            </span>
-                                                </div>
-                                            </td>
+                                      
+                                        {userRole ==='admin' && 
+                                        <td>
+                                            <ActionButtonHelpers 
+                                              module={debt}
+                                              deleteFunc={onDelete}
+                                              params={actionParams}
+                                            />
+                                        </td>
                                         }
 
                                     </tr>

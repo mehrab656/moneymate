@@ -9,6 +9,7 @@ import Pagination from "react-bootstrap/Pagination";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faBank, faEdit, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
+import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 
 export default function Banks() {
     const [loading, setLoading] = useState(false);
@@ -166,6 +167,14 @@ export default function Banks() {
         });
     };
 
+    const actionParams = {
+        route:{
+            viewRoute:'',
+            deleteRoute:''
+        },
+    }
+
+
 
     return (
         <div>
@@ -218,24 +227,18 @@ export default function Banks() {
                                 filteredBank.map((bank) => (
                                     <tr className={'text-center'} key={bank.id}>
                                         <td>{bank.bank_name}</td>
-                                        <td>{bank.user_name}</td>
-                                        <td>{new Date(bank.created_at).toDateString()}</td>
-                                        {userRole ==='admin' &&
-                                        <td className="text-center w-auto">
-                                            <div className="d-flex flex-wrap justify-content-center gap-2">
-                                            <span>
-                                        <Link className="btn-edit" to={`#`} onClick={() => edit(bank)}>
-                                           <FontAwesomeIcon icon={faEdit}/> Edit
-                                        </Link>
-                                            </span>
-                                                <span>
-                                                <a onClick={(e) => onDelete(bank)} className="btn-delete">
-                                                    <FontAwesomeIcon icon={faTrash}/> Delete
-                                                </a>
-                                            </span>
-                                            </div>
-                                        </td>
-                                        }
+                                        <td></td>
+                                        <td></td>
+                                        {userRole ==='admin' && 
+                                         <td>
+                                            <ActionButtonHelpers
+                                                module={bank}
+                                                deleteFunc={onDelete}
+                                                showEditDropdown={edit}
+                                                editDropdown={true}
+                                                params={actionParams}
+                                            />
+                                        </td>}
                                        
                                     </tr>
                                 ))

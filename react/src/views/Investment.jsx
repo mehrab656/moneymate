@@ -195,10 +195,11 @@ export default function Investment() {
                                         </td> */}
 
                                         <td>
-                                            <ActionButtonHelpers module={investment}
-                                                                 showModule={showInvestment}
-                                                                 deleteFunc={onDelete}
-                                                                 params={actionParams}
+                                            <ActionButtonHelpers 
+                                              module={investment}
+                                              showModule={showInvestment}
+                                              deleteFunc={onDelete}
+                                              params={actionParams}
                                             />
                                         </td>
                                     </tr>
