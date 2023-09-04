@@ -95,7 +95,6 @@ export default function ExpenseForm() {
             });
     }, [setExpenseCategories, setBankAccounts, setUsers]);
 
-    console.log('storeCategoryValue',storeCategoryValue)
     //set default category value
     useEffect(()=>{
         if(expenseCategories && expenseCategories.length>0 && !id){

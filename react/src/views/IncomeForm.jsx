@@ -6,6 +6,11 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import WizCard from "../components/WizCard";
 
+import {
+    TextField,
+    Autocomplete,
+  } from "@mui/material";
+
 export default function IncomeForm() {
 
     let {id} = useParams();
@@ -32,6 +37,10 @@ export default function IncomeForm() {
     const [selectedAccountId, setSelectedAccountId] = useState('');
     const navigate = useNavigate();
 
+    const [categoryValue, setCategoryValue] = useState(null);
+    const [storeCategoryValue, setStoreCategoryValue] = useState(null);
+
+
 
     useEffect(() => {
         axiosClient.get('/all-bank-account')
@@ -53,6 +62,16 @@ export default function IncomeForm() {
             });
     }, [setIncomeCategories, setBankAccounts]);
 
+     //set default category value
+     useEffect(()=>{
+        if(incomeCategories && incomeCategories.length>0 && !id){
+            setCategoryValue(incomeCategories[0])
+        }
+        if(storeCategoryValue !==null && id){
+            setCategoryValue(storeCategoryValue)
+        }
+    },[incomeCategories,storeCategoryValue])
+
 
     const handleCategoryChange = (event) => {
         setSelectedCategoryId(event.target.value);
@@ -64,20 +83,28 @@ export default function IncomeForm() {
             setLoading(true);
             axiosClient.get(`/income/${id}`)
                 .then(({data}) => {
-                    setLoading(false);
+                   
                     setSelectedCategoryId(data.category_id);
                     setSelectedAccountId(data.account_id);
+                    if(incomeCategories.length>0){
+                        incomeCategories.forEach(element => {
+                            if(element.id===data.category_id){
+                                setStoreCategoryValue(element)
+                            }
+                        });
+                    }
                     setIncome((prevIncome) => ({
                         ...prevIncome,
                         ...data,
                         income_date: data.income_date || '', // Set to empty string if the value is null or undefined
                     }));
+                    setLoading(false);
                 })
                 .catch(() => {
                     setLoading(false);
                 });
         }
-    }, [id]);
+    }, [id,incomeCategories]);
 
 
     useEffect(() => {
@@ -105,7 +132,7 @@ export default function IncomeForm() {
     }, [income?.income_date])
 
 
-    const incomeSubmit = (event) => {
+    const incomeSubmit = (event, stay) => {
         event.preventDefault();
 
         if (income.id) {
@@ -114,7 +141,7 @@ export default function IncomeForm() {
             const formData = new FormData();
             formData.append('account_id', selectedAccountId);
             formData.append('amount', amount);
-            formData.append('category_id', selectedCategoryId);
+            formData.append('category_id', categoryValue.id);
             formData.append('description', description);
             formData.append('note', note);
             formData.append('reference', reference);
@@ -127,7 +154,11 @@ export default function IncomeForm() {
                 },
             }).then(({data}) => {
                 setNotification('Income data has been updated')
-                navigate('/incomes');
+                if(stay ===true){
+                    window.location.reload()
+                }else{
+                    navigate('/incomes');
+                }
             })
                 .catch(err => {
                     const response = err.response;
@@ -140,7 +171,7 @@ export default function IncomeForm() {
             const formData = new FormData();
             formData.append('account_id', selectedAccountId);
             formData.append('amount', amount);
-            formData.append('category_id', selectedCategoryId);
+            formData.append('category_id', categoryValue.id);
             formData.append('description', description);
             formData.append('note', note);
             formData.append('reference', reference);
@@ -155,7 +186,11 @@ export default function IncomeForm() {
             })
                 .then(({data}) => {
                     setNotification('Income has been added.');
-                    navigate('/incomes');
+                    if(stay ===true){
+                        window.location.reload()
+                    }else{
+                        navigate('/incomes');
+                    }
                 })
                 .catch((error) => {
                     const response = error.response;
@@ -185,7 +220,7 @@ export default function IncomeForm() {
                 )}
 
                 {!loading && (
-                    <form onSubmit={incomeSubmit}>
+                    <form >
                         <div className="row">
                             <div className="col-md-6">
                                 <div className="form-group">
@@ -196,28 +231,27 @@ export default function IncomeForm() {
                                            onChange={ev => setIncome({...income, description: ev.target.value})}
                                            placeholder="Description"/>
                                 </div>
-                                <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="income_category">Income
-                                        Category</label>
-                                    <select
-                                        className="custom-form-control"
-                                        value={selectedCategoryId}
-                                        id="income-category"
-                                        name="income-category"
-                                        onChange={(event) => {
-                                            const value = event.target.value || '';
-                                            setSelectedCategoryId(value);
-                                            setIncome({...income, category_id: parseInt(value)});
-                                        }}>
-                                        <option defaultValue>Select an income category</option>
-                                        {incomeCategories.map(category => (
-                                            <option key={category.id} value={category.id}>
-                                                {category.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {errors.category_id &&
-                                        <p className="error-message mt-2">{errors.category_id[0]}</p>}
+                                <div className="">
+                                    <Autocomplete
+                                        // value={expenseCategories[0]}
+                                        options={incomeCategories}
+                                        getOptionLabel={(option) => option.name}
+                                        id="parentCategory"
+                                        value={categoryValue}
+                                        onChange={(event, newValue) => {
+                                            if (newValue) {
+                                            setCategoryValue(newValue);
+                                            }
+                                    }}
+                                    renderInput={(params) => (
+                                        <TextField
+                                        {...params}
+                                        label='Income Category'
+                                        margin="normal"
+                                        placeholder="Income Category"
+                                        />
+                                    )}
+                                    />
                                 </div>
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="income_amount">Amount</label>
@@ -292,9 +326,15 @@ export default function IncomeForm() {
                         </div>
 
 
-                        <button className={income.id ? "btn btn-info" : "custom-btn btn-add"}>
+                        <button onClick={(e)=>incomeSubmit(e,true)} className={income.id ? "btn btn-warning" : "custom-btn btn-add"}>
                             {income.id ? "Update Income Record" : "Add New Income"}
                         </button>
+                        {income.id && <button onClick={(e)=>incomeSubmit(e,false)} className={"custom-btn btn-add ml-3"}>
+                            Update Income & Exist
+                        </button>}
+                        {!income.id && <button onClick={(e)=>incomeSubmit(e,false)} className={"custom-btn btn-add ml-3"}>
+                            Add New Income & Exist
+                        </button>}
 
                     </form>
                 )}
