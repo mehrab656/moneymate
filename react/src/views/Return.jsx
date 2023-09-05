@@ -131,7 +131,7 @@ export default function Return() {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <div className="table-responsive">
+                <div className="table-responsive-sm">
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr>
@@ -189,7 +189,7 @@ export default function Return() {
                                          <td>
                                             <ActionButtonHelpers
                                                 module={marketReturn}
-                                                deleteFunc={onDelete}
+                                                // deleteFunc={onDelete}
                                                 showEditDropdown={edit}
                                                 editDropdown={true}
                                                 params={actionParams}

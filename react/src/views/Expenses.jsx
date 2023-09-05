@@ -163,7 +163,6 @@ export default function Expenses() {
                 {userRole === 'admin' &&
                     <Link className="btn-add align-right mr-3" to="/expense/new"><FontAwesomeIcon icon={faMinus}/> Add
                         New</Link>}
-
                 <ExpenseExportButton/>
             </div>
 
@@ -175,7 +174,7 @@ export default function Expenses() {
                            value={searchTerm}
                            onChange={(e) => setSearchTerm(e.target.value)}/>
                 </div>
-                <div className="table-responsive">
+                <div className="table-responsive-sm">
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr className={'text-center'}>

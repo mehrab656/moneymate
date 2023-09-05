@@ -68,6 +68,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/all-bank-account', [BankAccountController::class, 'allBankAccount']);
     Route::put('/bank-account/{bankAccount}', [BankAccountController::class, 'update']);
     Route::delete('/bank-account/{id}', [BankAccountController::class, 'destroy']);
+	Route::get('current-balance',[BankAccountController::class, 'currentBalance']);
 
 
     // Wallet Api
@@ -83,7 +84,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/income/{income}', [IncomeController::class, 'update']);
     Route::get('/export-income-csv', [IncomeController::class, 'exportIncomeCsv']);
     Route::post('/income/upload-attachment', [IncomeController::class, 'uploadAttachment']);
-
+    Route::get('/total-income', [IncomeController::class, 'totalIncome']);
 
     // File download API
 
@@ -99,6 +100,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/expense/{expense}', [ExpenseController::class, 'update']);
     Route::get('/export-expense-csv', [ExpenseController::class, 'exportExpenseCsv']);
     Route::get('/expenses/graph', [ExpenseController::class, 'getCategoryExpensesGraphForCurrentMonth']);
+	Route::get('/total-expense', [ExpenseController::class, 'totalExpense']);
 
 	// Returns from market api
 	Route::get('returns',[ExpenseController::class, 'getReturns']);

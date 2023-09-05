@@ -418,5 +418,12 @@ class ExpenseController extends Controller {
 		] );
 	}
 
+	public function totalExpense(): JsonResponse {
+		$totalAccount = Expense::sum( 'amount' );
+
+		return response()->json( [
+			'amount' => $totalAccount
+		] );
+	}
 
 }

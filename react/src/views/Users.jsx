@@ -125,7 +125,7 @@ export default function Users() {
                         onChange={e => setSearchQuery(e.target.value)}
                     />
                 </div>
-                <div className="table-responsive">
+                <div className="table-responsive-sm">
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr>

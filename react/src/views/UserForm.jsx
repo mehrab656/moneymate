@@ -176,7 +176,7 @@ export default function UserForm() {
 
                 {registration_type === 'subscription' && (
 
-                    <div className="table-responsive mt-4">
+                    <div className="table-responsive-sm mt-4">
                         <div className="text-danger mb-2">
                             <div className="alert alert-info" role="alert">Subscription History
                             </div>

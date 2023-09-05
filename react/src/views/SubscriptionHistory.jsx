@@ -73,7 +73,7 @@ export default function SubscriptionHistory() {
 
             </div>
             <WizCard className="animated fadeInDown">
-                <div className="table-responsive">
+                <div className="table-responsive-sm">
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr className={'text-center'}>

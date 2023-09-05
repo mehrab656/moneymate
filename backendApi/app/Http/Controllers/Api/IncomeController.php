@@ -8,6 +8,7 @@ use App\Http\Requests\IncomeUpdateRequest;
 use App\Http\Resources\IncomeResource;
 use App\Models\BankAccount;
 use App\Models\Category;
+use App\Models\Expense;
 use App\Models\Income;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -287,7 +288,11 @@ class IncomeController extends Controller
     }
 
 
+	public function totalIncome(): JsonResponse {
+		$totalAccount = Income::sum( 'amount' );
 
-
-
+		return response()->json( [
+			'amount' => $totalAccount
+		] );
+	}
 }

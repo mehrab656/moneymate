@@ -183,7 +183,7 @@ export default function Transfers() {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <div className="table-responsive">
+                <div className="table-responsive-sm">
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr className={"text-center"}>

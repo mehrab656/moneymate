@@ -1,7 +1,7 @@
 import {Link, Outlet, useLocation, useNavigate} from "react-router-dom";
 import {useStateContext} from "../contexts/ContextProvider.jsx";
 import axiosClient from "../axios-client.js";
-import React, {useContext, useEffect} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import '../../public/custom.css'
@@ -30,9 +30,13 @@ export default function DefaultLayout() {
 
     const {user, token, setUser, setToken, notification} = useStateContext();
     const navigate = useNavigate();
+    const [currentBalance, setCurrentBalance] = useState(0);
+    const [totalIncome, setTotalIncome] = useState(0);
+    const [totalExpense, setTotalExpense] = useState(0);
 
     const {applicationSettings, userRole, setUserRole} = useContext(SettingsContext);
-    const {
+    let {
+        default_currency,
         registration_type
     } = applicationSettings;
 
@@ -45,6 +49,18 @@ export default function DefaultLayout() {
         //if (!user.id) {
         axiosClient.get('/user').then(({data}) => {
             setUser(data);
+        });
+        //get current account balance
+        axiosClient.get('/current-balance').then(({data}) => {
+            setCurrentBalance(data.balance)
+        });
+        // get total income
+        axiosClient.get('/total-income').then(({data}) => {
+            setTotalIncome(data.amount)
+        });
+        // get total expense
+        axiosClient.get('/total-expense').then(({data}) => {
+            setTotalExpense(data.amount)
         });
         //}
     }, []);
@@ -264,8 +280,16 @@ export default function DefaultLayout() {
             <div className="wrapping-body">
                 <div className="body-content d-flex flex-column">
                     <header className="d-flex justify-content-between bg-white py-3 shadow-sm">
-                        <div>
+                        <div    >
+                            <span>Account Balance: <b>{default_currency + ' ' + currentBalance}</b></span>
+                        </div>
 
+                        <div>
+                            <span>Total Income: <b>{default_currency + ' ' + totalIncome}</b></span>
+                        </div>
+
+                        <div>
+                            <span>Total Expense: <b>{default_currency + ' ' + totalExpense}</b></span>
                         </div>
 
                         <div>

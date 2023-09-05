@@ -275,7 +275,7 @@ export default function Budgets() {
                            onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <div className="table-responsive">
+                <div className="table-responsive-sm">
                     <table className="table-bordered custom-table">
                         <thead>
                         <tr className={'text-center'}>

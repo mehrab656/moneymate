@@ -261,7 +261,7 @@ export default function ManageDebt() {
 
             <br/>
 
-            <div className="table-responsive">
+            <div className="table-responsive-sm">
                 <table className="table table-bordered custom-table">
                     <thead>
                     <tr>
