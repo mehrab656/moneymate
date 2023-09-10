@@ -281,15 +281,15 @@ export default function DefaultLayout() {
                 <div className="body-content d-flex flex-column">
                     <header className="d-flex justify-content-between bg-white py-3 shadow-sm">
                         <div>
-                            <span>Account Balance:{(default_currency !==undefined && currentBalance !==undefined) && <b>{default_currency + ' ' + currentBalance}</b>}</span>
+                            <span>Account Balance : {(default_currency !==undefined && currentBalance !==undefined) && <b>{default_currency + ' ' + currentBalance}</b>}</span>
                         </div>
 
                         <div>
-                            <span>Total Income:{(default_currency !==undefined && totalIncome !==undefined) && <b>{default_currency + ' ' + totalIncome}</b>} </span>
+                            <span>Total Income : {(default_currency !==undefined && totalIncome !==undefined) && <b>{default_currency + ' ' + totalIncome}</b>} </span>
                         </div>
 
                         <div>
-                            <span>Total Expense:{(default_currency !==undefined && totalExpense !==undefined) && <b>{default_currency + ' ' + totalExpense}</b>}</span>
+                            <span>Total Expense : {(default_currency !==undefined && totalExpense !==undefined) && <b>{default_currency + ' ' + totalExpense}</b>}</span>
                         </div>
 
                         <div>

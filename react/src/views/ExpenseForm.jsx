@@ -12,8 +12,19 @@ import {
     Autocomplete,
   } from "@mui/material";
 
-export default function ExpenseForm() {
+  import { makeStyles } from '@mui/styles';
 
+
+  const useStyles = makeStyles({
+    option: {
+      "&:hover": {
+        backgroundColor: "#ff7961 !important"
+      },
+    }
+  });
+
+export default function ExpenseForm() {
+    const classes = useStyles();
     let {id} = useParams();
 
     const [expense, setExpense] = useState({
@@ -389,6 +400,7 @@ export default function ExpenseForm() {
                                 <div className="">
                                     <Autocomplete
                                         // value={expenseCategories[0]}
+                                        classes={{option: classes.option}}
                                         options={expenseCategories}
                                         getOptionLabel={(option) => option.name}
                                         id="parentCategory"
@@ -400,10 +412,11 @@ export default function ExpenseForm() {
                                     }}
                                     renderInput={(params) => (
                                         <TextField
-                                        {...params}
-                                        label='Expense Category'
-                                        margin="normal"
-                                        placeholder="Expense Category"
+                                            {...params}
+                                            style={{ backgroundColor: '#eeeeee' }}
+                                            label='Expense Category'
+                                            margin="normal"
+                                            placeholder="Expense Category"
                                         />
                                     )}
                                     />

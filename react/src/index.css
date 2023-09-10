@@ -846,3 +846,11 @@ select option:focus {
 .table-responsive {
     overflow-x: initial !important;
 }
+
+
+.css-gdh49b-MuiAutocomplete-listbox .MuiAutocomplete-option[aria-selected="true"]{
+    background-color: #607d8b !important;
+}
+.css-gdh49b-MuiAutocomplete-listbox .MuiAutocomplete-option[aria-selected="true"].Mui-focused {
+    background-color: #607d8b !important;
+}
