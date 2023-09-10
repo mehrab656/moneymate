@@ -271,7 +271,7 @@ export default function Accounts() {
                 </div>
             </div>
 
-            <WizCard className="animated fadeInDown">
+            <WizCard className="animated fadeInDown ">
 
                 <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                     <h1 className="title-text mb-0">Bank Account</h1>
@@ -384,7 +384,7 @@ export default function Accounts() {
             </WizCard>
 
 
-            <WizCard className="animated fadeInDown">
+            <WizCard className="animated fadeInDown mt-4">
 
                 <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                     <h1 className="title-text mb-0">Wallet/Handcash</h1>

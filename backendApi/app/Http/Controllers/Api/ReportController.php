@@ -50,7 +50,7 @@ class ReportController extends Controller {
 		}
 
 		// Return the income report as a collection of IncomeReportResource
-		$incomesRes =  IncomeReportResource::collection( $incomes->get() );
+		$incomesRes =  IncomeReportResource::collection( $incomes->orderBy('income_date','DESC')->get() );
 		$sum = 0;
 		foreach ( $incomesRes as $key => $income ) {
 			if ( isset( $income->amount ) ) {
@@ -93,7 +93,7 @@ class ReportController extends Controller {
 			$expenses = $expenses->where( 'category_id', $cat_id );
 		}
 
-		$expensesRes = ExpenseReportResource::collection( $expenses->get() );
+		$expensesRes = ExpenseReportResource::collection( $expenses->orderBy('expense_date','DESC')->get() );
 
 
 		$sum = 0;
