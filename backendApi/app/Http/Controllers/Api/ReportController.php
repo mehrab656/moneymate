@@ -24,11 +24,11 @@ class ReportController extends Controller {
 		$endDate   = $request->input( 'end_date' );
 		$cat_id    = $request->input( 'cat_id' );
 
-		if ($startDate){
-			$startDate = Carbon::parse( $request->start_date,'Asia/Dubai' )->format( 'Y-m-d' );
+		if ( $startDate ) {
+			$startDate = date( 'Y-m-d', strtotime( $startDate ) );
 		}
-		if ($endDate){
-			$endDate = Carbon::parse( $request->input()['end_date'] )->format( 'Y-m-d' );
+		if ( $endDate ) {
+			$endDate = date( 'Y-m-d', strtotime( $endDate ) );
 		}
 		// Calculate the default date range (last 3 months)
 		if ( empty( $startDate ) ) {
@@ -50,8 +50,8 @@ class ReportController extends Controller {
 		}
 
 		// Return the income report as a collection of IncomeReportResource
-		$incomesRes =  IncomeReportResource::collection( $incomes->orderBy('income_date','DESC')->get() );
-		$sum = 0;
+		$incomesRes = IncomeReportResource::collection( $incomes->orderBy( 'income_date', 'DESC' )->get() );
+		$sum        = 0;
 		foreach ( $incomesRes as $key => $income ) {
 			if ( isset( $income->amount ) ) {
 				$sum += $income->amount;
@@ -61,8 +61,8 @@ class ReportController extends Controller {
 		return response()->json( [
 			'totalIncome' => $sum,
 			'incomes'     => $incomesRes,
-			'startDate'=>date('y-m-d',strtotime($request->start_date)),
-			'endDate'=>date('y-m-d',strtotime($request->end_date))
+			'startDate'   => date( 'y-m-d', strtotime( $request->start_date ) ),
+			'endDate'     => date( 'y-m-d', strtotime( $request->end_date ) )
 		] );
 	}
 
@@ -83,6 +83,12 @@ class ReportController extends Controller {
 			$startDate = Carbon::now()->subMonth( 3 )->toDateString();
 		}
 
+		if ( $startDate ) {
+			$startDate = date( 'Y-m-d', strtotime( $startDate ) );
+		}
+		if ( $endDate ) {
+			$endDate = date( 'Y-m-d', strtotime( $endDate ) );
+		}
 		$expenses = Expense::where( 'expense_date', '>=', $startDate )
 		                   ->where( 'expense_date', '<=', $endDate )
 		                   ->whereHas( 'category', function ( $query ) {
@@ -93,7 +99,7 @@ class ReportController extends Controller {
 			$expenses = $expenses->where( 'category_id', $cat_id );
 		}
 
-		$expensesRes = ExpenseReportResource::collection( $expenses->orderBy('expense_date','DESC')->get() );
+		$expensesRes = ExpenseReportResource::collection( $expenses->orderBy( 'expense_date', 'DESC' )->get() );
 
 
 		$sum = 0;
@@ -124,7 +130,7 @@ class ReportController extends Controller {
 		}
 		$investments = DB::table( 'investments' )->selectRaw( 'sum(amount) as amount, investor_id, name' )
 		                 ->join( 'users', 'investments.investor_id', '=', 'users.id' )
-		                 ->groupBy(['investor_id','name'] );
+		                 ->groupBy( [ 'investor_id', 'name' ] );
 
 		$totalInvestment = DB::table( 'investments' );
 		//filter investments

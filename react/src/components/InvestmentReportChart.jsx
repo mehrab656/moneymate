@@ -11,7 +11,7 @@ export default function InvestmentReportChart({totalInvestment, investors, title
 
         const coloredData = investors.map((investor) => ({
             label: investor.name,
-            value: parseFloat((investor.amount/totalInvestment)*100).toFixed(2),
+            value: Math.ceil(parseFloat((investor.amount/totalInvestment)*100).toFixed(2)),
             backgroundColor: getRandomColor(),
         }));
         setExpenseData(coloredData);
