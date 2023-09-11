@@ -33,6 +33,8 @@ import Return from "./views/Return";
 import InvestmentPlan from "./views/InvestmentPlan.jsx";
 import InvestmentPlanForm from "./views/InvestmentPlanForm.jsx";
 import OverallReport from "./views/OverallReport";
+import Sectors from "./views/Sectors/Sectors.jsx";
+import SectorCreate from "./views/Sectors/SectorCreate.jsx";
 
 const router = createBrowserRouter([
 
@@ -51,6 +53,14 @@ const router = createBrowserRouter([
             {
                 path: '/users',
                 element: <Users/>
+            },
+            {
+                path: '/sectors',
+                element: <Sectors/>
+            },
+            {
+                path: '/sector/new',
+                element: <SectorCreate key="SectorCreate"/>
             },
             {
                 path: '/categories',
