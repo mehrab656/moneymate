@@ -11,8 +11,17 @@ import {
     Autocomplete,
   } from "@mui/material";
 
-export default function IncomeForm() {
+  import { makeStyles } from '@mui/styles';
+  const useStyles = makeStyles({
+    option: {
+      "&:hover": {
+        backgroundColor: "#ff7961 !important"
+      },
+    }
+  });
 
+export default function IncomeForm() {
+    const classes = useStyles();
     let {id} = useParams();
 
     const [income, setIncome] = useState({
@@ -234,6 +243,7 @@ export default function IncomeForm() {
                                 <div className="">
                                     <Autocomplete
                                         // value={expenseCategories[0]}
+                                        classes={{option: classes.option}}
                                         options={incomeCategories}
                                         getOptionLabel={(option) => option.name}
                                         id="parentCategory"
@@ -245,10 +255,11 @@ export default function IncomeForm() {
                                     }}
                                     renderInput={(params) => (
                                         <TextField
-                                        {...params}
-                                        label='Income Category'
-                                        margin="normal"
-                                        placeholder="Income Category"
+                                            style={{ backgroundColor: '#eeeeee' }}
+                                            {...params}
+                                            label='Income Category'
+                                            margin="normal"
+                                            placeholder="Income Category"
                                         />
                                     )}
                                     />
