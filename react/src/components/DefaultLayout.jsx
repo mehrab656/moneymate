@@ -44,15 +44,14 @@ export default function DefaultLayout() {
     } = applicationSettings;
 
     //screen resize for responsive dynamic class
-    const [screenSize, setScreenSize] = useState('');
     const handleResize =()=> {
         const width = window.innerWidth;
         if (width < 768) {
-          setScreenSize('');
+            setClassName('');
         } else if (width >= 768 && width < 992) {
-          setScreenSize('wrapper');
+            setClassName('wrapper');
         } else {
-          setScreenSize('wrapper');
+            setClassName('wrapper');
         }
       }
 
@@ -151,7 +150,7 @@ export default function DefaultLayout() {
                 {/* Main Content */}
                 <Col xs={12}  sm={12}>
                 {/* Your page content goes here */}
-                <div className={`${screenSize}`} id="wrappingContent">
+                <div className={`${className}`} id="wrappingContent">
                     <aside className="wrapping-aside overflow-auto h-100 d-none d-md-block d-lg-block">
                         <div className="aside-content">
                             <ul className="aside-menu">
