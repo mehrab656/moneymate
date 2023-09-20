@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\IncomeController;
 use App\Http\Controllers\Api\InvestmentController;
 use App\Http\Controllers\Api\LendController;
 use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\Api\SectorModelController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WalletController;
@@ -68,11 +69,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/all-bank-account', [BankAccountController::class, 'allBankAccount']);
     Route::put('/bank-account/{bankAccount}', [BankAccountController::class, 'update']);
     Route::delete('/bank-account/{id}', [BankAccountController::class, 'destroy']);
-	Route::get('current-balance',[BankAccountController::class, 'currentBalance']);
+	Route::get('total-bankAccount-balance',[BankAccountController::class, 'totalBankAccountBalance']);
+	Route::get('total-balance',[BankAccountController::class, 'totalBalance']);
 
 
     // Wallet Api
     Route::apiResource('wallets', WalletController::class);
+	Route::get('total-wallet-balance',[WalletController::class, 'totalWalletBalance']);
 
 
     // Income Api
@@ -169,6 +172,16 @@ Route::middleware('auth:sanctum')->group(function () {
 	Route::get('/export-investment-csv', [InvestmentController::class, 'exportInvestmentCsv']);
 	Route::get('/investment/graph', [InvestmentController::class, 'getInvestmentGraph']);
 	Route::post('/investments/add-new-plan',[InvestmentController::class,'addPlan']);
+
+	// Sectors API
+
+	Route::get('/sectors',[ SectorModelController::class,'index']);
+	Route::post('/sector/add',[ SectorModelController::class,'add']);
+	Route::delete('/sector/{sector}',[ SectorModelController::class,'delete']);
+	Route::get('/sectors/{sector}',[ SectorModelController::class,'show']);
+//	Route::get('/sectors',[ SectorModelController::class,'index']);
+//	Route::get('/sectors',[ SectorModelController::class,'index']);
+//	Route::get('/sectors',[ SectorModelController::class,'index']);
 });
 
 

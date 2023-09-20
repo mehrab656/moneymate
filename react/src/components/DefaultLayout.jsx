@@ -75,8 +75,8 @@ export default function DefaultLayout() {
         axiosClient.get('/user').then(({data}) => {
             setUser(data);
         });
-        //get current account balance
-        axiosClient.get('/current-balance').then(({data}) => {
+        //get total account balance
+        axiosClient.get('/total-balance').then(({data}) => {
             setCurrentBalance(data.balance)
         });
         // get total income

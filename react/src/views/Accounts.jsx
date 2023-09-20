@@ -24,6 +24,9 @@ export default function Accounts() {
     const [totalCount, setTotalCount] = useState(0);
     const [searchText, setSearchText] = useState("");
     const [showModal, setShowModal] = useState(false);
+    const [bankAccountBalance,setBankAccountBalance]=useState(0);
+    const [handCashBalance,setHandCashBalance]=useState(0);
+    const [totalBalance,setTotalBalance]=useState(0);
 
     const [banks, setBanks] = useState([]);
 
@@ -78,6 +81,21 @@ export default function Accounts() {
     const handleCloseModal = () => {
         setShowModal(false);
     };
+    const getAccountBalances=()=>{
+        //get total account  balance
+        axiosClient.get('/total-bankAccount-balance').then(({data}) => {
+            setBankAccountBalance(data.balance)
+        });
+
+        //get total wallet balance balance
+        axiosClient.get('/total-wallet-balance').then(({data}) => {
+            setHandCashBalance(data.balance)
+        });
+        //get total account balance
+        axiosClient.get('/total-balance').then(({data}) => {
+            setTotalBalance(data.balance)
+        });
+    }
 
     useEffect(() => {
         document.title = "Manage Bank Account";
@@ -92,6 +110,7 @@ export default function Accounts() {
         });
 
         getAccounts(currentPage, pageSize);
+        getAccountBalances();
     }, [currentPage, pageSize]);
 
     const getAccounts = (page, pageSize) => {
@@ -107,6 +126,7 @@ export default function Accounts() {
                 setLoading(false);
             });
     };
+
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
@@ -145,6 +165,7 @@ export default function Accounts() {
                     setNotification("Bank account information has been updated");
                     setShowModal(false);
                     getAccounts(currentPage, pageSize);
+                    getAccountBalances();
                     setBankAccount({
                         id: null,
                         bank_name_id: null,
@@ -173,6 +194,7 @@ export default function Accounts() {
                     setNotification('Bank account has been added');
                     setShowModal(false);
                     getAccounts(currentPage, pageSize);
+                    getAccountBalances();
                     setBankAccount({
                         id: null,
                         bank_name_id: null,
@@ -255,17 +277,17 @@ export default function Accounts() {
                 <div className="row g-4">
                     <div className="col-md-6 col-lg-4">
 
-                        <SummeryCard value={100} summary="Account Balance" icon={<AttachMoneyIcon/>}
+                        <SummeryCard value={bankAccountBalance} summary="Account Balance" icon={<AttachMoneyIcon/>}
                                      iconClassName="icon-success" currency={default_currency}/>
                     </div>
                     <div className="col-md-6 col-lg-4">
 
-                        <SummeryCard value={90} summary="Wallet Balance" icon={<ArrowOutwardIcon/>}
+                        <SummeryCard value={handCashBalance} summary="Wallet Balance" icon={<ArrowOutwardIcon/>}
                                      iconClassName="icon-danger" currency={default_currency}/>
                     </div>
                     <div className="col-md-6 col-lg-4">
 
-                        <SummeryCard value={190} summary="Total Balance"
+                        <SummeryCard value={totalBalance} summary="Total Balance"
                                      icon={<AddCardTwoToneIcon/>} iconClassName="icon-success" currency={default_currency}/>
                     </div>
                 </div>

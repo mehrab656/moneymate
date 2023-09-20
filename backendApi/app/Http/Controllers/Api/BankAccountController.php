@@ -7,6 +7,7 @@ use App\Http\Requests\BankAccountRequest;
 use App\Http\Requests\BankAccountUpdateRequest;
 use App\Http\Resources\BankAccountResource;
 use App\Models\BankAccount;
+use App\Models\Wallet;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -103,13 +104,35 @@ class BankAccountController extends Controller {
 		return new BankAccountResource( $bankAccount );
 	}
 
-	public function currentBalance(): JsonResponse {
+
+	/**
+	 * This is the Current Bank account balance
+	 * @return JsonResponse
+	 */
+
+	public function totalBankAccountBalance(): JsonResponse {
 		$totalAccount = BankAccount::sum( 'balance' );
 
 		return response()->json( [
 			'balance' => $totalAccount
 		] );
 	}
+
+	/**
+	 * This is the Current Bank account balance
+	 * @return JsonResponse
+	 */
+
+	public function totalBalance(): JsonResponse {
+		$totalAccount = BankAccount::sum( 'balance' );
+		$totalWallet = Wallet::sum( 'balance' );
+
+		return response()->json( [
+			'balance' => $totalAccount+$totalWallet
+		] );
+	}
+
+
 
 
 }

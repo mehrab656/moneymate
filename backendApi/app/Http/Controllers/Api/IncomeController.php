@@ -103,9 +103,10 @@ class IncomeController extends Controller
      * @return IncomeResource
      */
 
-    public function update(IncomeUpdateRequest $request, Income $income): IncomeResource
+    public function update(IncomeUpdateRequest $request, Income $income)
     {
         $data = $request->validated();
+
 
         if ($request->hasFile('attachment')) {
             $attachmentFile = $request->file('attachment');

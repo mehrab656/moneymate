@@ -9,16 +9,17 @@ import WizCard from "../components/WizCard";
 import {
     TextField,
     Autocomplete,
-  } from "@mui/material";
+} from "@mui/material";
 
-  import { makeStyles } from '@mui/styles';
-  const useStyles = makeStyles({
+import {makeStyles} from '@mui/styles';
+
+const useStyles = makeStyles({
     option: {
-      "&:hover": {
-        backgroundColor: "#ff7961 !important"
-      },
+        "&:hover": {
+            backgroundColor: "#ff7961 !important"
+        },
     }
-  });
+});
 
 export default function IncomeForm() {
     const classes = useStyles();
@@ -50,15 +51,14 @@ export default function IncomeForm() {
     const [storeCategoryValue, setStoreCategoryValue] = useState(null);
 
 
-
     useEffect(() => {
         axiosClient.get('/all-bank-account')
             .then(({data}) => {
                 setSelectedAccountId(data.data[0].id)
                 setBankAccounts(data.data);
             }).catch(error => {
-                console.log('Error fetching bank accounts:', error)
-            });
+            console.log('Error fetching bank accounts:', error)
+        });
 
 
         axiosClient.get('/income-categories')
@@ -71,15 +71,15 @@ export default function IncomeForm() {
             });
     }, [setIncomeCategories, setBankAccounts]);
 
-     //set default category value
-     useEffect(()=>{
-        if(incomeCategories && incomeCategories.length>0 && !id){
+    //set default category value
+    useEffect(() => {
+        if (incomeCategories && incomeCategories.length > 0 && !id) {
             setCategoryValue(incomeCategories[0])
         }
-        if(storeCategoryValue !==null && id){
+        if (storeCategoryValue !== null && id) {
             setCategoryValue(storeCategoryValue)
         }
-    },[incomeCategories,storeCategoryValue])
+    }, [incomeCategories, storeCategoryValue])
 
 
     const handleCategoryChange = (event) => {
@@ -92,12 +92,12 @@ export default function IncomeForm() {
             setLoading(true);
             axiosClient.get(`/income/${id}`)
                 .then(({data}) => {
-                   
+
                     setSelectedCategoryId(data.category_id);
                     setSelectedAccountId(data.account_id);
-                    if(incomeCategories.length>0){
+                    if (incomeCategories.length > 0) {
                         incomeCategories.forEach(element => {
-                            if(element.id===data.category_id){
+                            if (element.id === data.category_id) {
                                 setStoreCategoryValue(element)
                             }
                         });
@@ -113,7 +113,7 @@ export default function IncomeForm() {
                     setLoading(false);
                 });
         }
-    }, [id,incomeCategories]);
+    }, [id, incomeCategories]);
 
 
     useEffect(() => {
@@ -163,9 +163,9 @@ export default function IncomeForm() {
                 },
             }).then(({data}) => {
                 setNotification('Income data has been updated')
-                if(stay ===true){
+                if (stay === true) {
                     window.location.reload()
-                }else{
+                } else {
                     navigate('/incomes');
                 }
             })
@@ -195,9 +195,9 @@ export default function IncomeForm() {
             })
                 .then(({data}) => {
                     setNotification('Income has been added.');
-                    if(stay ===true){
+                    if (stay === true) {
                         window.location.reload()
-                    }else{
+                    } else {
                         navigate('/incomes');
                     }
                 })
@@ -217,11 +217,13 @@ export default function IncomeForm() {
 
     return (
         <>
-            <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
-                {income.id && <h1 className="title-text mb-0">Update Income : {income.description}</h1>}
-                {!income.id && <h1 className="title-text mb-0">Add New Income</h1>}
-            </div>
+
             <WizCard className="animated fadeInDown wiz-card-mh">
+                <h3>
+                    {income.id && <h1 className="title-text mb-0">{income.description}</h1>}
+                    {!income.id && <h1 className="title-text mb-0">Add New Income</h1>}
+                </h3>
+
                 {loading && (
                     <div className="text-center">
                         Loading...
@@ -229,7 +231,7 @@ export default function IncomeForm() {
                 )}
 
                 {!loading && (
-                    <form >
+                    <form>
                         <div className="row">
                             <div className="col-md-6">
                                 <div className="form-group">
@@ -250,18 +252,18 @@ export default function IncomeForm() {
                                         value={categoryValue}
                                         onChange={(event, newValue) => {
                                             if (newValue) {
-                                            setCategoryValue(newValue);
+                                                setCategoryValue(newValue);
                                             }
-                                    }}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            style={{ backgroundColor: '#eeeeee' }}
-                                            {...params}
-                                            label='Income Category'
-                                            margin="normal"
-                                            placeholder="Income Category"
-                                        />
-                                    )}
+                                        }}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                style={{backgroundColor: '#eeeeee'}}
+                                                {...params}
+                                                label='Income Category'
+                                                margin="normal"
+                                                placeholder="Income Category"
+                                            />
+                                        )}
                                     />
                                 </div>
                                 <div className="form-group">
@@ -337,15 +339,25 @@ export default function IncomeForm() {
                         </div>
 
 
-                        <button onClick={(e)=>incomeSubmit(e,true)} className={income.id ? "btn btn-warning" : "custom-btn btn-add"}>
-                            {income.id ? "Update Income Record" : "Add New Income"}
-                        </button>
-                        {income.id && <button onClick={(e)=>incomeSubmit(e,false)} className={"custom-btn btn-add ml-3"}>
-                            Update Income & Exist
-                        </button>}
-                        {!income.id && <button onClick={(e)=>incomeSubmit(e,false)} className={"custom-btn btn-add ml-3"}>
-                            Add New Income & Exist
-                        </button>}
+                        <div className="buttonGroups text-end">
+                            <button onClick={(e) => incomeSubmit(e, false)}
+                                    className={income.id ? "btn btn-warning" : "custom-btn btn-add"}>
+                                {"Update"}
+                            </button>
+
+                            {!income.id &&
+                                <>
+                                    <button onClick={(e) => incomeSubmit(e, true)}
+                                            className={income.id ? "btn btn-warning" : "custom-btn btn-add"}>
+                                        {"Save"}
+                                    </button>
+                                    <button onClick={(e) => incomeSubmit(e, false)}
+                                            className={"custom-btn btn-add ml-3"}>
+                                        Save & Exit
+                                    </button>
+                                </>
+                            }
+                        </div>
 
                     </form>
                 )}

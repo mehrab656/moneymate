@@ -19,7 +19,7 @@ class InvestmentRequest extends FormRequest {
 	 */
 	public function rules(): array {
 		return [
-			'investor_id'         => 'required',
+			'investor_id'     => 'required',
 			'account_id'      => 'required',
 			'amount'          => 'required|numeric',
 			'note'            => 'nullable',
@@ -32,9 +32,9 @@ class InvestmentRequest extends FormRequest {
 	 */
 	public function messages(): array {
 		return [
-			'investor_id.required'    => 'Please select an Investor',
-			'account_id.required' => 'Please select an adjustment account',
-			'amount.required'     => 'Please add the investment amount',
+			'investor_id.required' => 'Please select an Investor',
+			'account_id.required'  => 'Please select an adjustment account',
+			'amount.required'      => 'Please add the investment amount',
 		];
 	}
 }

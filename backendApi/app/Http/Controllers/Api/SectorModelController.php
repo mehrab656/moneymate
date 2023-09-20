@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
-use App\Models\ReturnInvestment;
+use App\Http\Controllers\Controller;
+use App\Models\SectorModel;
 use Illuminate\Http\Request;
 
-class ReturnInvestmentController extends Controller
+class SectorModelController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,9 +19,9 @@ class ReturnInvestmentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function add()
     {
-        //
+
     }
 
     /**
@@ -34,7 +35,7 @@ class ReturnInvestmentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ReturnInvestment $returnInvestment)
+    public function show(SectorModel $sectorModel)
     {
         //
     }
@@ -42,7 +43,7 @@ class ReturnInvestmentController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ReturnInvestment $returnInvestment)
+    public function edit(SectorModel $sectorModel)
     {
         //
     }
@@ -50,7 +51,7 @@ class ReturnInvestmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ReturnInvestment $returnInvestment)
+    public function update(Request $request, SectorModel $sectorModel)
     {
         //
     }
@@ -58,7 +59,7 @@ class ReturnInvestmentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ReturnInvestment $returnInvestment)
+    public function destroy(SectorModel $sectorModel)
     {
         //
     }
