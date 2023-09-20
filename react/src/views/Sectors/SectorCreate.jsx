@@ -7,6 +7,8 @@ import FormControl from '@mui/material/FormControl';
 import ListItemText from '@mui/material/ListItemText';
 import Select from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
+import { useParams } from 'react-router-dom';
+import axiosClient from '../../axios-client';
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -27,7 +29,11 @@ const names = [
   ];
   
 function SectorCreate() {
-  const [formData, setFormData] = useState({
+
+  let {id} = useParams();
+
+
+  const [sectorData, setSectorData] = useState({
     sectorName: '',
     contactStartDate: '',
     contactEndDate: '',
@@ -75,7 +81,7 @@ function SectorCreate() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setSectorData({ ...sectorData, [name]: value });
   };
 
   const handleContactInputChange = (e) => {
@@ -111,10 +117,69 @@ function SectorCreate() {
     setPaymentData(updatedPayments);
   };
 
-  const handleSubmit = (e) => {
+  const sectorSubmit = (e, stay) => {
     e.preventDefault();
     // Handle form submission, e.g., send data to an API
-    console.log('Form data submitted:', formData);
+    console.log('Form data submitted:', categoryName);
+    console.log('staty', stay);
+
+        let formData = new FormData();
+        formData.append('sector_name', sectorData.sectorName);
+        formData.append('sector_internet_account', sectorData.internetAccount);
+        formData.append('sector_contact_startdate', sectorData.contactStartDate);
+        formData.append('sector_contact_enddate', sectorData.contactEndDate);
+        formData.append('sector_dewa', sectorData.DEWA);
+
+        //for contact
+        formData.append('contact_startdate', contactData.contactStartDate);
+        formData.append('contact_enddate', contactData.contactEndDate);
+
+        //for electricity
+        formData.append('electricity_dewa', electricityData.DEWA);
+        formData.append('electricity_acc_no', electricityData.accountNumber);
+        formData.append('electricity_billing_date', electricityData.billingDate);
+        formData.append('electricity_business_acc_no', electricityData.businessAccountNo);
+
+        //for internet
+        formData.append('internet_acc_no', internetData.accountNumber);
+        formData.append('internet_billing_date', internetData.billingDate);
+        formData.append('internet_reference', internetData.reference);
+
+        //for payment
+        if(paymentData && paymentData.length>0){
+          paymentData.forEach(element => {
+            formData.append('payment_amount[]', element.accountNumber);
+            formData.append('payment_date[]', element.paymentDate);
+            formData.append('payment_number[]', element.paymentNumber);
+          });
+        }
+
+        // for category
+        if(categoryName && categoryName.length>0){
+          categoryName.forEach(element => {
+            formData.append('category_name[]', element);
+          });
+        }
+        var url;
+        if(id){
+          url =`/sector/${id}`
+        }else{
+          url=`/sector/new`
+        }
+
+        axiosClient.post(url, formData, {
+          headers: {
+              'Content-Type': 'multipart/form-data',
+          },
+        }).then(() => {
+            if(stay ===true){
+                window.location.reload()
+            }else{
+                navigate('/sectors');
+            }
+          
+        }).catch((e)=>{});
+
   };
 
   return (
@@ -133,7 +198,7 @@ function SectorCreate() {
                 label="Sector Name"
                 variant="outlined"
                 name="sectorName"
-                value={formData.sectorName}
+                value={sectorData.sectorName}
                 onChange={handleInputChange}
                 focused
               />
@@ -145,7 +210,7 @@ function SectorCreate() {
                 type="date"
                 variant="outlined"
                 name="contactStartDate"
-                value={formData.contactStartDate}
+                value={sectorData.contactStartDate}
                 onChange={handleInputChange}
                 focused
               />
@@ -157,7 +222,7 @@ function SectorCreate() {
                 type="date"
                 variant="outlined"
                 name="contactEndDate"
-                value={formData.contactEndDate}
+                value={sectorData.contactEndDate}
                 onChange={handleInputChange}
                 focused
               />
@@ -168,7 +233,7 @@ function SectorCreate() {
                 label="DEWA"
                 variant="outlined"
                 name="DEWA"
-                value={formData.DEWA}
+                value={sectorData.DEWA}
                 onChange={handleInputChange}
                 focused
               />
@@ -179,7 +244,7 @@ function SectorCreate() {
                 label="Internet Account"
                 variant="outlined"
                 name="internetAccount"
-                value={formData.internetAccount}
+                value={sectorData.internetAccount}
                 onChange={handleInputChange}
                 focused
               />
@@ -426,8 +491,8 @@ function SectorCreate() {
       </Card>
 
      <Box display='flex' justifyContent='center'  justifyItems='center' sx={{mt:5, mb:5}}>
-        <Button variant='contained' sx={{m:2}}>Create</Button>
-        <Button variant='contained' sx={{m:2}}>Create & Exist</Button>
+        <Button variant='contained' sx={{m:2}} onClick={(e)=> sectorSubmit(e,true)}>Create</Button>
+        <Button variant='contained' sx={{m:2}} onClick={(e)=> sectorSubmit(e,false)}>Create & Exist</Button>
      </Box>
 
     </Fragment>

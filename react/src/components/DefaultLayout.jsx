@@ -21,6 +21,7 @@ import {
     faMoneyBill1Wave,
     faMoneyBillTrendUp,
     faMoneyCheck,
+    faSection,
     faTachometerAlt,
     faWallet,
 } from '@fortawesome/free-solid-svg-icons';
@@ -189,7 +190,7 @@ export default function DefaultLayout() {
                                     <Link
                                         to="/sectors"
                                         className={isActive('/sectors') ? 'active' : ''}>
-                                        <span className="aside-menu-icon"><FontAwesomeIcon icon={faListAlt}/></span>
+                                        <span className="aside-menu-icon"><FontAwesomeIcon icon={faSection}/></span>
                                         <span className="aside-menu-text"> Sectors</span>
                                     </Link>
                                 </li>
