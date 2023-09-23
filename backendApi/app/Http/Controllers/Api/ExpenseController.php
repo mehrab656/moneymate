@@ -391,6 +391,9 @@ class ExpenseController extends Controller {
 		] );
 	}
 
+	/**
+	 * @throws \Throwable
+	 */
 	public function updateReturn( UpdateExpenseRequest $request, Expense $return ) {
 		$data = $request->validated();
 

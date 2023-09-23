@@ -334,7 +334,7 @@
   dependencies:
     "@floating-ui/utils" "^0.1.1"
 
-"@floating-ui/dom@^1.0.1", "@floating-ui/dom@^1.5.1":
+"@floating-ui/dom@^1.0.0", "@floating-ui/dom@^1.0.1", "@floating-ui/dom@^1.5.1":
   version "1.5.1"
   resolved "https://registry.npmjs.org/@floating-ui/dom/-/dom-1.5.1.tgz"
   integrity sha512-KwvVcPSXg6mQygvA1TjbN/gh///36kKtllIF8SUm0qpFj8+rvYrpvlYdL1JoA71SHpDqgSSdGOSoQ0Mp3uY5aw==
@@ -809,7 +809,7 @@ chart.js@^4.1.1, chart.js@^4.3.0:
   dependencies:
     "@kurkle/color" "^0.3.0"
 
-classnames@^2.2.5, classnames@^2.2.6, classnames@^2.3.2:
+classnames@^2.2.5, classnames@^2.2.6, classnames@^2.3.0, classnames@^2.3.2:
   version "2.3.2"
   resolved "https://registry.npmjs.org/classnames/-/classnames-2.3.2.tgz"
   integrity sha512-CSbhY4cFEJRe6/GQzIk5qXZ4Jeg5pcsP7b5peFSDpffpe1cqjASH/n9UTjBwOp6XpMSTwQ8Za2K5V02ueA7Tmw==
@@ -1540,6 +1540,14 @@ react-smooth@^2.0.2:
   dependencies:
     fast-equals "^5.0.0"
     react-transition-group "2.9.0"
+
+react-tooltip@^5.21.4:
+  version "5.21.4"
+  resolved "https://registry.npmjs.org/react-tooltip/-/react-tooltip-5.21.4.tgz"
+  integrity sha512-LZsllEbiu63zNwuCalq3gIFcBu2Xf0I0fMg7uuF7/5ROo5//uHe8Sum7v9L1Rtp6IozcoU9YAjkNUZdrxutsNg==
+  dependencies:
+    "@floating-ui/dom" "^1.0.0"
+    classnames "^2.3.0"
 
 react-transition-group@^4.3.0, react-transition-group@^4.4.5:
   version "4.4.5"

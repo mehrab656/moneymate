@@ -10,18 +10,18 @@ import {SettingsContext} from "../contexts/SettingsContext.jsx";
 import {
     TextField,
     Autocomplete,
-  } from "@mui/material";
+} from "@mui/material";
 
-  import { makeStyles } from '@mui/styles';
+import {makeStyles} from '@mui/styles';
 
 
-  const useStyles = makeStyles({
+const useStyles = makeStyles({
     option: {
-      "&:hover": {
-        backgroundColor: "#ff7961 !important"
-      },
+        "&:hover": {
+            backgroundColor: "#ff7961 !important"
+        },
     }
-  });
+});
 
 export default function ExpenseForm() {
     const classes = useStyles();
@@ -58,11 +58,7 @@ export default function ExpenseForm() {
     const [storeCategoryValue, setStoreCategoryValue] = useState(null);
 
 
-
-
     const {
-        num_data_per_page,
-        default_currency,
         last_expense_cat_id,
         last_expense_account_id,
         last_expense_date,
@@ -107,16 +103,14 @@ export default function ExpenseForm() {
     }, [setExpenseCategories, setBankAccounts, setUsers]);
 
     //set default category value
-    useEffect(()=>{
-        if(expenseCategories && expenseCategories.length>0 && !id){
+    useEffect(() => {
+        if (expenseCategories && expenseCategories.length > 0 && !id) {
             setCategoryValue(expenseCategories[0])
         }
-        if(storeCategoryValue !==null && id){
+        if (storeCategoryValue !== null && id) {
             setCategoryValue(storeCategoryValue)
         }
-    },[expenseCategories,storeCategoryValue])
-
-
+    }, [expenseCategories, storeCategoryValue])
 
 
     const handleCategoryChange = (event) => {
@@ -132,9 +126,9 @@ export default function ExpenseForm() {
                     setSelectedCategoryId(data.category_id);
                     setSelectedAccountId(data.account_id);
                     setSelectedUserId(data.user_id);
-                    if(expenseCategories.length>0){
+                    if (expenseCategories.length > 0) {
                         expenseCategories.forEach(element => {
-                            if(element.id===data.category_id){
+                            if (element.id === data.category_id) {
                                 setStoreCategoryValue(element)
                             }
                         });
@@ -151,7 +145,7 @@ export default function ExpenseForm() {
                     setLoading(false);
                 });
         }
-    }, [id,expenseCategories]);
+    }, [id, expenseCategories]);
 
 
     useEffect(() => {
@@ -170,115 +164,53 @@ export default function ExpenseForm() {
 
     // set some default data
     useEffect(() => {
-
         // select default date
         if (expense?.expense_date === '') {
-            // if (last_expense_date) {
-            //     setExpense({
-            //         ...expense,
-            //         expense_date: new Date(last_expense_date).toISOString().split('T')[0]
-            //     });
-            // } else {
-            //     setExpense({
-            //         ...expense,
-            //         expense_date: new Date().toISOString().split('T')[0]
-            //     });
-            // }
-
             setExpense({
                 ...expense,
                 expense_date: new Date().toISOString().split('T')[0]
             });
         }
 
-        // //select default category
-        // if (last_expense_cat_id) {
-        //     setSelectedCategoryId(last_expense_cat_id)
-        // }
-        //
-        // //set last used bank account
-        // if (last_expense_account_id) {
-        //     setSelectedAccountId(last_expense_account_id)
-        // }
-
     }, [expense?.expense_date, last_expense_cat_id, last_expense_account_id])
 
     const expenseSubmit = (event, stay) => {
         event.preventDefault();
+        // event.currentTarget.disabled = true;
+        const {amount, refundable_amount, description, reference, expense_date, note, attachment} = expense;
 
-        if (expense.id) {
+        const formData = new FormData();
+        formData.append('account_id', selectedAccountId);
+        formData.append('amount', amount);
+        formData.append('refundable_amount', refundable_amount);
+        formData.append('category_id', categoryValue.id);
+        formData.append('user_id', selectedUserId);
+        formData.append('description', description);
+        formData.append('note', note);
+        formData.append('reference', reference);
+        formData.append('expense_date', expense_date);
+        formData.append('attachment', attachment);
 
-            const {amount, refundable_amount, description, reference, expense_date, note, attachment} = expense;
-            const formData = new FormData();
-            formData.append('account_id', selectedAccountId);
-            formData.append('amount', amount);
-            formData.append('refundable_amount', refundable_amount);
-            formData.append('category_id', categoryValue.id);
-            formData.append('user_id', selectedUserId);
-            formData.append('description', description);
-            formData.append('note', note);
-            formData.append('reference', reference);
-            formData.append('expense_date', expense_date);
-            formData.append('attachment', attachment);
+        const url = expense.id ? `/expense/${expense.id}` : '/expense/add';
+        const notifications = expense.id ? 'Expense has been updated' : 'Expense Added';
+        axiosClient.post(url, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        }).then(({data}) => {
+            if (data.action_status === 'insufficient_balance') {
+                setInsufficientBalanceForCategory(data.message);
+            } else {
+                setNotification(notifications)
+                stay === true ? window.location.reload() : navigate('/expenses')
+            }
 
-            axiosClient.post(`/expense/${expense.id}`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            }).then(() => {
-                setNotification('expense data has been updated')
-                if(stay ===true){
-                    window.location.reload()
-                }else{
-                    navigate('/expenses');
-                }
-               
-            })
-                .catch(err => {
-                    const response = err.response;
-                    if (response && response.status === 422) {
-                        setErrors(response.data.errors);
-                    }
-                });
-        } else {
-
-            const {amount, refundable_amount, description, reference, expense_date, note, attachment} = expense;
-            const formData = new FormData();
-            formData.append('account_id', selectedAccountId);
-            formData.append('amount', amount);
-            formData.append('refundable_amount', refundable_amount);
-            formData.append('category_id', categoryValue.id);
-            formData.append('user_id', selectedUserId);
-            formData.append('description', description);
-            formData.append('note', note);
-            formData.append('reference', reference);
-            formData.append('expense_date', expense_date);
-            formData.append('attachment', attachment);
-
-            axiosClient.post('/expense/add', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-                .then(({data}) => {
-                    if (data.action_status === 'insufficient_balance') {
-                        setInsufficientBalanceForCategory(data.message);
-                    } else {
-                        setNotification('expense has been added.');
-                        if(stay ===true){
-                            window.location.reload()
-                        }else{
-                            navigate('/expenses');
-                        }
-                    }
-
-
-                })
-                .catch((error) => {
-                    const response = error.response;
-                    setErrors(response.data.errors);
-                });
-        }
+        }).catch(err => {
+            const response = err.response;
+            if (response && response.status === 422) {
+                setErrors(response.data.errors);
+            }
+        });
     };
 
     const handleFileInputChange = (event) => {
@@ -287,8 +219,6 @@ export default function ExpenseForm() {
             return {...prevExpense, attachment: file};
         });
     };
-
-
 
 
     return (
@@ -305,7 +235,7 @@ export default function ExpenseForm() {
                 )}
 
                 {!loading && (
-                    <form >
+                    <form>
                         {insufficientBalanceForCategory && (
                             <div className="text-danger mt-2 mb-3">{insufficientBalanceForCategory}</div>
                         )}
@@ -371,7 +301,7 @@ export default function ExpenseForm() {
                                                 expense_date: updatedDate ? updatedDate.toISOString().split('T')[0] : ''
                                             });
                                         }}
-                                        dateFormat="yyyy-MM-dd"
+                                        dateFormat="dd-MM-yyyy"
                                         placeholderText="Expense Date"
                                     />
                                     {errors.start_date && <p className="error-message mt-2">{errors.start_date[0]}</p>}
@@ -407,18 +337,18 @@ export default function ExpenseForm() {
                                         value={categoryValue}
                                         onChange={(event, newValue) => {
                                             if (newValue) {
-                                            setCategoryValue(newValue);
+                                                setCategoryValue(newValue);
                                             }
-                                    }}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            style={{ backgroundColor: '#eeeeee' }}
-                                            label='Expense Category'
-                                            margin="normal"
-                                            placeholder="Expense Category"
-                                        />
-                                    )}
+                                        }}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                style={{backgroundColor: '#eeeeee'}}
+                                                label='Expense Category'
+                                                margin="normal"
+                                                placeholder="Expense Category"
+                                            />
+                                        )}
                                     />
                                 </div>
                                 <div className="form-group">
@@ -456,18 +386,25 @@ export default function ExpenseForm() {
                                 </div>
                             </div>
                         </div>
-
-                        <button onClick={(e)=>expenseSubmit(e,true)} className={expense.id ? "btn btn-warning" : "custom-btn btn-add"}>
-                            {expense.id ? "Update Expense Record" : "Add New Expense"}
-                        </button>
-                        {expense.id && <button onClick={(e)=>expenseSubmit(e,false)} className={"custom-btn btn-add ml-3"}>
-                            Update Expense & Exist
-                        </button>}
-                        {!expense.id && <button onClick={(e)=>expenseSubmit(e,false)} className={"custom-btn btn-add ml-3"}>
-                            Add New Expense & Exist
-                        </button>}
-                        
-
+                        <div className="text-end">
+                            {
+                                expense.id &&
+                                <button onClick={(e) => expenseSubmit(e, false)}
+                                        className={expense.id ? "btn btn-warning" : "custom-btn btn-add"}>
+                                    Update
+                                </button>
+                            }
+                            {!expense.id &&
+                                <>
+                                    <button onClick={(e) => expenseSubmit(e, true)} className={"custom-btn btn-add ml-3"}>
+                                        Save
+                                    </button>
+                                    <button onClick={(e) => expenseSubmit(e, false)} className={"custom-btn btn-add ml-3"}>
+                                        Save and Exit
+                                    </button>
+                                </>
+                            }
+                        </div>
                     </form>
                 )}
             </WizCard>

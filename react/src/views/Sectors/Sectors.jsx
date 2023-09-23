@@ -1,153 +1,64 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, {useEffect, useState, useContext} from "react";
 import axiosClient from "../../axios-client.js";
 import Swal from "sweetalert2";
-import { Link, useNavigate } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import Pagination from "react-bootstrap/Pagination";
 import WizCard from "../../components/WizCard.jsx";
-import { Button, Form, Modal } from "react-bootstrap";
-import { useStateContext } from "../../contexts/ContextProvider.jsx";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCoins, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { SettingsContext } from "../../contexts/SettingsContext.jsx";
+import {Button, Form, Modal} from "react-bootstrap";
+import {useStateContext} from "../../contexts/ContextProvider.jsx";
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faCoins, faEdit, faPlus, faTrash} from "@fortawesome/free-solid-svg-icons";
+import {SettingsContext} from "../../contexts/SettingsContext.jsx";
 import ActionButtonHelpers from "../../helper/ActionButtonHelpers.jsx";
+import ExpenseExportButton from "../../components/ExpenseExportButton.jsx";
+import {Tooltip} from "react-tooltip";
 
 export default function Sectors() {
-    const navigate = useNavigate()
     const [loading, setLoading] = useState(false);
-    const [categories, setCategories] = useState([]);
+    const [sectors, setSectors] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
+    const [modalInvest, setModalInvest] = useState(false)
     const [showModal, setShowModal] = useState(false);
-    const [errors, setErrors] = useState(null);
-    const [category, setCategory] = useState({
-        id: null,
-        name: '',
-        type: 'income'
-    });
+    const [name, setName] = useState(null)
+    const [nextPayment,setNextPayment]=useState({});
 
-    const { applicationSettings, userRole } = useContext(SettingsContext);
+    const {applicationSettings, userRole} = useContext(SettingsContext);
     const {
-        num_data_per_page
+        num_data_per_page,
+        default_currency
     } = applicationSettings;
+
     const pageSize = num_data_per_page;
     const totalPages = Math.ceil(totalCount / pageSize);
 
-    const filteredCategories = categories.filter(
-        (category) =>
-            category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            category.type.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-
-    const showCreateModal = () => {
-        setErrors(null);
+    const showInvestment = (invest) => {
+        setModalInvest(invest);
         setShowModal(true);
-    };
-
+    }
     const handleCloseModal = () => {
         setShowModal(false);
     };
-    const { setNotification } = useStateContext();
-
-    const categorySubmit = (event) => {
-        event.preventDefault();
-
-        if (category.id) {
-            axiosClient.put(`/category/${category.id}`, category)
-                .then(() => {
-                    setNotification("Category has been successfully updated");
-                    setShowModal(false);
-                    getCategories(currentPage, pageSize);
-                    setCategory({
-                        id: null,
-                        name: '',
-                        type: 'income'
-                    });
-                }).catch(error => {
-                const response = error.response;
-                if (response && response.status === 409) {
-                    setErrors({ name: ['Category name already exists'] });
-                } else if (response && response.status === 422) {
-                    setErrors(response.data.errors);
-                }
-            });
-        } else {
-            axiosClient.post('category/add', category).then(({ data }) => {
-                setNotification(`${category.name} was successfully created`);
-                setShowModal(false);
-                getCategories(currentPage, pageSize);
-                setCategory({
-                    id: null,
-                    name: '',
-                    type: 'income'
-                });
-            }).catch(error => {
-                const response = error.response;
-                if (response && response.status === 409) {
-                    setErrors({ name: ['Category name already exists'] });
-                } else if (response && response.status === 422) {
-                    setErrors(response.data.errors);
-                }
-            });
-        }
-    };
-
-    const edit = (category) => {
-        setCategory(category);
-        setErrors(null);
-        setShowModal(true);
-    };
-
-    const onDelete = (category) => {
-        Swal.fire({
-            title: "Are you sure?",
-            text: `You will not be able to recover the category ${category.name}!`,
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Yes, delete it!",
-            cancelButtonText: "Cancel",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                axiosClient
-                    .delete(`category/${category.id}`)
-                    .then(() => {
-                        getCategories(currentPage, pageSize);
-                        Swal.fire({
-                            title: "Deleted!",
-                            text: "Category has been deleted.",
-                            icon: "success",
-                        });
-                    })
-                    .catch((error) => {
-                        Swal.fire({
-                            title: "Error!",
-                            text: "Category could not be deleted.",
-                            icon: "error",
-                        });
-                    });
-            }
-        });
-    };
 
     useEffect(() => {
-        document.title = "Categories";
-        getCategories(currentPage, pageSize);
-    }, [currentPage, pageSize]); // Fetch categories when currentPage or pageSize changes
+        document.title = "Manage Sectors";
+        getSectors(currentPage, pageSize);
+    }, [currentPage, pageSize]);
 
-    const getCategories = (page, pageSize) => {
+    const getSectors = (page, pageSize) => {
         setLoading(true);
-        axiosClient
-            .get("/categories", { params: { page, pageSize } })
-            .then(({ data }) => {
+        axiosClient.get('/sectors', {params: {page, pageSize}})
+            .then(({data}) => {
                 setLoading(false);
-                setCategories(data.data);
+                setSectors(data.data);
                 setTotalCount(data.total);
             })
             .catch(() => {
                 setLoading(false);
-            });
-    };
+            })
+    }
+
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
@@ -159,57 +70,120 @@ export default function Sectors() {
             <Pagination.Item
                 key={i}
                 active={i === currentPage}
-                onClick={() => handlePageChange(i)}
-            >
+                onClick={() => handlePageChange(i)}>
                 {i}
             </Pagination.Item>
         );
     }
 
+    // const filteredSectors = sectors.filter((sector) => {
+
+    //     return sector.investor_id.toLowerCase().includes(searchTerm.toLowerCase())
+    //         || sector.account_id.toLowerCase().includes(searchTerm.toLowerCase())
+    //         || sector.amount.toLowerCase().includes(searchTerm.toLowerCase())
+    // });
+
+
+    const onDelete = (sector) => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: `You will not be able to recover the sector !`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axiosClient.delete(`sector/${sector.id}`).then((res) => {
+                    getSectors();
+                    Swal.fire({
+                        title: 'Deleted!',
+                        text: 'sector has been deleted.',
+                        icon: 'success',
+                    });
+                }).catch((error) => {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'sector could not be deleted.',
+                        icon: 'error',
+                    });
+                });
+            }
+        });
+    };
+
     const actionParams = {
-        route:{
-            viewRoute:'',
-            deleteRoute:''
+        route: {
+            editRoute: '/sector/',
+            viewRoute: '',
+            deleteRoute: ''
         },
+    }
+
+    function dateOrdinal(date) {
+        return date + (31 === date || 21 === date || 1 === date ? "st" : 22 === date || 2 === date ? "nd" : 23 === date || 3 === date ? "rd" : "th")
+    };
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+    function compareDates(date) {
+        const currentDate = new Date().getDate();
+
+        const billingDate = new Date(date).getDate();
+        const res = billingDate - currentDate;
+        return res >= 5 ? 'success' : 'danger';
+    }
+
+    function checkNextPaymentDate(payments) {
+        let breakStatement = false;
+        let nextPayments;
+        payments.map(payment => {
+            if (breakStatement) {
+                return;
+            }
+            if (payment.status === 'unpaid') {
+                // setNextPayment(payment)
+                nextPayments = payment;
+                breakStatement = true;
+            }
+        });
+        return 0;
     }
 
     return (
         <div>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
-                <h1 className="title-text mb-0">Sectors</h1>
-                {userRole ==='admin' &&
-                <div>
-                    <a className="custom-btn btn-add" onClick={(e)=>navigate('/sector/new')}>
-                        <FontAwesomeIcon icon={faCoins} /> Add New
-                    </a>
-                </div>
-                }
-               
+                <h1 className="title-text mb-0">Sectors Histories</h1>
+                {userRole === 'admin' &&
+                    <Link className="btn-add align-right mr-3" to="/sector/new"><FontAwesomeIcon icon={faPlus}/> Add
+                        New</Link>}
             </div>
-            {/* <WizCard className="animated fadeInDown">
+
+            <WizCard className="animated fadeInDown">
                 <div className="mb-4">
-                    <input
-                        className="custom-form-control"
-                        type="text"
-                        placeholder="Search category..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+                    <input className="custom-form-control"
+                           type="text"
+                           placeholder="Search Investment..."
+                           value={searchTerm}
+                           onChange={(e) => setSearchTerm(e.target.value)}/>
                 </div>
                 <div className="table-responsive-sm">
                     <table className="table table-bordered custom-table">
                         <thead>
-                        <tr>
-                            <th>CATEGORY NAME</th>
-                            <th className="text-center">CATEGORY TYPE</th>
-                            {userRole ==='admin' && <th className="text-center">ACTIONS</th>}
-                            
+                        <tr className={'text-center'}>
+                            <th>Sector</th>
+                            <th>Electricity Billing Date</th>
+                            <th>Internet Billing Date</th>
+                            <th>Next Payment Date</th>
+                            <th>Total Expense</th>
+                            <th>Total Income</th>
+                            <th width="20%">Action</th>
+
                         </tr>
                         </thead>
                         {loading && (
                             <tbody>
                             <tr>
-                                <td colSpan={3} className="text-center">
+                                <td colSpan={8} className="text-center">
                                     Loading...
                                 </td>
                             </tr>
@@ -217,29 +191,58 @@ export default function Sectors() {
                         )}
                         {!loading && (
                             <tbody>
-                            {filteredCategories.length === 0 ? (
+                            {sectors.length === 0 ? (
                                 <tr>
-                                    <td colSpan={3} className="text-center">
-                                        No categories found
+                                    <td colSpan={8} className="text-center">
+                                        No Sectors found
                                     </td>
                                 </tr>
                             ) : (
-                                filteredCategories.map((category) => (
-                                    <tr key={category.id}>
-                                        <td>{category.name}</td>
-                                        <td className="text-center">{category.type}</td>
+                                sectors.map((sector) => (
+                                    <tr className={'text-center'} key={sector.id}>
+                                        <td>{sector.name}</td>
+                                        <td>
+                                            <a
+                                                className={'text-' + compareDates(sector.el_billing_date)}
+                                                data-tooltip-id="dewa-account"
+                                                data-tooltip-content={'Premises Number: ' + sector.el_premises_no}>
+                                                {dateOrdinal(new Date(sector.el_billing_date).getDate()) + ' of ' + monthNames[new Date().getMonth()]}
+                                            </a>
+                                            <Tooltip id="dewa-account"/>
+                                        </td>
+                                        <td>
+                                            <a
+                                                className={'text-' + compareDates(sector.internet_billing_date)}
+                                                data-tooltip-id="internet-account"
+                                                data-tooltip-content={'Account Number: ' + String(sector.internet_acc_no).slice((-4))}>
+                                                {dateOrdinal(new Date(sector.internet_billing_date).getDate()) + ' of ' + monthNames[new Date().getMonth()]}
+                                            </a>
+                                            <Tooltip id="internet-account"/>
+                                        </td>
 
-                                        {userRole ==='admin' && 
+                                        <td>
+                                            {checkNextPaymentDate(sector.payments)}
+                                            <a
+                                                className={'text-' + compareDates(sector.internet_billing_date)}
+                                                data-tooltip-id="next-payment-date"
+                                                data-tooltip-content={'***' + String(sector.internet_acc_no).slice((-4))}>
+
+                                                {monthNames[new Date(nextPayment.date).getMonth()] + ' ' +
+                                                    dateOrdinal(new Date(nextPayment.date).getMonth()) + ', ' +
+                                                    new Date(nextPayment.date).getFullYear()}
+                                            </a>
+                                            <Tooltip id="next-payment-date"/>
+                                        </td>
+                                        <td>{0}</td>
+                                        <td>{0}</td>
                                         <td>
                                             <ActionButtonHelpers
-                                                module={category}
+                                                module={sector}
+                                                showModule={showInvestment}
                                                 deleteFunc={onDelete}
-                                                showEditDropdown={edit}
-                                                editDropdown={true}
                                                 params={actionParams}
                                             />
-                                        </td>}
-                                       
+                                        </td>
                                     </tr>
                                 ))
                             )}
@@ -247,6 +250,7 @@ export default function Sectors() {
                         )}
                     </table>
                 </div>
+
                 {totalPages > 1 && (
                     <Pagination>
                         <Pagination.Prev
@@ -260,62 +264,58 @@ export default function Sectors() {
                         />
                     </Pagination>
                 )}
+
             </WizCard>
+
 
             <Modal show={showModal} centered onHide={handleCloseModal} className="custom-modal">
                 <Modal.Header closeButton>
                     <Modal.Title>
-                        {category.id && <span>Update Category: {category.name}</span>}
-                        {!category.id && <span>Add New Category</span>}
+                        <span>Investment Details</span>
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <form className="custom-form">
-                        <div className="form-group">
-                            <label htmlFor="category_name" className="custom-form-label">Category Name</label>
-                            <input
-                                value={category.name}
-                                className="custom-form-control"
-                                onChange={e => setCategory({ ...category, name: e.target.value })}
-                                placeholder="Category Name"
-                            />
+                    <table className="footable table table-bordered table-striped mb-0">
+                        <thead></thead>
+                        <tbody>
+                        <tr>
+                            <td width="50%">
+                                <strong>Investor Name :</strong>
+                            </td>
+                            <td>{modalInvest?.investor_name}</td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <strong>Investment Amount :</strong>
+                            </td>
+                            <td> ${modalInvest?.amount}</td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <strong>Note :</strong>
+                            </td>
+                            <td>{modalInvest?.note}</td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <strong>Date :</strong>
+                            </td>
+                            <td>
+                                {modalInvest?.sector_date}
+                            </td>
+                        </tr>
 
-                            {errors && errors.name && (
-                                <div className="text-danger mt-2">{errors.name[0]}</div>
-                            )}
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="category_type" className="custom-form-label">Category Type</label>
-                            <select
-                                value={category.type}
-                                className="custom-form-control"
-                                onChange={e => setCategory({ ...category, type: e.target.value })}
-                            >
-                                <option value="income">Income</option>
-                                <option value="expense">Expense</option>
-                            </select>
-
-                            {errors && errors.type && (
-                                <div className="text-danger mt-2">{errors.type[0]}</div>
-                            )}
-                        </div>
-                        <div className="form-group">
-
-                        </div>
-                    </form>
+                        </tbody>
+                    </table>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button className="btn-sm" variant="primary" onClick={categorySubmit}>
-                        Save
-                    </Button>
-                    <Button className="btn-sm" variant="secondary" onClick={handleCloseModal}>
+                    <button className="btn btn-primary" onClick={handleCloseModal}>
                         Close
-                    </Button>
+                    </button>
                 </Modal.Footer>
-            </Modal> */}
+            </Modal>
         </div>
-    );
+    )
 }
 
 

@@ -26,10 +26,13 @@ class SectorRequest extends FormRequest {
 			'el_acc_no'             => 'required',
 			'el_business_acc_no'    => 'required',
 			'el_billing_date'       => 'required',
-			'el_note'               => 'nullable',
 			'internet_acc_no'       => 'required',
 			'internet_billing_date' => 'required',
-			'int_note'              => 'nullable'
+			'int_note'              => 'nullable',
+			'payment_amount'        => 'required',
+			'payment_date'          => 'required',
+			'payment_number'        => 'required',
+			'category_name'         => 'nullable',
 		];
 	}
 
@@ -38,7 +41,7 @@ class SectorRequest extends FormRequest {
 	 */
 	public function messages(): array {
 		return [
-			'name.required'                       => 'Sector name is required.',
+			'sector_name.required'                => 'Sector name is required.',
 			'contract_start_date.required'        => 'Contract start date is required.',
 			'contract_end_date.contract_end_date' => 'Contract end date is required.',
 			'el_premises_no.required'             => 'Electricity premises number is required.',
@@ -47,6 +50,9 @@ class SectorRequest extends FormRequest {
 			'el_billing_date.required'            => 'Electricity billing date is required.',
 			'internet_billing_date.required'      => 'Internet billing date is required.',
 			'internet_acc_no.required'            => 'Internet account number is required.',
+			'payment_date.required'               => 'Minimum one payment date is required.',
+			'payment_amount.required'             => 'Minimum one payment amount is required',
+			'payment_number.required'             => 'Minimum One payment number is required.',
 		];
 	}
 }

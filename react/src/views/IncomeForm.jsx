@@ -143,6 +143,7 @@ export default function IncomeForm() {
 
     const incomeSubmit = (event, stay) => {
         event.preventDefault();
+        event.currentTarget.disabled = true;
 
         if (income.id) {
 
@@ -340,10 +341,12 @@ export default function IncomeForm() {
 
 
                         <div className="buttonGroups text-end">
-                            <button onClick={(e) => incomeSubmit(e, false)}
-                                    className={income.id ? "btn btn-warning" : "custom-btn btn-add"}>
-                                {"Update"}
-                            </button>
+                            {income.id &&
+                                <button onClick={(e) => incomeSubmit(e, false)}
+                                        className={income.id ? "btn btn-warning" : "custom-btn btn-add"}>
+                                    {"Update"}
+                                </button>
+                            }
 
                             {!income.id &&
                                 <>

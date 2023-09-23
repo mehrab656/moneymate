@@ -10,6 +10,7 @@ import Pagination from "react-bootstrap/Pagination";
 import {SettingsContext} from "../contexts/SettingsContext.jsx";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 import { Modal } from "react-bootstrap";
+import {Tooltip} from "react-tooltip";
 
 
 export default function Investment() {
@@ -181,7 +182,15 @@ export default function Investment() {
                                 investments.map((investment) => (
                                     <tr className={'text-center'} key={investment.id}>
                                         <td>{initialName(investment.investor_name)+'-'+investment.id}</td>
-                                        <td>{investment.investor_name}</td>
+
+                                        <td>
+                                            <a
+                                                data-tooltip-id="investments-note"
+                                                data-tooltip-content={investment.note}>
+                                                {investment.investor_name}
+                                            </a>
+                                            <Tooltip id="investments-note"/>
+                                        </td>
                                         <td>{investment.amount}</td>
                                         <td>{investment.investment_date}</td>
                                         <td>{investment.added_by_name}</td>

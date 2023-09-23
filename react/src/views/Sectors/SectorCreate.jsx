@@ -1,5 +1,5 @@
-import React, { Fragment, useState } from 'react';
-import { Card, CardContent, Grid, TextField, Button, Typography, Box } from '@mui/material';
+import React, {Fragment, useState} from 'react';
+import {Card, CardContent, Grid, TextField, Button, Typography, Box} from '@mui/material';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -7,8 +7,9 @@ import FormControl from '@mui/material/FormControl';
 import ListItemText from '@mui/material/ListItemText';
 import Select from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
-import { useParams } from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import axiosClient from '../../axios-client';
+
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -21,8 +22,9 @@ const MenuProps = {
 };
 const names = [
     'Electricity',
-    'Internet & Mobile',
-    'Internet & TV',
+    'Gas Connection',
+    'Internet',
+    'Entertainment & TV',
     'Furniture',
     'Rental Cost',
     'Maintenance',
@@ -31,32 +33,26 @@ const names = [
 function SectorCreate() {
 
     let {id} = useParams();
-
+    const navigate = useNavigate();
+    const [errors, setErrors] = useState({});
 
     const [sectorData, setSectorData] = useState({
-        sectorName: '',
-        contactStartDate: '',
-        contactEndDate: '',
-        DEWA: '',
-        internetAccount: '',
-    });
-
-    const [contactData, setContactData] = useState({
-        contactStartDate: '',
-        contactEndDate: '',
+        name: '',
+        contractStartDate: '',
+        contractEndDate: '',
     });
 
     const [electricityData, setElectricityData] = useState({
-        DEWA: '',
+        premisesNumber: '',
         businessAccountNo: '',
         accountNumber: '',
-        billingDate: '',
+        elBillingDate: '',
     });
 
     const [internetData, setInternetData] = useState({
         accountNumber: '',
-        billingDate: '',
-        reference: '',
+        inBillingDate: '',
+        note: '',
     });
 
     const [paymentData, setPaymentData] = useState([
@@ -71,7 +67,7 @@ function SectorCreate() {
 
     const handleChangeCategory = (event) => {
         const {
-            target: { value },
+            target: {value},
         } = event;
         setCategoryName(
             // On autofill, we get a stringify value.
@@ -80,35 +76,30 @@ function SectorCreate() {
     };
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setSectorData({ ...sectorData, [name]: value });
-    };
-
-    const handleContactInputChange = (e) => {
-        const { name, value } = e.target;
-        setContactData({ ...contactData, [name]: value });
+        const {name, value} = e.target;
+        setSectorData({...sectorData, [name]: value});
     };
 
     const handleElectricityInputChange = (e) => {
-        const { name, value } = e.target;
-        setElectricityData({ ...electricityData, [name]: value });
+        const {name, value} = e.target;
+        setElectricityData({...electricityData, [name]: value});
     };
 
     const handleInternetInputChange = (e) => {
-        const { name, value } = e.target;
-        setInternetData({ ...internetData, [name]: value });
+        const {name, value} = e.target;
+        setInternetData({...internetData, [name]: value});
     };
 
     //payment
     const handlePaymentInputChange = (e, index) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         const updatedPayments = [...paymentData];
         updatedPayments[index][name] = value;
         setPaymentData(updatedPayments);
     };
 
     const handleAddPaymentRow = () => {
-        setPaymentData([...paymentData, { paymentNumber: '', paymentDate: '', amount: '' }]);
+        setPaymentData([...paymentData, {paymentNumber: '', paymentDate: '', amount: ''}]);
     };
 
     const handleRemovePaymentRow = (index) => {
@@ -120,65 +111,49 @@ function SectorCreate() {
     const sectorSubmit = (e, stay) => {
         e.preventDefault();
         // Handle form submission, e.g., send data to an API
-        console.log('Form data submitted:', categoryName);
-        console.log('staty', stay);
-
         let formData = new FormData();
-        formData.append('sector_name', sectorData.sectorName);
-        formData.append('sector_internet_account', sectorData.internetAccount);
-        formData.append('sector_contact_startdate', sectorData.contactStartDate);
-        formData.append('sector_contact_enddate', sectorData.contactEndDate);
-        formData.append('sector_dewa', sectorData.DEWA);
-
-        //for contact
-        formData.append('contact_startdate', contactData.contactStartDate);
-        formData.append('contact_enddate', contactData.contactEndDate);
+        formData.append('name', sectorData.name);
+        formData.append('contract_start_date', sectorData.contractStartDate);
+        formData.append('contract_end_date', sectorData.contractEndDate);
 
         //for electricity
-        formData.append('electricity_dewa', electricityData.DEWA);
-        formData.append('electricity_acc_no', electricityData.accountNumber);
-        formData.append('electricity_billing_date', electricityData.billingDate);
-        formData.append('electricity_business_acc_no', electricityData.businessAccountNo);
+        formData.append('el_premises_no', electricityData.premisesNumber);
+        formData.append('el_acc_no', electricityData.accountNumber);
+        formData.append('el_billing_date', electricityData.elBillingDate);
+        formData.append('el_business_acc_no', electricityData.businessAccountNo);
 
         //for internet
         formData.append('internet_acc_no', internetData.accountNumber);
-        formData.append('internet_billing_date', internetData.billingDate);
-        formData.append('internet_reference', internetData.reference);
-
+        formData.append('internet_billing_date', internetData.inBillingDate);
+        formData.append('int_note', internetData.note);
         //for payment
-        if(paymentData && paymentData.length>0){
+        if (paymentData && paymentData.length > 0) {
             paymentData.forEach(element => {
-                formData.append('payment_amount[]', element.accountNumber);
+                formData.append('payment_amount[]', element.amount);
                 formData.append('payment_date[]', element.paymentDate);
                 formData.append('payment_number[]', element.paymentNumber);
             });
         }
-
         // for category
-        if(categoryName && categoryName.length>0){
+        if (categoryName && categoryName.length > 0) {
             categoryName.forEach(element => {
                 formData.append('category_name[]', element);
             });
         }
-        let url;
-        if(id){
-            url =`/sector/${id}`
-        }else{
-            url=`/sector/new`
-        }
+
+        const url = id ? `/sector/${id}` : `/sector/add`;
 
         axiosClient.post(url, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
         }).then(() => {
-            if(stay ===true){
-                window.location.reload()
-            }else{
-                navigate('/sectors');
-            }
+            stay === true ? window.location.reload() : navigate('/sectors');
 
-        }).catch((e)=>{});
+        }).catch((error) => {
+            const response = error.response;
+            setErrors(response.data.errors);
+        });
 
     };
 
@@ -190,30 +165,34 @@ function SectorCreate() {
                     <Typography variant="h5" gutterBottom>
                         Sector Information
                     </Typography>
-                    <form >
+                    <form>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={4}>
                                 <TextField
                                     fullWidth
                                     label="Sector Name"
                                     variant="outlined"
-                                    name="sectorName"
-                                    value={sectorData.sectorName}
+                                    name="name"
+                                    value={sectorData.name}
                                     onChange={handleInputChange}
                                     focused
                                 />
+                                {/*{errors.name && <p className="error-message mt-2">{errors.name[0]}</p>}*/}
                             </Grid>
+
                             <Grid item xs={12} sm={4}>
                                 <TextField
                                     fullWidth
                                     label="Contact Start Date"
                                     type="date"
                                     variant="outlined"
-                                    name="contactStartDate"
-                                    value={sectorData.contactStartDate}
+                                    name="contractStartDate"
+                                    value={sectorData.contractStartDate}
                                     onChange={handleInputChange}
                                     focused
                                 />
+                                {errors.contract_start_date &&
+                                    <p className="error-message mt-2">{errors.contract_start_date[0]}</p>}
                             </Grid>
                             <Grid item xs={12} sm={4}>
                                 <TextField
@@ -221,76 +200,20 @@ function SectorCreate() {
                                     label="Contact End Date"
                                     type="date"
                                     variant="outlined"
-                                    name="contactEndDate"
-                                    value={sectorData.contactEndDate}
+                                    name="contractEndDate"
+                                    value={sectorData.contractEndDate}
                                     onChange={handleInputChange}
                                     focused
                                 />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="DEWA"
-                                    variant="outlined"
-                                    name="DEWA"
-                                    value={sectorData.DEWA}
-                                    onChange={handleInputChange}
-                                    focused
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Internet Account"
-                                    variant="outlined"
-                                    name="internetAccount"
-                                    value={sectorData.internetAccount}
-                                    onChange={handleInputChange}
-                                    focused
-                                />
+                                {errors.contract_end_date &&
+                                    <p className="error-message mt-2">{errors.contract_end_date[0]}</p>}
                             </Grid>
                         </Grid>
                     </form>
                 </CardContent>
             </Card>
 
-            <Card style={{ marginTop: '20px' }}>
-                <CardContent>
-                    <Typography variant="h5" gutterBottom>
-                        Contact
-                    </Typography>
-                    <form >
-                        <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Contact Start Date"
-                                    type="date"
-                                    variant="outlined"
-                                    name="contactStartDate"
-                                    value={contactData.contactStartDate}
-                                    onChange={handleContactInputChange}
-                                    focused
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Contact End Date"
-                                    type="date"
-                                    variant="outlined"
-                                    name="contactEndDate"
-                                    value={contactData.contactEndDate}
-                                    onChange={handleContactInputChange}
-                                    focused
-                                />
-                            </Grid>
-                        </Grid>
-                    </form>
-                </CardContent>
-            </Card>
-
-            <Card style={{ marginTop: '20px' }}>
+            <Card style={{marginTop: '20px'}}>
                 <CardContent>
                     <Typography variant="h5" gutterBottom>
                         Electricity
@@ -301,34 +224,42 @@ function SectorCreate() {
                                 <TextField
                                     fullWidth
                                     label="DEWA"
+                                    type="number"
                                     variant="outlined"
-                                    name="DEWA"
-                                    value={electricityData.DEWA}
+                                    name="premisesNumber"
+                                    value={electricityData.premisesNumber}
                                     onChange={handleElectricityInputChange}
                                     focused
                                 />
+                                {errors.el_premises_no &&
+                                    <p className="error-message mt-2">{errors.el_premises_no[0]}</p>}
                             </Grid>
                             <Grid item xs={12} sm={3}>
                                 <TextField
                                     fullWidth
                                     label="Business Account No"
+                                    type="number"
                                     variant="outlined"
                                     name="businessAccountNo"
                                     value={electricityData.businessAccountNo}
                                     onChange={handleElectricityInputChange}
                                     focused
                                 />
+                                {errors.el_business_acc_no &&
+                                    <p className="error-message mt-2">{errors.el_business_acc_no[0]}</p>}
                             </Grid>
                             <Grid item xs={12} sm={3}>
                                 <TextField
                                     fullWidth
                                     label="Account Number"
                                     variant="outlined"
+                                    type="number"
                                     name="accountNumber"
                                     value={electricityData.accountNumber}
                                     onChange={handleElectricityInputChange}
                                     focused
                                 />
+                                {errors.el_acc_no && <p className="error-message mt-2">{errors.el_acc_no[0]}</p>}
                             </Grid>
                             <Grid item xs={12} sm={3}>
                                 <TextField
@@ -336,23 +267,25 @@ function SectorCreate() {
                                     label="Billing Date"
                                     type="date"
                                     variant="outlined"
-                                    name="billingDate"
-                                    value={electricityData.billingDate}
+                                    name="elBillingDate"
+                                    value={electricityData.elBillingDate}
                                     onChange={handleElectricityInputChange}
                                     focused
                                 />
+                                {errors.el_billing_date &&
+                                    <p className="error-message mt-2">{errors.el_billing_date[0]}</p>}
                             </Grid>
                         </Grid>
                     </form>
                 </CardContent>
             </Card>
 
-            <Card style={{ marginTop: '20px' }}>
+            <Card style={{marginTop: '20px'}}>
                 <CardContent>
                     <Typography variant="h5" gutterBottom>
                         Internet
                     </Typography>
-                    <form >
+                    <form>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={4}>
                                 <TextField
@@ -360,10 +293,13 @@ function SectorCreate() {
                                     label="Account Number"
                                     variant="outlined"
                                     name="accountNumber"
+                                    type="number"
                                     value={internetData.accountNumber}
                                     onChange={handleInternetInputChange}
                                     focused
                                 />
+                                {errors.internet_acc_no &&
+                                    <p className="error-message mt-2">{errors.internet_acc_no[0]}</p>}
                             </Grid>
                             <Grid item xs={12} sm={4}>
                                 <TextField
@@ -371,8 +307,8 @@ function SectorCreate() {
                                     label="Billing Date"
                                     type="date"
                                     variant="outlined"
-                                    name="billingDate"
-                                    value={internetData.billingDate}
+                                    name="inBillingDate"
+                                    value={internetData.inBillingDate}
                                     onChange={handleInternetInputChange}
                                     focused
                                 />
@@ -380,93 +316,93 @@ function SectorCreate() {
                             <Grid item xs={12} sm={4}>
                                 <TextField
                                     fullWidth
-                                    label="Reference"
+                                    label="Note"
                                     variant="outlined"
-                                    name="reference"
-                                    value={internetData.reference}
+                                    name="note"
+                                    value={internetData.note}
                                     onChange={handleInternetInputChange}
                                     focused
                                 />
+                                {errors.internet_billing_date &&
+                                    <p className="error-message mt-2">{errors.internet_billing_date[0]}</p>}
                             </Grid>
                         </Grid>
                     </form>
                 </CardContent>
             </Card>
 
-            <Card style={{ marginTop: '20px' }}>
+            <Card style={{marginTop: '20px'}}>
                 <CardContent>
                     <Typography variant="h5" gutterBottom>
                         Payment
                     </Typography>
-                    <form >
-                        {paymentData.map((payment, index) => (
-                            <Grid container spacing={2} key={index} sx={{mb:2}}>
-                                <Grid item xs={12} sm={4}>
-                                    <TextField
-                                        fullWidth
-                                        label="Payment Number"
-                                        variant="outlined"
-                                        name="paymentNumber"
-                                        value={payment.paymentNumber}
-                                        onChange={(e) => handlePaymentInputChange(e, index)}
-                                        focused
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={4}>
-                                    <TextField
-                                        fullWidth
-                                        label="Payment Date"
-                                        type="date"
-                                        variant="outlined"
-                                        name="paymentDate"
-                                        value={payment.paymentDate}
-                                        onChange={(e) => handlePaymentInputChange(e, index)}
-                                        focused
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={2}>
-                                    <TextField
-                                        fullWidth
-                                        label="Amount"
-                                        variant="outlined"
-                                        name="amount"
-                                        value={payment.amount}
-                                        onChange={(e) => handlePaymentInputChange(e, index)}
-                                        focused
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={2}>
-                                    <Button
-                                        sx={{ml:2,mt:1.2}}
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={handleAddPaymentRow}
-                                    >
-                                        Add
-                                    </Button>
-                                    {index > 0 && (
-                                        <Button
-                                            sx={{ml:2,mt:1.2}}
-                                            variant="contained"
-                                            color="secondary"
-                                            onClick={() => handleRemovePaymentRow(index)}
-                                        >
-                                            Remove
-                                        </Button>
-                                    )}
-                                </Grid>
+                    {paymentData.map((payment, index) => (
+                        <Grid container spacing={2} key={index} sx={{mb: 2}}>
+                            <Grid item xs={12} sm={4}>
+                                <TextField
+                                    fullWidth
+                                    label="Payment Number"
+                                    variant="outlined"
+                                    name="paymentNumber"
+                                    value={payment.paymentNumber}
+                                    onChange={(e) => handlePaymentInputChange(e, index)}
+                                    focused
+                                />
                             </Grid>
-                        ))}
-                    </form>
+                            <Grid item xs={12} sm={4}>
+                                <TextField
+                                    fullWidth
+                                    label="Payment Date"
+                                    type="date"
+                                    variant="outlined"
+                                    name="paymentDate"
+                                    value={payment.paymentDate}
+                                    onChange={(e) => handlePaymentInputChange(e, index)}
+                                    focused
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={2}>
+                                <TextField
+                                    fullWidth
+                                    label="Amount"
+                                    variant="outlined"
+                                    name="amount"
+                                    value={payment.amount}
+                                    onChange={(e) => handlePaymentInputChange(e, index)}
+                                    focused
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={2}>
+                                <Button
+                                    sx={{ml: 2, mt: 1.2}}
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={handleAddPaymentRow}
+                                >
+                                    Add
+                                </Button>
+                                {index > 0 && (
+                                    <Button
+                                        sx={{ml: 2, mt: 1.2}}
+                                        variant="contained"
+                                        color="secondary"
+                                        onClick={() => handleRemovePaymentRow(index)}
+                                    >
+                                        Remove
+                                    </Button>
+                                )}
+                            </Grid>
+                        </Grid>
+                    ))}
                 </CardContent>
             </Card>
 
-            <Card style={{ marginTop: '20px' }}>
+            <Card style={{marginTop: '20px'}}>
                 <CardContent>
                     <Typography variant="h5" gutterBottom>
                         Associative Categories
                     </Typography>
-                    <FormControl sx={{ m: 1}} fullWidth>
+                    <FormControl sx={{m: 1}} fullWidth>
                         <InputLabel id="demo-multiple-checkbox-label"> Associative Categories</InputLabel>
                         <Select
                             labelId="demo-multiple-checkbox-label"
@@ -474,15 +410,15 @@ function SectorCreate() {
                             multiple
                             value={categoryName}
                             onChange={handleChangeCategory}
-                            input={<OutlinedInput label=" Associative Categories" />}
+                            input={<OutlinedInput label=" Associative Categories"/>}
                             renderValue={(selected) => selected.join(', ')}
                             MenuProps={MenuProps}
-                            style={{ backgroundColor: '#eeeeee' }}
+                            style={{backgroundColor: '#eeeeee'}}
                         >
                             {names.map((name) => (
                                 <MenuItem key={name} value={name}>
-                                    <Checkbox checked={categoryName.indexOf(name) > -1} />
-                                    <ListItemText primary={name} />
+                                    <Checkbox checked={categoryName.indexOf(name) > -1}/>
+                                    <ListItemText primary={name}/>
                                 </MenuItem>
                             ))}
                         </Select>
@@ -490,9 +426,9 @@ function SectorCreate() {
                 </CardContent>
             </Card>
 
-            <Box display='flex' justifyContent='center'  justifyItems='center' sx={{mt:5, mb:5}}>
-                <Button variant='contained' sx={{m:2}} onClick={(e)=> sectorSubmit(e,true)}>Create</Button>
-                <Button variant='contained' sx={{m:2}} onClick={(e)=> sectorSubmit(e,false)}>Create & Exist</Button>
+            <Box display='flex' justifyContent='center' justifyItems='center' sx={{mt: 5, mb: 5}}>
+                <Button variant='contained' sx={{m: 2}} onClick={(e) => sectorSubmit(e, true)}>Create</Button>
+                <Button variant='contained' sx={{m: 2}} onClick={(e) => sectorSubmit(e, false)}>Create & Exist</Button>
             </Box>
 
         </Fragment>
