@@ -191,8 +191,8 @@ function SectorCreate() {
                                     onChange={handleInputChange}
                                     focused
                                 />
-                                {errors.contract_start_date &&
-                                    <p className="error-message mt-2">{errors.contract_start_date[0]}</p>}
+                                {errors?.contract_start_date &&
+                                    <p className="error-message mt-2">{errors?.contract_start_date[0]}</p>}
                             </Grid>
                             <Grid item xs={12} sm={4}>
                                 <TextField
@@ -205,8 +205,8 @@ function SectorCreate() {
                                     onChange={handleInputChange}
                                     focused
                                 />
-                                {errors.contract_end_date &&
-                                    <p className="error-message mt-2">{errors.contract_end_date[0]}</p>}
+                                {errors?.contract_end_date &&
+                                    <p className="error-message mt-2">{errors?.contract_end_date[0]}</p>}
                             </Grid>
                         </Grid>
                     </form>
@@ -231,8 +231,8 @@ function SectorCreate() {
                                     onChange={handleElectricityInputChange}
                                     focused
                                 />
-                                {errors.el_premises_no &&
-                                    <p className="error-message mt-2">{errors.el_premises_no[0]}</p>}
+                                {errors?.el_premises_no &&
+                                    <p className="error-message mt-2">{errors?.el_premises_no[0]}</p>}
                             </Grid>
                             <Grid item xs={12} sm={3}>
                                 <TextField
@@ -245,8 +245,8 @@ function SectorCreate() {
                                     onChange={handleElectricityInputChange}
                                     focused
                                 />
-                                {errors.el_business_acc_no &&
-                                    <p className="error-message mt-2">{errors.el_business_acc_no[0]}</p>}
+                                {errors?.el_business_acc_no &&
+                                    <p className="error-message mt-2">{errors?.el_business_acc_no[0]}</p>}
                             </Grid>
                             <Grid item xs={12} sm={3}>
                                 <TextField
@@ -259,7 +259,7 @@ function SectorCreate() {
                                     onChange={handleElectricityInputChange}
                                     focused
                                 />
-                                {errors.el_acc_no && <p className="error-message mt-2">{errors.el_acc_no[0]}</p>}
+                                {errors?.el_acc_no && <p className="error-message mt-2">{errors?.el_acc_no[0]}</p>}
                             </Grid>
                             <Grid item xs={12} sm={3}>
                                 <TextField
@@ -272,8 +272,8 @@ function SectorCreate() {
                                     onChange={handleElectricityInputChange}
                                     focused
                                 />
-                                {errors.el_billing_date &&
-                                    <p className="error-message mt-2">{errors.el_billing_date[0]}</p>}
+                                {errors?.el_billing_date &&
+                                    <p className="error-message mt-2">{errors?.el_billing_date[0]}</p>}
                             </Grid>
                         </Grid>
                     </form>
@@ -298,8 +298,8 @@ function SectorCreate() {
                                     onChange={handleInternetInputChange}
                                     focused
                                 />
-                                {errors.internet_acc_no &&
-                                    <p className="error-message mt-2">{errors.internet_acc_no[0]}</p>}
+                                {errors?.internet_acc_no &&
+                                    <p className="error-message mt-2">{errors?.internet_acc_no[0]}</p>}
                             </Grid>
                             <Grid item xs={12} sm={4}>
                                 <TextField
@@ -323,8 +323,8 @@ function SectorCreate() {
                                     onChange={handleInternetInputChange}
                                     focused
                                 />
-                                {errors.internet_billing_date &&
-                                    <p className="error-message mt-2">{errors.internet_billing_date[0]}</p>}
+                                {errors?.internet_billing_date &&
+                                    <p className="error-message mt-2">{errors?.internet_billing_date[0]}</p>}
                             </Grid>
                         </Grid>
                     </form>

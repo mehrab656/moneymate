@@ -17,7 +17,7 @@ return new class extends Migration
 			$table->string('payment_number');
 			$table->date('date');
 			$table->double('amount');
-			$table->text('note')->default(null);
+			$table->text('note')->nullable(true)->default(null);
             $table->timestamps();
         });
     }
