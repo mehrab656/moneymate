@@ -173,11 +173,7 @@ export default function Sectors() {
         confirmButtonText: 'Yes'
       }).then((result) => {
         if (result.isConfirmed) {
-          Swal.fire(
-            'Deleted!',
-            'Your file has been deleted.',
-            'success'
-          )
+         //methods
         }
       })
   }
@@ -311,7 +307,7 @@ export default function Sectors() {
                                   new Date(nextPayment.date).getFullYear()}
                               </a>
                               <Tooltip id='next-payment-date' />
-                              {compareDates(nextPayment.date) ==='danger' && <Button className="ml-3">Pay now</Button>}
+                              {compareDates(nextPayment.date) ==='danger' && <Button onClick={(e)=> handlePay(nextPayment)} className="ml-3">Pay now</Button>}
                                 {/* <Button onClick={(e)=> handlePay(nextPayment)} className="ml-3">Pay now</Button> */}
                               
                             </td>
