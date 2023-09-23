@@ -1,21 +1,14 @@
 import React, {useEffect, useState, useContext} from "react";
 import axiosClient from "../../axios-client.js";
 import Swal from "sweetalert2";
-import {Link, useNavigate} from "react-router-dom";
+import {Link} from "react-router-dom";
 import Pagination from "react-bootstrap/Pagination";
 import WizCard from "../../components/WizCard.jsx";
-import {Button, Form, Modal} from "react-bootstrap";
-import {useStateContext} from "../../contexts/ContextProvider.jsx";
+import {Button, Modal, Table} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {
-    faCoins,
-    faEdit,
-    faPlus,
-    faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import {faPlus} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../../contexts/SettingsContext.jsx";
 import ActionButtonHelpers from "../../helper/ActionButtonHelpers.jsx";
-import ExpenseExportButton from "../../components/ExpenseExportButton.jsx";
 import {Tooltip} from "react-tooltip";
 
 export default function Sectors() {
@@ -24,9 +17,12 @@ export default function Sectors() {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
-    const [modalInvest, setModalInvest] = useState(false);
+    const [modalSector, setModalSector] = useState(false);
     const [showModal, setShowModal] = useState(false);
-    const [name, setName] = useState(null);
+    const [incomeExpense, setIncomeExpense] = useState({
+        income: 0,
+        expense: 0
+    });
 
     const {applicationSettings, userRole} = useContext(SettingsContext);
     const {num_data_per_page, default_currency} = applicationSettings;
@@ -34,8 +30,13 @@ export default function Sectors() {
     const pageSize = num_data_per_page;
     const totalPages = Math.ceil(totalCount / pageSize);
 
-    const showInvestment = (invest) => {
-        setModalInvest(invest);
+    const showSector = (sector) => {
+        axiosClient(`/sectorsIncomeExpense/${sector.id}`).then(({data}) => {
+            setIncomeExpense(data)
+        }).catch(e => {
+            console.warn(e)
+        })
+        setModalSector(sector);
         setShowModal(true);
     };
     const handleCloseModal = () => {
@@ -97,7 +98,7 @@ export default function Sectors() {
             if (result.isConfirmed) {
                 axiosClient
                     .delete(`sector/${sector.id}`)
-                    .then((res) => {
+                    .then(() => {
                         getSectors();
                         Swal.fire({
                             title: "Deleted!",
@@ -108,8 +109,10 @@ export default function Sectors() {
                     .catch((error) => {
                         Swal.fire({
                             title: "Error!",
-                            text: "sector could not be deleted.",
+                            text: error,
                             icon: "error",
+                        }).then(r => {
+                            console.warn(r);
                         });
                     });
             }
@@ -160,6 +163,35 @@ export default function Sectors() {
         return res >= 5 ? "success" : "danger";
     }
 
+    // handle pay
+    const handlePay = async (payment) => {
+        await Swal.fire({
+            title: `${default_currency + ' ' + payment.amount} has already paid?`,
+            text: "Are You sure the payment has paid!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes ! Sure',
+            cancelButtonText: 'Not Now !'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axiosClient.post(`/change-payment-status/${payment.id}`).then(({data}) => {
+
+                    Swal.fire({
+                        title: data.status === 400 ? 'Failed' : 'Paid',
+                        text: data.message,
+                        icon: data.status === 200 ? 'success' : 'error',
+                    });
+                    window.location.reload();
+                }).catch(e)
+                {
+                    console.warn(e)
+                }
+            }
+        })
+    }
+
     return (
         <div>
             <div className='d-flex justify-content-between align-content-center gap-2 mb-3'>
@@ -176,7 +208,7 @@ export default function Sectors() {
                     <input
                         className='custom-form-control'
                         type='text'
-                        placeholder='Search Investment...'
+                        placeholder='Search Sector...'
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -189,8 +221,6 @@ export default function Sectors() {
                             <th>Electricity Billing Date</th>
                             <th>Internet Billing Date</th>
                             <th>Next Payment Date</th>
-                            <th>Total Expense</th>
-                            <th>Total Income</th>
                             <th width='20%'>Action</th>
                         </tr>
                         </thead>
@@ -215,11 +245,9 @@ export default function Sectors() {
                                 <>
                                     {sectors &&
                                         sectors.length > 0 &&
-                                        sectors.map((sector, i) => {
-
-                                            var breakStatement = false;
-                                            var nextPayment;
-
+                                        sectors.map((sector) => {
+                                            let breakStatement = false;
+                                            let nextPayment;
                                             sector?.payments.map((payment) => {
                                                 if (breakStatement) {
                                                     return;
@@ -229,15 +257,6 @@ export default function Sectors() {
                                                     breakStatement = true;
                                                 }
                                             });
-
-                                            //get income and expense report
-                                            var incomeAndExpense = axiosClient.get(`/sectorsIncomeExpense/${sector.id}`)
-                                                .then(({data}) => {
-                                                    return data;
-                                                }).catch((e) => {
-                                                    console.warn(e)
-                                                })
-                                            console.log(incomeAndExpense)
 
                                             return (
                                                 <tr className={"text-center"} key={sector.id}>
@@ -283,32 +302,30 @@ export default function Sectors() {
                                                         <Tooltip id='internet-account'/>
                                                     </td>
 
-                                                    <td>
-                                                        <a
-                                                            className={
-                                                                "text-" + compareDates(nextPayment.date)
-                                                            }
-                                                            data-tooltip-id='next-payment-date'
-                                                            data-tooltip-content={`Payment Due: ${default_currency} ${nextPayment.amount}`}
-                                                        >
-                                                            {monthNames[
-                                                                    new Date(nextPayment.date).getMonth()
-                                                                    ] +
-                                                                " " +
-                                                                dateOrdinal(
-                                                                    new Date(nextPayment.date).getDate()
-                                                                ) +
-                                                                ", " +
-                                                                new Date(nextPayment.date).getFullYear()}
-                                                        </a>
-                                                        <Tooltip id='next-payment-date'/>
+                                                    <td>{
+                                                        nextPayment ?
+                                                            <>
+                                                                <a
+                                                                    className={"text-" + compareDates(nextPayment.date)}
+                                                                    data-tooltip-id='next-payment-date'
+                                                                    data-tooltip-content={`Payment Due: ${default_currency} ${nextPayment.amount}`}
+                                                                >
+                                                                    {monthNames[new Date(nextPayment.date).getMonth()] + " " + dateOrdinal(new Date(nextPayment.date).getDate()) + ", " + new Date(nextPayment.date).getFullYear()}
+                                                                </a>
+                                                                <Tooltip id='next-payment-date'/>
+                                                                {compareDates(nextPayment.date) === 'danger' &&
+                                                                    <Button onClick={() => handlePay(nextPayment)}
+                                                                            className="ml-3 btn-sm">Paid</Button>}
+                                                            </> :
+                                                            <>
+                                                                <a className="text-success">All Paid</a>
+                                                            </>
+                                                    }
                                                     </td>
-                                                    <td>{default_currency + incomeAndExpense.income}</td>
-                                                    <td>{default_currency + incomeAndExpense.expense}</td>
                                                     <td>
                                                         <ActionButtonHelpers
                                                             module={sector}
-                                                            showModule={showInvestment}
+                                                            showModule={showSector}
                                                             deleteFunc={onDelete}
                                                             params={actionParams}
                                                         />
@@ -343,42 +360,143 @@ export default function Sectors() {
                 centered
                 onHide={handleCloseModal}
                 className='custom-modal'
+                size="lg"
             >
                 <Modal.Header closeButton>
                     <Modal.Title>
-                        <span>Investment Details</span>
+                        <span>Sector Details</span>
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <table className='footable table table-bordered table-striped mb-0'>
-                        <thead></thead>
+                    <h4 className="mt-3 mb-3">Sector Details </h4>
+                    <table className='table table-bordered table-striped mb-0'>
                         <tbody>
                         <tr>
                             <td width='50%'>
-                                <strong>Investor Name :</strong>
+                                <strong>Sector :</strong>
                             </td>
-                            <td>{modalInvest?.investor_name}</td>
+                            <td> {modalSector?.name}</td>
                         </tr>
                         <tr>
                             <td width='50%'>
-                                <strong>Investment Amount :</strong>
+                                <strong>Contact Start Date :</strong>
                             </td>
-                            <td> ${modalInvest?.amount}</td>
+                            <td> {modalSector?.contract_start_date}</td>
                         </tr>
                         <tr>
                             <td width='50%'>
-                                <strong>Note :</strong>
+                                <strong>Contact End Date :</strong>
                             </td>
-                            <td>{modalInvest?.note}</td>
-                        </tr>
-                        <tr>
-                            <td width='50%'>
-                                <strong>Date :</strong>
-                            </td>
-                            <td>{modalInvest?.sector_date}</td>
+                            <td> {modalSector?.contract_end_date}</td>
                         </tr>
                         </tbody>
                     </table>
+
+                    <h4 className="mt-3 mb-3">DEWA Details </h4>
+                    <table className='table table-bordered table-striped mb-0'>
+                        <tbody>
+                        <tr>
+                            <td width='50%'>
+                                <strong>Electricity Acc No. :</strong>
+                            </td>
+                            <td> {modalSector?.el_acc_no}</td>
+                        </tr>
+                        <tr>
+                            <td width='50%'>
+                                <strong>Electricity Business Acc No:</strong>
+                            </td>
+                            <td> {modalSector?.el_business_acc_no}</td>
+                        </tr>
+                        <tr>
+                            <td width='50%'>
+                                <strong>Electricity Billing Date :</strong>
+                            </td>
+                            <td> {modalSector?.el_billing_date}</td>
+                        </tr>
+                        <tr>
+                            <td width='50%'>
+                                <strong>Electricity Premises No. :</strong>
+                            </td>
+                            <td> {modalSector?.el_premises_no}</td>
+                        </tr>
+                        <tr>
+                            <td width='50%'>
+                                <strong>Note:</strong>
+                            </td>
+                            <td> {modalSector?.el_note}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 className="mt-3 mb-3">Internet Details </h4>
+                    <table className='table table-bordered table-striped mb-0'>
+                        <tbody>
+                        <tr>
+                            <td width='50%'>
+                                <strong>Internet Acc No:</strong>
+                            </td>
+                            <td> {modalSector?.internet_acc_no}</td>
+                        </tr>
+                        <tr>
+                            <td width='50%'>
+                                <strong>Internet Billing Date:</strong>
+                            </td>
+                            <td> {modalSector?.internet_billing_date}</td>
+                        </tr>
+                        <tr>
+                            <td width='50%'>
+                                <strong>Note:</strong>
+                            </td>
+                            <td> {modalSector?.int_note}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 className="mt-3 mb-3">Income and Expense: </h4>
+                    <table className='table table-bordered table-striped mb-0'>
+                        <tbody>
+                        <tr>
+                            <td width='50%'>
+                                <strong>Total Income:</strong>
+                            </td>
+                            <td> {default_currency + ' ' + incomeExpense.income}</td>
+                        </tr>
+                        <tr>
+                            <td width='50%'>
+                                <strong>Total Expense:</strong>
+                            </td>
+                            <td> {default_currency + ' ' + incomeExpense.expense}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <h4 className="mt-3 mb-3">Payment Info </h4>
+                    <Table responsive striped bordered hover variant="light">
+
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Payment No.</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {modalSector?.payments && modalSector?.payments.length > 0 && modalSector?.payments.map((data, i) => {
+                            return (
+                                <tr key={data.id}>
+                                    <td>{i + 1}</td>
+                                    <td>{data?.payment_number}</td>
+                                    <td>{default_currency + ' ' + data?.amount}</td>
+                                    <td>{default_currency + ' ' + data?.date}</td>
+                                    {data?.status === 'paid' ? <td style={{color: 'green'}}>{data?.status}</td> :
+                                        <td style={{color: 'red'}}>{data?.status}</td>}
+                                </tr>
+                            )
+                        })}
+
+                        </tbody>
+                    </Table>
                 </Modal.Body>
                 <Modal.Footer>
                     <button className='btn btn-primary' onClick={handleCloseModal}>

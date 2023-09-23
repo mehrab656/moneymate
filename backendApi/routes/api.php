@@ -180,6 +180,7 @@ Route::middleware('auth:sanctum')->group(function () {
 	Route::delete('/sector/{sector}',[ SectorModelController::class,'delete']);
 	Route::get('/sectors/{sector}',[ SectorModelController::class,'show']);
 	Route::get('/sectorsIncomeExpense/{sector}',[ SectorModelController::class,'getTotalExpenseAndIncomeBySectorID']);
+	Route::post('/change-payment-status/{sector}',[ SectorModelController::class,'changePaymentStatus']);
 //	Route::get('/sectors',[ SectorModelController::class,'index']);
 //	Route::get('/sectors',[ SectorModelController::class,'index']);
 //	Route::get('/sectors',[ SectorModelController::class,'index']);

@@ -168,15 +168,33 @@ class SectorModelController extends Controller {
 		             ->join( 'expenses', 'categories.id', '=', 'expenses.category_id' )
 		             ->where( 'sectors.id', $sectorID )
 		             ->sum( 'expenses.amount' );
-		$income  = DB::table( 'sectors' )
-		             ->join( 'categories', 'sectors.id', '=', 'categories.sector_id' )
-		             ->join( 'incomes', 'categories.id', '=', 'incomes.category_id' )
-		             ->where( 'sectors.id', $sectorID )
-		             ->sum( 'incomes.amount' );
+
+		$income = DB::table( 'sectors' )
+		            ->join( 'categories', 'sectors.id', '=', 'categories.sector_id' )
+		            ->join( 'incomes', 'categories.id', '=', 'incomes.category_id' )
+		            ->where( 'sectors.id', $sectorID )
+		            ->sum( 'incomes.amount' );
 
 		return response()->json( [
 			'income'  => $income,
 			'expense' => $expense
 		] );
 	}
+
+	public function changePaymentStatus( $id ) {
+		$id = abs( $id );
+		if ( ! $id ) {
+			return [
+				'message' => 'Payment id is not provided',
+				'status'=>400,
+			];
+		}
+
+		$isUpdated = DB::table( 'payments' )
+		               ->where( 'id', $id )
+		               ->update( [ 'status' => 'paid' ] );
+
+		return [ 'message' => $isUpdated ? 'Payment was marked as paid!' : 'Unable to mark payment as paid','status'=>200 ];
+	}
 }
+
