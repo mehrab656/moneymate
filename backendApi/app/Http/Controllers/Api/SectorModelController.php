@@ -22,15 +22,15 @@ class SectorModelController extends Controller {
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function index(Request $request) {
+	public function index( Request $request ) {
 		$page     = $request->query( 'page', 1 );
 		$pageSize = $request->query( 'pageSize', 10 );
 
 
 		$sectors = SectorModel::skip( ( $page - 1 ) * $pageSize )
-		                     ->take( $pageSize )
-		                     ->orderBy( 'id', 'desc' )
-		                     ->get();
+		                      ->take( $pageSize )
+		                      ->orderBy( 'id', 'desc' )
+		                      ->get();
 
 		$totalCount = SectorModel::count();
 
@@ -150,5 +150,33 @@ class SectorModelController extends Controller {
 	 */
 	public function destroy( SectorModel $sectorModel ) {
 		//
+	}
+
+	public function getTotalExpenseAndIncomeBySectorID( $sectorID ) {
+		$sectorID = (int) $sectorID;
+
+		if ( ! $sectorID ) {
+			return [
+				'message'      => 'No sector id provided.',
+				'totalIncome'  => 0,
+				'totalExpense' => 0
+			];
+		}
+
+		$expense = DB::table( 'sectors' )
+		             ->join( 'categories', 'sectors.id', '=', 'categories.sector_id' )
+		             ->join( 'expenses', 'categories.id', '=', 'expenses.category_id' )
+		             ->where( 'sectors.id', $sectorID )
+		             ->sum( 'expenses.amount' );
+		$income  = DB::table( 'sectors' )
+		             ->join( 'categories', 'sectors.id', '=', 'categories.sector_id' )
+		             ->join( 'incomes', 'categories.id', '=', 'incomes.category_id' )
+		             ->where( 'sectors.id', $sectorID )
+		             ->sum( 'incomes.amount' );
+
+		return response()->json( [
+			'income'  => $income,
+			'expense' => $expense
+		] );
 	}
 }
