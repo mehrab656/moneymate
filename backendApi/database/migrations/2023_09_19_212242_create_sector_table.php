@@ -16,14 +16,14 @@ return new class extends Migration
 	        $table->string('name');
 	        $table->date('contract_start_date');
 	        $table->date('contract_end_date');
-	        $table->bigInteger('el_premises_no');
-	        $table->bigInteger('el_acc_no');
-	        $table->bigInteger('el_business_acc_no');
-	        $table->date('el_billing_date');
+	        $table->bigInteger('el_premises_no')->nullable(true);
+	        $table->bigInteger('el_acc_no')->nullable(true);
+	        $table->bigInteger('el_business_acc_no')->nullable(true);
+	        $table->date('el_billing_date')->nullable(true);
 	        $table->text('el_note')->default(null);
-	        $table->string('internet_acc_no');
-	        $table->date('internet_billing_date');
-	        $table->text('int_note')->default(null);
+	        $table->string('internet_acc_no')->nullable(true)->nullable(true);
+	        $table->date('internet_billing_date')->nullable(true);
+	        $table->text('int_note')->nullable(true)->default(null);
 	        $table->timestamps();
         });
     }
