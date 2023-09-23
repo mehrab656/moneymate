@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import { Link, useNavigate } from "react-router-dom";
 import Pagination from "react-bootstrap/Pagination";
 import WizCard from "../../components/WizCard.jsx";
-import { Button, Form, Modal } from "react-bootstrap";
+import { Button, Form, Modal, Table } from "react-bootstrap";
 import { useStateContext } from "../../contexts/ContextProvider.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -24,7 +24,7 @@ export default function Sectors() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  const [modalInvest, setModalInvest] = useState(false);
+  const [modalSector, setModalSector] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [name, setName] = useState(null);
 
@@ -34,8 +34,9 @@ export default function Sectors() {
   const pageSize = num_data_per_page;
   const totalPages = Math.ceil(totalCount / pageSize);
 
-  const showInvestment = (invest) => {
-    setModalInvest(invest);
+  const showSector = (sector) => {
+    console.log('sector', sector)
+    setModalSector(sector);
     setShowModal(true);
   };
   const handleCloseModal = () => {
@@ -159,6 +160,28 @@ export default function Sectors() {
     return res >= 5 ? "success" : "danger";
   }
 
+  // handle pay
+  const handlePay = async(payment)=>{
+    console.log('payment', payment)
+   await Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire(
+            'Deleted!',
+            'Your file has been deleted.',
+            'success'
+          )
+        }
+      })
+  }
+
   return (
     <div>
       <div className='d-flex justify-content-between align-content-center gap-2 mb-3'>
@@ -175,7 +198,7 @@ export default function Sectors() {
           <input
             className='custom-form-control'
             type='text'
-            placeholder='Search Investment...'
+            placeholder='Search Sector...'
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -217,6 +240,7 @@ export default function Sectors() {
                       sectors.map((sector, i) => {
                         var breakStatement = false;
                         var nextPayment;
+                        var status;
                         sector?.payments.map((payment) => {
                           if (breakStatement) {
                             return;
@@ -278,9 +302,7 @@ export default function Sectors() {
                                 data-tooltip-id='next-payment-date'
                                 data-tooltip-content={`Payment Due: ${default_currency} ${nextPayment.amount}`}
                               >
-                                {monthNames[
-                                  new Date(nextPayment.date).getMonth()
-                                ] +
+                                {monthNames[new Date(nextPayment.date).getMonth()] +
                                   " " +
                                   dateOrdinal(
                                     new Date(nextPayment.date).getDate()
@@ -289,13 +311,16 @@ export default function Sectors() {
                                   new Date(nextPayment.date).getFullYear()}
                               </a>
                               <Tooltip id='next-payment-date' />
+                              {compareDates(nextPayment.date) ==='danger' && <Button className="ml-3">Pay now</Button>}
+                                {/* <Button onClick={(e)=> handlePay(nextPayment)} className="ml-3">Pay now</Button> */}
+                              
                             </td>
                             <td>{0}</td>
                             <td>{0}</td>
                             <td>
                               <ActionButtonHelpers
                                 module={sector}
-                                showModule={showInvestment}
+                                showModule={showSector}
                                 deleteFunc={onDelete}
                                 params={actionParams}
                               />
@@ -330,42 +355,130 @@ export default function Sectors() {
         centered
         onHide={handleCloseModal}
         className='custom-modal'
+        size="lg"
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            <span>Investment Details</span>
+            <span>Sector Details</span>
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body scrollable={true}>
           <table className='footable table table-bordered table-striped mb-0'>
             <thead></thead>
             <tbody>
               <tr>
                 <td width='50%'>
-                  <strong>Investor Name :</strong>
+                  <strong>Sector Name :</strong>
                 </td>
-                <td>{modalInvest?.investor_name}</td>
+                <td >{modalSector?.name}</td>
               </tr>
               <tr>
-                <td width='50%'>
-                  <strong>Investment Amount :</strong>
+                <td width='50%'> 
+                  <strong>Contact Start Date :</strong>
                 </td>
-                <td> ${modalInvest?.amount}</td>
+                <td> {modalSector?.contract_start_date}</td>
               </tr>
               <tr>
-                <td width='50%'>
-                  <strong>Note :</strong>
+                <td width='50%'> 
+                  <strong>Contact End Date :</strong>
                 </td>
-                <td>{modalInvest?.note}</td>
+                <td> {modalSector?.contract_end_date}</td>
               </tr>
               <tr>
-                <td width='50%'>
-                  <strong>Date :</strong>
+                <td width='50%'> 
+                  <strong>Electricity Acc No. :</strong>
                 </td>
-                <td>{modalInvest?.sector_date}</td>
+                <td> {modalSector?.el_acc_no}</td>
               </tr>
+              <tr>
+                <td width='50%'> 
+                  <strong>Electricity Business Acc No:</strong>
+                </td>
+                <td> {modalSector?.el_business_acc_no}</td>
+              </tr>
+              <tr>
+                <td width='50%'> 
+                  <strong>Electricity Billing Date :</strong>
+                </td>
+                <td> {modalSector?.el_billing_date}</td>
+              </tr>
+              <tr>
+                <td width='50%'> 
+                  <strong>Electricity Premises No. :</strong>
+                </td>
+                <td> {modalSector?.el_premises_no}</td>
+              </tr>
+              <tr>
+                <td width='50%'> 
+                  <strong>Electricity Note:</strong>
+                </td>
+                <td> {modalSector?.el_note}</td>
+              </tr>
+              <tr>
+                <td width='50%'> 
+                  <strong>Internet Acc No:</strong>
+                </td>
+                <td> {modalSector?.internet_acc_no}</td>
+              </tr>
+              <tr>
+                <td width='50%'> 
+                  <strong>Internet Billing Date:</strong>
+                </td>
+                <td> {modalSector?.internet_billing_date}</td>
+              </tr>
+              <tr>
+                <td width='50%'> 
+                  <strong>Internet Note:</strong>
+                </td>
+                <td> {modalSector?.int_note}</td>
+              </tr>
+              
+              {/* payment table start */}
+              {/* <tr>
+                <td width='100%'>
+                  <strong></strong>
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td width='100%' className="display-flex justify-content-center">
+                  <strong>Payment Info </strong>
+                </td>
+                <td>{modalSector?.sector_date}</td>
+              </tr> */}
+
+            
+
+
             </tbody>
           </table>
+          <p className="mt-3 mb-3">Payment Info </p>
+          <Table responsive striped bordered hover variant="light">
+              
+                <thead>
+                    <tr>
+                    <th>#</th>
+                    <th>Payment No.</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {modalSector?.payments && modalSector?.payments.length>0 && modalSector?.payments.map((data, i)=>{
+                    return(
+                        <tr key={data.id}>
+                            <td>{i+1}</td>
+                            <td>{data?.payment_number}</td>
+                            <td>{data?.amount}</td>
+                            <td>{data?.date}</td>
+                            {data?.status ==='paid'? <td style={{color:'green'}}>{data?.status}</td>:<td style={{color:'red'}}>{data?.status}</td>}
+                        </tr>
+                    )
+                }) }
+                  
+                </tbody>
+                </Table>
         </Modal.Body>
         <Modal.Footer>
           <button className='btn btn-primary' onClick={handleCloseModal}>
