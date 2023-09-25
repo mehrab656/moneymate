@@ -9,6 +9,7 @@ import {faDollar, faEdit, faTrash} from "@fortawesome/free-solid-svg-icons";
 import Pagination from "react-bootstrap/Pagination";
 import DownloadAttachment from "../components/DownloadAttachment.jsx";
 import {SettingsContext} from "../contexts/SettingsContext.jsx";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function InvestmentPlan() {
 
@@ -102,6 +103,7 @@ export default function InvestmentPlan() {
 
     return (
         <div>
+           <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Investment Plan Histories</h1>
                 {userRole ==='admin' && <Link className="btn-add align-right mr-3" to="/investment-plan/new"><FontAwesomeIcon icon={faDollar}/> Add New

@@ -9,6 +9,7 @@ import Select from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
 import {useNavigate, useParams} from 'react-router-dom';
 import axiosClient from '../../axios-client';
+import MainLoader from '../../components/MainLoader';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -35,7 +36,7 @@ function SectorCreate() {
     let {id} = useParams();
     const navigate = useNavigate();
     const [errors, setErrors] = useState({});
-
+    const [loading, setLoading] = useState(false)
     const [sectorData, setSectorData] = useState({
         name: '',
         contractStartDate: '',
@@ -110,6 +111,7 @@ function SectorCreate() {
 
     const sectorSubmit = (e, stay) => {
         e.preventDefault();
+        setLoading(true)
         // Handle form submission, e.g., send data to an API
         let formData = new FormData();
         formData.append('name', sectorData.name);
@@ -149,17 +151,18 @@ function SectorCreate() {
             },
         }).then(() => {
             stay === true ? window.location.reload() : navigate('/sectors');
-
+            setLoading(false)
         }).catch((error) => {
             const response = error.response;
             setErrors(response.data.errors);
+            setLoading(false)
         });
 
     };
 
     return (
         <Fragment>
-
+            <MainLoader loaderVisible={loading} />
             <Card>
                 <CardContent>
                     <Typography variant="h5" gutterBottom>

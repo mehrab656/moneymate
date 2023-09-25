@@ -3,6 +3,7 @@ import axiosClient from "../axios-client.js";
 import DatePicker from 'react-datepicker';
 import WizCard from "../components/WizCard";
 import {SettingsContext} from "../contexts/SettingsContext";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function ExpenseReport() {
     const [loading, setLoading] = useState(false);
@@ -52,7 +53,9 @@ export default function ExpenseReport() {
                 setExpenseReport(data.expenses);
                 setTotalExpense(data.totalExpense);
                 setLoading(false);
-            });
+            }).catch((e)=>{
+                setLoading(false);
+            })
     };
 
     useEffect(() => {
@@ -74,6 +77,7 @@ export default function ExpenseReport() {
 
     return (
         <>
+        <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Expense Report</h1>
             </div>

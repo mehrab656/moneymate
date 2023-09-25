@@ -6,6 +6,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
 import {CardElement, useElements, useStripe} from "@stripe/react-stripe-js";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
@@ -51,6 +52,7 @@ export default function Login() {
 
     const onSubmit = async (ev) => {
         ev.preventDefault();
+        setLoading(true)
         const payload = {
             email: emailRef.current.value,
             password: passwordRef.current.value,
@@ -64,6 +66,7 @@ export default function Login() {
                     setUser(data.user);
                     setUserRole(data.user.role_as);
                     setToken(data.token);
+                    setLoading(false)
                 })
                 .catch((err) => {
                     const response = err.response;
@@ -79,8 +82,10 @@ export default function Login() {
                             "Attention: The configuration process is incomplete as VITE_APP_BASE_URL is not defined in config.js. Kindly refer to the installation documentation for guidance and ensure that the application is properly configured before proceeding with the login."
                         );
                     }
+                    setLoading(false)
                 });
         } else {
+            setLoading(false)
             // Handle the case when axios.defaults.baseURL is not defined
             setMessage("Attention: The configuration process is incomplete as VITE_APP_BASE_URL is not defined in config.js. Kindly refer to the installation documentation for guidance and ensure that the application is properly configured before proceeding with the login. Once configured properly make a hard reload of the page.");
         }
@@ -112,6 +117,7 @@ export default function Login() {
                 }
 
                 payLoad.paymentMethodId = paymentMethod.id;
+                setLoading(false)
             } catch (error) {
                 //    console.log(error);
                 setLoading(false); // Hide loading effect
@@ -143,6 +149,7 @@ export default function Login() {
 
     return (
         <div className="login-signup-form animated fadeInDown">
+        <MainLoader loaderVisible={loading} />
             <div className="form">
 
                 <div className="alert alert-info title">Login into your account</div>

@@ -12,6 +12,7 @@ import DatePicker from "react-datepicker";
 import {useStateContext} from "../contexts/ContextProvider";
 import {SettingsContext} from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function Budgets() {
 
@@ -65,12 +66,15 @@ export default function Budgets() {
     const {setNotification} = useStateContext();
 
     const getExpenseCategories = () => {
+        setLoading(true);
         axiosClient
             .get("/expense-categories")
             .then(({data}) => {
                 setExpenseCategories(data.categories);
+                setLoading(false);
             })
             .catch((error) => {
+                setLoading(false);
                 console.error("Error loading expense categories:", error);
             });
     };
@@ -141,7 +145,7 @@ export default function Budgets() {
 
     const budgetSubmit = (e) => {
         e.preventDefault();
-
+        setLoading(true);
         const updatedBudget = {
             ...budget,
             start_date: startDate ? new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60000).toISOString().split("T")[0] : null,
@@ -165,12 +169,14 @@ export default function Budgets() {
                         end_date: "",
                         use_id: null,
                     });
+                    setLoading(false);
                 })
                 .catch((error) => {
                     const response = error.response;
                     if (response && response.status === 422) {
                         setErrors(response.data.errors);
                     }
+                    setLoading(false);
                 });
         } else {
             axiosClient
@@ -191,8 +197,7 @@ export default function Budgets() {
                             use_id: null,
                         });
                     }
-
-
+                    setLoading(false);
                 })
                 .catch((error) => {
                     const response = error.response;
@@ -202,6 +207,7 @@ export default function Budgets() {
                     {
                         setBudgetOverlap(response.data.message);
                     }
+                    setLoading(false);
                 });
         }
     };
@@ -262,6 +268,7 @@ export default function Budgets() {
     }
     return (
         <>
+        <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Budgets</h1>
                 <Link className="btn-add" onClick={showCreateModal}><FontAwesomeIcon icon={faMoneyBill}/> Add New Budget</Link>

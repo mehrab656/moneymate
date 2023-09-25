@@ -7,6 +7,7 @@ import WizCard from "../components/WizCard";
 import {SettingsContext} from "../contexts/SettingsContext";
 import DatePicker from "react-datepicker";
 import InvestmentReportChart from "../components/InvestmentReportChart.jsx";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function InvestmentReport() {
 
@@ -48,6 +49,7 @@ export default function InvestmentReport() {
 
     return (
         <>
+         <MainLoader loaderVisible={loading} />
             <div className="col-md-8">
                 <WizCard className="animated fadeInDown">
                     <div className="row">

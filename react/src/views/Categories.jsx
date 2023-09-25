@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCoins, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { SettingsContext } from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function Categories() {
     const [loading, setLoading] = useState(false);
@@ -51,7 +52,7 @@ export default function Categories() {
 
     const categorySubmit = (event) => {
         event.preventDefault();
-
+        setLoading(true)
         if (category.id) {
             axiosClient.put(`/category/${category.id}`, category)
                 .then(() => {
@@ -63,6 +64,7 @@ export default function Categories() {
                         name: '',
                         type: 'income'
                     });
+                    setLoading(false)
                 }).catch(error => {
                 const response = error.response;
                 if (response && response.status === 409) {
@@ -70,6 +72,7 @@ export default function Categories() {
                 } else if (response && response.status === 422) {
                     setErrors(response.data.errors);
                 }
+                setLoading(false)
             });
         } else {
             axiosClient.post('category/add', category).then(({ data }) => {
@@ -81,6 +84,7 @@ export default function Categories() {
                     name: '',
                     type: 'income'
                 });
+                setLoading(false)
             }).catch(error => {
                 const response = error.response;
                 if (response && response.status === 409) {
@@ -88,6 +92,7 @@ export default function Categories() {
                 } else if (response && response.status === 422) {
                     setErrors(response.data.errors);
                 }
+                setLoading(false)
             });
         }
     };
@@ -174,6 +179,7 @@ export default function Categories() {
 
     return (
         <div>
+            <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Income & Expense Categories</h1>
                 {userRole ==='admin' &&

@@ -4,6 +4,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import axiosClient from '../axios-client.js';
 import {Modal} from 'react-bootstrap';
+import MainLoader from '../components/MainLoader.jsx';
 
 export default function Calendar() {
     const [loading, setLoading] = useState(false);
@@ -88,6 +89,7 @@ export default function Calendar() {
 
     return (
         <div>
+         <MainLoader loaderVisible={loading} />
             <FullCalendar
                 plugins={[dayGridPlugin, interactionPlugin]}
                 initialView="dayGridMonth"

@@ -5,6 +5,7 @@ import {useStateContext} from "../contexts/ContextProvider.jsx";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import WizCard from "../components/WizCard.jsx";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function InvestmentForm() {
 
@@ -122,9 +123,8 @@ export default function InvestmentForm() {
 
     const investmentSubmit = (event) => {
         event.preventDefault();
-
+        setLoading(true)
         if (investment.id) {
-
             const {amount, investment_date, note} = investment;
             const formData = new FormData();
             formData.append('account_id', selectedAccountId);
@@ -140,12 +140,14 @@ export default function InvestmentForm() {
             }).then(() => {
                 setNotification('Investments data has been updated')
                 navigate('/investments');
+                setLoading(false)
             })
                 .catch(err => {
                     const response = err.response;
                     if (response && response.status === 422) {
                         setErrors(response.data.errors);
                     }
+                    setLoading(false)
                 });
         } else {
 
@@ -169,10 +171,10 @@ export default function InvestmentForm() {
                         setNotification('Investments has been added.');
                         navigate('/investments');
                     }
-
-
+                    setLoading(false)
                 })
                 .catch((error) => {
+                    setLoading(false)
                     const response = error.response;
                     setErrors(response.data.errors);
                 });
@@ -182,6 +184,7 @@ export default function InvestmentForm() {
 
     return (
         <>
+         <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 {investment.id && <h1 className="title-text mb-0">Update Investment </h1>}
                 {!investment.id && <h1 className="title-text mb-0">Add New Investment</h1>}

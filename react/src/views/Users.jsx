@@ -8,6 +8,7 @@ import {faEdit, faTrash, faUser} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
 import Pagination from "react-bootstrap/Pagination";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function Users() {
     const [users, setUsers] = useState([]);
@@ -105,6 +106,7 @@ export default function Users() {
 
     return (
         <div>
+          <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">List of users</h1>
                 {userRole ==='admin' && <div>

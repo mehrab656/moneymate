@@ -15,6 +15,7 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward';
 import AddCardTwoToneIcon from '@mui/icons-material/AddCardTwoTone';
 import RemoveTwoToneIcon from '@mui/icons-material/RemoveTwoTone';
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function Accounts() {
 
@@ -158,7 +159,7 @@ export default function Accounts() {
 
     const bankAccountSubmit = (e) => {
         e.preventDefault();
-
+        setLoading(true)
         if (bankAccount.id) {
             axiosClient.put(`/bank-account/${bankAccount.id}`, bankAccount)
                 .then(() => {
@@ -179,7 +180,7 @@ export default function Accounts() {
                         account_number: '',
                         balance: ''
                     });
-
+                    setLoading(false)
                 }).catch(error => {
                 const response = error.response;
                 if (response && response.status === 409) {
@@ -187,6 +188,7 @@ export default function Accounts() {
                 } else if (response && response.status === 422) {
                     setErrors(response.data.errors);
                 }
+                setLoading(false)
             });
         } else {
             axiosClient.post('/bank-account/add', bankAccount)
@@ -208,6 +210,7 @@ export default function Accounts() {
                         account_number: '',
                         balance: ''
                     });
+                    setLoading(false)
                 }).catch(error => {
                 const response = error.response;
                 if (response && response.status === 409) {
@@ -215,6 +218,7 @@ export default function Accounts() {
                 } else if (response && response.status === 422) {
                     setErrors(response.data.errors);
                 }
+                setLoading(false)
             });
 
         }
@@ -272,7 +276,7 @@ export default function Accounts() {
 
     return (
         <div>
-
+            <MainLoader loaderVisible={loading} />
             <div className="mb-4">
                 <div className="row g-4">
                     <div className="col-md-6 col-lg-4">

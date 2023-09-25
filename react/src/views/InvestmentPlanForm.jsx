@@ -5,6 +5,7 @@ import {useStateContext} from "../contexts/ContextProvider.jsx";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import WizCard from "../components/WizCard.jsx";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function InvestmentPlanForm() {
     const {user} = useStateContext();
@@ -87,7 +88,7 @@ export default function InvestmentPlanForm() {
 
     const planSubmit = (event) => {
         event.preventDefault();
-
+        setLoading(true)
         if (plan.id) {
             const {userId, date, startDate, endDate} = plan;
             const formData = new FormData();
@@ -104,12 +105,14 @@ export default function InvestmentPlanForm() {
             }).then(({data}) => {
                 setNotification('Plan data has been updated')
                 navigate('/investment-plan');
+                setLoading(false)
             })
                 .catch(err => {
                     const response = err.response;
                     if (response && response.status === 422) {
                         setErrors(response.data.errors);
                     }
+                    setLoading(false)
                 });
         } else {
             const {userId, plan_name, date, startDate, endDate, purposes} = plan;
@@ -127,6 +130,7 @@ export default function InvestmentPlanForm() {
                 },
             }).then(({data}) => {
                 setNotification('Plan data has been added')
+                setLoading(false)
                 // navigate('/investment-plan');
             })
                 .catch(err => {
@@ -134,12 +138,14 @@ export default function InvestmentPlanForm() {
                     if (response && response.status === 422) {
                         setErrors(response.data.errors);
                     }
+                    setLoading(false)
                 });
         }
     };
 
     return (
         <>
+        <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 {plan.id && <h1 className="title-text mb-0">Update Investment Plan </h1>}
                 {!plan.id && <h1 className="title-text mb-0">Add New Investment Plan</h1>}

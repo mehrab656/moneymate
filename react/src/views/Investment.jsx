@@ -11,6 +11,7 @@ import {SettingsContext} from "../contexts/SettingsContext.jsx";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 import { Modal } from "react-bootstrap";
 import {Tooltip} from "react-tooltip";
+import MainLoader from "../components/MainLoader.jsx";
 
 
 export default function Investment() {
@@ -132,6 +133,7 @@ export default function Investment() {
 
     return (
         <div>
+        <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Investments Histories</h1>
                 {userRole ==='admin' &&   <Link className="btn-add align-right mr-3" to="/investments/new"><FontAwesomeIcon icon={faMinus}/> Add

@@ -10,6 +10,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faBank, faEdit, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function Banks() {
     const [loading, setLoading] = useState(false);
@@ -89,6 +90,7 @@ export default function Banks() {
 
     const bankSubmit = (e) => {
         e.preventDefault();
+        setLoading(true)
         if (bank.id) {
             axiosClient
                 .put(`/bank-names/${bank.id}`, bank)
@@ -100,7 +102,7 @@ export default function Banks() {
                         id: null,
                         bank_name: ""
                     });
-
+                    setLoading(false)
                 })
                 .catch((error) => {
                     const response = error.response;
@@ -109,6 +111,7 @@ export default function Banks() {
                     } else if (response && response.status === 422) {
                         setErrors(response.data.errors);
                     }
+                    setLoading(false)
                 });
         } else {
             axiosClient
@@ -121,6 +124,7 @@ export default function Banks() {
                         id: null,
                         bank_name: ""
                     });
+                    setLoading(false)
                 })
                 .catch((error) => {
                     const response = error.response;
@@ -129,6 +133,7 @@ export default function Banks() {
                     } else if (response && response.status === 422) {
                         setErrors(response.data.errors);
                     }
+                    setLoading(false)
                 });
         }
     };
@@ -178,6 +183,7 @@ export default function Banks() {
 
     return (
         <div>
+          <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">List Of Banks</h1>
                 <div>

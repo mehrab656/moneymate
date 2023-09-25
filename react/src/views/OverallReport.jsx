@@ -3,6 +3,7 @@ import axiosClient from "../axios-client.js";
 import WizCard from "../components/WizCard";
 import {SettingsContext} from "../contexts/SettingsContext";
 import Table from 'react-bootstrap/Table'
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function OverallReport() {
 
@@ -28,6 +29,7 @@ export default function OverallReport() {
             })
         } catch (error) {
             // console.log(error);
+            setLoading(false);
         }
     };
 
@@ -44,6 +46,7 @@ export default function OverallReport() {
 
     return (
         <>
+        <MainLoader loaderVisible={loading} />
             <WizCard className="animated fadeInDown">
                 <div className="row">
                     <div className="col-12">
