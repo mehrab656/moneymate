@@ -119,13 +119,7 @@ export default function Sectors() {
         });
     };
 
-    const actionParams = {
-        route: {
-            editRoute: "/sector/",
-            viewRoute: "",
-            deleteRoute: "",
-        },
-    };
+
 
     function dateOrdinal(date) {
         return (
@@ -191,6 +185,14 @@ export default function Sectors() {
             }
         })
     }
+
+    const actionParams = {
+      route: {
+          editRoute: "/sector/update/",
+          viewRoute: "",
+          deleteRoute: "",
+      },
+  };
 
     return (
         <div>

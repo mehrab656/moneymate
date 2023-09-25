@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 
 import {makeStyles} from '@mui/styles';
+import MainLoader from "../components/MainLoader.jsx";
 
 
 const useStyles = makeStyles({
@@ -176,6 +177,7 @@ export default function ExpenseForm() {
 
     const expenseSubmit = (event, stay) => {
         event.preventDefault();
+        setLoading(true)
         // event.currentTarget.disabled = true;
         const {amount, refundable_amount, description, reference, expense_date, note, attachment} = expense;
 
@@ -204,12 +206,13 @@ export default function ExpenseForm() {
                 setNotification(notifications)
                 stay === true ? window.location.reload() : navigate('/expenses')
             }
-
+            setLoading(false)
         }).catch(err => {
             const response = err.response;
             if (response && response.status === 422) {
                 setErrors(response.data.errors);
             }
+            setLoading(false)
         });
     };
 
@@ -223,6 +226,7 @@ export default function ExpenseForm() {
 
     return (
         <>
+        <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 {expense.id && <h1 className="title-text mb-0">Update expense : {expense.description}</h1>}
                 {!expense.id && <h1 className="title-text mb-0">Add New expense</h1>}

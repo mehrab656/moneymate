@@ -12,6 +12,7 @@ import {SettingsContext} from "../contexts/SettingsContext";
 import {Button, Image, Modal} from "react-bootstrap";
 import Dropdown from "react-bootstrap/Dropdown"
 import ActionButtonHelpers from "../helper/ActionButtonHelpers";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function Expenses() {
 
@@ -158,6 +159,7 @@ export default function Expenses() {
     }
     return (
         <div>
+            <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Expense Histories</h1>
                 {userRole === 'admin' &&

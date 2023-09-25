@@ -63,6 +63,10 @@ const router = createBrowserRouter([
                 element: <SectorCreate key="SectorCreate"/>
             },
             {
+                path: '/sector/update/:id',
+                element: <SectorCreate key="SectorCreate"/>
+            },
+            {
                 path: '/categories',
                 element: <Categories/>
             },
