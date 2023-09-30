@@ -29,14 +29,14 @@ export default function Calendar() {
                         setCalendarData([...transformedIncomeData, ...transformedExpenseData]);
                     })
                     .catch((error) => {
-                        console.log('Unable to fetch data', error);
+                        console.warn('Unable to fetch data', error);
                     })
                     .finally(() => {
                         setLoading(false);
                     });
             })
             .catch((error) => {
-                console.log('Unable to fetch data', error);
+                console.warn('Unable to fetch data', error);
             })
             .finally(() => {
                 setLoading(false);

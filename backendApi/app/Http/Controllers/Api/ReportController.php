@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 
 class ReportController extends Controller {
@@ -77,11 +78,13 @@ class ReportController extends Controller {
 		$startDate = $request->start_date;
 		$endDate   = $request->end_date;
 		$cat_id    = $request->cat_id;
+		$sec_id    = $request->sec_id;
 
-		if ( empty( $startDate ) || empty( $endDate ) ) {
-			$endDate   = Carbon::now()->toDateString();
-			$startDate = Carbon::now()->subMonth( 3 )->toDateString();
-		}
+		$response = [];
+//		if ( empty( $startDate ) || empty( $endDate ) ) {
+//			$endDate   = Carbon::now()->toDateString();
+//			$startDate = Carbon::now()->subMonth( 3 )->toDateString();
+//		}
 
 		if ( $startDate ) {
 			$startDate = date( 'Y-m-d', strtotime( $startDate ) );
@@ -89,17 +92,25 @@ class ReportController extends Controller {
 		if ( $endDate ) {
 			$endDate = date( 'Y-m-d', strtotime( $endDate ) );
 		}
-		$expenses = Expense::where( 'expense_date', '>=', $startDate )
-		                   ->where( 'expense_date', '<=', $endDate )
-		                   ->whereHas( 'category', function ( $query ) {
-			                   $query->where( 'type', 'expense' );
-		                   } );
 
+		$query = Expense::select('expenses.*')->join( 'categories', 'categories.id', '=', 'expenses.category_id' )
+		                   ->where( 'type', 'expense' );
+
+		if ( $startDate ) {
+			$query = $query->where( 'expense_date', '>=', $startDate )
+			                     ->where( 'expense_date', '<=', $endDate );
+		}
+		if ( $sec_id ) {
+			$query = $query->where( 'sector_id', $sec_id );
+		}
 		if ( $cat_id ) {
-			$expenses = $expenses->where( 'category_id', $cat_id );
+			$query = $query->where( 'category_id', $cat_id );
 		}
 
-		$expensesRes = ExpenseReportResource::collection( $expenses->orderBy( 'expense_date', 'DESC' )->get() );
+		$response['sql'] = Str::replaceArray( '?', $query->getBindings(), $query->toSql() );
+
+
+		$expensesRes = ExpenseReportResource::collection( $query->orderBy( 'expense_date', 'DESC' )->get() );
 
 
 		$sum = 0;
@@ -109,10 +120,10 @@ class ReportController extends Controller {
 			}
 		}
 
-		return response()->json( [
-			'totalExpense' => $sum,
-			'expenses'     => $expensesRes,
-		] );
+		$response['totalExpense'] = $sum;
+		$response['expenses']     = $expensesRes;
+
+		return response()->json( $response );
 	}
 
 	public function investmentReport( Request $request ) {

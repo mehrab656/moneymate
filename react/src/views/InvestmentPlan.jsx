@@ -90,7 +90,7 @@ export default function InvestmentPlan() {
                         icon: 'success',
                     });
                 }).catch((error) => {
-                    //console.log(error);
+                    console.warn(error);
                     Swal.fire({
                         title: 'Error!',
                         text: 'Income could not be deleted.',

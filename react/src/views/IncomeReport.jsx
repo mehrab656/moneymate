@@ -40,8 +40,6 @@ export default function IncomeReport() {
     }, [setIncomeCategories]);
 
     const getIncomeReport = () => {
-        console.log(endDate)
-
         setLoading(true);
         axiosClient
             .get("/report/income", {

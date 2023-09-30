@@ -162,7 +162,6 @@ class ExpenseController extends Controller {
 	 * @return JsonResponse
 	 */
 	public function categories(): JsonResponse {
-		$user       = Auth::user();
 		$categories = Category::where( 'type', 'expense' )->get();
 
 		return response()->json( [ 'categories' => $categories ] );

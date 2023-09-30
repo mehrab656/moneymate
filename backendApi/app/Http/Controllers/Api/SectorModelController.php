@@ -196,5 +196,11 @@ class SectorModelController extends Controller {
 
 		return [ 'message' => $isUpdated ? 'Payment was marked as paid!' : 'Unable to mark payment as paid','status'=>200 ];
 	}
+
+	public function sectorList(): JsonResponse {
+		$sectors = SectorModel::get();
+
+		return response()->json( [ 'sectors' => $sectors ] );
+	}
 }
 

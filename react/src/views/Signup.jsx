@@ -54,14 +54,14 @@ export default function Signup() {
 
                 if (error) {
                     // Handle any errors from Stripe
-                    console.log(error);
+                    console.warn(error);
                     setLoading(false); // Hide loading effect
                     return;
                 }
                 payLoad.paymentMethodId = paymentMethod.id;
                 setLoading(false);
             } catch (error) {
-                console.log(error);
+                console.warn(error);
                 setLoading(false); // Hide loading effect
                 return;
             }

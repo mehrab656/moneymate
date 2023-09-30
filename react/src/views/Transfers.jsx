@@ -77,7 +77,7 @@ export default function Transfers() {
                 setLoading(false)
             })
             .catch(error => {
-                console.log('Error fetching bank accounts:', error)
+                console.warn('Error fetching bank accounts:', error)
                 setLoading(false)
             });
     }
@@ -103,7 +103,7 @@ export default function Transfers() {
                 setLoading(false)
             })
             .catch((error) => {
-                console.log("Unable to fetch transfer histories", error);
+                console.warn("Unable to fetch transfer histories", error);
                 setLoading(false)
             })
             .finally(() => {

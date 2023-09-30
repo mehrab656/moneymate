@@ -85,7 +85,7 @@ export default function Debts() {
             })
             .catch(error => {
                 setLoading(true)
-                console.log('Error fetching bank accounts:', error)
+                console.warn('Error fetching bank accounts:', error)
             });
     }
 
@@ -97,7 +97,7 @@ export default function Debts() {
             setTotalCount(data.total);
         }).catch(error => {
             setLoading(false);
-            console.log('Unable to fetch debt data', error);
+            console.warn('Unable to fetch debt data', error);
         })
     }
 
@@ -108,7 +108,6 @@ export default function Debts() {
     }, [currentPage, pageSize]);
 
     const edit = (selectedDebt) => {
-        console.log(selectedDebt);
         setSelectedAccountId(selectedDebt.account_id);
         setDebt(selectedDebt);
         setErrors(null);
@@ -171,7 +170,7 @@ export default function Debts() {
                 .catch(error => {
                     // Handle error
                     setLoading(false);
-                    console.log('Error creating debt:', error);
+                    console.warn('Error creating debt:', error);
                     setErrors(error.response.data.errors); // Set the error messages received from the server
                 })
                 .finally(() => {

@@ -110,8 +110,7 @@ export default function Login() {
                 });
 
                 if (error) {
-                    // Handle any errors from Stripe
-                    // console.log(error);
+                    console.warn(error);
                     setLoading(false); // Hide loading effect
                     return;
                 }
@@ -119,7 +118,7 @@ export default function Login() {
                 payLoad.paymentMethodId = paymentMethod.id;
                 setLoading(false)
             } catch (error) {
-                //    console.log(error);
+                   console.warn(error);
                 setLoading(false); // Hide loading effect
                 return;
             }

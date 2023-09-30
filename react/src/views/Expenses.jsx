@@ -136,7 +136,7 @@ export default function Expenses() {
                             icon: 'success',
                         });
                     }).catch((error) => {
-                        console.log(error);
+                        console.warn(error);
                         Swal.fire({
                             title: 'Error!',
                             text: 'Expense could not be deleted.',

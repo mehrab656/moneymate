@@ -59,7 +59,7 @@ export default function BudgetForm() {
                 })
                 .catch((error) => {
                     setLoading(true);
-                    console.log("Unable to load budget", error);
+                    console.warn("Unable to load budget", error);
                 });
         }, []);
     }

@@ -28,7 +28,7 @@ export default function OverallReport() {
                 setLoading(false);
             })
         } catch (error) {
-            // console.log(error);
+            console.warn(error);
             setLoading(false);
         }
     };

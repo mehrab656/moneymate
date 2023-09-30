@@ -9,10 +9,9 @@ export default function MonthlyExpenseData() {
             .get('/expenses/graph')
             .then(({data}) => {
                 setExpenseData(data);
-                console.log(data);
             })
             .catch((error) => {
-                console.log('Unable to fetch expense data');
+                console.warn('Unable to fetch expense data:' + error);
             });
     };
 

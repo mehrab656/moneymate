@@ -32,7 +32,7 @@ export default function InvestmentReport() {
                 setLoading(false);
             })
         } catch (error) {
-            // console.log(error);
+            console.warn(error);
         }
     };
 

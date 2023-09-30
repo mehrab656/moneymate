@@ -88,7 +88,6 @@ export default function Budgets() {
                 setTotalCount(data.total);
             }).catch((error) => {
             setLoading(false);
-          //  console.log(error);
         });
     }
 
@@ -247,10 +246,9 @@ export default function Budgets() {
                         icon: 'success',
                     });
                 }).catch((error) => {
-                    console.log(error);
                     Swal.fire({
                         title: 'Error!',
-                        text: 'Budget could not be deleted.',
+                        text: 'Budget could not be deleted.'+error,
                         icon: 'error',
                     });
                 });

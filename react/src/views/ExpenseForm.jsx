@@ -48,12 +48,11 @@ export default function ExpenseForm() {
     const [bankAccounts, setBankAccounts] = useState([]);
     const [selectUserID, setUsers] = useState([]);
     const {setNotification} = useStateContext();
-    const [selectedCategoryId, setSelectedCategoryId] = useState('');
     const [selectedAccountId, setSelectedAccountId] = useState('');
     const [selectedUserId, setSelectedUserId] = useState('');
     const navigate = useNavigate();
     const [insufficientBalanceForCategory, setInsufficientBalanceForCategory] = useState(null);
-    const {applicationSettings, userRole} = useContext(SettingsContext);
+    const {applicationSettings} = useContext(SettingsContext);
 
     const [categoryValue, setCategoryValue] = useState(null);
     const [storeCategoryValue, setStoreCategoryValue] = useState(null);
@@ -62,7 +61,6 @@ export default function ExpenseForm() {
     const {
         last_expense_cat_id,
         last_expense_account_id,
-        last_expense_date,
     } = applicationSettings;
 
     useEffect(() => {
@@ -71,7 +69,7 @@ export default function ExpenseForm() {
                 setBankAccounts(data.data);
             })
             .catch(error => {
-                console.log('Error fetching bank accounts:', error)
+                console.warn('Error fetching bank accounts:', error)
             });
 
         axiosClient.get('/expense-categories')
@@ -108,12 +106,6 @@ export default function ExpenseForm() {
             setCategoryValue(storeCategoryValue)
         }
     }, [expenseCategories, storeCategoryValue])
-
-
-    const handleCategoryChange = (event) => {
-        setSelectedCategoryId(event.target.value);
-    };
-
 
     useEffect(() => {
         if (id) {

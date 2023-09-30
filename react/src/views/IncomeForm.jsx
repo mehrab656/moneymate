@@ -58,7 +58,7 @@ export default function IncomeForm() {
                 setSelectedAccountId(data.data[0].id)
                 setBankAccounts(data.data);
             }).catch(error => {
-            console.log('Error fetching bank accounts:', error)
+            console.warn('Error fetching bank accounts:', error)
         });
 
 

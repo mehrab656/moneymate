@@ -10,17 +10,18 @@ export default function ExpenseReport() {
     const [expenseReport, setExpenseReport] = useState([]);
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
-
     const [expenseCategories, setExpenseCategories] = useState([]);
+    const [sectors, setSectors] = useState([]);
     const [selectedCategoryId, setSelectedCategoryId] = useState('');
-    const [totalExpense,setTotalExpense] = useState(parseFloat(0).toFixed(2));
-    
+    const [selectedSectorId, setSelectedSectorId] = useState('');
+    const [totalExpense, setTotalExpense] = useState(parseFloat(0).toFixed(2));
+
     const {applicationSettings} = useContext(SettingsContext);
     let {
         default_currency
     } = applicationSettings;
 
-    if (default_currency===undefined){
+    if (default_currency === undefined) {
         default_currency = 'AED ';
     }
 
@@ -28,34 +29,40 @@ export default function ExpenseReport() {
         axiosClient.get('/expense-categories')
             .then(({data}) => {
                 setExpenseCategories(data.categories);
-                //no need to select the first one. it's confusing.
-                // if(data?.categories.length>0){
-                //     setSelectedCategoryId(data?.categories[0].id)
-                // }
             })
             .catch(error => {
                 console.error('Error loading expense categories:', error);
                 // handle error, e.g., show an error message to the user
             });
+
+        axiosClient.get('/sectors-list')
+            .then(({data}) => {
+                setSectors(data.sectors);
+            }).catch(error => {
+            console.warn('Error Loading sectors: ', error);
+        })
     }, [setExpenseCategories]);
 
-
-    
 
     const getExpenseReport = () => {
         setLoading(true);
         setTotalExpense(0);
         axiosClient
             .get("/report/expense", {
-                params: {start_date: startDate, end_date: endDate, cat_id:selectedCategoryId},
+                params: {
+                    start_date: startDate,
+                    end_date: endDate,
+                    cat_id: selectedCategoryId,
+                    sec_id: selectedSectorId
+                },
             })
             .then(({data}) => {
                 setExpenseReport(data.expenses);
                 setTotalExpense(data.totalExpense);
                 setLoading(false);
-            }).catch((e)=>{
-                setLoading(false);
-            })
+            }).catch((e) => {
+            setLoading(false);
+        })
     };
 
     useEffect(() => {
@@ -67,7 +74,7 @@ export default function ExpenseReport() {
         e.preventDefault();
         getExpenseReport();
     };
-    
+
     const resetFilterParameter = () => {
         setStartDate(null);
         setEndDate(null);
@@ -77,36 +84,56 @@ export default function ExpenseReport() {
 
     return (
         <>
-        <MainLoader loaderVisible={loading} />
+            <MainLoader loaderVisible={loading}/>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Expense Report</h1>
             </div>
-            <WizCard className="animated fadeInDown wiz-card-mh">
+            <WizCard className="animated fadeInDown wiz-card-mh expx">
                 <div className="row">
                     <form onSubmit={handleSubmit}>
-                        <div className="col-4">
+                        <div className="col-3">
                             <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="expense_category">Expense Category</label>
-                                    <select
-                                        className="custom-form-control"
-                                        value={selectedCategoryId}
-                                        filter={true}
-                                        id="expense-category"
-                                        name="expense-category"
-                                        onChange={(event) => {
-                                            const value = event.target.value || '';
-                                            setSelectedCategoryId(value);
-                                        }}>
-                                        <option defaultValue>Filter By Category</option>
-                                        {expenseCategories.map(category => (
-                                            <option key={category.id} value={category.id}>
-                                                {category.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
+                                <label className="custom-form-label" htmlFor="expense_category">Sectors</label>
+                                <select
+                                    className="custom-form-control"
+                                    value={selectedSectorId}
+                                    id="sector"
+                                    name="sector"
+                                    onChange={(event) => {
+                                        const value = event.target.value || '';
+                                        setSelectedSectorId(value);
+                                    }}>
+                                    <option defaultValue>Filter By Sectors</option>
+                                    {sectors.map(sector => (
+                                        <option key={"sec-" + sector.id} value={sector.id}>
+                                            {sector.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
                         <div className="col-3">
+                            <div className="form-group">
+                                <label className="custom-form-label" htmlFor="expense_category">Expense Category</label>
+                                <select
+                                    className="custom-form-control"
+                                    value={selectedCategoryId}
+                                    id="expense-category"
+                                    name="expense-category"
+                                    onChange={(event) => {
+                                        const value = event.target.value || '';
+                                        setSelectedCategoryId(value);
+                                    }}>
+                                    <option defaultValue>Filter By Category</option>
+                                    {expenseCategories.map(category => (
+                                        <option key={'cat-' + category.id} value={category.id}>
+                                            {category.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                        <div className="col-2">
                             <div className="form-group">
                                 <label className="custom-form-label" htmlFor="start_date">Start Date</label>
                                 <DatePicker
@@ -118,7 +145,7 @@ export default function ExpenseReport() {
                                 />
                             </div>
                         </div>
-                        <div className="col-3">
+                        <div className="col-2">
                             <div className="form-group">
                                 <label className="custom-form-label" htmlFor="end_date">End Date:</label>
                                 <DatePicker
@@ -160,19 +187,19 @@ export default function ExpenseReport() {
                             )}
                             {!loading && (
                                 <tbody>
-                                {expenseReport.length===0?(
+                                {expenseReport.length === 0 ? (
                                     <tr>
                                         <td colSpan={4} className="text-center">
                                             Nothing found !
                                         </td>
                                     </tr>
-                                ):(
+                                ) : (
                                     expenseReport.map(expense => (
                                         <tr key={expense.id} className={'text-start'}>
                                             <td>{expense.expense_date}</td>
                                             <td>{expense.category_name}</td>
-                                            <td >{expense.description}</td>
-                                            <td className={'text-end'}>{default_currency +' '+ expense.amount}</td>
+                                            <td>{expense.description}</td>
+                                            <td className={'text-end'}>{default_currency + ' ' + expense.amount}</td>
                                         </tr>
                                     ))
                                 )}
@@ -182,7 +209,7 @@ export default function ExpenseReport() {
                             <tfoot>
                             <tr>
                                 <td className={'text-center fw-bold'} colSpan={3}>Total Expense</td>
-                                <td className={'text-end fw-bold'}>{default_currency +' ' + parseFloat(totalExpense).toFixed(2)}</td>
+                                <td className={'text-end fw-bold'}>{default_currency + ' ' + parseFloat(totalExpense).toFixed(2)}</td>
                             </tr>
                             </tfoot>
                         </table>
