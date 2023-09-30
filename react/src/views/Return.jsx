@@ -10,6 +10,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCoins, faEdit, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function Return() {
     const [loading, setLoading] = useState(false);
@@ -44,24 +45,26 @@ export default function Return() {
 
     const submitForUpdate = (event) => {
         event.preventDefault();
+        setLoading(true)
         if (parseFloat(marketReturn.return_amount) > (parseFloat(marketReturn.refundable_amount) - parseFloat(marketReturn.refunded_amount))) {
             setErrors({
                 type: ['Return amount can\'t exceed the remaining refundable amount.']
             });
         } else {
             setErrors(null);
-
             axiosClient.post(`/return/${marketReturn.id}`, marketReturn)
                 .then(({data}) => {
                     setNotification("Return added");
                     setShowModal(false);
                     getMarketReturns(currentPage, pageSize);
                     setMarketReturn(data);
+                    setLoading(false)
                 }).catch(error => {
                 const response = error.response;
                 if (response && response.status === 422) {
                     setErrors(response.data.errors);
                 }
+                setLoading(false)
             });
         }
     };
@@ -118,6 +121,7 @@ export default function Return() {
 
     return (
         <div>
+         <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Market Returns</h1>
             </div>

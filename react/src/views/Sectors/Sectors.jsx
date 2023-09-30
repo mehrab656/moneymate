@@ -10,6 +10,7 @@ import {faPlus} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../../contexts/SettingsContext.jsx";
 import ActionButtonHelpers from "../../helper/ActionButtonHelpers.jsx";
 import {Tooltip} from "react-tooltip";
+import MainLoader from "../../components/MainLoader.jsx";
 
 export default function Sectors() {
     const [loading, setLoading] = useState(false);
@@ -119,13 +120,7 @@ export default function Sectors() {
         });
     };
 
-    const actionParams = {
-        route: {
-            editRoute: "/sector/",
-            viewRoute: "",
-            deleteRoute: "",
-        },
-    };
+
 
     function dateOrdinal(date) {
         return (
@@ -192,8 +187,17 @@ export default function Sectors() {
         })
     }
 
+    const actionParams = {
+      route: {
+          editRoute: "/sector/update/",
+          viewRoute: "",
+          deleteRoute: "",
+      },
+  };
+
     return (
         <div>
+          <MainLoader loaderVisible={loading} />
             <div className='d-flex justify-content-between align-content-center gap-2 mb-3'>
                 <h1 className='title-text mb-0'>Sectors Histories</h1>
                 {userRole === "admin" && (

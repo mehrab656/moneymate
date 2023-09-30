@@ -4,6 +4,7 @@ import axiosClient from '../axios-client.js';
 import {Button, Form, Modal} from 'react-bootstrap';
 import {useStateContext} from "../contexts/ContextProvider.jsx";
 import DatePicker from "react-datepicker";
+import MainLoader from '../components/MainLoader.jsx';
 
 export default function ManageDebt() {
     let {id} = useParams();
@@ -99,7 +100,7 @@ export default function ManageDebt() {
 
     const handleBorrowSaveChanges = (e) => {
         e.preventDefault();
-
+        setLoading(true)
         const borrowData = {
             ...borrow,
             date: date ? new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().split("T")[0] : null,
@@ -134,9 +135,10 @@ export default function ManageDebt() {
                         setDate(null);
                     }
                 }
-
+                setLoading(false)
             })
             .catch((error) => {
+                setLoading(false)
                 const response = error.response;
                 setErrors(response.data.errors);
             });
@@ -152,7 +154,7 @@ export default function ManageDebt() {
 
     const handleRepaySaveChanges = (e) => {
         e.preventDefault();
-
+        setLoading(true)
         const repaymentData = {
             ...repayment,
             date: date ? new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().split("T")[0] : null,
@@ -199,11 +201,12 @@ export default function ManageDebt() {
                         setDate(null);
                     }
                 }
-
+                setLoading(false)
             })
             .catch((error) => {
                 const response = error.response;
                 setErrors(response.data.errors);
+                setLoading(false)
             });
 
 
@@ -217,6 +220,7 @@ export default function ManageDebt() {
 
     return (
         <div>
+         <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0 uppercase">Manage {debt.type}</h1>
             </div>

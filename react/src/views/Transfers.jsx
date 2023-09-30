@@ -9,6 +9,7 @@ import Pagination from "react-bootstrap/Pagination";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faMoneyBillTransfer} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function Transfers() {
 
@@ -32,6 +33,14 @@ export default function Transfers() {
     const [selectedToAccountId, setSelectedToAccountId] = useState('');
     const [bankAccounts, setBankAccounts] = useState([]);
     const [transferDate, setTransferDate] = useState(null);
+
+    const [loading, setLoading] = useState(true); // Initialize loading state as true
+    const [transferHistories, setTransferHistories] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
+    const [searchTerm, setSearchTerm] = useState("");
+
+
     const handleTransferDateChange = (date) => {
         setTransferDate(date);
     };
@@ -61,20 +70,19 @@ export default function Transfers() {
     };
 
     const getBankAccount = () => {
+        setLoading(true)
         axiosClient.get('/all-bank-account')
             .then(({data}) => {
                 setBankAccounts(data.data);
+                setLoading(false)
             })
             .catch(error => {
                 console.log('Error fetching bank accounts:', error)
+                setLoading(false)
             });
     }
 
-    const [loading, setLoading] = useState(true); // Initialize loading state as true
-    const [transferHistories, setTransferHistories] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalCount, setTotalCount] = useState(0);
-    const [searchTerm, setSearchTerm] = useState("");
+
 
     const pageSize = num_data_per_page;
     const totalPages = Math.ceil(totalCount / pageSize);
@@ -86,14 +94,17 @@ export default function Transfers() {
     });
 
     const getTransferHistories = (page, pageSize) => {
+        setLoading(true)
         axiosClient
             .get("/transfer/histories", {params: {page, pageSize}})
             .then(({data}) => {
                 setTransferHistories(data.data);
                 setTotalCount(data.total);
+                setLoading(false)
             })
             .catch((error) => {
                 console.log("Unable to fetch transfer histories", error);
+                setLoading(false)
             })
             .finally(() => {
                 setLoading(false); // Set loading state to false after data is fetched
@@ -131,7 +142,7 @@ export default function Transfers() {
 
     const transferSubmit = (e) => {
         e.preventDefault();
-
+        setLoading(true)
         const transferData = {
             ...transfer,
             transfer_date: transferDate ? new Date(transferDate.getTime() - transferDate.getTimezoneOffset() * 60000).toISOString().split("T")[0] : null,
@@ -151,6 +162,7 @@ export default function Transfers() {
                 getTransferHistories();
                 setShowModal(false);
                 setNotification('Account transfer has been done');
+                setLoading(false)
             })
             .catch((error) => {
                 const response = error.response;
@@ -159,11 +171,13 @@ export default function Transfers() {
                 } else {
                     setInsufficientBalance(response.data.message);
                 }
+                setLoading(false)
             });
     };
 
     return (
         <>
+        <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Transfer Histories</h1>
                 <div>

@@ -3,6 +3,7 @@ import {useContext, useEffect, useState} from "react";
 import Swal from "sweetalert2";
 import axiosClient from "../axios-client.js";
 import { SettingsContext } from "../contexts/SettingsContext.jsx";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function Wallets() {
 
@@ -49,10 +50,14 @@ export default function Wallets() {
 
 
     const getWallets = () => {
+        setLoading(true)
         axiosClient.get('/wallets')
             .then(({data}) => {
                 setWallets(data.data);
-            });
+                setLoading(false)
+            }).catch((e)=>{
+                setLoading(false)
+            })
     }
 
 
@@ -60,12 +65,9 @@ export default function Wallets() {
         getWallets();
     }, []);
 
-
-
-
-
     return (
         <>
+        <MainLoader loaderVisible={loading} />
             <div
                 style={{
                     display: "flex",

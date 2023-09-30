@@ -11,6 +11,7 @@ import {AccountBalanceRounded, AddTwoTone} from "@mui/icons-material";
 import BalanceTransfer from "../components/BalanceTransfer.jsx";
 import BudgetExpensesChart from "../components/BudgetExpensesChart.jsx";
 import {SettingsContext} from "../contexts/SettingsContext";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function Dashboard() {
 
@@ -45,6 +46,7 @@ export default function Dashboard() {
                     setLoading(false);
                 })
         } catch (error) {
+            setLoading(false)
         }
     }, []);
 
@@ -72,6 +74,7 @@ export default function Dashboard() {
 
     return (
         <>
+        <MainLoader loaderVisible={loading} />
             <div className="mb-4">
                 <div className="row g-4">
                     <div className="col-md-6 col-lg-4">

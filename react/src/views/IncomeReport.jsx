@@ -3,6 +3,7 @@ import axiosClient from "../axios-client.js";
 import DatePicker from 'react-datepicker';
 import WizCard from "../components/WizCard";
 import {SettingsContext} from "../contexts/SettingsContext";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function IncomeReport() {
     const [loading, setLoading] = useState(false);
@@ -70,6 +71,7 @@ export default function IncomeReport() {
     };
     return (
         <>
+         <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Income Report</h1>
             </div>

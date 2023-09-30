@@ -2,6 +2,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {useStateContext} from "../contexts/ContextProvider.jsx";
 import axiosClient from "../axios-client.js";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function WalletForm() {
     let {id} = useParams();
@@ -17,10 +18,14 @@ export default function WalletForm() {
     });
 
     const getWallet = () => {
+        setLoading(true)
         axiosClient.get(`/wallets/${id}`)
             .then(({data}) => {
                 setWallet(data);
-            });
+                setLoading(false)
+            }).catch((e)=>{
+                setLoading(false)
+            })
     }
 
     if (id) {
@@ -31,12 +36,13 @@ export default function WalletForm() {
 
     const walletSubmit = (e) => {
         e.preventDefault();
+        setLoading(true)
         if (wallet.id) {
-
             axiosClient.put(`/wallets/${wallet.id}`, wallet)
                 .then(() => {
                     setNotification("Wallet name has been updated");
                     navigate('/wallets');
+                    setLoading(false)
                 }).catch(error => {
                 const response = error.response;
                 if (response && response.status === 409) {
@@ -44,12 +50,14 @@ export default function WalletForm() {
                 } else if (response && response.status === 422) {
                     setErrors(response.data.errors);
                 }
+                setLoading(false)
             });
 
         } else {
             axiosClient.post('/wallets', wallet).then(({data}) => {
                 setNotification(`${wallet.name} has been created`);
                 navigate('/wallets');
+                setLoading(false)
             }).catch(error => {
                 const response = error.response;
                 if (response && response.status === 409) {
@@ -57,6 +65,7 @@ export default function WalletForm() {
                 } else if (response && response.status === 422) {
                     setErrors(response.data.errors);
                 }
+                setLoading(false)
             });
         }
     }
@@ -64,6 +73,7 @@ export default function WalletForm() {
 
     return (
         <>
+         <MainLoader loaderVisible={loading} />
             {wallet.id && <h1>Update Wallet Name: {wallet.name}</h1>}
             {!wallet.id && <h1>Add New Wallet</h1>}
 

@@ -10,6 +10,7 @@ import Pagination from "react-bootstrap/Pagination";
 import DownloadAttachment from "../components/DownloadAttachment.jsx";
 import {SettingsContext} from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function Incomes() {
 
@@ -110,6 +111,7 @@ export default function Incomes() {
 
     return (
         <div>
+         <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Income Histories</h1>
                 {userRole === 'admin' &&

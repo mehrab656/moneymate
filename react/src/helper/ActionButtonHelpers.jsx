@@ -7,7 +7,6 @@ import {SettingsContext} from "../contexts/SettingsContext";
 
 const ActionButtonHelpers = ({module, showModule, deleteFunc, params, editDropdown, showEditDropdown}) => {
     const {applicationSettings, userRole} = useContext(SettingsContext);
-
     return (
         <Dropdown>
             <Dropdown.Toggle variant="success" id="expense-actions">

@@ -4,6 +4,7 @@ import axiosClient from "../axios-client.js";
 import {useStateContext} from "../contexts/ContextProvider.jsx";
 import WizCard from "../components/WizCard";
 import {SettingsContext} from "../contexts/SettingsContext";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function ApplicationSettingsForm() {
     const [applicationSettings, setApplicationSettings] = useState({
@@ -73,20 +74,21 @@ export default function ApplicationSettingsForm() {
     const applicationSettingsSubmit = async (e) => {
         e.preventDefault();
         setSaving(true);
-
-
+        setLoading(true)
         axiosClient
             .put("/store-application-setting", applicationSettings)
             .then(() => {
                 setNotification("Application settings have been updated");
                 navigate("/application-settings");
                 setSettingsContext(applicationSettings); // Update settings in the context
+                setLoading(false)
             })
             .catch((error) => {
                 const response = error.response;
                 if (response && response.status === 422) {
                     setErrors(response.data.errors);
                 }
+                setLoading(false)
             })
             .finally(() => {
                 setSaving(false);
@@ -95,6 +97,7 @@ export default function ApplicationSettingsForm() {
 
     return (
         <>
+        <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Application settings</h1>
             </div>

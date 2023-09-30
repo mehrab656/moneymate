@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 
 import {makeStyles} from '@mui/styles';
+import MainLoader from "../components/MainLoader.jsx";
 
 const useStyles = makeStyles({
     option: {
@@ -144,9 +145,8 @@ export default function IncomeForm() {
     const incomeSubmit = (event, stay) => {
         event.preventDefault();
         event.currentTarget.disabled = true;
-
+        setLoading(true)
         if (income.id) {
-
             const {amount, description, reference, income_date, note, attachment} = income;
             const formData = new FormData();
             formData.append('account_id', selectedAccountId);
@@ -169,12 +169,14 @@ export default function IncomeForm() {
                 } else {
                     navigate('/incomes');
                 }
+                setLoading(false)
             })
                 .catch(err => {
                     const response = err.response;
                     if (response && response.status === 422) {
                         setErrors(response.data.errors);
                     }
+                    setLoading(false)
                 });
         } else {
             const {amount, description, reference, income_date, note, attachment} = income;
@@ -201,10 +203,12 @@ export default function IncomeForm() {
                     } else {
                         navigate('/incomes');
                     }
+                    setLoading(false)
                 })
                 .catch((error) => {
                     const response = error.response;
                     setErrors(response.data.errors);
+                    setLoading(false)
                 });
         }
     };
@@ -218,7 +222,7 @@ export default function IncomeForm() {
 
     return (
         <>
-
+        <MainLoader loaderVisible={loading} />
             <WizCard className="animated fadeInDown wiz-card-mh">
                 <h3>
                     {income.id && <h1 className="title-text mb-0">{income.description}</h1>}

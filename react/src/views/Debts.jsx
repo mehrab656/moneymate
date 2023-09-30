@@ -11,6 +11,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEdit, faMoneyCheck, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function Debts() {
 
@@ -76,11 +77,14 @@ export default function Debts() {
     };
 
     const getBankAccounts = () => {
+        setLoading(true)
         axiosClient.get('/all-bank-account')
             .then(({data}) => {
                 setBankAccounts(data.data);
+                setLoading(true)
             })
             .catch(error => {
+                setLoading(true)
                 console.log('Error fetching bank accounts:', error)
             });
     }
@@ -92,6 +96,7 @@ export default function Debts() {
             setDebts(data.debts);
             setTotalCount(data.total);
         }).catch(error => {
+            setLoading(false);
             console.log('Unable to fetch debt data', error);
         })
     }
@@ -120,10 +125,10 @@ export default function Debts() {
 
     const debtSubmit = (e) => {
         e.preventDefault();
-
-
+        setLoading(true);
         if (debt.id) {
             alert("Updating existing debt data");
+            setLoading(false);
         } else {
             const debtData = {
                 ...debt,
@@ -161,10 +166,11 @@ export default function Debts() {
                     if (response.data.status === 'fail') {
                         setNotification(response.data.message);
                     }
-
+                    setLoading(false);
                 })
                 .catch(error => {
                     // Handle error
+                    setLoading(false);
                     console.log('Error creating debt:', error);
                     setErrors(error.response.data.errors); // Set the error messages received from the server
                 })
@@ -233,6 +239,7 @@ export default function Debts() {
 
     return (
         <div>
+            <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Debts/Loans</h1>
                 {userRole === 'admin' &&
