@@ -67,10 +67,6 @@ export default function ExpenseForm() {
     useEffect(() => {
         axiosClient.get('/all-bank-account')
             .then(({data}) => {
-                //by default select the last bank account used for expense purpose
-                // if (data.data.length > 0) {
-                //     setSelectedAccountId(data.data[0].id)
-                // }
                 setBankAccounts(data.data);
             })
             .catch(error => {
@@ -176,6 +172,9 @@ export default function ExpenseForm() {
 
     const expenseSubmit = (event, stay) => {
         event.preventDefault();
+        const currentButtonText = event.target.innerText;
+        // event.currentTarget.disabled = true;
+        event.target.innerText = 'Processing';
         // event.currentTarget.disabled = true;
         const {amount, refundable_amount, description, reference, expense_date, note, attachment} = expense;
 
@@ -204,13 +203,19 @@ export default function ExpenseForm() {
                 setNotification(notifications)
                 stay === true ? window.location.reload() : navigate('/expenses')
             }
+            event.target.innerText = currentButtonText;
 
         }).catch(err => {
             const response = err.response;
             if (response && response.status === 422) {
                 setErrors(response.data.errors);
+                // event.currentTarget.disabled = false;
+
             }
+            event.target.innerText = currentButtonText;
+
         });
+
     };
 
     const handleFileInputChange = (event) => {
