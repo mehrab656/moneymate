@@ -53,7 +53,7 @@ export default function ExpenseForm() {
     const navigate = useNavigate();
     const [insufficientBalanceForCategory, setInsufficientBalanceForCategory] = useState(null);
     const {applicationSettings} = useContext(SettingsContext);
-
+    // const [selectedCategoryId, setSelectedCategoryId] = useState('');
     const [categoryValue, setCategoryValue] = useState(null);
     const [storeCategoryValue, setStoreCategoryValue] = useState(null);
 
@@ -75,7 +75,7 @@ export default function ExpenseForm() {
         axiosClient.get('/expense-categories')
             .then(({data}) => {
                 if (data.categories.length > 0) {
-                    setSelectedCategoryId(data.categories[0].id)
+                    // setSelectedCategoryId(data.categories[0].id)
                 }
                 setExpenseCategories(data.categories);
             })
@@ -107,12 +107,13 @@ export default function ExpenseForm() {
         }
     }, [expenseCategories, storeCategoryValue])
 
+
     useEffect(() => {
         if (id) {
             setLoading(true);
             axiosClient.get(`/expense/${id}`)
                 .then(({data}) => {
-                    setSelectedCategoryId(data.category_id);
+                    // setSelectedCategoryId(data.category_id);
                     setSelectedAccountId(data.account_id);
                     setSelectedUserId(data.user_id);
                     if (expenseCategories.length > 0) {
@@ -212,7 +213,6 @@ export default function ExpenseForm() {
             return {...prevExpense, attachment: file};
         });
     };
-
 
     return (
         <>
@@ -330,6 +330,7 @@ export default function ExpenseForm() {
                                         id="parentCategory"
                                         value={categoryValue}
                                         onChange={(event, newValue) => {
+                                            console.log(categoryValue)
                                             if (newValue) {
                                                 setCategoryValue(newValue);
                                             }
