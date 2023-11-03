@@ -7,6 +7,7 @@ use App\Http\Requests\SectorRequest;
 use App\Http\Resources\InvestmentResource;
 use App\Http\Resources\SectorResource;
 use App\Models\Category;
+use App\Models\Expense;
 use App\Models\Investment;
 use App\Models\PaymentModel;
 use App\Models\SectorModel;
@@ -14,6 +15,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Nette\Schema\ValidationException;
 use Throwable;
@@ -181,20 +183,75 @@ class SectorModelController extends Controller {
 		] );
 	}
 
+	/**
+	 * @throws Throwable
+	 */
 	public function changePaymentStatus( $id ) {
 		$id = abs( $id );
 		if ( ! $id ) {
 			return [
 				'message' => 'Payment id is not provided',
-				'status'=>400,
+				'status'  => 400,
+			];
+		}
+		$isUpdated      = false;
+		$paymentDetails = DB::table( 'payments' )->find( $id );
+
+		if ( ! $paymentDetails ) {
+			return [ 'message' => 'No Payment Details was found', 'status' => 200 ];
+		}
+
+		$sector = DB::table( 'sectors' )->find( $paymentDetails->sector_id );
+
+		if ( ! $sector ) {
+			return [ 'message' => 'No Sectors were found according to this payment term!', 'status' => 200 ];
+		}
+
+		$category = DB::table( 'categories' )
+		              ->where( 'sector_id', '=', $sector->id )
+		              ->where( function ( $query ) {
+			              $query->where( 'name', 'LIKE', '%apartment%' )
+			                    ->orWhere( 'name', 'LIKE', '%rent%' );
+		              } )->first();
+
+		if ( ! $category ) {
+			return [
+				'message' => 'No Associative category were found according to this payment term!',
+				'status'  => 200
 			];
 		}
 
-		$isUpdated = DB::table( 'payments' )
-		               ->where( 'id', $id )
-		               ->update( [ 'status' => 'paid' ] );
+		$expense = [
+			'user_id'           => Auth::user()->id,
+			'account_id'        => $sector->payment_account_id,
+			'amount'            => $paymentDetails->amount,
+			'refundable_amount' => 0,
+			'category_id'       => $category->id,
+			'description'       => $paymentDetails->payment_number . ' ' . 'payment of ' . $sector->name,
+			'note'              => 'This expense was recorded while user paid from sector details directly.',
+			'reference'         => 'Automated Payment for : ' . $sector->name,
+			'date'              => Carbon::now()->format( 'Y-m-d' )
+		];
+		// Create and response for this expense.
 
-		return [ 'message' => $isUpdated ? 'Payment was marked as paid!' : 'Unable to mark payment as paid','status'=>200 ];
+		DB::beginTransaction();
+		try {
+			Expense::create( $expense );
+			$isUpdated = DB::table( 'payments' )
+			               ->where( 'id', $id )
+			               ->update( [ 'status' => 'paid' ] );
+		} catch ( ValidationException $e ) {
+			DB::rollBack();
+
+			return redirect()->back()->withErrors( $e->getMessages() )->withInput();
+		}
+
+		DB::commit();
+
+		return [
+			'message' => $isUpdated ? 'Payment was marked as paid!' : 'Unable to mark payment as paid',
+			'status'  => 200
+		];
 	}
 
 	public function sectorList(): JsonResponse {

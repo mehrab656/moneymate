@@ -41,8 +41,8 @@ class ReportController extends Controller {
 		}
 
 		// Query the incomes based on the date range
-		$incomes = Income::where( 'income_date', '>=', $startDate )
-		                 ->where( 'income_date', '<=', $endDate )
+		$incomes = Income::where( 'date', '>=', $startDate )
+		                 ->where( 'date', '<=', $endDate )
 		                 ->whereHas( 'category', function ( $query ) {
 			                 $query->where( 'type', 'income' );
 		                 } );
@@ -51,7 +51,7 @@ class ReportController extends Controller {
 		}
 
 		// Return the income report as a collection of IncomeReportResource
-		$incomesRes = IncomeReportResource::collection( $incomes->orderBy( 'income_date', 'DESC' )->get() );
+		$incomesRes = IncomeReportResource::collection( $incomes->orderBy( 'date', 'DESC' )->get() );
 		$sum        = 0;
 		foreach ( $incomesRes as $key => $income ) {
 			if ( isset( $income->amount ) ) {
@@ -97,8 +97,8 @@ class ReportController extends Controller {
 		                   ->where( 'type', 'expense' );
 
 		if ( $startDate ) {
-			$query = $query->where( 'expense_date', '>=', $startDate )
-			                     ->where( 'expense_date', '<=', $endDate );
+			$query = $query->where( 'date', '>=', $startDate )
+			                     ->where( 'date', '<=', $endDate );
 		}
 		if ( $sec_id ) {
 			$query = $query->where( 'sector_id', $sec_id );
@@ -110,7 +110,7 @@ class ReportController extends Controller {
 		$response['sql'] = Str::replaceArray( '?', $query->getBindings(), $query->toSql() );
 
 
-		$expensesRes = ExpenseReportResource::collection( $query->orderBy( 'expense_date', 'DESC' )->get() );
+		$expensesRes = ExpenseReportResource::collection( $query->orderBy( 'date', 'DESC' )->get() );
 
 
 		$sum = 0;

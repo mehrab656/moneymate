@@ -35,7 +35,7 @@ class IncomeRequest extends FormRequest
             'attachment' => 'nullable|file',
             'note' => 'nullable',
             'reference' => 'nullable',
-            'income_date' => 'nullable'
+            'date' => 'nullable'
         ];
     }
 

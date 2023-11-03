@@ -68,7 +68,7 @@ class IncomeController extends Controller {
 			$income['attachment'] = $filename; // Store only the filename
 		}
 
-		$incomeDate = Carbon::parse( $income['income_date'] )->format( 'Y-m-d' );
+		$incomeDate = Carbon::parse( $income['date'] )->format( 'Y-m-d' );
 		$income     = Income::create( [
 			'user_id'     => Auth::user()->id,
 			'account_id'  => $income['account_id'],
@@ -77,7 +77,7 @@ class IncomeController extends Controller {
 			'description' => $income['description'],
 			'note'        => $income['note'],
 			'reference'   => $income['reference'],
-			'income_date' => $incomeDate,
+			'date' => $incomeDate,
 			'attachment'  => $income['attachment']
 		] );
 
@@ -271,7 +271,7 @@ class IncomeController extends Controller {
 				$income->category ? $income->category->name : '',
 				$income->amount,
 				$income->description,
-				$income->income_date
+				$income->date
 			] );
 		}
 

@@ -25,7 +25,7 @@ class ExpenseReportResource extends JsonResource
             'category_name' => $this->category->name,
             'description' => $this->description,
             'reference' => $this->reference,
-            'expense_date' => $this->expense_date,
+            'date' => $this->date,
             'note' => $this->note,
             'attachment' => $this->attachment,
             'created_at' => $this->created_at,

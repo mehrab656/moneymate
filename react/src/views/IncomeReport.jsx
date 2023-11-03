@@ -160,7 +160,7 @@ export default function IncomeReport() {
                                 ):(
                                     incomeReport.map(income => (
                                         <tr key={income.id} className={'text-center'}>
-                                            <td>{income.income_date}</td>
+                                            <td>{income.date}</td>
                                             <td>{income.description}</td>
                                             <td>{income.category_name}</td>
                                             <td className={'text-end'}>{default_currency + income.amount}</td>

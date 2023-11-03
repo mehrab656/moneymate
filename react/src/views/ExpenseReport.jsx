@@ -196,7 +196,7 @@ export default function ExpenseReport() {
                                 ) : (
                                     expenseReport.map(expense => (
                                         <tr key={expense.id} className={'text-start'}>
-                                            <td>{expense.expense_date}</td>
+                                            <td>{expense.date}</td>
                                             <td>{expense.category_name}</td>
                                             <td>{expense.description}</td>
                                             <td className={'text-end'}>{default_currency + ' ' + expense.amount}</td>

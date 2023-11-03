@@ -39,7 +39,7 @@ class IncomeResource extends JsonResource
             'note' => $this->note,
             'reference' => $this->reference,
             'attachment' => $this->attachment,
-            'income_date' => Carbon::parse($this->income_date)->format('Y-m-d'),
+            'date' => Carbon::parse($this->date)->format('Y-m-d'),
         ];
     }
 }

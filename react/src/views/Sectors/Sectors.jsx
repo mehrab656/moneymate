@@ -121,7 +121,6 @@ export default function Sectors() {
     };
 
 
-
     function dateOrdinal(date) {
         return (
             date +
@@ -172,13 +171,12 @@ export default function Sectors() {
         }).then((result) => {
             if (result.isConfirmed) {
                 axiosClient.post(`/change-payment-status/${payment.id}`).then(({data}) => {
-
                     Swal.fire({
                         title: data.status === 400 ? 'Failed' : 'Paid',
                         text: data.message,
                         icon: data.status === 200 ? 'success' : 'error',
                     });
-                    window.location.reload();
+                    // window.location.reload();
                 }).catch(e)
                 {
                     console.warn(e)
@@ -188,34 +186,35 @@ export default function Sectors() {
     }
 
     const actionParams = {
-      route: {
-          editRoute: "/sector/update/",
-          viewRoute: "",
-          deleteRoute: "",
-      },
-  };
+        route: {
+            editRoute: "/sector/update/",
+            viewRoute: "",
+            deleteRoute: "",
+        },
+    };
 
     return (
         <div>
-          <MainLoader loaderVisible={loading} />
-            <div className='d-flex justify-content-between align-content-center gap-2 mb-3'>
-                <h1 className='title-text mb-0'>Sectors Histories</h1>
-                {userRole === "admin" && (
-                    <Link className='btn-add align-right mr-3' to='/sector/new'>
-                        <FontAwesomeIcon icon={faPlus}/> Add New
-                    </Link>
-                )}
-            </div>
-
+            <MainLoader loaderVisible={loading}/>
             <WizCard className='animated fadeInDown'>
                 <div className='mb-4'>
-                    <input
-                        className='custom-form-control'
-                        type='text'
-                        placeholder='Search Sector...'
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+                    <div className="col-md-10">
+                        <input
+                            className='custom-form-control mb-4'
+                            type='text'
+                            placeholder='Search Sector...'
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    {userRole === "admin" && (
+                        <div className="col-md-2">
+                            <Link className='btn-add align-right mr-3' to='/sector/new'>
+                                <FontAwesomeIcon icon={faPlus}/> Add New
+                            </Link>
+                        </div>
+                    )}
+
                 </div>
                 <div className='table-responsive-sm'>
                     <table className='table table-bordered custom-table'>

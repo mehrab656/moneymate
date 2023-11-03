@@ -5,7 +5,6 @@ import {useStateContext} from "../contexts/ContextProvider.jsx";
 import WizCard from "../components/WizCard";
 import {SettingsContext} from "../contexts/SettingsContext";
 import MainLoader from "../components/MainLoader.jsx";
-
 export default function ApplicationSettingsForm() {
     const [applicationSettings, setApplicationSettings] = useState({
         company_name: "",
@@ -26,6 +25,7 @@ export default function ApplicationSettingsForm() {
     const [saving, setSaving] = useState(false);
     const [userRole, setUserRole] = useState([]);
     const [registrationType, setRegistrationType] = useState("");
+    const [associativeCategories,setAssociativeCategories] = useState([]);
 
     const handleChange = (e) => {
         const {name, value} = e.target;
@@ -208,6 +208,21 @@ export default function ApplicationSettingsForm() {
                                         placeholder="Number of data per page"
                                     />
                                 </div>
+
+                                <div className="form-group">
+                                    <label className="custom-form-label" htmlFor="address">
+                                        Associative categories
+                                    </label>
+                                    <input
+                                        className="custom-form-control"
+                                        name="associative_categories"
+                                        // value={''}
+                                        // value={applicationSettings.num_data_per_page || ""}
+                                        placeholder="Number of data per page"
+                                        data-role="tagsinput"
+                                    />
+                                </div>
+
                             </div>
                             {applicationSettings.registration_type === "subscription" && (
                                 <div className="col-12">
@@ -242,6 +257,16 @@ export default function ApplicationSettingsForm() {
                                         onChange={handleChange}
                                         placeholder="Product Api ID"
                                     />
+                                    <label className="custom-form-label mt-2" htmlFor="product_api_id">
+                                        Associative Categories
+                                    </label>
+                                    <input
+                                        className="custom-form-control"
+                                        name="associative_categories"
+                                        value={applicationSettings.associative_categories || ""}
+                                        onChange={handleChange}
+                                        placeholder="Associative Categories"
+                                    />
                                 </div>
                             )}
                         </div>
@@ -253,4 +278,3 @@ export default function ApplicationSettingsForm() {
         </>
     );
 }
-

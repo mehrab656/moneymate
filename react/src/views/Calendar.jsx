@@ -51,7 +51,7 @@ export default function Calendar() {
     function transformIncomeData(incomeData) {
         return incomeData.map((income) => ({
             title: income.category_name,
-            start: income.income_date,
+            start: income.date,
             color: 'rgb(65, 147, 136)',
             additionalData: income,
             classNames: 'income-event',
@@ -61,7 +61,7 @@ export default function Calendar() {
     function transformExpenseData(expenseData) {
         return expenseData.map((expense) => ({
             title: expense.category_name,
-            start: expense.expense_date,
+            start: expense.date,
             color: 'rgb(214, 62, 99)',
             additionalData: expense,
             classNames: 'expense-event',
@@ -157,8 +157,8 @@ export default function Calendar() {
                                         <strong>Date :</strong>
                                     </td>
                                     <td>
-                                        {selectedEvent?.additionalData?.expense_date ||
-                                            selectedEvent?.additionalData?.income_date}
+                                        {selectedEvent?.additionalData?.date ||
+                                            selectedEvent?.additionalData?.date}
                                     </td>
                                 </tr>
                                 </tbody>

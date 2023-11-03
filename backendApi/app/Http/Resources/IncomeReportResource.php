@@ -25,7 +25,7 @@ class IncomeReportResource extends JsonResource
             'category_name' => $this->category->name,
             'description' => $this->description,
             'reference' => $this->reference,
-            'income_date' => $this->income_date,
+            'date' => $this->date,
             'note' => $this->note,
             'attachment' => $this->attachment,
             'created_at' => $this->created_at,

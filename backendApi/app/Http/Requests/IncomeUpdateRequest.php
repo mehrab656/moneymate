@@ -35,7 +35,7 @@ class IncomeUpdateRequest extends FormRequest
             'description' => 'nullable|string',
             'note' => 'nullable|string',
             'reference' => 'nullable|string',
-            'income_date' => 'nullable|date_format:Y-m-d',
+            'date' => 'nullable|date_format:Y-m-d',
         ];
 
         if ($this->hasFile('attachment')) {
@@ -59,7 +59,7 @@ class IncomeUpdateRequest extends FormRequest
             'attachment.file' => 'Attachment must be a file.',
             'note.string' => 'Note must be a string.',
             'reference.string' => 'Income reference must be a string.',
-            'income_date.date_format' => 'Income date must be in the format "YYYY-MM-DD".',
+            'date.date_format' => 'Income date must be in the format "YYYY-MM-DD".',
         ];
     }
 }

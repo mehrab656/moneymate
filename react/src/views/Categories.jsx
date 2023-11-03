@@ -1,14 +1,14 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, {useEffect, useState, useContext} from "react";
 import axiosClient from "../axios-client.js";
 import Swal from "sweetalert2";
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 import Pagination from "react-bootstrap/Pagination";
 import WizCard from "../components/WizCard";
-import { Button, Form, Modal } from "react-bootstrap";
-import { useStateContext } from "../contexts/ContextProvider";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCoins, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { SettingsContext } from "../contexts/SettingsContext";
+import {Button, Form, Modal} from "react-bootstrap";
+import {useStateContext} from "../contexts/ContextProvider";
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faCoins, faEdit, faTrash} from "@fortawesome/free-solid-svg-icons";
+import {SettingsContext} from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 import MainLoader from "../components/MainLoader.jsx";
 
@@ -22,11 +22,13 @@ export default function Categories() {
     const [errors, setErrors] = useState(null);
     const [category, setCategory] = useState({
         id: null,
+        sector_id:null,
         name: '',
         type: 'income'
     });
+    const [sectors, setSector] = useState([])
 
-    const { applicationSettings, userRole } = useContext(SettingsContext);
+    const {applicationSettings, userRole} = useContext(SettingsContext);
     const {
         num_data_per_page
     } = applicationSettings;
@@ -48,7 +50,7 @@ export default function Categories() {
     const handleCloseModal = () => {
         setShowModal(false);
     };
-    const { setNotification } = useStateContext();
+    const {setNotification} = useStateContext();
 
     const categorySubmit = (event) => {
         event.preventDefault();
@@ -62,33 +64,35 @@ export default function Categories() {
                     setCategory({
                         id: null,
                         name: '',
-                        type: 'income'
+                        type: 'income',
+                        sector_id:null
                     });
                     setLoading(false)
                 }).catch(error => {
                 const response = error.response;
                 if (response && response.status === 409) {
-                    setErrors({ name: ['Category name already exists'] });
+                    setErrors({name: ['Category name already exists']});
                 } else if (response && response.status === 422) {
                     setErrors(response.data.errors);
                 }
                 setLoading(false)
             });
         } else {
-            axiosClient.post('category/add', category).then(({ data }) => {
+            axiosClient.post('category/add', category).then(({data}) => {
                 setNotification(`${category.name} was successfully created`);
                 setShowModal(false);
                 getCategories(currentPage, pageSize);
                 setCategory({
                     id: null,
                     name: '',
-                    type: 'income'
+                    type: 'income',
+                    sector_id: null
                 });
                 setLoading(false)
             }).catch(error => {
                 const response = error.response;
                 if (response && response.status === 409) {
-                    setErrors({ name: ['Category name already exists'] });
+                    setErrors({name: ['Category name already exists']});
                 } else if (response && response.status === 422) {
                     setErrors(response.data.errors);
                 }
@@ -136,14 +140,23 @@ export default function Categories() {
 
     useEffect(() => {
         document.title = "Categories";
+        axiosClient.get('/sectors-list')
+            .then(({data}) => {
+                setSector(data.sectors);
+            })
+            .catch(error => {
+                console.warn('Error fetching bank accounts:', error)
+            });
+
+
         getCategories(currentPage, pageSize);
-    }, [currentPage, pageSize]); // Fetch categories when currentPage or pageSize changes
+    }, [currentPage, pageSize, setSector]); // Fetch categories when currentPage or pageSize changes
 
     const getCategories = (page, pageSize) => {
         setLoading(true);
         axiosClient
-            .get("/categories", { params: { page, pageSize } })
-            .then(({ data }) => {
+            .get("/categories", {params: {page, pageSize}})
+            .then(({data}) => {
                 setLoading(false);
                 setCategories(data.data);
                 setTotalCount(data.total);
@@ -171,25 +184,25 @@ export default function Categories() {
     }
 
     const actionParams = {
-        route:{
-            viewRoute:'',
-            deleteRoute:''
+        route: {
+            viewRoute: '',
+            deleteRoute: ''
         },
     }
 
     return (
         <div>
-            <MainLoader loaderVisible={loading} />
+            <MainLoader loaderVisible={loading}/>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Income & Expense Categories</h1>
-                {userRole ==='admin' &&
-                <div>
-                    <a className="custom-btn btn-add" onClick={showCreateModal}>
-                        <FontAwesomeIcon icon={faCoins} /> Add New
-                    </a>
-                </div>
+                {userRole === 'admin' &&
+                    <div>
+                        <a className="custom-btn btn-add" onClick={showCreateModal}>
+                            <FontAwesomeIcon icon={faCoins}/> Add New
+                        </a>
+                    </div>
                 }
-               
+
             </div>
             <WizCard className="animated fadeInDown">
                 <div className="mb-4">
@@ -207,8 +220,8 @@ export default function Categories() {
                         <tr>
                             <th>CATEGORY NAME</th>
                             <th className="text-center">CATEGORY TYPE</th>
-                            {userRole ==='admin' && <th className="text-center">ACTIONS</th>}
-                            
+                            {userRole === 'admin' && <th className="text-center">ACTIONS</th>}
+
                         </tr>
                         </thead>
                         {loading && (
@@ -234,17 +247,17 @@ export default function Categories() {
                                         <td>{category.name}</td>
                                         <td className="text-center">{category.type}</td>
 
-                                        {userRole ==='admin' && 
-                                        <td>
-                                            <ActionButtonHelpers
-                                                module={category}
-                                                deleteFunc={onDelete}
-                                                showEditDropdown={edit}
-                                                editDropdown={true}
-                                                params={actionParams}
-                                            />
-                                        </td>}
-                                       
+                                        {userRole === 'admin' &&
+                                            <td>
+                                                <ActionButtonHelpers
+                                                    module={category}
+                                                    deleteFunc={onDelete}
+                                                    showEditDropdown={edit}
+                                                    editDropdown={true}
+                                                    params={actionParams}
+                                                />
+                                            </td>}
+
                                     </tr>
                                 ))
                             )}
@@ -281,7 +294,7 @@ export default function Categories() {
                             <input
                                 value={category.name}
                                 className="custom-form-control"
-                                onChange={e => setCategory({ ...category, name: e.target.value })}
+                                onChange={e => setCategory({...category, name: e.target.value})}
                                 placeholder="Category Name"
                             />
 
@@ -295,7 +308,7 @@ export default function Categories() {
                             <select
                                 value={category.type}
                                 className="custom-form-control"
-                                onChange={e => setCategory({ ...category, type: e.target.value })}
+                                onChange={e => setCategory({...category, type: e.target.value})}
                             >
                                 <option value="income">Income</option>
                                 <option value="expense">Expense</option>
@@ -306,8 +319,26 @@ export default function Categories() {
                             )}
                         </div>
                         <div className="form-group">
+                            <label htmlFor="category_type" className="custom-form-label">Sector</label>
+                            <select
+                                value={category.sector_id}
+                                className="custom-form-control"
+                                id="sector-id"
+                                name="sector-id"
+                                onChange={e => setCategory({...category, sector_id: e.target.value})}>
+                                <option defaultValue>Sector</option>
+                                {sectors.map(sector => (
+                                    <option key={sector.id} value={sector.id}>
+                                        {sector.name}
+                                    </option>
+                                ))}
+                            </select>
 
+                            {errors && errors.sector_id && (
+                                <div className="text-danger mt-2">{errors.sector_id[0]}</div>
+                            )}
                         </div>
+
                     </form>
                 </Modal.Body>
                 <Modal.Footer>

@@ -165,7 +165,7 @@ export default function InvestmentPlan() {
                                             <DownloadAttachment filename={income.attachment}/>}</td>
                                         <td>{income.description !== 'null' ? income.description : ''}</td>
 
-                                        <td>{income.income_date}</td>
+                                        <td>{income.date}</td>
                                         {userRole ==='admin' &&
                                             <td>
                                                 <Link className="btn-edit" to={"/income/" + income.id}> <FontAwesomeIcon

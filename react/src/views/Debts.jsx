@@ -389,8 +389,8 @@ export default function Debts() {
                                 required // Add required attribute
                         >
                             <option value="">Select Type</option>
-                            <option value="lend">Lend</option>
-                            <option value="borrow">Borrow</option>
+                            <option value="lend">Lend(Give Loan to Others)</option>
+                            <option value="borrow">Borrow(Taken Loan From Others)</option>
                         </select>
 
                         {errors && errors.type && (
@@ -416,7 +416,7 @@ export default function Debts() {
 
 
                     <div className="form-group">
-                        <label htmlFor="income_date" className="custom-form-label">Date :</label>
+                        <label htmlFor="date" className="custom-form-label">Date :</label>
                         <DatePicker className="custom-form-control"
                                     selected={date}
                                     onChange={handleDateChange}

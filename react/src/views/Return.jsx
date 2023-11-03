@@ -170,7 +170,7 @@ export default function Return() {
                             ) : (
                                 filterMarketReturns.map((marketReturn) => (
                                     <tr key={marketReturn.id}>
-                                        <td>{marketReturn.expense_date}</td>
+                                        <td>{marketReturn.date}</td>
                                         <td>{marketReturn.description}</td>
                                         <td className="text-right">{default_currency + marketReturn.refundable_amount}</td>
                                         <td className="text-right">{default_currency + marketReturn.refunded_amount}</td>

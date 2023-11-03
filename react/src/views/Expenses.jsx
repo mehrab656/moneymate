@@ -33,7 +33,7 @@ export default function Expenses() {
         category_id: null,
         description: '',
         reference: '',
-        expense_date: '',
+        date: '',
         note: '',
         attachment: ''
     });
@@ -210,7 +210,7 @@ export default function Expenses() {
                             ) : (
                                 filteredExpenses.map((expense) => (
                                     <tr className={'text-center'} key={expense.id}>
-                                        <td>{expense.expense_date}</td>
+                                        <td>{expense.date}</td>
                                         <td className={'text-start'}>{expense.description}</td>
                                         <td className={'text-start'}>{expense.category_name}</td>
                                         <td className={'text-end'}>{default_currency + expense.amount}</td>
@@ -317,7 +317,7 @@ export default function Expenses() {
                                 <strong>Date :</strong>
                             </td>
                             <td>
-                                {expense.expense_date}
+                                {expense.date}
                             </td>
                         </tr>
 

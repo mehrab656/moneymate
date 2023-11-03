@@ -362,7 +362,7 @@ export default function ManageDebt() {
 
                         </Form.Group>
                         <div className="form-group">
-                            <label htmlFor="income_date" className="custom-form-label">Date :</label>
+                            <label htmlFor="date" className="custom-form-label">Date :</label>
                             <DatePicker
                                 className="custom-form-control"
                                 selected={date}
@@ -433,7 +433,7 @@ export default function ManageDebt() {
 
 
                         <div className="form-group">
-                            <label htmlFor="income_date" className="custom-form-label">Date :</label>
+                            <label htmlFor="date" className="custom-form-label">Date :</label>
                             <DatePicker
                                 className="custom-form-control"
                                 selected={date}

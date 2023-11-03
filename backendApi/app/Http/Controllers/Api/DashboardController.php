@@ -22,12 +22,12 @@ class DashboardController extends Controller
 
     public function dashboardData(): JsonResponse
     {
-        $incomeOfThisMonth = Income::whereMonth('income_date', date('m'))
-            ->whereYear('income_date', date('Y'))
+        $incomeOfThisMonth = Income::whereMonth('date', date('m'))
+            ->whereYear('date', date('Y'))
             ->sum('amount');
 
-        $expenseOfThisMonth = Expense::whereMonth('expense_date', date('m'))
-            ->whereYear('expense_date', date('Y'))
+        $expenseOfThisMonth = Expense::whereMonth('date', date('m'))
+            ->whereYear('date', date('Y'))
             ->sum('amount');
 
         $totalBalance = BankAccount::sum('balance');

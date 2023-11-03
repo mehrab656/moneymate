@@ -42,7 +42,7 @@ class ExpenseController extends Controller {
 			$query->where( 'type', 'expense' );
 		} )->skip( ( $page - 1 ) * $pageSize )
 		                   ->take( $pageSize )
-		                   ->orderBy( 'expense_date', 'desc' )
+		                   ->orderBy( 'date', 'desc' )
 		                   ->orderBy( 'id', 'desc' )
 		                   ->get();
 
@@ -89,7 +89,7 @@ class ExpenseController extends Controller {
 		}
 
 
-		$expenseDate = Carbon::parse( $expense['expense_date'] )->format( 'Y-m-d' );
+		$expenseDate = Carbon::parse( $expense['date'] )->format( 'Y-m-d' );
 		$expense     = Expense::create( [
 			'user_id'           => $expense['user_id'],
 			'account_id'        => $expense['account_id'],
@@ -99,7 +99,7 @@ class ExpenseController extends Controller {
 			'description'       => $expense['description'],
 			'note'              => $expense['note'],
 			'reference'         => $expense['reference'],
-			'expense_date'      => $expenseDate,
+			'date'      => $expenseDate,
 			'attachment'        => $expense['attachment']
 		] );
 
@@ -134,7 +134,7 @@ class ExpenseController extends Controller {
 
 		//add some data to be remembered on options' table
 		//last_expense_cat_id
-		//last_expense_date
+		//last_date
 		//last_expense_account_id
 
 		$option = Option::firstOrCreate(['key' => 'last_expense_cat_id']);
@@ -303,7 +303,7 @@ class ExpenseController extends Controller {
 				$expense->amount,
 				$expense->refundable_amount,
 				$expense->description,
-				$expense->expense_date
+				$expense->date
 			] );
 		}
 
@@ -343,7 +343,7 @@ class ExpenseController extends Controller {
 		              ->join( 'users', 'expenses.user_id', '=', 'users.id' )
 		              ->select( 'categories.name', DB::raw( 'SUM(expenses.amount) as total' ) )
 		              ->where( 'users.id', $loggedInUserId )
-		              ->whereMonth( 'expenses.expense_date', $currentMonth )
+		              ->whereMonth( 'expenses.date', $currentMonth )
 		              ->groupBy( 'categories.name' )
 		              ->get();
 

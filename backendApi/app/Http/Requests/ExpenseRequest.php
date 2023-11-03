@@ -37,7 +37,7 @@ class ExpenseRequest extends FormRequest
             'attachment' => 'nullable|file',
             'note' => 'nullable',
             'reference' => 'nullable',
-            'expense_date' => 'nullable',
+            'date' => 'nullable',
         ];
     }
 

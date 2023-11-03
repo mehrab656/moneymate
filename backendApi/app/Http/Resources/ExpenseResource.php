@@ -16,7 +16,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property mixed $description
  * @property mixed $note
  * @property mixed $reference
- * @property mixed $expense_date
+ * @property mixed $date
  * @property mixed $user_id
  * @property mixed $attachment
  */
@@ -45,7 +45,7 @@ class ExpenseResource extends JsonResource {
 			'attachment'        => $this->attachment,
 			'description'       => $this->description,
 			'bank_name'         => $this->bankAccount && $this->bankAccount->bankName ? $this->bankAccount->bankName->bank_name : '',
-			'expense_date'      => $this->expense_date,
+			'date'      => $this->date,
 			'note'              => $this->note,
 			'reference'         => $this->reference
 		];

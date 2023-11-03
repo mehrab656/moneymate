@@ -34,7 +34,7 @@ export default function IncomeForm() {
         category_id: null,
         description: '',
         reference: '',
-        income_date: null,
+        date: null,
         note: '',
         attachment: ''
     });
@@ -106,7 +106,7 @@ export default function IncomeForm() {
                     setIncome((prevIncome) => ({
                         ...prevIncome,
                         ...data,
-                        income_date: data.income_date || '', // Set to empty string if the value is null or undefined
+                        date: data.date || '', // Set to empty string if the value is null or undefined
                     }));
                     setLoading(false);
                 })
@@ -133,13 +133,13 @@ export default function IncomeForm() {
 
     // set default date(today)
     useEffect(() => {
-        if (income?.income_date === null) {
+        if (income?.date === null) {
             setIncome({
                 ...income,
-                income_date: new Date().toISOString().split('T')[0]
+                date: new Date().toISOString().split('T')[0]
             });
         }
-    }, [income?.income_date])
+    }, [income?.date])
 
 
     const incomeSubmit = (event, stay) => {
@@ -147,7 +147,7 @@ export default function IncomeForm() {
         event.currentTarget.disabled = true;
         setLoading(true)
         if (income.id) {
-            const {amount, description, reference, income_date, note, attachment} = income;
+            const {amount, description, reference, date, note, attachment} = income;
             const formData = new FormData();
             formData.append('account_id', selectedAccountId);
             formData.append('amount', amount);
@@ -155,7 +155,7 @@ export default function IncomeForm() {
             formData.append('description', description);
             formData.append('note', note);
             formData.append('reference', reference);
-            formData.append('income_date', income_date);
+            formData.append('date', date);
             formData.append('attachment', attachment);
 
             axiosClient.post(`/income/${income.id}`, formData, {
@@ -179,7 +179,7 @@ export default function IncomeForm() {
                     setLoading(false)
                 });
         } else {
-            const {amount, description, reference, income_date, note, attachment} = income;
+            const {amount, description, reference, date, note, attachment} = income;
             const formData = new FormData();
             formData.append('account_id', selectedAccountId);
             formData.append('amount', amount);
@@ -187,7 +187,7 @@ export default function IncomeForm() {
             formData.append('description', description);
             formData.append('note', note);
             formData.append('reference', reference);
-            formData.append('income_date', income_date);
+            formData.append('date', date);
             formData.append('attachment', attachment);
 
 
@@ -288,23 +288,23 @@ export default function IncomeForm() {
                             </div>
                             <div className="col-md-6">
                                 <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="income_date">Date</label>
+                                    <label className="custom-form-label" htmlFor="date">Date</label>
                                     <DatePicker
                                         className="custom-form-control"
-                                        selected={income.income_date ? new Date(income.income_date) : new Date()}
+                                        selected={income.date ? new Date(income.date) : new Date()}
                                         onChange={(date) => {
                                             const selectedDate = date ? new Date(date) : null;
-                                            const updatedDate = selectedDate && !income.income_date ? new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000) : selectedDate;
+                                            const updatedDate = selectedDate && !income.date ? new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000) : selectedDate;
                                             setIncome({
                                                 ...income,
-                                                income_date: updatedDate ? updatedDate.toISOString().split('T')[0] : ''
+                                                date: updatedDate ? updatedDate.toISOString().split('T')[0] : ''
                                             });
                                         }}
                                         dateFormat="yyyy-MM-dd"
                                         placeholderText="Income Date"
                                     />
-                                    {errors.income_date &&
-                                        <p className="error-message mt-2">{errors.income_date[0]}</p>}
+                                    {errors.date &&
+                                        <p className="error-message mt-2">{errors.date[0]}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="bank_account">Select Bank

@@ -37,7 +37,7 @@ export default function ExpenseForm() {
         category_id: null,
         description: '',
         reference: '',
-        expense_date: '',
+        date: '',
         note: '',
         attachment: ''
     });
@@ -127,7 +127,7 @@ export default function ExpenseForm() {
                     setExpense((prevExpense) => ({
                         ...prevExpense,
                         ...data,
-                        expense_date: data.expense_date || '', // Set to empty string if the value is null or undefined
+                        date: data.date || '', // Set to empty string if the value is null or undefined
                     }));
                     setLoading(false);
                 })
@@ -155,20 +155,20 @@ export default function ExpenseForm() {
     // set some default data
     useEffect(() => {
         // select default date
-        if (expense?.expense_date === '') {
+        if (expense?.date === '') {
             setExpense({
                 ...expense,
-                expense_date: new Date().toISOString().split('T')[0]
+                date: new Date().toISOString().split('T')[0]
             });
         }
 
-    }, [expense?.expense_date, last_expense_cat_id, last_expense_account_id])
+    }, [expense?.date, last_expense_cat_id, last_expense_account_id])
 
     const expenseSubmit = (event, stay) => {
         event.preventDefault();
         setLoading(true)
         // event.currentTarget.disabled = true;
-        const {amount, refundable_amount, description, reference, expense_date, note, attachment} = expense;
+        const {amount, refundable_amount, description, reference, date, note, attachment} = expense;
 
         const formData = new FormData();
         formData.append('account_id', selectedAccountId);
@@ -179,7 +179,7 @@ export default function ExpenseForm() {
         formData.append('description', description);
         formData.append('note', note);
         formData.append('reference', reference);
-        formData.append('expense_date', expense_date);
+        formData.append('date', date);
         formData.append('attachment', attachment);
 
         const url = expense.id ? `/expense/${expense.id}` : '/expense/add';
@@ -283,16 +283,16 @@ export default function ExpenseForm() {
 
                             <div className="col-md-6">
                                 <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="expense_date">Date</label>
+                                    <label className="custom-form-label" htmlFor="date">Date</label>
                                     <DatePicker
                                         className="custom-form-control"
-                                        selected={expense.expense_date ? new Date(expense.expense_date) : new Date()}
+                                        selected={expense.date ? new Date(expense.date) : new Date()}
                                         onChange={(date) => {
                                             const selectedDate = date ? new Date(date) : null;
-                                            const updatedDate = selectedDate && !expense.expense_date ? new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000) : selectedDate;
+                                            const updatedDate = selectedDate && !expense.date ? new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000) : selectedDate;
                                             setExpense({
                                                 ...expense,
-                                                expense_date: updatedDate ? updatedDate.toISOString().split('T')[0] : ''
+                                                date: updatedDate ? updatedDate.toISOString().split('T')[0] : ''
                                             });
                                         }}
                                         dateFormat="dd-MM-yyyy"

@@ -30,6 +30,7 @@ class CategoryRequest extends FormRequest
                 'required',
             ],
             'type' => 'required|in:income,expense',
+            'sector_id' => 'required',
         ];
     }
 
@@ -41,6 +42,7 @@ class CategoryRequest extends FormRequest
         return [
             'name.required' => 'Category name is required',
             'type.required' => 'You need to select a type',
+            'sector_id.required' => 'Sector is Required',
         ];
     }
 }

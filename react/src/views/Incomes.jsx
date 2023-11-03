@@ -164,7 +164,7 @@ export default function Incomes() {
                             ) : (
                                 filteredIncomes.map((income) => (
                                     <tr className={'text-center'} key={income.id}>
-                                        <td>{income.income_date}</td>
+                                        <td>{income.date}</td>
                                         <td>{income.description !== 'null' ? income.description : ''}</td>
                                         <td>{income.category_name}</td>
                                         <td>{default_currency + ' ' + income.amount}</td>
