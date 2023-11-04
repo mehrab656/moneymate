@@ -29,6 +29,24 @@ import {SettingsContext, SettingsProvider} from "../contexts/SettingsContext.jsx
 import Footer from "./Footer.jsx";
 import {Container, Row, Col, Button, Offcanvas} from 'react-bootstrap';
 
+import { FloatingWhatsApp } from 'react-floating-whatsapp'
+import avatar from '../../../954445_n.jpg'
+
+import { Fab, Badge, List, ListItem, ListItemText, Popover } from '@mui/material';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import { styled } from '@mui/material/styles';
+
+const FloatingNotificationIcon = styled('div')({
+  position: 'fixed',
+  bottom: '100px',
+  right: '30px',
+});
+
+const NotificationIcon = styled(Fab)({
+  backgroundColor: '#007BFF',
+});
+
+
 export default function DefaultLayout() {
 
     const {user, token, setUser, setToken, notification} = useStateContext();
@@ -131,6 +149,28 @@ export default function DefaultLayout() {
 
     const toggleSidebar = () => {
         setShowSidebar(!showSidebar);
+    };
+
+
+
+    const [showNotification, setShowNotification] = useState(false);
+    const [notificationCount, setNotificationCount] = useState(3); // Initial notification count
+    const [notifications, setNotifications] = useState([
+      { id: 1, text: 'Notification 1' },
+      { id: 2, text: 'Notification 2' },
+      { id: 3, text: 'Notification 3' },
+    ]);
+  
+    const [anchorEl, setAnchorEl] = useState(null);
+  
+    const handleOpenPopover = (event) => {
+      setAnchorEl(event.currentTarget);
+      setShowNotification(false);
+      setNotificationCount(0);
+    };
+  
+    const handleClosePopover = () => {
+      setAnchorEl(null);
     };
 
     return (
@@ -620,6 +660,48 @@ export default function DefaultLayout() {
                     </Offcanvas.Body>
                 </Offcanvas>
             </Container>
+
+
+            <FloatingWhatsApp
+                    phoneNumber="+971551258910"
+                    accountName="Mehrab Hossain"
+                    avatar={avatar}
+                    allowEsc
+                    allowClickAway
+                    notification
+                    notificationSound
+                />
+
+            <FloatingNotificationIcon>
+                <div className="floating-notification-icon">
+                    <Badge color="secondary" badgeContent={notificationCount} onClick={handleOpenPopover}>
+                        <Fab color="primary">
+                        <NotificationsIcon />
+                        </Fab>
+                    </Badge>
+                    <Popover
+                        open={Boolean(anchorEl)}
+                        anchorEl={anchorEl}
+                        onClose={handleClosePopover}
+                        anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right',
+                        }}
+                        transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                        }}
+                    >
+                        <List>
+                        {notifications.map((notification) => (
+                            <ListItem key={notification.id}>
+                            <ListItemText primary={notification.text} />
+                            </ListItem>
+                        ))}
+                        </List>
+                    </Popover>
+                </div>
+            </FloatingNotificationIcon>
         </>
     )
 }

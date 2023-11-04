@@ -5,6 +5,7 @@ import {useStateContext} from "../contexts/ContextProvider.jsx";
 import WizCard from "../components/WizCard";
 import {SettingsContext} from "../contexts/SettingsContext";
 import MainLoader from "../components/MainLoader.jsx";
+import { Autocomplete, Box, Chip, TextField } from "@mui/material";
 export default function ApplicationSettingsForm() {
     const [applicationSettings, setApplicationSettings] = useState({
         company_name: "",
@@ -94,6 +95,27 @@ export default function ApplicationSettingsForm() {
                 setSaving(false);
             });
     };
+
+    const [categories,setCategories] = useState([])
+
+    const getCategories = () => {
+        setLoading(true);
+        axiosClient
+            .get("/categories")
+            .then(({data}) => {
+                setLoading(false);
+                setCategories(data.data);
+            })
+            .catch(() => {
+                setLoading(false);
+            });
+    };
+
+    useEffect(()=>{
+        getCategories()
+    },[])
+
+
 
     return (
         <>
@@ -209,7 +231,7 @@ export default function ApplicationSettingsForm() {
                                     />
                                 </div>
 
-                                <div className="form-group">
+                                {/* <div className="form-group">
                                     <label className="custom-form-label" htmlFor="address">
                                         Associative categories
                                     </label>
@@ -221,8 +243,27 @@ export default function ApplicationSettingsForm() {
                                         placeholder="Number of data per page"
                                         data-role="tagsinput"
                                     />
-                                </div>
-
+                                </div> */}
+                                <Box sx={{mt:4}}>
+                                    <Autocomplete
+                                        multiple
+                                        options={categories.map((option) => option.name)}
+                                        freeSolo
+                                        renderTags={(value, getTagProps) =>
+                                        value.map((option, index) => (
+                                            <Chip variant="outlined" label={option} {...getTagProps({ index })} />
+                                        ))
+                                        }
+                                        renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            variant="filled"
+                                            label="Associative Categories"
+                                            placeholder="Associative Categories"
+                                        />
+                                        )}
+                                    />
+                                </Box>
                             </div>
                             {applicationSettings.registration_type === "subscription" && (
                                 <div className="col-12">
@@ -257,7 +298,7 @@ export default function ApplicationSettingsForm() {
                                         onChange={handleChange}
                                         placeholder="Product Api ID"
                                     />
-                                    <label className="custom-form-label mt-2" htmlFor="product_api_id">
+                                    {/* <label className="custom-form-label mt-2" htmlFor="product_api_id">
                                         Associative Categories
                                     </label>
                                     <input
@@ -266,7 +307,29 @@ export default function ApplicationSettingsForm() {
                                         value={applicationSettings.associative_categories || ""}
                                         onChange={handleChange}
                                         placeholder="Associative Categories"
-                                    />
+                                    /> */}
+
+                                    <Box sx={{mt:4}}>
+                                        <Autocomplete
+                                            multiple
+                                            options={categories.map((option) => option.name)}
+                                            freeSolo
+                                            renderTags={(value, getTagProps) =>
+                                            value.map((option, index) => (
+                                                <Chip variant="outlined" label={option} {...getTagProps({ index })} />
+                                            ))
+                                            }
+                                            renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                variant="filled"
+                                                label="Associative Categories"
+                                                placeholder="Associative Categories"
+                                            />
+                                            )}
+                                        />
+                                </Box>
+                                    
                                 </div>
                             )}
                         </div>

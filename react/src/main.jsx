@@ -7,6 +7,9 @@ import {ContextProvider} from "./contexts/ContextProvider.jsx";
 import {SettingsProvider} from "./contexts/SettingsContext.jsx";
 import 'react-tooltip/dist/react-tooltip.css';
 import { Tooltip } from 'react-tooltip'
+
+
+
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
         <ContextProvider>
