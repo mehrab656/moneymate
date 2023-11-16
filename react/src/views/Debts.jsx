@@ -8,7 +8,7 @@ import {Button, Modal} from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import Pagination from "react-bootstrap/Pagination";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faEdit, faMoneyCheck, faTrash} from "@fortawesome/free-solid-svg-icons";
+import { faMoneyCheck} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 import MainLoader from "../components/MainLoader.jsx";
@@ -43,7 +43,7 @@ export default function Debts() {
 
     const [debt, setDebt] = useState({
         id: null,
-        amount: null,
+        amount: 0,
         account_id: null,
         type: '',
         person: '',
@@ -71,6 +71,11 @@ export default function Debts() {
         setErrors(null);
         setShowModal(true);
     };
+
+    const showDebt = (debt) => {
+        setDebt(debt);
+        setShowModal(true);
+    }
 
     const handleCloseModal = () => {
         setShowModal(false);
@@ -304,6 +309,7 @@ export default function Debts() {
                                         <td>
                                             <ActionButtonHelpers 
                                               module={debt}
+                                              showModule={showDebt}
                                               deleteFunc={onDelete}
                                               params={actionParams}
                                             />
@@ -445,14 +451,10 @@ export default function Debts() {
                         )}
 
                     </div>
-
-
                 </Modal.Body>
                 <Modal.Footer>
-
                     <Button className="btn-sm" variant="primary" onClick={debtSubmit}>
                         Add new debt
-
                     </Button>
                     <Button className="btn-sm" variant="secondary" onClick={handleCloseModal}>
                         Close

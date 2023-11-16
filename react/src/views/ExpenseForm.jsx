@@ -324,7 +324,6 @@ export default function ExpenseForm() {
                                 </div>
                                 <div className="">
                                     <Autocomplete
-                                        // value={expenseCategories[0]}
                                         classes={{option: classes.option}}
                                         options={expenseCategories}
                                         getOptionLabel={(option) => option.name}
