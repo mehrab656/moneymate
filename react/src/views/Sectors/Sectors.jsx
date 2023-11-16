@@ -290,8 +290,7 @@ export default function Sectors() {
                                                             }
                                                             data-tooltip-id='internet-account'
                                                             data-tooltip-content={
-                                                                "Account Number: " +
-                                                                String(sector.internet_acc_no).slice(-4)
+                                                                "Account Number: " + sector.internet_acc_no
                                                             }
                                                         >
                                                             {dateOrdinal(

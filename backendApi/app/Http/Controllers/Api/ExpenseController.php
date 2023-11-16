@@ -164,6 +164,10 @@ class ExpenseController extends Controller {
 	public function categories(): JsonResponse {
 		$categories = Category::where( 'type', 'expense' )->get();
 
+//		$categoryNames = array_map(function($category) {
+//			return $category['name'];
+//		}, $categories);
+
 		return response()->json( [ 'categories' => $categories ] );
 	}
 

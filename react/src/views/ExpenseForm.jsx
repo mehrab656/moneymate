@@ -56,8 +56,6 @@ export default function ExpenseForm() {
     // const [selectedCategoryId, setSelectedCategoryId] = useState('');
     const [categoryValue, setCategoryValue] = useState(null);
     const [storeCategoryValue, setStoreCategoryValue] = useState(null);
-
-
     const {
         last_expense_cat_id,
         last_expense_account_id,
@@ -77,6 +75,7 @@ export default function ExpenseForm() {
                 if (data.categories.length > 0) {
                     // setSelectedCategoryId(data.categories[0].id)
                 }
+
                 setExpenseCategories(data.categories);
             })
             .catch(error => {
@@ -96,6 +95,8 @@ export default function ExpenseForm() {
                 // handle error, e.g., show an error message to the user
             });
     }, [setExpenseCategories, setBankAccounts, setUsers]);
+
+
 
     //set default category value
     useEffect(() => {
@@ -328,9 +329,9 @@ export default function ExpenseForm() {
                                         options={expenseCategories}
                                         getOptionLabel={(option) => option.name}
                                         id="parentCategory"
+                                        isOptionEqualToValue={(option, categoryValue) => option.id === categoryValue.id}
                                         value={categoryValue}
                                         onChange={(event, newValue) => {
-                                            console.log(categoryValue)
                                             if (newValue) {
                                                 setCategoryValue(newValue);
                                             }
