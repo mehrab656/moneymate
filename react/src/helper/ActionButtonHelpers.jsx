@@ -3,10 +3,12 @@ import Dropdown from "react-bootstrap/Dropdown";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEdit, faThList, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
+import { useNavigate } from "react-router-dom";
 
 
 const ActionButtonHelpers = ({module, showModule, deleteFunc, params, editDropdown, showEditDropdown}) => {
     const {applicationSettings, userRole} = useContext(SettingsContext);
+    const navigate = useNavigate()
     return (
         <Dropdown>
             <Dropdown.Toggle variant="success" id="expense-actions">
@@ -15,8 +17,7 @@ const ActionButtonHelpers = ({module, showModule, deleteFunc, params, editDropdo
 
             <Dropdown.Menu>
                 {userRole === 'admin' && editDropdown !== true &&
-                    <Dropdown.Item className="text-warning"
-                                   href={params.route.editRoute + module.id}>
+                    <Dropdown.Item className="text-warning" onClick={(e)=> navigate(`${params.route.editRoute}${module.id}`)}>
                         <FontAwesomeIcon icon={faEdit}/> Edit
                     </Dropdown.Item>}
 
