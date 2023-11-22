@@ -21,6 +21,7 @@ class LendController extends Controller
     {
         $data = $request->validate([
             'amount' => 'required|numeric',
+            'note' => 'required',
             'debt_id' => 'required|exists:debts,id',
             'account_id' => 'required|exists:bank_accounts,id',
             'date' => 'required|date',
@@ -64,6 +65,7 @@ class LendController extends Controller
     {
         $data = $request->validate([
             'amount' => 'required|numeric',
+            'note' => 'required',
             'debt_id' => 'required|exists:debts,id',
             'account_id' => 'required|exists:bank_accounts,id',
             'date' => 'required|date',

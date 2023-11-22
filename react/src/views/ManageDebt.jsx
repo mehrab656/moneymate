@@ -22,17 +22,21 @@ export default function ManageDebt() {
         setDate(date);
     };
 
+    let textColor = 'success';
+
     const [borrow, setBorrow] = useState({
         id: null,
         amount: '',
         date: null,
         debt_id: id,
-        account_id: null
+        account_id: null,
+        note: null
     });
 
     const [repayment, setRepayment] = useState({
         id: null,
         amount: null,
+        note: null,
         debt_id: id,
         date: null,
         account_id: null
@@ -145,10 +149,9 @@ export default function ManageDebt() {
     };
 
 
-
-
     useEffect(() => {
         if (debt.date) {
+            // @fixme
         }
     }, [debt]);
 
@@ -183,7 +186,7 @@ export default function ManageDebt() {
                         } else if (data && data.status === 422) {
                             setErrors(data.data.errors);
                         }
-
+                        setLoading(false);
                     } else {
                         setNotification(data.message);
                         getDebt(); // Fetch the updated debt data
@@ -193,12 +196,14 @@ export default function ManageDebt() {
                         setRepayment({
                             id: null,
                             amount: '',
+                            note: null,
                             debt_id: id,
                             account_id: null,
                             date: null,
                         });
 
                         setDate(null);
+                        setLoading(false);
                     }
                 }
                 setLoading(false)
@@ -220,7 +225,7 @@ export default function ManageDebt() {
 
     return (
         <div>
-         <MainLoader loaderVisible={loading} />
+            <MainLoader loaderVisible={loading}/>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0 uppercase">Manage {debt.type}</h1>
             </div>
@@ -269,12 +274,11 @@ export default function ManageDebt() {
                 <table className="table table-bordered custom-table">
                     <thead>
                     <tr>
-                        <th className={'text-center'}>Amount</th>
-                        <th className={'text-center'}>Bank Name</th>
-                        <th className={'text-center'}>Account Holder</th>
-                        <th className={'text-center'}>Account Number</th>
                         <th className={'text-center'}>Date</th>
                         <th className={'text-center'}>Type</th>
+                        <th className={'text-center'}>Amount</th>
+                        <th className={'text-center'}>Notes</th>
+                        <th className={'text-center'}>Bank Name</th>
                     </tr>
                     </thead>
                     {loading && (
@@ -294,18 +298,25 @@ export default function ManageDebt() {
                                     No bank found
                                 </td>
                             </tr>
-                        ) : (
-                            debtHistories.map((debtHistory) => (
-                                <tr className={'text-center'} key={debtHistory.type+debtHistory.id}>
-                                    <td>{debtHistory.amount}</td>
-                                    <td>{debtHistory.bank_name}</td>
-                                    <td>{debtHistory.account_holder_name}</td>
-                                    <td>{debtHistory.account_number}</td>
-                                    <td>{debtHistory.date}</td>
-                                    <td>{debtHistory.type}</td>
+                        ) : (debtHistories.map((debtHistory) => {
+                                if (debtHistory.type === 'Lend' || debtHistory.type === 'Borrow') {
+                                    textColor = 'danger'
+                                }
 
-                                </tr>
-                            ))
+                                if (debtHistory.type === 'Debt Collection' || debtHistory.type === 'Repayment') {
+                                    textColor = 'success'
+                                }
+
+                                return (
+                                    <tr className={'text-center'} key={debtHistory.type + debtHistory.id}>
+                                        <td className={'text-' + textColor}>{debtHistory.date}</td>
+                                        <td className={'text-' + textColor}>{debtHistory.type}</td>
+                                        <td className={'text-' + textColor}>{debtHistory.amount}</td>
+                                        <td className={'text-' + textColor}>{debtHistory.note}</td>
+                                        <td className={'text-' + textColor}>{debtHistory.bank_name}</td>
+                                    </tr>
+                                )
+                            })
                         )}
                         </tbody>
                     )}
@@ -330,6 +341,22 @@ export default function ManageDebt() {
 
                             {errors && errors.amount && (
                                 <div className="text-danger mt-2">{errors.amount[0]}</div>
+                            )}
+
+                        </Form.Group>
+
+                        <br/>
+                        <Form.Group controlId="note">
+                            <Form.Label>
+                                <strong>Note</strong>
+                            </Form.Label>
+                            <Form.Control
+                                onChange={(e) => setBorrow({...borrow, note: e.target.value})}
+                                placeholder="Enter Note"
+                            />
+
+                            {errors && errors.note && (
+                                <div className="text-danger mt-2">{errors.note[0]}</div>
                             )}
 
                         </Form.Group>
@@ -405,6 +432,18 @@ export default function ManageDebt() {
                                 type="number" placeholder="Enter amount"/>
                             {errors && errors.amount && (
                                 <div className="text-danger mt-2">{errors.amount[0]}</div>
+                            )}
+                        </Form.Group>
+                        <br/>
+                        <Form.Group controlId="note">
+                            <Form.Label>
+                                <strong>Note</strong>
+                            </Form.Label>
+                            <Form.Control
+                                onChange={(e) => setRepayment({...repayment, note: e.target.value})}
+                                placeholder="Enter Note"/>
+                            {errors && errors.amount && (
+                                <div className="text-danger mt-2">{errors.note[0]}</div>
                             )}
                         </Form.Group>
                         <br/>

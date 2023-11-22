@@ -20,7 +20,7 @@ class BankNameController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $user = Auth::user();
+
         $page = $request->query('page', 1);
         $pageSize = $request->query('pageSize', 10);
         $bankNames = BankName::skip(($page - 1) * $pageSize)

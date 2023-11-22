@@ -14,6 +14,9 @@ return new class extends Migration
 		Schema::table('lends', function($table) {
 			$table->string('note')->after('amount')->default('null');
 		});
+		Schema::table('borrows', function($table) {
+			$table->string('note')->after('amount')->default('null');
+		});
 	}
 
 	/**
@@ -21,7 +24,10 @@ return new class extends Migration
 	 */
 	public function down(): void {
 		Schema::table( 'lends', function ( Blueprint $table ) {
-			$table->dropColumn( 'status' );
+			$table->dropColumn( 'note' );
+		} );
+		Schema::table( 'borrows', function ( Blueprint $table ) {
+			$table->dropColumn( 'note' );
 		} );
 	}
 };

@@ -9,13 +9,16 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "ext-curl": "*",
         "guzzlehttp/guzzle": "^7.2",
         "illuminate/database": "*",
         "laravel-admin-ext/log-viewer": "^1.0",
         "laravel/framework": "^10.8",
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
-        "stripe/stripe-php": "^10.15"
+        "stripe/stripe-php": "^10.15",
+        "twilio/sdk": "^7.12",
+        "ext-http": "*"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.13",

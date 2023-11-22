@@ -127,6 +127,7 @@
       <path value="$PROJECT_DIR$/backendApi/vendor/laravel-admin-ext/log-viewer" />
       <path value="$PROJECT_DIR$/backendApi/vendor/encore/laravel-admin" />
       <path value="$PROJECT_DIR$/backendApi/vendor/symfony/dom-crawler" />
+      <path value="$PROJECT_DIR$/backendApi/vendor/twilio/sdk" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.1" />

@@ -86,10 +86,10 @@ export default function Debts() {
         axiosClient.get('/all-bank-account')
             .then(({data}) => {
                 setBankAccounts(data.data);
-                setLoading(true)
+                setLoading(false)
             })
             .catch(error => {
-                setLoading(true)
+                setLoading(false)
                 console.warn('Error fetching bank accounts:', error)
             });
     }
@@ -353,7 +353,7 @@ export default function Debts() {
                     <div className="form-group">
                         <label htmlFor="amount" className="custom-form-label">Amount :</label>
                         <input className="custom-form-control"
-                               value={debt.amount}
+                               value={debt.amount== null ?'':debt.amount}
                                onChange={e => setDebt(prevDebt => ({...prevDebt, amount: e.target.value}))}
                                placeholder="Amount"
                         />
