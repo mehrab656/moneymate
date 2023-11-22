@@ -49,6 +49,8 @@ class ApplicationSettingsController extends Controller
 	        'last_income_account_id',
 	        'last_income_date',
 	        'last_income_cat_id',
+	        'last_income_cat_id',
+	        'associative_categories',
 
         ];
 

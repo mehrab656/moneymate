@@ -12,6 +12,7 @@ import { faMoneyCheck} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 import MainLoader from "../components/MainLoader.jsx";
+import { Tooltip } from "@mui/material";
 
 export default function Debts() {
 
@@ -82,11 +83,9 @@ export default function Debts() {
     };
 
     const getBankAccounts = () => {
-        setLoading(true)
         axiosClient.get('/all-bank-account')
             .then(({data}) => {
                 setBankAccounts(data.data);
-                setLoading(false)
             })
             .catch(error => {
                 setLoading(false)
@@ -97,9 +96,10 @@ export default function Debts() {
     const getDebts = (page, pageSize) => {
         setLoading(true);
         axiosClient.get('/debts', {params: {page, pageSize}}).then(({data}) => {
-            setLoading(false);
             setDebts(data.debts);
             setTotalCount(data.total);
+            getBankAccounts();
+            setLoading(false);
         }).catch(error => {
             setLoading(false);
             console.warn('Unable to fetch debt data', error);
@@ -109,7 +109,6 @@ export default function Debts() {
     useEffect(() => {
         document.title = "Debts / Loan";
         getDebts(currentPage, pageSize);
-        getBankAccounts();
     }, [currentPage, pageSize]);
 
     const edit = (selectedDebt) => {
@@ -270,10 +269,10 @@ export default function Debts() {
                         <thead>
                         <tr>
                             <th className="text-center">DATE</th>
+                            <th className="text-center">TYPE</th>
                             <th className="text-center">PERSON</th>
                             <th className="text-center">ACCOUNT</th>
                             <th className={'text-center'}>AMOUNT</th>
-                            <th className="text-center">TYPE</th>
                             <th className="text-center">NOTE</th>
                             {userRole === 'admin' && <th className="text-center">ACTIONS</th>}
                         </tr>
@@ -299,11 +298,16 @@ export default function Debts() {
                                 filterDebts.map((debt) => (
                                     <tr key={debt.id}>
                                         <td className="text-center">{debt.date}</td>
+                                        <td className="text-center">{debt.type.toUpperCase()}</td>
                                         <td className="text-center">{debt.type === 'borrow' ? "Borrowed from " : "Lend to "} {debt.person}</td>
                                         <td className="text-center">{debt.account}</td>
                                         <td>{default_currency}{debt.amount}</td>
-                                        <td className="text-center">{debt.type.toUpperCase()}</td>
-                                        <td className="text-center">{debt.note}</td>
+                                       
+                                        <td className="text-center">
+                                        <Tooltip title={debt?.note} arrow>
+                                            {debt?.note.length>7?debt?.note.split(' ').slice(0,3).join(' ')+`  ... 🅘`:debt?.note}
+                                        </Tooltip>
+                                        </td>
                                       
                                         {userRole ==='admin' && 
                                         <td>
