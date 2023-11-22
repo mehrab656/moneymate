@@ -41,7 +41,6 @@ const ActionButtonHelpers = ({module, showModule, deleteFunc, params, editDropdo
                         <FontAwesomeIcon icon={faTrash}/> Delete
                     </Dropdown.Item> : ''
                 }
-
             </Dropdown.Menu>
         </Dropdown>
     )

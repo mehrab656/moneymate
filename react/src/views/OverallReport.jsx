@@ -46,70 +46,12 @@ export default function OverallReport() {
 
     return (
         <>
-        <MainLoader loaderVisible={loading} />
+            <MainLoader loaderVisible={loading}/>
             <WizCard className="animated fadeInDown">
                 <div className="row">
                     <div className="col-12">
                         <h1 className="title-text text-center">Total Investment Reports</h1>
-                        <div className="responsive" style={{overflow:'auto'}}>
-                            <table className="table table-bordered">
-                                <thead>
-                                <tr className={'text-center'}>
-                                    <th>SL/No</th>
-                                    <th>Month</th>
-                                    <th>Investments</th>
-                                    <th>Cost and Returns</th>
-
-                                </tr>
-                                </thead>
-                                {loading && (
-                                    <tbody>
-                                    <tr className={'text-center'}>
-                                        <td colSpan={6} className="text-center">
-                                            Loading...
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                )}
-                                {!loading && (
-                                    <tbody>
-                                    {investments.map(investment => (
-                                        <tr key={investment.investor_id} className={'text-center'}>
-                                            <td>{investment.name}</td>
-                                            <td>{default_currency + ' ' + investment.amount}</td>
-                                            <td>
-                                                <td>{investment.name}</td>
-                                                <td>{investment.name}</td>
-                                                <td>{investment.name}</td>
-                                                <td>{investment.name}</td>
-                                                <td>{investment.name}</td>
-                                            </td>
-                                            <td>
-                                                <td>{default_currency + ' ' + investment.amount}</td>
-                                                <td>{investment.name}</td>
-                                                <td>{default_currency + ' ' + investment.amount}</td>
-                                                <td>{investment.name}</td>
-                                                <td>{default_currency + ' ' + investment.amount}</td>
-                                                <td>{investment.name}</td>
-                                                <td>{default_currency + ' ' + investment.amount}</td>
-                                                <td>{investment.name}</td>
-                                                <td>{default_currency + ' ' + investment.amount}</td>
-                                                <td>{investment.name}</td>
-                                                <td>{default_currency + ' ' + investment.amount}</td>
-                                                <td>{investment.name}</td>
-                                                <td>{default_currency + ' ' + investment.amount}</td>
-                                                <td>{investment.name}</td>
-                                                <td>{default_currency + ' ' + investment.amount}</td>
-                                                <td>{investment.name}</td>
-                                                <td>{default_currency + ' ' + investment.amount}</td>
-                                                <td>{investment.name}</td>
-                                                <td>{default_currency + ' ' + investment.amount}</td>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    </tbody>
-                                )}
-                            </table>
+                        <div className="responsive" style={{overflow: 'auto'}}>
 
                         </div>
                     </div>

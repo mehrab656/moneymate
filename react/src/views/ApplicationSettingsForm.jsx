@@ -28,9 +28,6 @@ export default function ApplicationSettingsForm() {
     const [userRole, setUserRole] = useState([]);
     const [registrationType, setRegistrationType] = useState("");
 
-    // console.log('applicationSettings', applicationSettings)
-
-
     const handleChange = (e) => {
         const {name, value} = e.target;
         setApplicationSettings((prevApplicationSettings) => ({

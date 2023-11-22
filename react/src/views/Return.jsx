@@ -29,6 +29,15 @@ export default function Return() {
         default_currency
     } = applicationSettings;
 
+    let totals = {
+        totalRefundableAmount: 0,
+        totalRefundedAmount: 0,
+        totalRemaining: 0,
+        totalRefundedPercent: 0,
+        totalRemainingPercent: 0
+    };
+
+
     const pageSize = num_data_per_page;
     const totalPages = Math.ceil(totalCount / pageSize);
 
@@ -113,113 +122,140 @@ export default function Return() {
     }
 
     const actionParams = {
-        route:{
-            viewRoute:'',
-            deleteRoute:''
+        route: {
+            viewRoute: '',
+            deleteRoute: ''
         },
     }
 
     return (
         <div>
-         <MainLoader loaderVisible={loading} />
-            <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
-                <h1 className="title-text mb-0">Market Returns</h1>
-            </div>
-            <WizCard className="animated fadeInDown">
-                <div className="mb-4">
-                    <input
-                        className="custom-form-control"
-                        type="text"
-                        placeholder="Search Returns..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
-                <div className="table-responsive-sm">
-                    <table className="table table-bordered custom-table">
-                        <thead>
-                        <tr>
-                            <th className="text-center">Date</th>
-                            <th className="text-center">Description</th>
-                            <th className="text-center">Refundable Amount</th>
-                            <th className="text-center">Refunded Amount</th>
-                            <th className="text-center">Remaining</th>
-                            {
-                                userRole === 'admin'&&
-                                <th className="text-center">Action</th>
-                            }
-                        </tr>
-                        </thead>
-                        {loading && (
-                            <tbody>
+            <MainLoader loaderVisible={loading}/>
+            <div className="col-9">
+                <WizCard className="animated fadeInDown">
+                    <div className="row">
+                        <div className="col-4">
+                            <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
+                                <h1 className="title-text mb-0">Market Returns</h1>
+                            </div>
+                        </div>
+                        <div className="col-8">
+                            <div className="mb-4">
+                                <input
+                                    className="custom-form-control"
+                                    type="text"
+                                    placeholder="Search Returns..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="table-responsive-sm">
+                        <table className="table table-bordered custom-table">
+                            <thead>
                             <tr>
-                                <td colSpan={6} className="text-center">
-                                    Loading...
-                                </td>
+                                <th className="text-center">Date</th>
+                                <th className="text-center">Description</th>
+                                <th className="text-center">Refundable Amount</th>
+                                <th className="text-center">Refunded Amount</th>
+                                <th className="text-center">Remaining</th>
+                                {
+                                    userRole === 'admin' &&
+                                    <th className="text-center">Action</th>
+                                }
                             </tr>
-                            </tbody>
-                        )}
-                        {!loading && (
-                            <tbody>
-                            {filterMarketReturns.length === 0 ? (
+                            </thead>
+                            {loading && (
+                                <tbody>
                                 <tr>
                                     <td colSpan={6} className="text-center">
-                                        No Refundable expense found
+                                        Loading...
                                     </td>
                                 </tr>
-                            ) : (
-                                filterMarketReturns.map((marketReturn) => (
-                                    <tr key={marketReturn.id}>
-                                        <td>{marketReturn.date}</td>
-                                        <td>{marketReturn.description}</td>
-                                        <td className="text-right">{default_currency + marketReturn.refundable_amount}</td>
-                                        <td className="text-right">{default_currency + marketReturn.refunded_amount}</td>
-                                        <td className="text-right">{default_currency + (marketReturn.refundable_amount - marketReturn.refunded_amount).toString()}</td>
-                                        {/* {
-                                            userRole === 'admin' &&
-                                            <td className="text-center w-auto">
-                                                <div className="d-flex flex-wrap justify-content-center gap-2">
-                                              <span>
-                                                <Link
-                                                    className="btn-edit"
-                                                    to={`#`}
-                                                    onClick={() => edit(marketReturn)}>
-                                                  <FontAwesomeIcon icon={faEdit}/> Edit</Link>
-                                              </span>
-                                                </div>
-                                            </td>
-                                        } */}
-                                        {userRole ==='admin' && 
-                                         <td>
-                                            <ActionButtonHelpers
-                                                module={marketReturn}
-                                                // deleteFunc={onDelete}
-                                                showEditDropdown={edit}
-                                                editDropdown={true}
-                                                params={actionParams}
-                                            />
-                                        </td>}
-                                    </tr>
-                                ))
+                                </tbody>
                             )}
-                            </tbody>
-                        )}
-                    </table>
+                            {!loading && (
+                                <tbody>
+                                {filterMarketReturns.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={6} className="text-center">
+                                            No Refundable expense found
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    filterMarketReturns.map((marketReturn) => {
+                                        totals.totalRefundableAmount += Number(parseFloat(marketReturn.refundable_amount));
+                                        totals.totalRefundedAmount += Number(parseFloat(marketReturn.refunded_amount));
+                                        totals.totalRefundedPercent = Math.ceil((totals.totalRefundedAmount * 100) / totals.totalRefundableAmount);
+                                        totals.totalRemainingPercent = 100 - totals.totalRefundedPercent;
+
+                                        return (
+                                            <tr key={marketReturn.id}>
+                                                <td>{marketReturn.date}</td>
+                                                <td>{marketReturn.description}</td>
+                                                <td className="text-right">{default_currency + marketReturn.refundable_amount}</td>
+                                                <td className="text-right">{default_currency + marketReturn.refunded_amount}</td>
+                                                <td className="text-right">{default_currency + (marketReturn.refundable_amount - marketReturn.refunded_amount).toString()}</td>
+                                                {userRole === 'admin' &&
+                                                    <td>
+                                                        <ActionButtonHelpers
+                                                            module={marketReturn}
+                                                            // deleteFunc={onDelete}
+                                                            showEditDropdown={edit}
+                                                            editDropdown={true}
+                                                            params={actionParams}
+                                                        />
+                                                    </td>}
+                                            </tr>
+
+                                        )
+                                    })
+                                )}
+                                </tbody>
+                            )}
+                        </table>
+                    </div>
+                    {totalPages > 1 && (
+                        <Pagination>
+                            <Pagination.Prev
+                                disabled={currentPage === 1}
+                                onClick={() => handlePageChange(currentPage - 1)}
+                            />
+                            {paginationItems}
+                            <Pagination.Next
+                                disabled={currentPage === totalPages}
+                                onClick={() => handlePageChange(currentPage + 1)}
+                            />
+                        </Pagination>
+                    )}
+                </WizCard>
+            </div>
+
+            <div className="col-xl-3 col-md-3">
+                <div className="card quater-card summery-card">
+                    <div className="card-block">
+                        <h6 className="text-muted m-b-20">Summary</h6>
+
+                        <h4>{default_currency + ' ' + totals.totalRefundableAmount}</h4>
+                        <p className="text-muted">Total refundable amount</p>
+                        <h5 className="m-t-30">{default_currency + ' ' + totals.totalRefundedAmount}</h5>
+                        <p className="text-muted">Total Refunded <span
+                            className="f-right">{totals.totalRefundedPercent + '%'}</span></p>
+                        <div className="progress">
+                            <div className="progress-bar bg-success"
+                                 style={{width: totals.totalRefundedPercent + '%'}}/>
+                        </div>
+                        <h5 className="m-t-30">{default_currency + ' ' + (totals.totalRefundableAmount - totals.totalRefundedAmount)}</h5>
+                        <p className="text-muted">Total Remaining <span
+                            className="f-right">{totals.totalRemainingPercent + '%'}</span></p>
+                        <div className="progress">
+                            <div className="progress-bar bg-danger"
+                                 style={{width: totals.totalRemainingPercent + '%'}}/>
+                        </div>
+                    </div>
                 </div>
-                {totalPages > 1 && (
-                    <Pagination>
-                        <Pagination.Prev
-                            disabled={currentPage === 1}
-                            onClick={() => handlePageChange(currentPage - 1)}
-                        />
-                        {paginationItems}
-                        <Pagination.Next
-                            disabled={currentPage === totalPages}
-                            onClick={() => handlePageChange(currentPage + 1)}
-                        />
-                    </Pagination>
-                )}
-            </WizCard>
+            </div>
 
             <Modal show={showModal} centered onHide={handleCloseModal} className="custom-modal">
                 <Modal.Header closeButton>
