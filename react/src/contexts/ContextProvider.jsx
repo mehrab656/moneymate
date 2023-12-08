@@ -1,4 +1,5 @@
-import {createContext, useContext, useState} from "react";
+import {createContext, useContext, useEffect, useState} from "react";
+import axiosClient from "../axios-client.js";
 
 const StateContext = createContext({
     currentUser: null,
@@ -26,6 +27,13 @@ export const ContextProvider = ({children}) => {
 
         }
     }
+
+    // useEffect(()=>{
+    //     //check if user exist on local storage
+    //     axiosClient.get('/user').then(({data}) => {
+    //         setUser(data);
+    //     });
+    // },[])
 
     const setNotification = message => {
         _setNotification(message);

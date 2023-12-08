@@ -213,9 +213,9 @@ export default function Expenses() {
                                         <td>{expense.date}</td>
                                         <td className={'text-start'}>{expense.description}</td>
                                         <td className={'text-start'}>{expense.category_name}</td>
-                                        <td className={'text-end'}>{default_currency + expense.amount}</td>
-                                        <td className={'text-end'}>{default_currency + expense.refundable_amount}</td>
-                                        <td className={"text-end text-" + expense.refunded_txt_clr}>{default_currency + expense.refunded_amount}</td>
+                                        <td className={'text-end'}>{default_currency +' ' + expense.amount}</td>
+                                        <td className={'text-end'}>{default_currency +' ' + expense.refundable_amount}</td>
+                                        <td className={"text-end text-" + expense.refunded_txt_clr}>{default_currency +' ' + expense.refunded_amount}</td>
                                         <td>
                                             <ActionButtonHelpers
                                                 module={expense}
@@ -256,7 +256,7 @@ export default function Expenses() {
                 </Modal.Header>
                 <Modal.Body>
                     <table className="footable table table-bordered table-striped mb-0">
-                        <thead></thead>
+                        <thead/>
                         <tbody>
                         <tr>
                             <td width="50%">

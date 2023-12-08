@@ -6,7 +6,6 @@ import router from "./router.jsx";
 import {ContextProvider} from "./contexts/ContextProvider.jsx";
 import {SettingsProvider} from "./contexts/SettingsContext.jsx";
 import 'react-tooltip/dist/react-tooltip.css';
-import { Tooltip } from 'react-tooltip'
 
 
 

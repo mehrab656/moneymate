@@ -18,49 +18,60 @@ import {
     faListAlt,
     faMailBulk,
     faMoneyBill,
-    faMoneyBill1Wave,
     faMoneyBillTrendUp,
     faMoneyCheck,
     faSection,
     faTachometerAlt,
     faWallet,
+    faBell
 } from '@fortawesome/free-solid-svg-icons';
 import {SettingsContext, SettingsProvider} from "../contexts/SettingsContext.jsx";
 import Footer from "./Footer.jsx";
-import {Container, Row, Col, Button, Offcanvas} from 'react-bootstrap';
-
-import { FloatingWhatsApp } from 'react-floating-whatsapp'
+import {Container, Row, Col, Button, Offcanvas, Nav} from 'react-bootstrap';
+import {FloatingWhatsApp} from 'react-floating-whatsapp'
 import avatar from '../../../954445_n.jpg'
-
-import { Fab, Badge, List, ListItem, ListItemText, Popover } from '@mui/material';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import { styled } from '@mui/material/styles';
-
-const FloatingNotificationIcon = styled('div')({
-  position: 'fixed',
-  bottom: '100px',
-  right: '30px',
-});
-
-const NotificationIcon = styled(Fab)({
-  backgroundColor: '#007BFF',
-});
-
+import NavDropdown from 'react-bootstrap/NavDropdown';
+import {compareDates} from "../helper/HelperFunctions.js";
+import DropDownProperties from "./DropdownProperties";
 
 export default function DefaultLayout() {
 
     const {user, token, setUser, setToken, notification} = useStateContext();
     const navigate = useNavigate();
-    const [currentBalance, setCurrentBalance] = useState(0);
-    const [totalIncome, setTotalIncome] = useState(0);
-    const [totalExpense, setTotalExpense] = useState(0);
+    const [financeStatus, setFinanceStatus] = useState({
+        totalAccountBalance: 0,
+        totalIncome: 0,
+        totalExpense: 0,
+    })
     const [className, setClassName] = useState('');
-
+    const [notifications, setNotifications] = useState([]);
     const {applicationSettings, userRole, setUserRole} = useContext(SettingsContext);
     let {
         default_currency,
         registration_type
     } = applicationSettings;
+    const getNotifications = () => {
+        axiosClient
+            .get("/sectors")
+            .then(({data}) => {
+                let notificationsArray = [];
+                data.data.map(item => {
+                    if (compareDates(item.internet_billing_date) === 'danger') {
+                        item = {...item, type: 'internet'}
+                        notificationsArray.push(item)
+                    }
+                    if (compareDates(item.el_billing_date) === 'danger') {
+                        item = {...item, type: 'electricity'}
+
+                        notificationsArray.push(item)
+                    }
+                });
+
+                setNotifications(notificationsArray);
+            });
+
+    }
+    console.log(notifications)
 
     //screen resize for responsive dynamic class
     const handleResize = () => {
@@ -89,37 +100,19 @@ export default function DefaultLayout() {
         }
 
         // Check if user data is available
-        //if (!user.id) {
-        axiosClient.get('/user').then(({data}) => {
-            setUser(data);
-        });
+        if (!user.id) {
+            axiosClient.get('/user').then(({data}) => {
+                setUser(data);
+            });
+        }
         //get total account balance
-        axiosClient.get('/total-balance').then(({data}) => {
-            setCurrentBalance(data.balance)
+
+        axiosClient.get('/getFinanceReport').then(({data}) => {
+            setFinanceStatus(data)
         });
-        // get total income
-        axiosClient.get('/total-income').then(({data}) => {
-            setTotalIncome(data.amount)
-        });
-        // get total expense
-        axiosClient.get('/total-expense').then(({data}) => {
-            setTotalExpense(data.amount)
-        });
-        //}
+        getNotifications();
     }, []);
 
-    //token, setUser, navigate, user.id was set those dependencies which was causing error.
-
-    useEffect(() => {
-        if (!token) {
-            navigate('/login');
-        }
-
-        // axiosClient.get('/user').then(({data}) => {
-        //     setUser(data);
-        // });
-
-    }, [token, setUser]);
 
     const onLogout = (ev) => {
         ev.preventDefault();
@@ -150,27 +143,15 @@ export default function DefaultLayout() {
     const toggleSidebar = () => {
         setShowSidebar(!showSidebar);
     };
-
-
-
-    const [showNotification, setShowNotification] = useState(false);
-    const [notificationCount, setNotificationCount] = useState(3); // Initial notification count
-    const [notifications, setNotifications] = useState([
-      { id: 1, text: 'Notification 1' },
-      { id: 2, text: 'Notification 2' },
-      { id: 3, text: 'Notification 3' },
-    ]);
-  
     const [anchorEl, setAnchorEl] = useState(null);
-  
+
+
     const handleOpenPopover = (event) => {
-      setAnchorEl(event.currentTarget);
-      setShowNotification(false);
-      setNotificationCount(0);
+        setAnchorEl(event.currentTarget);
     };
-  
+
     const handleClosePopover = () => {
-      setAnchorEl(null);
+        setAnchorEl(null);
     };
 
     return (
@@ -396,25 +377,73 @@ export default function DefaultLayout() {
                                 <div className="body-content d-flex flex-column">
                                     <header className="d-flex justify-content-between bg-white py-3 shadow-sm">
                                         <div className="d-none d-sm-block">
-                                            <span>Account Balance : {(default_currency !== undefined && currentBalance !== undefined) &&
-                                                <b>{default_currency + ' ' + currentBalance}</b>}</span>
+                                            <span>Account Balance : {(default_currency !== undefined && financeStatus.totalAccountBalance !== undefined) &&
+                                                <b>{default_currency + ' ' + financeStatus.totalAccountBalance}</b>}</span>
                                         </div>
 
                                         <div className="d-none d-sm-block">
-                                            <span>Total Income : {(default_currency !== undefined && totalIncome !== undefined) &&
-                                                <b>{default_currency + ' ' + totalIncome}</b>} </span>
+                                            <span>Total Income : {(default_currency !== undefined && financeStatus.totalIncome !== undefined) &&
+                                                <b>{default_currency + ' ' + financeStatus.totalIncome}</b>} </span>
                                         </div>
 
                                         <div className="d-none d-sm-block">
-                                            <span>Total Expense : {(default_currency !== undefined && totalExpense !== undefined) &&
-                                                <b>{default_currency + ' ' + totalExpense}</b>}</span>
+                                            <span>Total Expense : {(default_currency !== undefined && financeStatus.totalExpense !== undefined) &&
+                                                <b>{default_currency + ' ' + financeStatus.totalExpense}</b>}</span>
                                         </div>
 
-                                        <div>
-                                            {user.name} &nbsp; &nbsp;
-                                            <a onClick={onLogout} className="btn-logout" href="#">Logout</a>
-                                        </div>
+                                        <NavDropdown title={<DropDownProperties
+                                            icon={faBell}
+                                            totalNotification={notifications.length}
+                                        />} id="basic-nav-dropdown">
+                                            {
+                                                notifications.map((item, index) => {
+                                                    if (item.type === 'internet') {
+                                                        return (
+                                                            <>
+                                                                <NavDropdown.Item href="#action/3.1"
+                                                                                  key={item.id}>
+                                                                    {Number(index + 1) + '. ' + item.name + ' ' + item.type + ' bill date ' + item.internet_billing_date}
+                                                                </NavDropdown.Item>
+                                                                <NavDropdown.Divider/>
+
+                                                            </>
+
+                                                        )
+                                                    } else {
+                                                        return (
+                                                            <>
+                                                                <NavDropdown.Item href="#action/3.1"
+                                                                                  key={item.id}>
+                                                                    {Number(index + 1) + '. ' + item.name + ' ' + item.type + ' bill date ' + item.el_billing_date}</NavDropdown.Item>
+                                                                <NavDropdown.Divider/>
+                                                            </>
+                                                        )
+                                                    }
+
+                                                })
+                                            }
+                                        </NavDropdown>
+
+                                        {/*user Sections */}
+                                        <NavDropdown title={user.name ?? 'User'} id="basic-nav-dropdown">
+                                            <NavDropdown.Item href="#action/3.1">Profile</NavDropdown.Item>
+                                            <NavDropdown.Item href="application-settings">Activity
+                                                Log</NavDropdown.Item>
+                                            {userRole === 'admin' &&
+                                                <NavDropdown.Item><Link className={"header-dropdown-item"}
+                                                                        to="/application-settings">Application
+                                                    Settings</Link></NavDropdown.Item>
+                                            }
+                                            <NavDropdown.Divider/>
+                                            <NavDropdown.Item onClick={onLogout}>
+                                                {/*<a onClick={onLogout} href="#"></a>*/}
+                                                Logout
+                                            </NavDropdown.Item>
+                                        </NavDropdown>
+
                                     </header>
+
+
                                     <main className="flex-grow-1 py-4">
                                         <Outlet/>
 
@@ -631,28 +660,15 @@ export default function DefaultLayout() {
                                             </Link>
                                         </li>
 
-                                        {registration_type === 'subscription' && userRole === 'admin' &&
-                                            <li className="aside-menu-item">
-                                                <Link to="/subscription-history"
-                                                      className={isActive('/subscription-history') ? 'active' : ''}>
-                                                    <span className="aside-menu-icon"><FontAwesomeIcon icon={faDollar}/></span>
-                                                    <span className="aside-menu-text" onClick={toggleSidebar}> Subscription History</span>
-                                                </Link>
-                                            </li>
-                                        }
+                                        <li className="aside-menu-item">
+                                            <Link to="/subscription-history"
+                                                  className={isActive('/subscription-history') ? 'active' : ''}>
+                                                <span className="aside-menu-icon"><FontAwesomeIcon
+                                                    icon={faDollar}/></span>
+                                                <span className="aside-menu-text" onClick={toggleSidebar}> Subscription History</span>
+                                            </Link>
+                                        </li>
 
-
-                                        {userRole === 'admin' &&
-                                            <li className="aside-menu-item">
-                                                <Link
-                                                    to="/application-settings"
-                                                    className={isActive('/application-settings') ? 'active' : ''}>
-                                                    <span className="aside-menu-icon"><FontAwesomeIcon
-                                                        icon={faCogs}/></span>
-                                                    <span className="aside-menu-text" onClick={toggleSidebar}> Application Settings </span>
-                                                </Link>
-                                            </li>
-                                        }
                                     </ul>
                                 </div>
                             </aside>
@@ -663,45 +679,14 @@ export default function DefaultLayout() {
 
 
             <FloatingWhatsApp
-                    phoneNumber="+971551258910"
-                    accountName="Mehrab Hossain"
-                    avatar={avatar}
-                    allowEsc
-                    allowClickAway
-                    notification
-                    notificationSound
-                />
-
-            <FloatingNotificationIcon>
-                <div className="floating-notification-icon">
-                    <Badge color="secondary" badgeContent={notificationCount} onClick={handleOpenPopover}>
-                        <Fab color="primary">
-                        <NotificationsIcon />
-                        </Fab>
-                    </Badge>
-                    <Popover
-                        open={Boolean(anchorEl)}
-                        anchorEl={anchorEl}
-                        onClose={handleClosePopover}
-                        anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'right',
-                        }}
-                        transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                        }}
-                    >
-                        <List>
-                        {notifications.map((notification) => (
-                            <ListItem key={notification.id}>
-                            <ListItemText primary={notification.text} />
-                            </ListItem>
-                        ))}
-                        </List>
-                    </Popover>
-                </div>
-            </FloatingNotificationIcon>
+                phoneNumber="+971551258910"
+                accountName="Mehrab Hossain"
+                avatar={avatar}
+                allowEsc
+                allowClickAway
+                notification
+                notificationSound
+            />
         </>
     )
 }

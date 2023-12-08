@@ -391,5 +391,7 @@ footer {
     max-height: 0;
     opacity: 0;
 }
-
-
+.header-dropdown-item{
+    color: black;
+    text-decoration: none;
+}

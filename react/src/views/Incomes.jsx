@@ -5,12 +5,12 @@ import Swal from 'sweetalert2';
 import IncomeExportButton from "../components/IncomeExportButton.jsx";
 import WizCard from "../components/WizCard";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faDollar, faEdit, faTrash} from "@fortawesome/free-solid-svg-icons";
+import {faDollar, faEdit, faPlus, faTrash} from "@fortawesome/free-solid-svg-icons";
 import Pagination from "react-bootstrap/Pagination";
-import DownloadAttachment from "../components/DownloadAttachment.jsx";
 import {SettingsContext} from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 import MainLoader from "../components/MainLoader.jsx";
+import {Modal} from "react-bootstrap";
 
 export default function Incomes() {
 
@@ -100,7 +100,27 @@ export default function Incomes() {
             }
         });
     };
+    const [showModal, setShowModal] = useState(false);
+    const [income, setIncome] = useState({
+        id: null,
+        user_id: null,
+        account_id: '', // Set default value to an empty string
+        amount: 0, // Set default value to an empty string
+        category_id: null,
+        description: '',
+        reference: '',
+        date: '',
+        note: '',
+        attachment: ''
+    });
+    const showIncome = (income) => {
+        setIncome(income);
+        setShowModal(true);
+    }
 
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
     const actionParams = {
         route:{
             editRoute:'/income/',
@@ -112,25 +132,32 @@ export default function Incomes() {
     return (
         <div>
          <MainLoader loaderVisible={loading} />
-            <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
-                <h1 className="title-text mb-0">Income Histories</h1>
-                {userRole === 'admin' &&
-                    <Link className="btn-add align-right mr-3" to="/income/new"><FontAwesomeIcon icon={faDollar}/> Add
-                        New
-                        Income</Link>}
 
-                <IncomeExportButton/>
-            </div>
 
             <WizCard className="animated fadeInDown">
-                <div className="mb-4">
-                    <input className="custom-form-control"
-                           type="text"
-                           placeholder="Search Income..."
-                           value={searchTerm}
-                           onChange={(e) => setSearchTerm(e.target.value)}/>
+                <div className="row">
+                    <div className="col-3">
+                        <h3>Income </h3>
+                    </div>
+                    <div className="col-7">
+                        <div className="mb-4">
+                            <input className="custom-form-control"
+                                   type="text"
+                                   placeholder="Search Income..."
+                                   value={searchTerm}
+                                   onChange={(e) => setSearchTerm(e.target.value)}/>
 
+                        </div>
+                    </div>
+                    <div className="col-2">
+                        <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
+                            {userRole === 'admin' &&
+                                <Link className="btn-add align-right mr-3" to="/income/new"><FontAwesomeIcon icon={faPlus}/></Link>}
+                            <IncomeExportButton/>
+                        </div>
+                    </div>
                 </div>
+
 
                 <div className="table-responsive-sm">
                     <table className="table table-bordered custom-table">
@@ -171,6 +198,7 @@ export default function Incomes() {
                                         {userRole === 'admin' &&
                                             <ActionButtonHelpers 
                                               module={income}
+                                              showModule={showIncome}
                                               deleteFunc={onDelete}
                                               params={actionParams}
                                             />
@@ -199,6 +227,69 @@ export default function Incomes() {
                 )}
 
             </WizCard>
+
+            <Modal show={showModal} centered onHide={handleCloseModal} className="custom-modal modal-lg">
+                <Modal.Header closeButton>
+                    <Modal.Title>
+                        <span>Incomes Details</span>
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <table className="footable table table-bordered table-striped mb-0">
+                        <thead> </thead>
+                        <tbody>
+                        <tr>
+                            <td width="50%">
+                                <strong>Details:</strong>
+                            </td>
+                            <td>{income.description}</td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <strong>Date:</strong>
+                            </td>
+                            <td>{income.date}</td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <strong>Sector:</strong>
+                            </td>
+                            <td> {income.category_id}</td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <strong>Income Reference :</strong>
+                            </td>
+                            <td> {income.reference}  </td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <strong>Income Amount :</strong>
+                            </td>
+                            <td> {income.amount}</td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <strong>Income Note :</strong>
+                            </td>
+                            <td> {income.note}</td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <strong>Attachment :</strong>
+                            </td>
+                            <td> {income.attachment}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </Modal.Body>
+                <Modal.Footer>
+                    <button className="btn btn-primary" onClick={handleCloseModal}>
+                        Close
+                    </button>
+                </Modal.Footer>
+            </Modal>
+
         </div>
     )
 }

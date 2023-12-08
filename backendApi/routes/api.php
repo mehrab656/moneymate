@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DebtController;
 use App\Http\Controllers\Api\ExpenseController;
 use App\Http\Controllers\Api\FileDownloadController;
+use App\Http\Controllers\Api\FinanceController;
 use App\Http\Controllers\Api\IncomeController;
 use App\Http\Controllers\Api\InvestmentController;
 use App\Http\Controllers\Api\LendController;
@@ -184,6 +185,9 @@ Route::middleware('auth:sanctum')->group(function () {
 	Route::get('/sectors-list',[ SectorModelController::class,'sectorList']);
 //	Route::get('/sectors',[ SectorModelController::class,'index']);
 //	Route::get('/sectors',[ SectorModelController::class,'index']);
+
+	//finance report
+	Route::get('/getFinanceReport',[ FinanceController::class,'getAccountStatement']);
 });
 
 

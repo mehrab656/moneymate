@@ -1,5 +1,7 @@
 import React, {useState} from 'react';
 import axiosClient from '../axios-client.js';
+import {faFileExport, faPlus} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 export default function IncomeExportButton() {
     const [loading, setLoading] = useState(false);
@@ -28,7 +30,8 @@ export default function IncomeExportButton() {
     return (
         <div>
             <button className='btn-info' onClick={handleExportCsv} disabled={loading}>
-                {loading ? 'Exporting...' : 'Export Income Data'}
+                <FontAwesomeIcon icon={faFileExport}/>
+                {/*{loading ? 'Exporting...' : 'Export Data'}*/}
             </button>
         </div>
     );

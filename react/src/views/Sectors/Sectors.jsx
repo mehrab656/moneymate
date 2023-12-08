@@ -11,6 +11,7 @@ import {SettingsContext} from "../../contexts/SettingsContext.jsx";
 import ActionButtonHelpers from "../../helper/ActionButtonHelpers.jsx";
 import {Tooltip} from "react-tooltip";
 import MainLoader from "../../components/MainLoader.jsx";
+import {compareDates} from "../../helper/HelperFunctions.js";
 
 export default function Sectors() {
     const [loading, setLoading] = useState(false);
@@ -149,13 +150,7 @@ export default function Sectors() {
         "December",
     ];
 
-    function compareDates(date) {
-        const currentDate = new Date().getDate();
 
-        const billingDate = new Date(date).getDate();
-        const res = billingDate - currentDate;
-        return res >= 5 ? "success" : "danger";
-    }
 
     // handle pay
     const handlePay = async (payment) => {
