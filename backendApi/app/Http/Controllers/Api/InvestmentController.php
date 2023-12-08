@@ -65,6 +65,14 @@ class InvestmentController extends Controller {
 		$bankAccount->balance += $request->amount;
 		$bankAccount->save();
 
+		storeActivityLog( [
+			'user_id'      => Auth::user()->id,
+			'log_type'     => 'create',
+			'module'       => 'investment',
+			'descriptions' => "",
+			'data_records' => array_merge( json_decode( json_encode( $invest ), true ), [ 'account_balance' => $bankAccount->balance ] ),
+		] );
+
 		return response()->json( [
 			'invest' => $invest,
 		] );
@@ -74,7 +82,7 @@ class InvestmentController extends Controller {
 	 * Display the specified resource.
 	 */
 	public function show( Investment $investment ) {
-		return new InvestmentResource($investment);
+		return new InvestmentResource( $investment );
 	}
 
 	/**
@@ -89,21 +97,21 @@ class InvestmentController extends Controller {
 	 */
 	public function update( UpdateInvestmentRequest $request, Investment $investment ) {
 		$data = $request->validated();
-		$user   = Auth::user();
+		$user = Auth::user();
 
 		DB::beginTransaction();
-		try{
+		try {
 			//first handel bank
 			$bankAccount          = BankAccount::find( $investment->account_id );
 			$bankAccount->balance = $bankAccount->balance - $investment->amount;
 			$bankAccount->save();
 
 			// now update other data
-			$investDate = Carbon::parse( $data['investment_date'] )->format( 'Y-m-d' );
-			$data['added_by'] = $user->id;
+			$investDate              = Carbon::parse( $data['investment_date'] )->format( 'Y-m-d' );
+			$data['added_by']        = $user->id;
 			$data['investment_date'] = $investDate;
 
-			$investment->update($data);
+			$investment->update( $data );
 			$investment->save();
 
 			//now again update bank with the new amount.
@@ -111,13 +119,22 @@ class InvestmentController extends Controller {
 			$bankAccount->balance += $request->amount;
 			$bankAccount->save();
 
-		}catch(ValidationException $e){
+			storeActivityLog( [
+				'user_id'      => Auth::user()->id,
+				'log_type'     => 'edit',
+				'module'       => 'investment',
+				'descriptions' => "",
+				'data_records' => array_merge( json_decode( json_encode( $investment ), true ), [ 'account_balance' => $bankAccount->balance ] ),
+			] );
+
+		} catch ( ValidationException $e ) {
 			DB::rollBack();
-			return redirect()->back()->withErrors($e->getMessages())->withInput();
+
+			return redirect()->back()->withErrors( $e->getMessages() )->withInput();
 		}
 		DB::commit();
 
-		return new InvestmentResource($investment);
+		return new InvestmentResource( $investment );
 	}
 
 	/**
@@ -135,12 +152,20 @@ class InvestmentController extends Controller {
 			$bankAccount->balance -= $investment->amount;
 			$bankAccount->save();
 		}
+		storeActivityLog( [
+			'user_id'      => Auth::user()->id,
+			'log_type'     => 'delete',
+			'module'       => 'investment',
+			'descriptions' => "",
+			'data_records' => array_merge( json_decode( json_encode( $investment ), true ), [ 'account_balance' => $bankAccount->balance ] ),
+		] );
 
 		return response()->noContent();
 	}
 
-	public function addPlan(Request $request){
+	public function addPlan( Request $request ) {
 		$s = $request->purposes;
+
 		return $s;
 	}
 }

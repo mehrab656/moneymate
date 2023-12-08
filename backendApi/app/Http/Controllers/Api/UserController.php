@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -49,6 +50,13 @@ class UserController extends Controller
         $data = $request->validated();
         $data['password'] = bcrypt($data['password']);
         $user = User::create($data);
+	    storeActivityLog( [
+		    'user_id'      => Auth::user()->id,
+		    'log_type'     => 'create',
+		    'module'       => 'user',
+		    'descriptions' => "",
+		    'data_records' => $user,
+	    ] );
         return response(new UserResource($user), 201);
     }
 

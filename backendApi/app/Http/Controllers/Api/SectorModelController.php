@@ -23,8 +23,10 @@ use Throwable;
 class SectorModelController extends Controller {
 	/**
 	 * Display a listing of the resource.
+	 * @throws \Exception
 	 */
 	public function index( Request $request ) {
+
 		$page     = $request->query( 'page', 1 );
 		$pageSize = $request->query( 'pageSize', 10 );
 
@@ -47,6 +49,7 @@ class SectorModelController extends Controller {
 	 * @throws Throwable
 	 */
 	public function add( SectorRequest $request ): JsonResponse|RedirectResponse {
+
 		$sector             = $request->validated();
 		$payment['numbers'] = $sector['payment_number'];
 		$payment['amount']  = $sector['payment_amount'];
@@ -55,21 +58,22 @@ class SectorModelController extends Controller {
 			$associativeCategories = $sector['category_name'];
 		}
 
+		$sectorData = [
+			'name'                  => $sector['name'],
+			'contract_start_date'   => Carbon::parse( $sector['contract_start_date'] )->format( 'Y-m-d' ),
+			'contract_end_date'     => Carbon::parse( $sector['contract_end_date'] )->format( 'Y-m-d' ),
+			'el_premises_no'        => $sector['el_premises_no'],
+			'el_acc_no'             => $sector['el_acc_no'],
+			'el_business_acc_no'    => $sector['el_business_acc_no'],
+			'el_billing_date'       => Carbon::parse( $sector['el_billing_date'] )->format( 'Y-m-d' ),
+			'internet_acc_no'       => $sector['internet_acc_no'],
+			'internet_billing_date' => Carbon::parse( $sector['internet_billing_date'] )->format( 'Y-m-d' ),
+			'int_note'              => $sector['int_note']
+		];
 		DB::beginTransaction();
 		try {
 			//first insert the sector data.
-			$sector = SectorModel::create( [
-				'name'                  => $sector['name'],
-				'contract_start_date'   => Carbon::parse( $sector['contract_start_date'] )->format( 'Y-m-d' ),
-				'contract_end_date'     => Carbon::parse( $sector['contract_end_date'] )->format( 'Y-m-d' ),
-				'el_premises_no'        => $sector['el_premises_no'],
-				'el_acc_no'             => $sector['el_acc_no'],
-				'el_business_acc_no'    => $sector['el_business_acc_no'],
-				'el_billing_date'       => Carbon::parse( $sector['el_billing_date'] )->format( 'Y-m-d' ),
-				'internet_acc_no'       => $sector['internet_acc_no'],
-				'internet_billing_date' => Carbon::parse( $sector['internet_billing_date'] )->format( 'Y-m-d' ),
-				'int_note'              => $sector['int_note']
-			] );
+			$sector = SectorModel::create( $sectorData );
 
 			//now insert the payment plans for the sectors.
 			if ( ! empty( $payment['numbers'] ) ) {
@@ -106,6 +110,15 @@ class SectorModelController extends Controller {
 					] );
 				}
 			}
+
+			//Add activity Log
+			storeActivityLog( [
+				'user_id'      => Auth::user()->id,
+				'log_type'     => 'create',
+				'module'       => 'sectors',
+				'descriptions' => '',
+				'data_records' => $sectorData,
+			] );
 		} catch ( ValidationException $e ) {
 			DB::rollBack();
 
@@ -245,6 +258,15 @@ class SectorModelController extends Controller {
 
 			return redirect()->back()->withErrors( $e->getMessages() )->withInput();
 		}
+
+		//Add activity Log
+		storeActivityLog( [
+			'user_id'      => Auth::user()->id,
+			'log_type'     => 'edit',
+			'module'       => 'sectors',
+			'descriptions' => 'updated payment status.',
+			'data_records' => $expense,
+		] );
 
 		DB::commit();
 

@@ -23,12 +23,8 @@ class CategoryController extends Controller {
 	}
 
 	public function index( Request $request ): JsonResponse {
-		$user     = Auth::user();
 		$page     = $request->query( 'page', 1 );
 		$pageSize = $request->query( 'pageSize', 10 );
-		//No need to depend Category on User ID.
-//        $categories = $this->categoryRepository->getByUserId($user->id, $page, $pageSize);
-//        $totalCount = $this->categoryRepository->getTotalCountByUserId($user->id);
 
 		$categories = Category::skip( ( $page - 1 ) * $pageSize )
 		                      ->take( $pageSize )
@@ -47,6 +43,13 @@ class CategoryController extends Controller {
 		$categoryData['user_id'] = auth()->user()->id;
 
 		$category = $this->categoryRepository->create( $categoryData );
+		storeActivityLog( [
+			'user_id'      => Auth::user()->id,
+			'log_type'     => 'create',
+			'module'       => 'Category',
+			'descriptions' => "",
+			'data_records' => $category,
+		] );
 
 		return response()->json( [ 'category' => $category ] );
 	}
@@ -57,7 +60,19 @@ class CategoryController extends Controller {
 
 	public function update( UpdateCategoryRequest $request, Category $category ): CategoryResource {
 		$data     = $request->validated();
+		$oldData  = $category;
 		$category = $this->categoryRepository->update( $category, $data );
+
+		storeActivityLog( [
+			'user_id'      => Auth::user()->id,
+			'log_type'     => 'edit',
+			'module'       => 'Category',
+			'descriptions' => "",
+			'data_records' => [
+				'Old Data' => $oldData,
+				'New Data' => $category
+			],
+		] );
 
 		return new CategoryResource( $category );
 	}
@@ -72,6 +87,15 @@ class CategoryController extends Controller {
 	 */
 	public function destroy( Category $category ): JsonResponse {
 		$this->categoryRepository->delete( $category );
+		storeActivityLog( [
+			'user_id'      => Auth::user()->id,
+			'log_type'     => 'delete',
+			'module'       => 'Category',
+			'descriptions' => "",
+			'data_records' => [
+				'Old Record' => $category,
+			],
+		] );
 
 		return response()->json( [ 'message' => 'Category deleted' ] );
 	}

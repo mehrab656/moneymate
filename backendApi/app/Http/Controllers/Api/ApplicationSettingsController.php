@@ -7,18 +7,30 @@ use App\Http\Resources\ApplicationSettingsResource;
 use App\Models\Option;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Stripe\StripeClient;
 
 class ApplicationSettingsController extends Controller
 {
     public function storeApplicationSetting(Request $request): JsonResponse
     {
-        $inputs = $request->except('_token');
+
+	    $inputs = $request->except('_token');
 
         foreach ($inputs as $key => $value) {
             $option = Option::firstOrCreate(['key' => $key]);
+			$old = [$option->key=>$option->value];
+
             $option->value = $value;
             $option->save();
+
+	        storeActivityLog( [
+		        'user_id'      => Auth::user()->id,
+		        'log_type'     => 'edit',
+		        'module'       => 'settings',
+		        'descriptions' => '',
+		        'data_records' => ['oldData'=>$old,'newData'=>[$key=>$value]]
+	        ] );
         }
 
         return response()->json(['application_settings' => ApplicationSettingsResource::collection(Option::all())]);

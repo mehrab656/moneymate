@@ -12,6 +12,7 @@ use App\Models\Debt;
 use App\Models\DebtCollection;
 use App\Models\Lend;
 use App\Models\Repayment;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +28,6 @@ class DebtController extends Controller {
 	 */
 
 	public function index( Request $request ): JsonResponse {
-		$user     = Auth::user();
 		$page     = $request->query( 'page', 1 );
 		$pageSize = $request->query( 'pageSize', 10 );
 
@@ -55,7 +55,8 @@ class DebtController extends Controller {
 
 		$debt = $request->validated();
 		if ( $debt['type'] === 'borrow' ) {
-			$debtAmount = - $debt['amount'];
+			$debtAmount   = - $debt['amount'];
+			$borrowAmount = $debt['amount'];
 		} else {
 			if ( $debt['amount'] > $selectedBankAccount->balance ) {
 				return response()->json( [
@@ -68,13 +69,14 @@ class DebtController extends Controller {
 			$debtAmount = $debt['amount'];
 		}
 
+		$person = $debt['person'];
 		/** @var TYPE_NAME $debtAmount */
 		$debt = Debt::firstOrCreate( [
 			'user_id'    => auth()->user()->id,
 			'amount'     => $debtAmount,
 			'account_id' => $debt['account_id'],
 			'type'       => $debt['type'],
-			'person'     => $debt['person'],
+			'person'     => $person,
 			'date'       => $debt['date'],
 			'note'       => $debt['note']
 		] );
@@ -84,17 +86,29 @@ class DebtController extends Controller {
 		// Means you are lending money to someone.
 
 		if ( $debt['type'] === 'lend' ) {
-			Lend::create( [
+			$lendData = [
 				'amount'     => $debt->amount,
 				'account_id' => $debt->account_id,
 				'date'       => $debt['date'],
 				'debt_id'    => $debt->id,
 				'note'       => $debt['note']
-			] );
+			];
+			Lend::create( $lendData );
 
 			// Update Associated bank account by decreasing account balance
 			$bankAccount->balance -= $request->amount;
 			$bankAccount->save();
+
+			storeActivityLog( [
+				'user_id'      => Auth::user()->id,
+				'log_type'     => 'create',
+				'module'       => 'Debt',
+				'descriptions' => " lend an amount of $debtAmount to $person",
+				'data_records' => [
+					'lendData'       => $lendData,
+					'accountBalance' => $bankAccount->balance
+				],
+			] );
 
 			return response()->json( [
 				'status'          => 'success',
@@ -109,18 +123,30 @@ class DebtController extends Controller {
 		// Means you are lending money form someone.
 
 		if ( $debt['type'] === 'borrow' ) {
-			Borrow::create( [
+			$borrowData = [
 				'amount'     => ( $debt->amount * - 1 ),
 				'account_id' => $debt->account_id,
 				'date'       => $debt->date,
 				'debt_id'    => $debt->id,
 				'note'       => $debt['note']
 
-			] );
+			];
+			Borrow::create( $borrowData );
 
 			// Update Associated bank account by increasing account balance
 			$bankAccount->balance += $request->amount;
 			$bankAccount->save();
+
+			storeActivityLog( [
+				'user_id'      => Auth::user()->id,
+				'log_type'     => 'create',
+				'module'       => 'Debt',
+				'descriptions' => " has borrowed an amount of $borrowAmount from $person",
+				'data_records' => [
+					'borrowData'     => $borrowData,
+					'accountBalance' => $bankAccount->balance
+				],
+			] );
 
 			return response()->json( [
 				'status'          => 'success',
@@ -163,6 +189,7 @@ class DebtController extends Controller {
 			$borrows          = collect( Borrow::where( 'debt_id', $debt_id )->get() );
 			$repayments       = collect( Repayment::where( 'debt_id', $debt_id )->get() );
 			$borrowRepayments = $borrows->merge( $repayments )->sortByDesc( 'created_at' );
+
 			return response()->json( [
 				'infos' => DebtHistory::collection( $borrowRepayments )
 			] );
@@ -190,9 +217,19 @@ class DebtController extends Controller {
 	 * @param Debt $debt
 	 *
 	 * @return JsonResponse
+	 * @throws Exception
 	 */
 	public function destroy( $id ): JsonResponse {
 		Debt::where( 'id', $id )->delete();
+		storeActivityLog( [
+			'user_id'      => Auth::user()->id,
+			'log_type'     => 'delete',
+			'module'       => 'Debt',
+			'descriptions' => "",
+			'data_records' => [
+				'id' => $id,
+			],
+		] );
 
 		return response()->json( [
 			'message' => 'Debt removed'

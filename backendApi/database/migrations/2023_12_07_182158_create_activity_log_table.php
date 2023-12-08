@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('activity_logs', function (Blueprint $table) {
             $table->id();
 	        $table->unsignedBigInteger('user_id');
+			$table->string('uid',32);
 	        $table->ipAddress()->nullable()->default(null);
-	        $table->string('log_ype')->comment('modify,delete,create');
+	        $table->string('log_type')->comment('modify,delete,create');
 	        $table->json('data_records')->comment('store previous records and other associative information');
 	        $table->text('descriptions')->comment('log descriptions');
             $table->timestamps();

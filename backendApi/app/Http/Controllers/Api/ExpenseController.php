@@ -99,7 +99,7 @@ class ExpenseController extends Controller {
 			'description'       => $expense['description'],
 			'note'              => $expense['note'],
 			'reference'         => $expense['reference'],
-			'date'      => $expenseDate,
+			'date'              => $expenseDate,
 			'attachment'        => $expense['attachment']
 		] );
 
@@ -137,17 +137,25 @@ class ExpenseController extends Controller {
 		//last_date
 		//last_expense_account_id
 
-		$option = Option::firstOrCreate(['key' => 'last_expense_cat_id']);
+		$option        = Option::firstOrCreate( [ 'key' => 'last_expense_cat_id' ] );
 		$option->value = $expense['category_id'];
 		$option->save();
 
-		$option = Option::firstOrCreate(['key' => 'last_expense_account_id']);
+		$option        = Option::firstOrCreate( [ 'key' => 'last_expense_account_id' ] );
 		$option->value = $expense['account_id'];
 		$option->save();
 
-		$option = Option::firstOrCreate(['key' => 'last_expense_date']);
+		$option        = Option::firstOrCreate( [ 'key' => 'last_expense_date' ] );
 		$option->value = $expenseDate;
 		$option->save();
+
+		storeActivityLog( [
+			'user_id'      => Auth::user()->id,
+			'log_type'     => 'create',
+			'module'       => 'expense',
+			'descriptions' => "",
+			'data_records' => array_merge( json_decode( json_encode( $expense ), true ), [ 'account_balance' => $bankAccount->balance ] ),
+		] );
 
 		return response()->json( [
 			'expense'  => $expense,
@@ -163,10 +171,6 @@ class ExpenseController extends Controller {
 	 */
 	public function categories(): JsonResponse {
 		$categories = Category::where( 'type', 'expense' )->get();
-
-//		$categoryNames = array_map(function($category) {
-//			return $category['name'];
-//		}, $categories);
 
 		return response()->json( [ 'categories' => $categories ] );
 	}
@@ -189,6 +193,15 @@ class ExpenseController extends Controller {
 			$bankAccount->balance += $expense->amount;
 			$bankAccount->save();
 		}
+
+
+		storeActivityLog( [
+			'user_id'      => Auth::user()->id,
+			'log_type'     => 'delete',
+			'module'       => 'expense',
+			'descriptions' => "",
+			'data_records' => array_merge( json_decode( json_encode( $expense ), true ), [ 'account_balance' => $bankAccount->balance ] ),
+		] );
 
 		return response()->noContent();
 	}
@@ -228,6 +241,7 @@ class ExpenseController extends Controller {
 		$expense->update( $data ); // Use fill() instead of update()
 		$expense->save();
 
+
 		if ( $expense->account_id != $originalBankAccountNo ) {
 			$oldBankAccount = BankAccount::find( $originalBankAccountNo );
 			$newBankAccount = BankAccount::find( $expense->account_id );
@@ -237,6 +251,7 @@ class ExpenseController extends Controller {
 
 			$newBankAccount->balance -= $expense->amount;
 			$newBankAccount->save();
+			$accountBalance = $newBankAccount->balance;
 
 		} else {
 
@@ -247,8 +262,15 @@ class ExpenseController extends Controller {
 				$bankAccount->balance += ( $originalAmount - $expense->amount );
 			}
 			$bankAccount->save();
+			$accountBalance = $bankAccount->balance;
 		}
-
+		storeActivityLog( [
+			'user_id'      => Auth::user()->id,
+			'log_type'     => 'edit',
+			'module'       => 'expense',
+			'descriptions' => "",
+			'data_records' => array_merge( json_decode( json_encode( $expense ), true ), [ 'account_balance' => $accountBalance ] ),
+		] );
 
 		return new ExpenseResource( $expense );
 	}
@@ -410,6 +432,15 @@ class ExpenseController extends Controller {
 
 			$refunded_amount = $return->refunded_amount + $request->return_amount;
 			$return->update( [ 'refunded_amount' => $refunded_amount ] );
+
+			storeActivityLog( [
+				'user_id'      => Auth::user()->id,
+				'log_type'     => 'update',
+				'module'       => 'return',
+				'descriptions' => "  added returns. Amount: $request->return_amount",
+				'data_records' => $data,
+			] );
+
 			$return->save();
 		} catch ( ValidationException $e ) {
 			DB::rollBack();

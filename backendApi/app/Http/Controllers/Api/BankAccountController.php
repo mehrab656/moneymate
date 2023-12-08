@@ -8,11 +8,12 @@ use App\Http\Requests\BankAccountUpdateRequest;
 use App\Http\Resources\BankAccountResource;
 use App\Models\BankAccount;
 use App\Models\Wallet;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class BankAccountController extends Controller {
 	/**
@@ -54,14 +55,34 @@ class BankAccountController extends Controller {
 
 	public function add( BankAccountRequest $request ): JsonResponse {
 		$bankAccount = $request->validated();
-
-		$bankAccount = BankAccount::create( [
+		$details     = [
 			'user_id'        => Auth::user()->id,
 			'account_name'   => $bankAccount['account_name'],
 			'account_number' => $bankAccount['account_number'],
 			'bank_name_id'   => $bankAccount['bank_name_id'],
 			'balance'        => $bankAccount['balance'],
-		] );
+		];
+
+		try {
+			DB::beginTransaction();
+			$bankAccount = BankAccount::create( $details );
+
+			storeActivityLog( [
+				'user_id'      => Auth::user()->id,
+				'log_type'     => 'create',
+				'module'       => 'Account',
+				'descriptions' => '',
+				'data_records' => $details,
+			] );
+			DB::commit();
+		} catch ( \Throwable $e ) {
+			DB::rollBack();
+
+			return response()->json( [
+				'message' => 'Failed to create Account.' . $e->getMessage(),
+			], 500 );
+		}
+
 
 		return response()->json( [ 'bank_account' => $bankAccount ] );
 
@@ -81,11 +102,30 @@ class BankAccountController extends Controller {
 	/**
 	 * @param BankAccount $bankAccount
 	 *
-	 * @return Response
+	 * @return JsonResponse|Response
 	 */
-	public function destroy( $id ): Response {
+	public function destroy( $id ) {
 		$bankAccount = BankAccount::find( $id );
-		$bankAccount->delete();
+
+		try {
+			DB::beginTransaction();
+			$bankAccount->delete();
+			storeActivityLog( [
+				'user_id'      => Auth::user()->id,
+				'log_type'     => 'delete',
+				'module'       => 'Bank Account',
+				'descriptions' => '',
+				'data_records' => $bankAccount,
+			] );
+			DB::commit();
+		} catch ( \Throwable $e ) {
+			DB::rollBack();
+
+			return response()->json( [
+				'message' => 'Failed to delete Account.' . $e->getMessage(),
+			], 500 );
+		}
+
 
 		return response()->noContent();
 	}
@@ -125,14 +165,12 @@ class BankAccountController extends Controller {
 
 	public function totalBalance(): JsonResponse {
 		$totalAccount = BankAccount::sum( 'balance' );
-		$totalWallet = Wallet::sum( 'balance' );
+		$totalWallet  = Wallet::sum( 'balance' );
 
 		return response()->json( [
-			'balance' => $totalAccount+$totalWallet
+			'balance' => $totalAccount + $totalWallet
 		] );
 	}
-
-
 
 
 }

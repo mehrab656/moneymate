@@ -69,7 +69,8 @@ class IncomeController extends Controller {
 		}
 
 		$incomeDate = Carbon::parse( $income['date'] )->format( 'Y-m-d' );
-		$income     = Income::create( [
+
+		$income = Income::create( [
 			'user_id'     => Auth::user()->id,
 			'account_id'  => $income['account_id'],
 			'amount'      => $income['amount'],
@@ -77,7 +78,7 @@ class IncomeController extends Controller {
 			'description' => $income['description'],
 			'note'        => $income['note'],
 			'reference'   => $income['reference'],
-			'date' => $incomeDate,
+			'date'        => $incomeDate,
 			'attachment'  => $income['attachment']
 		] );
 
@@ -87,6 +88,13 @@ class IncomeController extends Controller {
 		$bankAccount->balance += $request->amount;
 		$bankAccount->save();
 
+		storeActivityLog( [
+			'user_id'      => Auth::user()->id,
+			'log_type'     => 'create',
+			'module'       => 'income',
+			'descriptions' => "  added income.",
+			'data_records' => array_merge( json_decode( json_encode( $income ), true ), [ 'account_balance' => $bankAccount->balance ] ),
+		] );
 
 		return response()->json( [
 			'income'   => $income,
@@ -132,12 +140,23 @@ class IncomeController extends Controller {
 
 			$newBankAccount->balance += $income->amount;
 			$newBankAccount->save();
+			$accountBalance = $newBankAccount->balance;
 
 		} else {
-			$bankAccount = BankAccount::find( $income->account_id );
+			$bankAccount          = BankAccount::find( $income->account_id );
 			$bankAccount->balance += ( $income->amount - $originalAmount );
 			$bankAccount->save();
+			$accountBalance = $bankAccount->balance;
 		}
+
+		storeActivityLog( [
+			'user_id'      => Auth::user()->id,
+			'log_type'     => 'edit',
+			'module'       => 'income',
+			'descriptions' => "",
+			'data_records' => array_merge( json_decode( json_encode( $income ), true ), [ 'account_balance' => $accountBalance ] ),
+		] );
+
 		return new IncomeResource( $income );
 	}
 
@@ -228,6 +247,13 @@ class IncomeController extends Controller {
 			$bankAccount->save();
 		}
 
+		storeActivityLog( [
+			'user_id'      => Auth::user()->id,
+			'log_type'     => 'delete',
+			'module'       => 'income',
+			'descriptions' => "",
+			'data_records' => array_merge( json_decode( json_encode( $income ), true ), [ 'account_balance' => $bankAccount->balance ] ),
+		] );
 		return response()->noContent();
 	}
 
