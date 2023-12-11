@@ -194,9 +194,9 @@ export default function Return() {
                                             <tr key={marketReturn.id}>
                                                 <td>{marketReturn.date}</td>
                                                 <td>{marketReturn.description}</td>
-                                                <td className="text-right">{default_currency + marketReturn.refundable_amount}</td>
-                                                <td className="text-right">{default_currency + marketReturn.refunded_amount}</td>
-                                                <td className="text-right">{default_currency + (marketReturn.refundable_amount - marketReturn.refunded_amount).toString()}</td>
+                                                <td className="text-right">{default_currency + ' ' + + marketReturn.refundable_amount}</td>
+                                                <td className="text-right">{default_currency + ' ' + + marketReturn.refunded_amount}</td>
+                                                <td className="text-right">{default_currency + ' ' + + (marketReturn.refundable_amount - marketReturn.refunded_amount).toString()}</td>
                                                 {userRole === 'admin' &&
                                                     <td>
                                                         <ActionButtonHelpers

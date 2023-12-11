@@ -164,8 +164,8 @@ export default function Dashboard() {
                                 {budgets.map(budget => (
                                     <tr key={budget.id} className={'text-center'}>
                                         <td>{budget.budget_name}</td>
-                                        <td>{default_currency + budget.original_budget_amount}</td>
-                                        <td>{default_currency + budget.amount_available}</td>
+                                        <td>{default_currency +' '+ budget.original_budget_amount}</td>
+                                        <td>{default_currency +' '+ budget.amount_available}</td>
                                     </tr>
                                 ))}
                                 </tbody>

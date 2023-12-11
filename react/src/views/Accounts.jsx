@@ -360,7 +360,7 @@ export default function Accounts() {
                                         <td className="text-center">{account.account_name}</td>
                                         <td className="text-center">{account.bank_name}</td>
                                         <td className="text-center">{account.account_number}</td>
-                                        <td className="text-center">{default_currency}{account.balance}</td>
+                                        <td className="text-center">{default_currency+' '}{account.balance}</td>
                                         {/* {userRole ==='admin' && 
                                         <td className="text-center">
                                             <div className="d-flex flex-wrap justify-content-center gap-2">
