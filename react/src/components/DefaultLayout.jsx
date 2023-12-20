@@ -71,7 +71,6 @@ export default function DefaultLayout() {
             });
 
     }
-    console.log(notifications)
 
     //screen resize for responsive dynamic class
     const handleResize = () => {
