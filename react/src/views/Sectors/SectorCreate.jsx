@@ -1,4 +1,4 @@
-import React, {Fragment, useState} from 'react';
+import React, {Fragment, useState,useEffect} from 'react';
 import {Card, CardContent, Grid, TextField, Button, Typography, Box} from '@mui/material';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
@@ -21,15 +21,12 @@ const MenuProps = {
         },
     },
 };
-const names = [
+const default_associative_categories = [
     'Electricity',
-    'Gas Connection',
     'Internet',
-    'Entertainment & TV',
-    'Furniture',
     'Rental Cost',
-    'Maintenance',
 ];
+
 
 function SectorCreate() {
 
@@ -65,6 +62,19 @@ function SectorCreate() {
     ]);
 
     const [categoryName, setCategoryName] = useState([]);
+    const [associativeCategories, setAssociativeCategory] = useState([]);
+
+    useEffect(()=>{
+        axiosClient.get('/get-associative-categories')
+            .then(({data}) => {
+                console.log(data)
+            })
+            .catch(error => {
+                console.error('Error loading categories:', error);
+                // handle error, e.g., show an error message to the user
+            });
+    }, []);
+
 
     const handleChangeCategory = (event) => {
         const {
@@ -418,7 +428,7 @@ function SectorCreate() {
                             MenuProps={MenuProps}
                             style={{backgroundColor: '#eeeeee'}}
                         >
-                            {names.map((name) => (
+                            {default_associative_categories.map((name) => (
                                 <MenuItem key={name} value={name}>
                                     <Checkbox checked={categoryName.indexOf(name) > -1}/>
                                     <ListItemText primary={name}/>

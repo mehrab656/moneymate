@@ -192,6 +192,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 Route::get('/get-application-settings', [ApplicationSettingsController::class, 'getApplicationSettings']);
+Route::get('/get-associative-categories', [ApplicationSettingsController::class, 'getAssociativeCategories']);
 Route::post('/signup', [AuthController::class, 'signup']);
 Route::post('/renew-subscription', [AuthController::class, 'renewSubscription']);
 Route::post('/login', [AuthController::class, 'login']);

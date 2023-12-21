@@ -163,7 +163,7 @@ export default function IncomeReport() {
                                             <td>{income.date}</td>
                                             <td>{income.description}</td>
                                             <td>{income.category_name}</td>
-                                            <td className={'text-end'}>{default_currency + income.amount}</td>
+                                            <td className={'text-end'}>{default_currency + ' ' + + income.amount}</td>
                                         </tr>
                                     ))
                                 )}
@@ -173,7 +173,7 @@ export default function IncomeReport() {
                             <tfoot>
                             <tr>
                                 <td className={'text-center fw-bold'} colSpan={3}>Total Income</td>
-                                <td className={'text-end fw-bold'}>{default_currency + parseFloat(totalIncome).toFixed(2)}</td>
+                                <td className={'text-end fw-bold'}>{default_currency + ' ' + + parseFloat(totalIncome).toFixed(2)}</td>
                             </tr>
                             </tfoot>
                         </table>

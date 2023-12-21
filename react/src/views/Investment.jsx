@@ -193,7 +193,7 @@ export default function Investment() {
                                             </a>
                                             <Tooltip id="investments-note"/>
                                         </td>
-                                        <td>{investment.amount}</td>
+                                        <td>{default_currency+ ' '+ investment.amount}</td>
                                         <td>{investment.investment_date}</td>
                                         <td>{investment.added_by_name}</td>
                                         {/* <td>
