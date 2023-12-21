@@ -55,9 +55,21 @@ export default function DefaultLayout() {
     } = applicationSettings;
 
     const {data:getSectorsData} = useGetSectorsDataQuery({token})
-    // const {data:getFinancialReportData} = useGetFinancialReportDataQuery({token})
+    const {data:getFinancialReportData} = useGetFinancialReportDataQuery({token})
 
-    // console.log('getFinancialReportData', getFinancialReportData)
+    useEffect(() => {
+        if (!token) {
+            navigate('/login');
+        }
+        //get total account balance
+    }, [token]);
+
+
+    useEffect(()=>{
+        if(getFinancialReportData){
+            setFinanceStatus(getFinancialReportData)
+        }
+    },[getFinancialReportData])
 
     useEffect(()=>{
         if(getSectorsData?.data){
@@ -101,16 +113,6 @@ export default function DefaultLayout() {
     }, []);
 
 
-    useEffect(() => {
-        if (!token) {
-            navigate('/login');
-        }
-        //get total account balance
-
-        axiosClient.get('/getFinanceReport').then(({data}) => {
-            setFinanceStatus(data)
-        });
-    }, [token]);
 
 
     const onLogout = (ev) => {
