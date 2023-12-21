@@ -28,8 +28,8 @@ export default function MonthlyExpenseChart({title}) {
     }, []);
 
     const getRandomColor = () => {
-        const color = `#${Math.floor(Math.random() * 16777215).toString(16)}`; // Generate a random hexadecimal color code
-        return color;
+         // Generate a random hexadecimal color code
+        return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
     };
 
     const sortedExpenseData = [...expenseData].sort((a, b) => b.value - a.value);

@@ -117,7 +117,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Budget Api
 
-    Route::get('/budgets/active-budgets', [BudgetController::class, 'getActiveBudgets']);
     Route::apiResource('budgets', BudgetController::class);
     Route::get('/budgets/{id}/categories', [BudgetController::class, 'getBudgetCategories']);
     Route::get('/budget/pie-data', [BudgetController::class, 'getCategoryExpenses']);

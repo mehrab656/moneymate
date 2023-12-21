@@ -43,6 +43,7 @@ export default function Dashboard() {
                     setTotalLend(data.total_lend);
                     setTotalBankAccounts(data.number_of_bank_account);
                     setSubscriptionAmountOfThisMonth(data.total_subscription_amount_of_this_month);
+                    setBudgets(data.active_budget)
                     setLoading(false);
                 })
         } catch (error) {
@@ -50,26 +51,11 @@ export default function Dashboard() {
         }
     }, []);
 
-    const getActiveBudgets = useCallback(async () => {
-        try {
-            setLoading(true); // Set loading to true before making the API call
-            axiosClient
-                .get('/budgets/active-budgets')
-                .then(({data}) => {
-                    setBudgets(data);
-                    setLoading(false); // Set loading to false after receiving the response
-                })
-        } catch (error) {
-            setLoading(false); // Set loading to false if there is an error
-        }
-    }, []);
-
 
     useEffect(() => {
         document.title = "Dashboard";
-        getActiveBudgets();
         getDashboardData();
-    }, [getDashboardData, getActiveBudgets]);
+    }, [getDashboardData]);
 
 
     return (
@@ -176,15 +162,16 @@ export default function Dashboard() {
             </WizCard>
             <br/>
 
-            <WizCard className="animated fadeInDown">
-                <div className="row">
-                    <div className="col-12">
-                        <h1 className="title-text text-center">Number of account transfer in this month</h1>
-                        <BalanceTransfer/>
-                    </div>
-                </div>
-            </WizCard>
-            <br/><br/>
+            {/*Commented by Mehrab; Noo need right now*/}
+            {/*<WizCard className="animated fadeInDown">*/}
+            {/*    <div className="row">*/}
+            {/*        <div className="col-12">*/}
+            {/*            <h1 className="title-text text-center">Number of account transfer in this month</h1>*/}
+            {/*            <BalanceTransfer/>*/}
+            {/*        </div>*/}
+            {/*    </div>*/}
+            {/*</WizCard>*/}
+            {/*<br/><br/>*/}
         </>
     )
 }

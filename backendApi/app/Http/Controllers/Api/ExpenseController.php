@@ -362,13 +362,11 @@ class ExpenseController extends Controller {
 	 */
 	public function getCategoryExpensesGraphForCurrentMonth(): JsonResponse {
 		$currentMonth   = Carbon::now()->month;
-		$loggedInUserId = auth()->user()->id;
 
 		$expenses = DB::table( 'expenses' )
 		              ->join( 'categories', 'expenses.category_id', '=', 'categories.id' )
 		              ->join( 'users', 'expenses.user_id', '=', 'users.id' )
 		              ->select( 'categories.name', DB::raw( 'SUM(expenses.amount) as total' ) )
-		              ->where( 'users.id', $loggedInUserId )
 		              ->whereMonth( 'expenses.date', $currentMonth )
 		              ->groupBy( 'categories.name' )
 		              ->get();

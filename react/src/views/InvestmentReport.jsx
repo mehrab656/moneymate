@@ -1,6 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
 import axiosClient from "../axios-client.js";
-import MonthlyExpenseChart from "../components/MonthlyExpenseChart.jsx";
 import SummeryCard from "../components/SummeryCard";
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import WizCard from "../components/WizCard";
