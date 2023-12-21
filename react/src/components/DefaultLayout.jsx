@@ -33,6 +33,9 @@ import avatar from '../../../954445_n.jpg'
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import {compareDates} from "../helper/HelperFunctions.js";
 import DropDownProperties from "./DropdownProperties";
+import { useGetUserDataQuery } from "../api/slices/userSlice.js";
+import { useGetSectorsDataQuery } from "../api/slices/sectorSlice.js";
+import { useGetFinancialReportDataQuery } from "../api/slices/accountSlice.js";
 
 export default function DefaultLayout() {
 
@@ -50,28 +53,32 @@ export default function DefaultLayout() {
         default_currency,
         registration_type
     } = applicationSettings;
-    const getNotifications = () => {
-        axiosClient
-            .get("/sectors")
-            .then(({data}) => {
-                let notificationsArray = [];
-                data.data.map(item => {
-                    if (compareDates(item.internet_billing_date) === 'danger') {
-                        item = {...item, type: 'internet'}
-                        notificationsArray.push(item)
-                    }
-                    if (compareDates(item.el_billing_date) === 'danger') {
-                        item = {...item, type: 'electricity'}
 
-                        notificationsArray.push(item)
-                    }
-                });
+    const {data:getSectorsData} = useGetSectorsDataQuery({token})
+    // const {data:getFinancialReportData} = useGetFinancialReportDataQuery({token})
 
-                setNotifications(notificationsArray);
+    // console.log('getFinancialReportData', getFinancialReportData)
+
+    useEffect(()=>{
+        if(getSectorsData?.data){
+            let notificationsArray = [];
+            getSectorsData?.data.map(item => {
+                if (compareDates(item.internet_billing_date) === 'danger') {
+                    item = {...item, type: 'internet'}
+                    notificationsArray.push(item)
+                }
+                if (compareDates(item.el_billing_date) === 'danger') {
+                    item = {...item, type: 'electricity'}
+
+                    notificationsArray.push(item)
+                }
             });
 
-    }
-    console.log(notifications)
+            setNotifications(notificationsArray);
+        }
+    },[getSectorsData])
+
+
 
     //screen resize for responsive dynamic class
     const handleResize = () => {
@@ -98,20 +105,12 @@ export default function DefaultLayout() {
         if (!token) {
             navigate('/login');
         }
-
-        // Check if user data is available
-        if (!user.id) {
-            axiosClient.get('/user').then(({data}) => {
-                setUser(data);
-            });
-        }
         //get total account balance
 
         axiosClient.get('/getFinanceReport').then(({data}) => {
             setFinanceStatus(data)
         });
-        getNotifications();
-    }, []);
+    }, [token]);
 
 
     const onLogout = (ev) => {
@@ -123,6 +122,9 @@ export default function DefaultLayout() {
                 setUser({});
                 setUserRole({});
                 setToken(null);
+                localStorage.removeItem('ACCESS_TOKEN');
+                localStorage.removeItem('ACCESS_USER');
+                localStorage.removeItem('ACCESS_ROLE');
             })
             .catch(error => {
                 console.warn('Error occurred', error);
@@ -425,7 +427,7 @@ export default function DefaultLayout() {
                                         </NavDropdown>
 
                                         {/*user Sections */}
-                                        <NavDropdown title={user.name ?? 'User'} id="basic-nav-dropdown">
+                                        <NavDropdown title={user?.name ?? 'User'} id="basic-nav-dropdown">
                                             <NavDropdown.Item href="#action/3.1">Profile</NavDropdown.Item>
                                             <NavDropdown.Item href="application-settings">Activity
                                                 Log</NavDropdown.Item>
