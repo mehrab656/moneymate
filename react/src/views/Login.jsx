@@ -1,4 +1,4 @@
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import axios from "axios";
 import {createRef, useContext, useEffect, useState} from "react";
 import {useStateContext} from "../contexts/ContextProvider.jsx";
@@ -9,6 +9,7 @@ import {CardElement, useElements, useStripe} from "@stripe/react-stripe-js";
 import MainLoader from "../components/MainLoader.jsx";
 
 export default function Login() {
+    const naviagte = useNavigate()
     const [showPassword, setShowPassword] = useState(false);
     const emailRef = createRef();
     const passwordRef = createRef();
@@ -66,7 +67,12 @@ export default function Login() {
                     setUser(data.user);
                     setUserRole(data.user.role_as);
                     setToken(data.token);
+                    localStorage.setItem('ACCESS_TOKEN', data.token);
+                    localStorage.setItem('ACCESS_USER', JSON.stringify(data.user));
+                    localStorage.setItem('ACCESS_ROLE', data.user.role_as);
+
                     setLoading(false)
+                    naviagte('/dashboard')
                 })
                 .catch((err) => {
                     const response = err.response;

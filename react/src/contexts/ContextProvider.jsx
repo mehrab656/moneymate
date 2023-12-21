@@ -28,12 +28,13 @@ export const ContextProvider = ({children}) => {
         }
     }
 
-    // useEffect(()=>{
-    //     //check if user exist on local storage
-    //     axiosClient.get('/user').then(({data}) => {
-    //         setUser(data);
-    //     });
-    // },[])
+    useEffect(()=>{
+        //check if user exist on local storage
+        const getUser = localStorage.getItem('ACCESS_USER')
+        if(getUser){
+            setUser(JSON.parse(getUser))
+        }
+    },[localStorage.getItem('ACCESS_USER')])
 
     const setNotification = message => {
         _setNotification(message);
