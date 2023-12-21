@@ -15,6 +15,7 @@ class ContentSecurityPolicy
      */
     public function handle(Request $request, Closure $next): Response
     {
+
         $response = $next($request);
 
 //        $response->header(
