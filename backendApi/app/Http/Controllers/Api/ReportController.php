@@ -81,11 +81,6 @@ class ReportController extends Controller {
 		$sec_id    = $request->sec_id;
 
 		$response = [];
-//		if ( empty( $startDate ) || empty( $endDate ) ) {
-//			$endDate   = Carbon::now()->toDateString();
-//			$startDate = Carbon::now()->subMonth( 3 )->toDateString();
-//		}
-
 		if ( $startDate ) {
 			$startDate = date( 'Y-m-d', strtotime( $startDate ) );
 		}

@@ -4,6 +4,9 @@ import DatePicker from 'react-datepicker';
 import WizCard from "../components/WizCard";
 import {SettingsContext} from "../contexts/SettingsContext";
 import MainLoader from "../components/MainLoader.jsx";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faArrowsToEye, faEye, faListAlt, faStreetView} from "@fortawesome/free-solid-svg-icons";
+import ExpenseModal from "../helper/ExpenseModal.jsx";
 
 export default function ExpenseReport() {
     const [loading, setLoading] = useState(false);
@@ -15,6 +18,21 @@ export default function ExpenseReport() {
     const [selectedCategoryId, setSelectedCategoryId] = useState('');
     const [selectedSectorId, setSelectedSectorId] = useState('');
     const [totalExpense, setTotalExpense] = useState(parseFloat(0).toFixed(2));
+    const [modalData, setModalData] = useState({
+        id: null,
+        user_id: null,
+        account_id: '', // Set default value to an empty string
+        amount: '', // Set default value to an empty string
+        refundable_amount: 0, // Set default value to an empty string
+        refunded_amount: 0,
+        category_id: null,
+        description: '',
+        reference: '',
+        date: '',
+        note: '',
+        attachment: ''
+    })
+    const [showModal, setShowModal] = useState(false);
 
     const {applicationSettings} = useContext(SettingsContext);
     let {
@@ -25,6 +43,10 @@ export default function ExpenseReport() {
         default_currency = 'AED ';
     }
 
+    const showExpenseDetails = (expense) => {
+        setModalData(expense);
+        setShowModal(true);
+    }
     useEffect(() => {
         axiosClient.get('/expense-categories')
             .then(({data}) => {
@@ -43,7 +65,9 @@ export default function ExpenseReport() {
         })
     }, [setExpenseCategories]);
 
-
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
     const getExpenseReport = () => {
         setLoading(true);
         setTotalExpense(0);
@@ -79,6 +103,7 @@ export default function ExpenseReport() {
         setStartDate(null);
         setEndDate(null);
         setSelectedCategoryId('');
+        setSelectedSectorId('')
         getExpenseReport();
     };
 
@@ -198,7 +223,13 @@ export default function ExpenseReport() {
                                         <tr key={expense.id} className={'text-start'}>
                                             <td>{expense.date}</td>
                                             <td>{expense.category_name}</td>
-                                            <td>{expense.description}</td>
+                                            <td>{expense.description}
+                                                <a onClick={()=> showExpenseDetails(expense)} className={"fa-pull-right"}>
+                                                    <span className="aside-menu-icon" title={"view details"}>
+                                                        <FontAwesomeIcon icon={faEye}/>
+                                                    </span>
+                                                </a>
+                                            </td>
                                             <td className={'text-end'}>{default_currency + ' ' + expense.amount}</td>
                                         </tr>
                                     ))
@@ -216,6 +247,11 @@ export default function ExpenseReport() {
                     </div>
                 </div>
             </WizCard>
+
+            <ExpenseModal showModal={showModal}
+                          handelCloseModal={handleCloseModal}
+                          title={'Expense Details'}
+                          data={modalData}/>
         </>
     );
 }

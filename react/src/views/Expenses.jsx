@@ -13,6 +13,7 @@ import {Button, Image, Modal} from "react-bootstrap";
 import Dropdown from "react-bootstrap/Dropdown"
 import ActionButtonHelpers from "../helper/ActionButtonHelpers";
 import MainLoader from "../components/MainLoader.jsx";
+import ExpenseModal from "../helper/ExpenseModal.jsx";
 
 export default function Expenses() {
 
@@ -118,7 +119,7 @@ export default function Expenses() {
                 text: 'Investors are not permitted to delete any data!',
                 icon: 'danger',
             });
-        }else{
+        } else {
             Swal.fire({
                 title: 'Are you sure?',
                 text: `You will not be able to recover the expense !`,
@@ -159,7 +160,7 @@ export default function Expenses() {
     }
     return (
         <div>
-            <MainLoader loaderVisible={loading} />
+            <MainLoader loaderVisible={loading}/>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Expense Histories</h1>
                 {userRole === 'admin' &&
@@ -213,9 +214,9 @@ export default function Expenses() {
                                         <td>{expense.date}</td>
                                         <td className={'text-start'}>{expense.description}</td>
                                         <td className={'text-start'}>{expense.category_name}</td>
-                                        <td className={'text-end'}>{default_currency +' ' + expense.amount}</td>
-                                        <td className={'text-end'}>{default_currency +' ' + expense.refundable_amount}</td>
-                                        <td className={"text-end text-" + expense.refunded_txt_clr}>{default_currency +' ' + expense.refunded_amount}</td>
+                                        <td className={'text-end'}>{default_currency + ' ' + expense.amount}</td>
+                                        <td className={'text-end'}>{default_currency + ' ' + expense.refundable_amount}</td>
+                                        <td className={"text-end text-" + expense.refunded_txt_clr}>{default_currency + ' ' + expense.refunded_amount}</td>
                                         <td>
                                             <ActionButtonHelpers
                                                 module={expense}
@@ -247,101 +248,10 @@ export default function Expenses() {
                 )}
 
             </WizCard>
-
-            <Modal show={showModal} centered onHide={handleCloseModal} className="custom-modal modal-lg">
-                <Modal.Header closeButton>
-                    <Modal.Title>
-                        <span>Expense Details</span>
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <table className="footable table table-bordered table-striped mb-0">
-                        <thead/>
-                        <tbody>
-                        <tr>
-                            <td width="50%">
-                                <strong>User Name :</strong>
-                            </td>
-                            <td>{expense.user_name}</td>
-                        </tr>
-                        <tr>
-                            <td width="50%">
-                                <strong>Account Number :</strong>
-                            </td>
-                            <td> {expense.account_number}</td>
-                        </tr>
-                        <tr>
-                            <td width="50%">
-                                <strong>Bank Name :</strong>
-                            </td>
-                            <td> {expense.bank_name}  </td>
-                        </tr>
-                        <tr>
-                            <td width="50%">
-                                <strong>Expense Amount :</strong>
-                            </td>
-                            <td> {expense.amount}</td>
-                        </tr>
-                        <tr>
-                            <td width="50%">
-                                <strong>Refundable Amount :</strong>
-                            </td>
-                            <td> {expense.refundable_amount}</td>
-                        </tr>
-                        <tr>
-                            <td width="50%">
-                                <strong>Refunded Amount :</strong>
-                            </td>
-                            <td> {expense.refunded_amount}</td>
-                        </tr>
-                        <tr>
-                            <td width="50%">
-                                <strong>Description :</strong>
-                            </td>
-                            <td> {expense.description}</td>
-                        </tr>
-                        <tr>
-                            <td width="50%">
-                                <strong>Note :</strong>
-                            </td>
-                            <td> {expense.note}</td>
-                        </tr>
-                        <tr>
-                            <td width="50%">
-                                <strong>Reference :</strong>
-                            </td>
-                            <td> {expense.reference}</td>
-                        </tr>
-                        <tr>
-                            <td width="50%">
-                                <strong>Date :</strong>
-                            </td>
-                            <td>
-                                {expense.date}
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td width="50%">
-                                <strong>Attachments :</strong>
-                            </td>
-
-                            <td>{expense.attachment &&
-                                // <Image src={window.URL.createObjectURL(expense.attachment)} fluid/>
-                                <DownloadAttachment filename={expense.attachment}/>
-                            }
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </Modal.Body>
-                <Modal.Footer>
-                    <button className="btn btn-primary" onClick={handleCloseModal}>
-                        Close
-                    </button>
-                </Modal.Footer>
-            </Modal>
-
+            <ExpenseModal showModal={showModal}
+                          handelCloseModal={handleCloseModal}
+                          title={'Expense Details'}
+                          data={expense}/>
         </div>
     )
 }

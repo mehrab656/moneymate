@@ -399,7 +399,7 @@ export default function DefaultLayout() {
                                             icon={faBell}
                                             totalNotification={notifications.length}
                                         />} id="basic-nav-dropdown">
-                                            <NavDropdown.Header className={'bg-primary'}></NavDropdown.Header>
+                                            <NavDropdown.Header className={'bg-primary p-3'}></NavDropdown.Header>
                                             {
                                                 notifications.map((item, index) => {
                                                     if (item.type === 'internet') {
