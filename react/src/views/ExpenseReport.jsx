@@ -5,8 +5,16 @@ import WizCard from "../components/WizCard";
 import {SettingsContext} from "../contexts/SettingsContext";
 import MainLoader from "../components/MainLoader.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faArrowsToEye, faEye, faListAlt, faStreetView} from "@fortawesome/free-solid-svg-icons";
+import {
+    faArrowsToEye,
+    faEye,
+    faEyeDropper,
+    faEyeSlash,
+    faListAlt,
+    faStreetView
+} from "@fortawesome/free-solid-svg-icons";
 import ExpenseModal from "../helper/ExpenseModal.jsx";
+import {Tooltip} from "react-tooltip";
 
 export default function ExpenseReport() {
     const [loading, setLoading] = useState(false);
@@ -18,6 +26,7 @@ export default function ExpenseReport() {
     const [selectedCategoryId, setSelectedCategoryId] = useState('');
     const [selectedSectorId, setSelectedSectorId] = useState('');
     const [totalExpense, setTotalExpense] = useState(parseFloat(0).toFixed(2));
+    const [activeModal, setActiveModal] = useState('')
     const [modalData, setModalData] = useState({
         id: null,
         user_id: null,
@@ -43,7 +52,8 @@ export default function ExpenseReport() {
         default_currency = 'AED ';
     }
 
-    const showExpenseDetails = (expense) => {
+    const showExpenseDetails = (expense, index) => {
+        setActiveModal(index)
         setModalData(expense);
         setShowModal(true);
     }
@@ -66,6 +76,7 @@ export default function ExpenseReport() {
     }, [setExpenseCategories]);
 
     const handleCloseModal = () => {
+        setActiveModal('');
         setShowModal(false);
     };
     const getExpenseReport = () => {
@@ -219,16 +230,21 @@ export default function ExpenseReport() {
                                         </td>
                                     </tr>
                                 ) : (
-                                    expenseReport.map(expense => (
+                                    expenseReport.map((expense, index) => (
                                         <tr key={expense.id} className={'text-start'}>
                                             <td>{expense.date}</td>
                                             <td>{expense.category_name}</td>
                                             <td>{expense.description}
-                                                <a onClick={()=> showExpenseDetails(expense)} className={"fa-pull-right"}>
-                                                    <span className="aside-menu-icon" title={"view details"}>
-                                                        <FontAwesomeIcon icon={faEye}/>
+                                                <a onClick={() => showExpenseDetails(expense, index)}
+                                                   className={index === activeModal ? 'text-primary fa-pull-right ' : 'text-muted fa-pull-right'}
+                                                   data-tooltip-id='expense-details'
+                                                   data-tooltip-content={"View details"}>
+                                                    <span className="aside-menu-icon">
+                                                        <FontAwesomeIcon
+                                                            icon={index === activeModal ? faEye : faEyeSlash}/>
                                                     </span>
                                                 </a>
+                                                <Tooltip id={"expense-details"}/>
                                             </td>
                                             <td className={'text-end'}>{default_currency + ' ' + expense.amount}</td>
                                         </tr>
