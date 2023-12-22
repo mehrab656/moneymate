@@ -11,6 +11,7 @@ import {SettingsContext} from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 import MainLoader from "../components/MainLoader.jsx";
 import {Modal} from "react-bootstrap";
+import IncomeModal from "../helper/IncomeModal.jsx";
 
 export default function Incomes() {
 
@@ -107,6 +108,7 @@ export default function Incomes() {
         account_id: '', // Set default value to an empty string
         amount: 0, // Set default value to an empty string
         category_id: null,
+        category_name: '',
         description: '',
         reference: '',
         date: '',
@@ -227,68 +229,14 @@ export default function Incomes() {
                 )}
 
             </WizCard>
+            <IncomeModal
+                showModal={showModal}
+                handelCloseModal={handleCloseModal}
+                title={'Income Details'}
+                data={income}
+                currency={default_currency}
+            />
 
-            <Modal show={showModal} centered onHide={handleCloseModal} className="custom-modal modal-lg">
-                <Modal.Header closeButton>
-                    <Modal.Title>
-                        <span>Incomes Details</span>
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <table className="footable table table-bordered table-striped mb-0">
-                        <thead> </thead>
-                        <tbody>
-                        <tr>
-                            <td width="50%">
-                                <strong>Details:</strong>
-                            </td>
-                            <td>{income.description}</td>
-                        </tr>
-                        <tr>
-                            <td width="50%">
-                                <strong>Date:</strong>
-                            </td>
-                            <td>{income.date}</td>
-                        </tr>
-                        <tr>
-                            <td width="50%">
-                                <strong>Sector:</strong>
-                            </td>
-                            <td> {income.category_id}</td>
-                        </tr>
-                        <tr>
-                            <td width="50%">
-                                <strong>Income Reference :</strong>
-                            </td>
-                            <td> {income.reference}  </td>
-                        </tr>
-                        <tr>
-                            <td width="50%">
-                                <strong>Income Amount :</strong>
-                            </td>
-                            <td> {income.amount}</td>
-                        </tr>
-                        <tr>
-                            <td width="50%">
-                                <strong>Income Note :</strong>
-                            </td>
-                            <td> {income.note}</td>
-                        </tr>
-                        <tr>
-                            <td width="50%">
-                                <strong>Attachment :</strong>
-                            </td>
-                            <td> {income.attachment}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </Modal.Body>
-                <Modal.Footer>
-                    <button className="btn btn-primary" onClick={handleCloseModal}>
-                        Close
-                    </button>
-                </Modal.Footer>
-            </Modal>
 
         </div>
     )

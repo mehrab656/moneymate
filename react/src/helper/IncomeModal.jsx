@@ -1,27 +1,30 @@
 import {Col, Container, Modal, Row} from "react-bootstrap";
-import DownloadAttachment from "../components/DownloadAttachment.jsx";
 import React, {memo} from "react";
 
 
-const ExpenseModal = ({showModal, handelCloseModal, title, data, currency}) => {
+const IncomeModal = ({showModal, handelCloseModal, title, data, currency})=>{
+
     return (
         <>
-            <Modal size={"md"} show={showModal} centered onHide={handelCloseModal} className="custom-modal modal-lg">
+            <Modal show={showModal} centered onHide={handelCloseModal} className="custom-modal modal-lg">
                 <Modal.Header closeButton>
                     <Modal.Title>
-                        <span>{title}</span>
+                        <span>Incomes Details</span>
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Container>
                         <Row className={'border p-2'}>
-                            <strong className={'text-primary'}>User Details</strong>
+                            <strong className={'text-primary'}>Income Details</strong>
 
-                            <Col xs={6} md={6}>
-                                <strong>{'Expense By: '}</strong>{data.user_name}
+                            <Col xs={12} md={4}>
+                                <strong>{'Category: '}</strong>{data.category_name}
                             </Col>
-                            <Col xs={12} md={6}>
-                                <strong>{'Expense Date: '}</strong>{data.date}
+                            <Col xs={12} md={4}>
+                                <strong>{'Amount: '}</strong>{currency+' '+data.amount}
+                            </Col>
+                            <Col xs={12} md={4}>
+                                <strong>{'Date: '}</strong>{data.date}
                             </Col>
                         </Row>
                         <Row className={'border p-2'}>
@@ -32,13 +35,6 @@ const ExpenseModal = ({showModal, handelCloseModal, title, data, currency}) => {
                             <Col xs={12} md={6}>
                                 <strong>Account Number: </strong>{data.account_number}
                             </Col>
-                        </Row>
-                        <Row className={'border p-2'}>
-                            <strong className={'text-primary'}>Amount</strong>
-                            <Col xs={4} md={4}><strong>Amount: </strong>{currency + ' ' + data.amount}</Col>
-                            <Col xs={4} md={4}><strong>Refundable: </strong>{currency + ' ' + data.refundable_amount}
-                            </Col>
-                            <Col xs={4} md={4}><strong>Refunded: </strong>{currency + ' ' + data.refunded_amount}</Col>
                         </Row>
                         <Row className={'border p-2'}>
                             <strong className={'text-primary'}>Description</strong>
@@ -58,8 +54,9 @@ const ExpenseModal = ({showModal, handelCloseModal, title, data, currency}) => {
                     </button>
                 </Modal.Footer>
             </Modal>
+
         </>
     )
 }
 
-export default memo(ExpenseModal)
+export default memo(IncomeModal);

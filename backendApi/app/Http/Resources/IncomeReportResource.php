@@ -21,6 +21,8 @@ class IncomeReportResource extends JsonResource
             'id' => $this->id,
             'user_id' => $this->user_id,
             'account_id' => $this->account_id,
+            'bank_name' => $this->bankAccount->bankName->bank_name,
+            'account_number' => $this->bankAccount->account_number,
             'amount' => $this->amount,
             'category_name' => $this->category->name,
             'description' => $this->description,

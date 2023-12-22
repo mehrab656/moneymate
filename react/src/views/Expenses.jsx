@@ -251,7 +251,9 @@ export default function Expenses() {
             <ExpenseModal showModal={showModal}
                           handelCloseModal={handleCloseModal}
                           title={'Expense Details'}
-                          data={expense}/>
+                          data={expense}
+                          currency={default_currency}
+            />
         </div>
     )
 }

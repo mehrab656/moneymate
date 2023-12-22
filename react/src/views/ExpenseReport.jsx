@@ -15,6 +15,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ExpenseModal from "../helper/ExpenseModal.jsx";
 import {Tooltip} from "react-tooltip";
+import {Col, Container, Row} from "react-bootstrap";
 
 export default function ExpenseReport() {
     const [loading, setLoading] = useState(false);
@@ -40,7 +41,8 @@ export default function ExpenseReport() {
         date: '',
         note: '',
         attachment: ''
-    })
+    });
+
     const [showModal, setShowModal] = useState(false);
 
     const {applicationSettings} = useContext(SettingsContext);
@@ -200,74 +202,93 @@ export default function ExpenseReport() {
                     </form>
                 </div>
 
-                <br/><br/>
+                <br/>
                 <div className="row">
-                    <div className="table-responsive-sm">
-                        <table className="table table-bordered custom-table">
-                            <thead>
-                            <tr className={'text-center'}>
-                                <th>Expense Date</th>
-                                <th>Expense Category</th>
-                                <th>Description</th>
-                                <th>Expense Amount</th>
-                            </tr>
-                            </thead>
-                            {loading && (
-                                <tbody>
-                                <tr className={'text-center'}>
-                                    <td colSpan={4} className="text-center">
-                                        Loading...
-                                    </td>
-                                </tr>
-                                </tbody>
-                            )}
-                            {!loading && (
-                                <tbody>
-                                {expenseReport.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={4} className="text-center">
-                                            Nothing found !
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    expenseReport.map((expense, index) => (
-                                        <tr key={expense.id} className={'text-start'}>
-                                            <td>{expense.date}</td>
-                                            <td>{expense.category_name}</td>
-                                            <td>{expense.description}
-                                                <a onClick={() => showExpenseDetails(expense, index)}
-                                                   className={index === activeModal ? 'text-primary fa-pull-right ' : 'text-muted fa-pull-right'}
-                                                   data-tooltip-id='expense-details'
-                                                   data-tooltip-content={"View details"}>
+                    <Container>
+                        <Row>
+                            <Col xs={12} md={9}>
+                                <div className="table-responsive-sm">
+                                    <table className="table table-bordered custom-table">
+                                        <thead>
+                                        <tr className={'text-center'}>
+                                            <th>Expense Date</th>
+                                            <th>Expense Category</th>
+                                            <th>Description</th>
+                                            <th>Expense Amount</th>
+                                        </tr>
+                                        </thead>
+                                        {loading && (
+                                            <tbody>
+                                            <tr className={'text-center'}>
+                                                <td colSpan={4} className="text-center">
+                                                    Loading...
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        )}
+                                        {!loading && (
+                                            <tbody>
+                                            {expenseReport.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan={4} className="text-center">
+                                                        Nothing found !
+                                                    </td>
+                                                </tr>
+                                            ) : (
+                                                expenseReport.map((expense, index) => (
+                                                    <tr key={expense.id} className={'text-start'}>
+                                                        <td>{expense.date}</td>
+                                                        <td>{expense.category_name}</td>
+                                                        <td>{expense.description}
+                                                            <a onClick={() => showExpenseDetails(expense, index)}
+                                                               className={index === activeModal ? 'text-primary fa-pull-right ' : 'text-muted fa-pull-right'}
+                                                               data-tooltip-id='expense-details'
+                                                               data-tooltip-content={"View details"}>
                                                     <span className="aside-menu-icon">
                                                         <FontAwesomeIcon
                                                             icon={index === activeModal ? faEye : faEyeSlash}/>
                                                     </span>
-                                                </a>
-                                                <Tooltip id={"expense-details"}/>
-                                            </td>
-                                            <td className={'text-end'}>{default_currency + ' ' + expense.amount}</td>
-                                        </tr>
-                                    ))
-                                )}
-                                </tbody>
-                            )}
+                                                            </a>
+                                                            <Tooltip id={"expense-details"}/>
+                                                        </td>
+                                                        <td className={'text-end'}>{default_currency + ' ' + expense.amount}</td>
+                                                    </tr>
+                                                ))
+                                            )}
+                                            </tbody>
+                                        )}
 
-                            <tfoot>
-                            <tr>
-                                <td className={'text-center fw-bold'} colSpan={3}>Total Expense</td>
-                                <td className={'text-end fw-bold'}>{default_currency + ' ' + parseFloat(totalExpense).toFixed(2)}</td>
-                            </tr>
-                            </tfoot>
-                        </table>
-                    </div>
+                                        <tfoot>
+                                        <tr>
+                                            <td className={'text-center fw-bold'} colSpan={3}>Total Expense</td>
+                                            <td className={'text-end fw-bold'}>{default_currency + ' ' + parseFloat(totalExpense).toFixed(2)}</td>
+                                        </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+
+                            </Col>
+                            <Col xs={12} md={3}>
+                                <div className="card quater-card summery-card">
+                                    <div className="card-block">
+                                        <h6 className="text-muted m-b-20">Total Expense</h6>
+                                        <h4>{default_currency + ' ' + totalExpense}</h4>
+                                        <p className="text-muted">Total expense amount</p>
+                                    </div>
+                                </div>
+
+                            </Col>
+                        </Row>
+                    </Container>
                 </div>
             </WizCard>
 
             <ExpenseModal showModal={showModal}
                           handelCloseModal={handleCloseModal}
                           title={'Expense Details'}
-                          data={modalData}/>
+                          data={modalData}
+                          currency={default_currency}
+            />
         </>
     );
 }

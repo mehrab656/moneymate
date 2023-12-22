@@ -4,6 +4,10 @@ import DatePicker from 'react-datepicker';
 import WizCard from "../components/WizCard";
 import {SettingsContext} from "../contexts/SettingsContext";
 import MainLoader from "../components/MainLoader.jsx";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
+import ExpenseModal from "../helper/ExpenseModal.jsx";
+import IncomeModal from "../helper/IncomeModal.jsx";
 
 export default function IncomeReport() {
     const [loading, setLoading] = useState(false);
@@ -13,7 +17,25 @@ export default function IncomeReport() {
 
     const [incomeCategories, setIncomeCategories] = useState([]);
     const [selectedCategoryId, setSelectedCategoryId] = useState('');
-    const [totalIncome,setTotalIncome]=useState(parseFloat(0).toFixed(2))
+    const [totalIncome, setTotalIncome] = useState(parseFloat(0).toFixed(2))
+    const [activeModal, setActiveModal] = useState('')
+    const [showModal, setShowModal] = useState(false);
+
+    const [modalData, setModalData] = useState({
+        id: null,
+        user_id: null,
+        account_id: '', // Set default value to an empty string
+        amount: 0, // Set default value to an empty string
+        category_id: null,
+        category_name: '',
+        description: '',
+        reference: '',
+        date: '',
+        note: '',
+        attachment: ''
+    });
+
+    console.log(modalData)
 
 
     const {applicationSettings} = useContext(SettingsContext);
@@ -21,7 +43,7 @@ export default function IncomeReport() {
         default_currency
     } = applicationSettings;
 
-    if (default_currency === undefined){
+    if (default_currency === undefined) {
         default_currency = 'AED ';
     }
 
@@ -43,7 +65,7 @@ export default function IncomeReport() {
         setLoading(true);
         axiosClient
             .get("/report/income", {
-                params: {start_date: startDate, end_date: endDate, cat_id:selectedCategoryId},
+                params: {start_date: startDate, end_date: endDate, cat_id: selectedCategoryId},
             })
             .then(({data}) => {
                 setIncomeReport(data.incomes);
@@ -51,6 +73,12 @@ export default function IncomeReport() {
                 setLoading(false);
             });
     };
+
+    const showIncomeDetails = (income, index) => {
+        setActiveModal(index)
+        setModalData(income);
+        setShowModal(true);
+    }
 
     useEffect(() => {
         document.title = "Income Report";
@@ -67,9 +95,13 @@ export default function IncomeReport() {
         setSelectedCategoryId('');
         getIncomeReport();
     };
+    const handleCloseModal = () => {
+        setActiveModal('');
+        setShowModal(false);
+    };
     return (
         <>
-         <MainLoader loaderVisible={loading} />
+            <MainLoader loaderVisible={loading}/>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Income Report</h1>
             </div>
@@ -77,25 +109,25 @@ export default function IncomeReport() {
                 <div className="row">
                     <form onSubmit={handleIncomeFilterSubmit}>
                         <div className="col-4">
-                                <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="income_category">Income Category</label>
-                                    <select
-                                        className="custom-form-control"
-                                        value={selectedCategoryId}
-                                        id="income-category"
-                                        name="income-category"
-                                        onChange={(event) => {
-                                            const value = event.target.value || '';
-                                            setSelectedCategoryId(value);
-                                        }}>
-                                        <option defaultValue>Filter by income category</option>
-                                        {incomeCategories.map(category => (
-                                            <option key={category.id} value={category.id}>
-                                                {category.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
+                            <div className="form-group">
+                                <label className="custom-form-label" htmlFor="income_category">Income Category</label>
+                                <select
+                                    className="custom-form-control"
+                                    value={selectedCategoryId}
+                                    id="income-category"
+                                    name="income-category"
+                                    onChange={(event) => {
+                                        const value = event.target.value || '';
+                                        setSelectedCategoryId(value);
+                                    }}>
+                                    <option defaultValue>Filter by income category</option>
+                                    {incomeCategories.map(category => (
+                                        <option key={category.id} value={category.id}>
+                                            {category.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
                         <div className="col-3">
                             <div className="form-group">
@@ -151,19 +183,29 @@ export default function IncomeReport() {
                             )}
                             {!loading && (
                                 <tbody>
-                                {incomeReport.length===0?(
+                                {incomeReport.length === 0 ? (
                                     <tr>
                                         <td colSpan={4} className="text-center">
                                             Nothing found !
                                         </td>
                                     </tr>
-                                ):(
-                                    incomeReport.map(income => (
+                                ) : (
+                                    incomeReport.map((income, index) => (
                                         <tr key={income.id} className={'text-center'}>
                                             <td>{income.date}</td>
-                                            <td>{income.description}</td>
+                                            <td>{income.description}
+                                                <a onClick={() => showIncomeDetails(income, index)}
+                                                   className={index === activeModal ? 'text-primary fa-pull-right ' : 'text-muted fa-pull-right'}
+                                                   data-tooltip-id='expense-details'
+                                                   data-tooltip-content={"View details"}>
+                                                      <span className="aside-menu-icon">
+                                                        <FontAwesomeIcon
+                                                            icon={index === activeModal ? faEye : faEyeSlash}/>
+                                                    </span>
+                                                </a>
+                                            </td>
                                             <td>{income.category_name}</td>
-                                            <td className={'text-end'}>{default_currency + ' ' + + income.amount}</td>
+                                            <td className={'text-end'}>{default_currency + ' ' + +income.amount}</td>
                                         </tr>
                                     ))
                                 )}
@@ -173,13 +215,20 @@ export default function IncomeReport() {
                             <tfoot>
                             <tr>
                                 <td className={'text-center fw-bold'} colSpan={3}>Total Income</td>
-                                <td className={'text-end fw-bold'}>{default_currency + ' ' + + parseFloat(totalIncome).toFixed(2)}</td>
+                                <td className={'text-end fw-bold'}>{default_currency + ' ' + +parseFloat(totalIncome).toFixed(2)}</td>
                             </tr>
                             </tfoot>
                         </table>
                     </div>
                 </div>
             </WizCard>
+
+            <IncomeModal showModal={showModal}
+                         handelCloseModal={handleCloseModal}
+                         title={'Expense Details'}
+                         data={modalData}
+                         currency={default_currency}
+            />
         </>
     );
 }
