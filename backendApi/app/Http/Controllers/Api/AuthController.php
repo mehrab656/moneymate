@@ -11,6 +11,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Session;
 use Stripe\Exception\ApiErrorException;
 use Illuminate\Support\Facades\Hash;
 
@@ -27,8 +28,7 @@ class AuthController extends Controller
     public function signup(SignupRequest $request): Response|Application|ResponseFactory
     {
         $data = $request->validated();
-        // return $data;
-        $registrationType = get_option('registration_type');
+
 
 
         if (User::count() > 0)
@@ -102,20 +102,7 @@ class AuthController extends Controller
         return response(compact('user', 'token'));
     }
 
-    public function renewSubscription(LoginRequest $request)
-    {
-        $credentials = $request->validated();
-        if (!Auth::attempt($credentials)) {
-            return response([
-                'message' => 'Provided email or password is incorrect'
-            ], 422);
-        }
 
-        $registrationType = get_option('registration_type');
-
-        /** @var User $user */
-        $user = Auth::user();
-	}
 
 
 
@@ -128,6 +115,7 @@ class AuthController extends Controller
     {
         /** @var User $user */
         $user = $request->user();
+//	    Session::flush();
         $user->currentAccessToken()->delete();
         return response('', 204);
     }

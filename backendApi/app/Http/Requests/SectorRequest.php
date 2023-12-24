@@ -28,6 +28,7 @@ class SectorRequest extends FormRequest {
 			'el_billing_date'       => 'required',
 			'internet_acc_no'       => 'required',
 			'internet_billing_date' => 'required',
+			'contract_period' => 'required',
 			'int_note'              => 'nullable',
 			'payment_amount'        => 'required',
 			'payment_date'          => 'required',

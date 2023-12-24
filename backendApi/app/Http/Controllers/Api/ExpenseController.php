@@ -34,7 +34,6 @@ class ExpenseController extends Controller {
 	 */
 	public function index( Request $request ): JsonResponse {
 
-		$user     = Auth::user();
 		$page     = $request->query( 'page', 1 );
 		$pageSize = $request->query( 'pageSize', 10 );
 

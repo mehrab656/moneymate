@@ -33,7 +33,7 @@ class SectorModelController extends Controller {
 
 		$sectors = SectorModel::skip( ( $page - 1 ) * $pageSize )
 		                      ->take( $pageSize )
-		                      ->orderBy( 'id', 'desc' )
+		                      ->orderBy( 'id', 'DESC' )
 		                      ->get();
 
 		$totalCount = SectorModel::count();
@@ -70,12 +70,42 @@ class SectorModelController extends Controller {
 			'internet_billing_date' => Carbon::parse( $sector['internet_billing_date'] )->format( 'Y-m-d' ),
 			'int_note'              => $sector['int_note']
 		];
+
+		$internet_contract_period = $sector['contract_period'];
+		if ( $internet_contract_period > 24 ) {
+			$internet_contract_period = 24;
+		}
+
 		DB::beginTransaction();
 		try {
 			//first insert the sector data.
 			$sector = SectorModel::create( $sectorData );
 
-			//now insert the payment plans for the sectors.
+			//now  insert the internet billing dates on payment table
+			for ( $i = 1; $i <= $internet_contract_period; $i ++ ) {
+				PaymentModel::create( [
+					'sector_id'      => $sector['id'],
+					'payment_number' => $sector['name'] . ' internet bill for ' . date( 'Y-m-d', strtotime( "+$i month", strtotime( $sectorData['internet_billing_date'] ) ) ),
+					'date'           => date( 'Y-m-d', strtotime( "+$i month", strtotime( $sectorData['internet_billing_date'] ) ) ),
+					'amount'         => 0,
+					'type'           => 'internet',
+					'note'           => null,
+				] );
+			}
+
+			//now insert electricity billing date on payment table
+			for ( $i = 1; $i <= 12; $i ++ ) {
+				PaymentModel::create( [
+					'sector_id'      => $sector['id'],
+					'payment_number' => $sector['name'] . ' electricity bill for ' . date( 'Y-m-d', strtotime( "+$i month", strtotime( $sectorData['el_billing_date'] ) ) ),
+					'date'           => date( 'Y-m-d', strtotime( "+$i month", strtotime( $sectorData['el_billing_date'] ) ) ),
+					'amount'         => 0,
+					'type'           => 'electricity',
+					'note'           => null,
+				] );
+			}
+
+			//now insert the payment plans for the sectors cheque.
 			if ( ! empty( $payment['numbers'] ) ) {
 				$totalPayment = count( $payment['numbers'] );
 
@@ -85,6 +115,7 @@ class SectorModelController extends Controller {
 						'payment_number' => $payment['numbers'][ $i ],
 						'date'           => Carbon::parse( $payment['date'][ $i ] )->format( 'Y-m-d' ),
 						'amount'         => $payment['amount'][ $i ],
+						'type'           => 'cheque',
 						'note'           => null,
 					] );
 				}
@@ -272,6 +303,81 @@ class SectorModelController extends Controller {
 
 		return [
 			'message' => $isUpdated ? 'Payment was marked as paid!' : 'Unable to mark payment as paid',
+			'status'  => 200
+		];
+	}
+
+	public function payBills( $paymentID, Request $request ): array|RedirectResponse {
+		$id = abs( $paymentID );
+		if ( ! $id ) {
+			return [
+				'message' => 'Payment id is not provided',
+				'status'  => 400,
+			];
+		}
+		$type = $request->type;
+
+		$search_criteria = $type === 'internet' ? 'internet' : ( $type === 'cheque' ? 'rent cost' : 'electricity' );
+		$sector          = DB::table( 'sectors' )->find( $request->sector_id );
+		$category        = DB::table( 'categories' )
+		                     ->where( 'sector_id', '=', $sector->id )
+		                     ->where( function ( $query ) use ( $search_criteria ) {
+			                     $query->where( 'name', 'LIKE', '%electricity%' )
+			                           ->orWhere( 'name', 'LIKE', "%$search_criteria%" );
+//			                           ->orWhere( 'name', 'LIKE', '%city%' );
+		                     } )->first();
+
+		if ( ! $category ) {
+			return [
+				'message' => 'No Associative category were found according to this payment term!',
+				'status'  => 200
+			];
+		}
+		$expense = [
+			'user_id'           => Auth::user()->id,
+			'account_id'        => $sector->payment_account_id,
+			'amount'            => $request->amount,
+			'refundable_amount' => 0,
+			'category_id'       => $category->id,
+			'description'       => $request->payment_number,
+			'note'              => 'This expense was recorded while user paid from sector details directly.',
+			'reference'         => 'Automated Payment for : ' . $sector->name . strtoupper( $request->type ),
+			'date'              => Carbon::now()->format( 'Y-m-d' )
+		];
+
+		DB::beginTransaction();
+		try {
+			Expense::create( $expense );
+			$isUpdated = DB::table( 'payments' )
+			               ->where( 'id', $id )
+			               ->update( [
+				               'status'     => 'paid',
+				               'amount'     => $request->amount,
+				               'updated_at' => Carbon::now()->format( 'Y-m-d H:i:s' )
+			               ] );
+
+			//Add activity Log
+			storeActivityLog( [
+				'user_id'      => Auth::user()->id,
+				'log_type'     => 'update',
+				'module'       => "$type-payments",
+				'descriptions' => "Add $type bill payment on" . $request->payment_number . ' ' . $request->amount,
+				'data_records' => $expense,
+			] );
+
+
+		} catch ( ValidationException $e ) {
+			DB::rollBack();
+
+			return redirect()->back()->withErrors( $e->getMessages() )->withInput();
+		}
+
+
+
+		DB::commit();
+
+		return [
+			'message' => $isUpdated ? 'Updated successfully!' : 'Unable to Update Bill',
 			'status'  => 200
 		];
 	}

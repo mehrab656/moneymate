@@ -181,6 +181,7 @@ Route::middleware('auth:sanctum')->group(function () {
 	Route::get('/sectors/{sector}',[ SectorModelController::class,'show']);
 	Route::get('/sectorsIncomeExpense/{sector}',[ SectorModelController::class,'getTotalExpenseAndIncomeBySectorID']);
 	Route::post('/change-payment-status/{sector}',[ SectorModelController::class,'changePaymentStatus']);
+	Route::post('/pay-bill/{payment}',[ SectorModelController::class,'payBills']);
 	Route::get('/sectors-list',[ SectorModelController::class,'sectorList']);
 //	Route::get('/sectors',[ SectorModelController::class,'index']);
 //	Route::get('/sectors',[ SectorModelController::class,'index']);
@@ -193,6 +194,5 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/get-application-settings', [ApplicationSettingsController::class, 'getApplicationSettings']);
 Route::get('/get-associative-categories', [ApplicationSettingsController::class, 'getAssociativeCategories']);
 Route::post('/signup', [AuthController::class, 'signup']);
-Route::post('/renew-subscription', [AuthController::class, 'renewSubscription']);
 Route::post('/login', [AuthController::class, 'login']);
 
