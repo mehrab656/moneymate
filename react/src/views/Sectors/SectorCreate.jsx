@@ -1,4 +1,4 @@
-import React, {Fragment, useState,useEffect} from 'react';
+import React, {Fragment, useState, useEffect} from 'react';
 import {Card, CardContent, Grid, TextField, Button, Typography, Box} from '@mui/material';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
@@ -10,6 +10,7 @@ import Checkbox from '@mui/material/Checkbox';
 import {useNavigate, useParams} from 'react-router-dom';
 import axiosClient from '../../axios-client';
 import MainLoader from '../../components/MainLoader';
+import {useStateContext} from "../../contexts/ContextProvider.jsx";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -27,54 +28,37 @@ const default_associative_categories = [
     'Rental Cost',
 ];
 
+const initialSectorState = {
+    name: '',
+    contract_start_date: '',
+    contract_end_date: '',
+    el_premises_no: null,
+    el_business_acc_no: null,
+    el_acc_no: null,
+    el_billing_date: null,
+    int_note: '',
+    internet_acc_no: null,
+    internet_billing_date: null,
+};
+const initialPaymentState = [
+    {
+        paymentNumber: '',
+        paymentDate: '',
+        amount: '',
+    },
+];
+
 
 function SectorCreate() {
 
     let {id} = useParams();
     const navigate = useNavigate();
+    const {setNotification} = useStateContext();
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false)
-    const [sectorData, setSectorData] = useState({
-        name: '',
-        contractStartDate: '',
-        contractEndDate: '',
-    });
-
-    const [electricityData, setElectricityData] = useState({
-        premisesNumber: '',
-        businessAccountNo: '',
-        accountNumber: '',
-        elBillingDate: '',
-    });
-
-    const [internetData, setInternetData] = useState({
-        accountNumber: '',
-        inBillingDate: '',
-        note: '',
-    });
-
-    const [paymentData, setPaymentData] = useState([
-        {
-            paymentNumber: '',
-            paymentDate: '',
-            amount: '',
-        },
-    ]);
-
+    const [sector, setSector] = useState(initialSectorState);
+    const [paymentData, setPaymentData] = useState(initialPaymentState);
     const [categoryName, setCategoryName] = useState([]);
-    const [associativeCategories, setAssociativeCategory] = useState([]);
-
-    useEffect(()=>{
-        axiosClient.get('/get-associative-categories')
-            .then(({data}) => {
-                console.log(data)
-            })
-            .catch(error => {
-                console.error('Error loading categories:', error);
-                // handle error, e.g., show an error message to the user
-            });
-    }, []);
-
 
     const handleChangeCategory = (event) => {
         const {
@@ -88,17 +72,7 @@ function SectorCreate() {
 
     const handleInputChange = (e) => {
         const {name, value} = e.target;
-        setSectorData({...sectorData, [name]: value});
-    };
-
-    const handleElectricityInputChange = (e) => {
-        const {name, value} = e.target;
-        setElectricityData({...electricityData, [name]: value});
-    };
-
-    const handleInternetInputChange = (e) => {
-        const {name, value} = e.target;
-        setInternetData({...internetData, [name]: value});
+        setSector({...sector, [name]: value});
     };
 
     //payment
@@ -124,22 +98,22 @@ function SectorCreate() {
         setLoading(true)
         // Handle form submission, e.g., send data to an API
         let formData = new FormData();
-        formData.append('name', sectorData.name);
-        formData.append('contract_start_date', sectorData.contractStartDate);
-        formData.append('contract_end_date', sectorData.contractEndDate);
+        formData.append('name', sector.name);
+        formData.append('contract_start_date', sector.contract_start_date);
+        formData.append('contract_end_date', sector.contract_end_date);
 
         //for electricity
-        formData.append('el_premises_no', electricityData.premisesNumber);
-        formData.append('el_acc_no', electricityData.accountNumber);
-        formData.append('el_billing_date', electricityData.elBillingDate);
-        formData.append('el_business_acc_no', electricityData.businessAccountNo);
+        formData.append('el_premises_no', sector.el_premises_no);
+        formData.append('el_acc_no', sector.el_acc_no);
+        formData.append('el_billing_date', sector.el_billing_date);
+        formData.append('el_business_acc_no', sector.el_business_acc_no);
 
         //for internet
-        formData.append('internet_acc_no', internetData.accountNumber);
-        formData.append('internet_billing_date', internetData.inBillingDate);
-        formData.append('int_note', internetData.note);
+        formData.append('internet_acc_no', sector.internet_acc_no);
+        formData.append('internet_billing_date', sector.internet_billing_date);
+        formData.append('int_note', sector.int_note);
         //for payment
-        if (paymentData && paymentData.length > 0) {
+        if (id === null && paymentData && paymentData.length > 0) {
             paymentData.forEach(element => {
                 formData.append('payment_amount[]', element.amount);
                 formData.append('payment_date[]', element.paymentDate);
@@ -147,7 +121,7 @@ function SectorCreate() {
             });
         }
         // for category
-        if (categoryName && categoryName.length > 0) {
+        if (id === null && categoryName && categoryName.length > 0) {
             categoryName.forEach(element => {
                 formData.append('category_name[]', element);
             });
@@ -160,19 +134,41 @@ function SectorCreate() {
                 'Content-Type': 'multipart/form-data',
             },
         }).then(() => {
-            stay === true ? window.location.reload() : navigate('/sectors');
+            if (stay) {
+                setSector(initialSectorState);
+                setPaymentData(initialPaymentState);
+                setNotification('Sector data has been added.');
+
+            } else {
+                navigate('/sectors');
+                setNotification('Sector data has been updated.');
+            }
             setLoading(false)
         }).catch((error) => {
             const response = error.response;
+            setNotification(response.data.message);
             setErrors(response.data.errors);
             setLoading(false)
+            console.log(response)
         });
 
     };
-
+    useEffect(() => {
+        if (id) {
+            setLoading(true);
+            axiosClient.get(`/sector/${id}`)
+                .then(({data}) => {
+                    setSector(data.data)
+                    setLoading(false);
+                })
+                .catch(() => {
+                    setLoading(false);
+                });
+        }
+    }, [id]);
     return (
         <Fragment>
-            <MainLoader loaderVisible={loading} />
+            <MainLoader loaderVisible={loading}/>
             <Card>
                 <CardContent>
                     <Typography variant="h5" gutterBottom>
@@ -186,11 +182,11 @@ function SectorCreate() {
                                     label="Sector Name"
                                     variant="outlined"
                                     name="name"
-                                    value={sectorData.name}
+                                    value={sector.name}
                                     onChange={handleInputChange}
                                     focused
                                 />
-                                {/*{errors.name && <p className="error-message mt-2">{errors.name[0]}</p>}*/}
+                                {errors.name && <p className="error-message mt-2">{errors.name[0]}</p>}
                             </Grid>
 
                             <Grid item xs={12} sm={4}>
@@ -199,8 +195,8 @@ function SectorCreate() {
                                     label="Contact Start Date"
                                     type="date"
                                     variant="outlined"
-                                    name="contractStartDate"
-                                    value={sectorData.contractStartDate}
+                                    name="contract_start_date"
+                                    value={sector.contract_start_date}
                                     onChange={handleInputChange}
                                     focused
                                 />
@@ -213,8 +209,8 @@ function SectorCreate() {
                                     label="Contact End Date"
                                     type="date"
                                     variant="outlined"
-                                    name="contractEndDate"
-                                    value={sectorData.contractEndDate}
+                                    name="contract_end_date"
+                                    value={sector.contract_end_date}
                                     onChange={handleInputChange}
                                     focused
                                 />
@@ -239,9 +235,9 @@ function SectorCreate() {
                                     label="DEWA"
                                     type="number"
                                     variant="outlined"
-                                    name="premisesNumber"
-                                    value={electricityData.premisesNumber}
-                                    onChange={handleElectricityInputChange}
+                                    name="el_premises_no"
+                                    value={sector.el_premises_no}
+                                    onChange={ev => setSector({...sector, el_premises_no: ev.target.value})}
                                     focused
                                 />
                                 {errors?.el_premises_no &&
@@ -253,9 +249,9 @@ function SectorCreate() {
                                     label="Business Account No"
                                     type="number"
                                     variant="outlined"
-                                    name="businessAccountNo"
-                                    value={electricityData.businessAccountNo}
-                                    onChange={handleElectricityInputChange}
+                                    name="el_business_acc_no"
+                                    value={sector.el_business_acc_no}
+                                    onChange={ev => setSector({...sector, el_business_acc_no: ev.target.value})}
                                     focused
                                 />
                                 {errors?.el_business_acc_no &&
@@ -267,9 +263,9 @@ function SectorCreate() {
                                     label="Account Number"
                                     variant="outlined"
                                     type="number"
-                                    name="accountNumber"
-                                    value={electricityData.accountNumber}
-                                    onChange={handleElectricityInputChange}
+                                    name="el_acc_no"
+                                    value={sector.el_acc_no}
+                                    onChange={ev => setSector({...sector, el_acc_no: ev.target.value})}
                                     focused
                                 />
                                 {errors?.el_acc_no && <p className="error-message mt-2">{errors?.el_acc_no[0]}</p>}
@@ -280,9 +276,9 @@ function SectorCreate() {
                                     label="Billing Date"
                                     type="date"
                                     variant="outlined"
-                                    name="elBillingDate"
-                                    value={electricityData.elBillingDate}
-                                    onChange={handleElectricityInputChange}
+                                    name="el_billing_date"
+                                    value={sector.el_billing_date}
+                                    onChange={ev => setSector({...sector, el_billing_date: ev.target.value})}
                                     focused
                                 />
                                 {errors?.el_billing_date &&
@@ -305,10 +301,10 @@ function SectorCreate() {
                                     fullWidth
                                     label="Account Number"
                                     variant="outlined"
-                                    name="accountNumber"
+                                    name="internet_acc_no"
                                     type="number"
-                                    value={internetData.accountNumber}
-                                    onChange={handleInternetInputChange}
+                                    value={sector.internet_acc_no}
+                                    onChange={ev => setSector({...sector, internet_acc_no: ev.target.value})}
                                     focused
                                 />
                                 {errors?.internet_acc_no &&
@@ -320,9 +316,12 @@ function SectorCreate() {
                                     label="Billing Date"
                                     type="date"
                                     variant="outlined"
-                                    name="inBillingDate"
-                                    value={internetData.inBillingDate}
-                                    onChange={handleInternetInputChange}
+                                    name="internet_billing_date"
+                                    value={sector.internet_billing_date}
+                                    onChange={ev => setSector({
+                                        ...sector,
+                                        internet_billing_date: ev.target.value
+                                    })}
                                     focused
                                 />
                             </Grid>
@@ -332,117 +331,131 @@ function SectorCreate() {
                                     label="Note"
                                     variant="outlined"
                                     name="note"
-                                    value={internetData.note}
-                                    onChange={handleInternetInputChange}
+                                    value={sector.int_note}
+                                    onChange={ev => setSector({...sector, int_note: ev.target.value})}
                                     focused
                                 />
-                                {errors?.internet_billing_date &&
-                                    <p className="error-message mt-2">{errors?.internet_billing_date[0]}</p>}
+                                {errors?.int_note &&
+                                    <p className="error-message mt-2">{errors?.int_note[0]}</p>}
                             </Grid>
                         </Grid>
                     </form>
                 </CardContent>
             </Card>
+            {
+                !sector.id &&
+                <>
 
-            <Card style={{marginTop: '20px'}}>
-                <CardContent>
-                    <Typography variant="h5" gutterBottom>
-                        Payment
-                    </Typography>
-                    {paymentData.map((payment, index) => (
-                        <Grid container spacing={2} key={index} sx={{mb: 2}}>
-                            <Grid item xs={12} sm={4}>
-                                <TextField
-                                    fullWidth
-                                    label="Payment Number"
-                                    variant="outlined"
-                                    name="paymentNumber"
-                                    value={payment.paymentNumber}
-                                    onChange={(e) => handlePaymentInputChange(e, index)}
-                                    focused
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={4}>
-                                <TextField
-                                    fullWidth
-                                    label="Payment Date"
-                                    type="date"
-                                    variant="outlined"
-                                    name="paymentDate"
-                                    value={payment.paymentDate}
-                                    onChange={(e) => handlePaymentInputChange(e, index)}
-                                    focused
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={2}>
-                                <TextField
-                                    fullWidth
-                                    label="Amount"
-                                    variant="outlined"
-                                    name="amount"
-                                    value={payment.amount}
-                                    onChange={(e) => handlePaymentInputChange(e, index)}
-                                    focused
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={2}>
-                                <Button
-                                    sx={{ml: 2, mt: 1.2}}
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={handleAddPaymentRow}
-                                >
-                                    Add
-                                </Button>
-                                {index > 0 && (
-                                    <Button
-                                        sx={{ml: 2, mt: 1.2}}
-                                        variant="contained"
-                                        color="secondary"
-                                        onClick={() => handleRemovePaymentRow(index)}
-                                    >
-                                        Remove
-                                    </Button>
-                                )}
-                            </Grid>
-                        </Grid>
-                    ))}
-                </CardContent>
-            </Card>
-
-            <Card style={{marginTop: '20px'}}>
-                <CardContent>
-                    <Typography variant="h5" gutterBottom>
-                        Associative Categories
-                    </Typography>
-                    <FormControl sx={{m: 1}} fullWidth>
-                        <InputLabel id="demo-multiple-checkbox-label"> Associative Categories</InputLabel>
-                        <Select
-                            labelId="demo-multiple-checkbox-label"
-                            id="demo-multiple-checkbox"
-                            multiple
-                            value={categoryName}
-                            onChange={handleChangeCategory}
-                            input={<OutlinedInput label=" Associative Categories"/>}
-                            renderValue={(selected) => selected.join(', ')}
-                            MenuProps={MenuProps}
-                            style={{backgroundColor: '#eeeeee'}}
-                        >
-                            {default_associative_categories.map((name) => (
-                                <MenuItem key={name} value={name}>
-                                    <Checkbox checked={categoryName.indexOf(name) > -1}/>
-                                    <ListItemText primary={name}/>
-                                </MenuItem>
+                    <Card style={{marginTop: '20px'}}>
+                        <CardContent>
+                            <Typography variant="h5" gutterBottom>
+                                Payment
+                            </Typography>
+                            {paymentData.map((payment, index) => (
+                                <Grid container spacing={2} key={index} sx={{mb: 2}}>
+                                    <Grid item xs={12} sm={4}>
+                                        <TextField
+                                            fullWidth
+                                            label="Payment Number"
+                                            variant="outlined"
+                                            name="paymentNumber"
+                                            value={payment.paymentNumber}
+                                            onChange={(e) => handlePaymentInputChange(e, index)}
+                                            focused
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={4}>
+                                        <TextField
+                                            fullWidth
+                                            label="Payment Date"
+                                            type="date"
+                                            variant="outlined"
+                                            name="paymentDate"
+                                            value={payment.paymentDate}
+                                            onChange={(e) => handlePaymentInputChange(e, index)}
+                                            focused
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={2}>
+                                        <TextField
+                                            fullWidth
+                                            label="Amount"
+                                            variant="outlined"
+                                            name="amount"
+                                            value={payment.amount}
+                                            onChange={(e) => handlePaymentInputChange(e, index)}
+                                            focused
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={2}>
+                                        <Button
+                                            sx={{ml: 2, mt: 1.2}}
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={handleAddPaymentRow}
+                                        >
+                                            Add
+                                        </Button>
+                                        {index > 0 && (
+                                            <Button
+                                                sx={{ml: 2, mt: 1.2}}
+                                                variant="contained"
+                                                color="secondary"
+                                                onClick={() => handleRemovePaymentRow(index)}
+                                            >
+                                                Remove
+                                            </Button>
+                                        )}
+                                    </Grid>
+                                </Grid>
                             ))}
-                        </Select>
-                    </FormControl>
-                </CardContent>
-            </Card>
+                        </CardContent>
+                    </Card>
+
+                    <Card style={{marginTop: '20px'}}>
+                        <CardContent>
+                            <Typography variant="h5" gutterBottom>
+                                Associative Categories
+                            </Typography>
+                            <FormControl sx={{m: 1}} fullWidth>
+                                <InputLabel id="demo-multiple-checkbox-label"> Associative Categories</InputLabel>
+                                <Select
+                                    labelId="demo-multiple-checkbox-label"
+                                    id="demo-multiple-checkbox"
+                                    multiple
+                                    value={categoryName}
+                                    onChange={handleChangeCategory}
+                                    input={<OutlinedInput label=" Associative Categories"/>}
+                                    renderValue={(selected) => selected.join(', ')}
+                                    MenuProps={MenuProps}
+                                    style={{backgroundColor: '#eeeeee'}}
+                                >
+                                    {default_associative_categories.map((name) => (
+                                        <MenuItem key={name} value={name}>
+                                            <Checkbox checked={categoryName.indexOf(name) > -1}/>
+                                            <ListItemText primary={name}/>
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </CardContent>
+                    </Card>
+                </>
+            }
+
 
             <Box display='flex' justifyContent='center' justifyItems='center' sx={{mt: 5, mb: 5}}>
-                <Button variant='contained' sx={{m: 2}} onClick={(e) => sectorSubmit(e, true)}>Create</Button>
-                <Button variant='contained' sx={{m: 2}} onClick={(e) => sectorSubmit(e, false)}>Create & Exist</Button>
-            </Box>
+                {
+                    sector.id &&
+                    <Button variant='contained' sx={{m: 2}} onClick={(e) => sectorSubmit(e, false)}>Update</Button>
+                }{
+                !sector.id &&
+                <>
+                    <Button variant='contained' sx={{m: 2}} onClick={(e) => sectorSubmit(e, true)}>Create</Button>
+                    <Button variant='contained' sx={{m: 2}} onClick={(e) => sectorSubmit(e, false)}>Create &
+                        Exist</Button>
+                </>
+            }</Box>
 
         </Fragment>
 

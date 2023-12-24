@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SectorRequest;
+use App\Http\Requests\SectorUpdateRequest;
+use App\Http\Resources\IncomeResource;
 use App\Http\Resources\InvestmentResource;
 use App\Http\Resources\SectorResource;
 use App\Models\Category;
@@ -164,17 +166,10 @@ class SectorModelController extends Controller {
 	}
 
 	/**
-	 * Store a newly created resource in storage.
-	 */
-	public function store( Request $request ) {
-		//
-	}
-
-	/**
 	 * Display the specified resource.
 	 */
-	public function show( SectorModel $sectorModel ) {
-		//
+	public function show( SectorModel $sector ): SectorResource {
+		return new SectorResource( $sector );
 	}
 
 	/**
@@ -186,9 +181,22 @@ class SectorModelController extends Controller {
 
 	/**
 	 * Update the specified resource in storage.
+	 * @throws \Exception
 	 */
-	public function update( Request $request, SectorModel $sectorModel ) {
-		//
+	public function update( SectorUpdateRequest $request, SectorModel $sector ) {
+		$data = $request->validated();
+
+		$sector->fill( $data );
+		$sector->save();
+		storeActivityLog( [
+			'user_id'      => Auth::user()->id,
+			'log_type'     => 'Update',
+			'module'       => 'Sector',
+			'descriptions' => "",
+			'data_records' => $sector
+		] );
+
+		return new SectorResource( $sector );
 	}
 
 	/**
@@ -371,7 +379,6 @@ class SectorModelController extends Controller {
 
 			return redirect()->back()->withErrors( $e->getMessages() )->withInput();
 		}
-
 
 
 		DB::commit();

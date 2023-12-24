@@ -178,7 +178,8 @@ Route::middleware('auth:sanctum')->group(function () {
 	Route::get('/sectors',[ SectorModelController::class,'index']);
 	Route::post('/sector/add',[ SectorModelController::class,'add']);
 	Route::delete('/sector/{sector}',[ SectorModelController::class,'delete']);
-	Route::get('/sectors/{sector}',[ SectorModelController::class,'show']);
+	Route::get('sector/{sector}',[ SectorModelController::class,'show']);
+	Route::post('sector/{sector}',[ SectorModelController::class,'update']);
 	Route::get('/sectorsIncomeExpense/{sector}',[ SectorModelController::class,'getTotalExpenseAndIncomeBySectorID']);
 	Route::post('/change-payment-status/{sector}',[ SectorModelController::class,'changePaymentStatus']);
 	Route::post('/pay-bill/{payment}',[ SectorModelController::class,'payBills']);

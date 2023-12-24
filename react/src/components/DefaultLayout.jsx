@@ -29,7 +29,7 @@ import {SettingsContext, SettingsProvider} from "../contexts/SettingsContext.jsx
 import Footer from "./Footer.jsx";
 import {Container, Row, Col, Button, Offcanvas, Nav} from 'react-bootstrap';
 import {FloatingWhatsApp} from 'react-floating-whatsapp'
-import avatar from '../../../954445_n.jpg'
+// import avatar from '../../../954445_n.jpg'
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import {compareDates} from "../helper/HelperFunctions.js";
 import DropDownProperties from "./DropdownProperties";
@@ -686,7 +686,7 @@ export default function DefaultLayout() {
             <FloatingWhatsApp
                 phoneNumber="+971551258910"
                 accountName="Mehrab Hossain"
-                avatar={avatar}
+                // avatar={avatar}
                 allowEsc
                 allowClickAway
                 notification

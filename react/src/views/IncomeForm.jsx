@@ -222,7 +222,7 @@ export default function IncomeForm() {
 
     return (
         <>
-        <MainLoader loaderVisible={loading} />
+            <MainLoader loaderVisible={loading}/>
             <WizCard className="animated fadeInDown wiz-card-mh">
                 <h3>
                     {income.id && <h1 className="title-text mb-0">{income.description}</h1>}
@@ -347,7 +347,7 @@ export default function IncomeForm() {
                         <div className="buttonGroups text-end">
                             {income.id &&
                                 <button onClick={(e) => incomeSubmit(e, false)}
-                                        className={income.id ? "btn btn-warning" : "custom-btn btn-add"}>
+                                        className={"btn btn-warning"}>
                                     {"Update"}
                                 </button>
                             }
@@ -355,7 +355,7 @@ export default function IncomeForm() {
                             {!income.id &&
                                 <>
                                     <button onClick={(e) => incomeSubmit(e, true)}
-                                            className={income.id ? "btn btn-warning" : "custom-btn btn-add"}>
+                                            className={"custom-btn btn-add"}>
                                         {"Save"}
                                     </button>
                                     <button onClick={(e) => incomeSubmit(e, false)}
