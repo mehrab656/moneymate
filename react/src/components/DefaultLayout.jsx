@@ -33,9 +33,9 @@ import {FloatingWhatsApp} from 'react-floating-whatsapp'
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import {compareDates} from "../helper/HelperFunctions.js";
 import DropDownProperties from "./DropdownProperties";
-import { useGetUserDataQuery } from "../api/slices/userSlice.js";
-import { useGetSectorsDataQuery } from "../api/slices/sectorSlice.js";
-import { useGetFinancialReportDataQuery } from "../api/slices/accountSlice.js";
+import {useGetUserDataQuery} from "../api/slices/userSlice.js";
+import {useGetSectorsDataQuery} from "../api/slices/sectorSlice.js";
+import {useGetFinancialReportDataQuery} from "../api/slices/accountSlice.js";
 
 export default function DefaultLayout() {
 
@@ -54,8 +54,8 @@ export default function DefaultLayout() {
         registration_type
     } = applicationSettings;
 
-    const {data:getSectorsData} = useGetSectorsDataQuery({token})
-    const {data:getFinancialReportData} = useGetFinancialReportDataQuery({token})
+    const {data: getSectorsData} = useGetSectorsDataQuery({token})
+    const {data: getFinancialReportData} = useGetFinancialReportDataQuery({token})
 
     useEffect(() => {
         if (!token) {
@@ -65,14 +65,14 @@ export default function DefaultLayout() {
     }, [token]);
 
 
-    useEffect(()=>{
-        if(getFinancialReportData){
+    useEffect(() => {
+        if (getFinancialReportData) {
             setFinanceStatus(getFinancialReportData)
         }
-    },[getFinancialReportData])
+    }, [getFinancialReportData])
 
-    useEffect(()=>{
-        if(getSectorsData?.data){
+    useEffect(() => {
+        if (getSectorsData?.data) {
             let notificationsArray = [];
             getSectorsData?.data.map(item => {
                 if (compareDates(item.internet_billing_date) === 'danger') {
@@ -88,8 +88,7 @@ export default function DefaultLayout() {
 
             setNotifications(notificationsArray);
         }
-    },[getSectorsData])
-
+    }, [getSectorsData])
 
 
     //screen resize for responsive dynamic class
@@ -111,8 +110,6 @@ export default function DefaultLayout() {
             window.removeEventListener('resize', handleResize);
         };
     }, []);
-
-
 
 
     const onLogout = (ev) => {
@@ -404,27 +401,23 @@ export default function DefaultLayout() {
                                                 notifications.map((item, index) => {
                                                     if (item.type === 'internet') {
                                                         return (
-                                                            <>
+                                                            <li key={'internet-' + item.id}>
                                                                 <NavDropdown.Item href="#action/3.1"
                                                                                   key={item.id}>
-                                                                    {Number(index + 1) + '. ' + item.name + ' ' + item.type + ' bill date ' + item.internet_billing_date}
+                                                                    {item.name + ' ' + item.type + ' bill date ' + item.internet_billing_date}
                                                                 </NavDropdown.Item>
                                                                 <NavDropdown.Divider/>
-
-                                                            </>
-
+                                                            </li>
                                                         )
                                                     } else {
                                                         return (
-                                                            <>
-                                                                <NavDropdown.Item href="#action/3.1"
-                                                                                  key={item.id}>
-                                                                    {Number(index + 1) + '. ' + item.name + ' ' + item.type + ' bill date ' + item.el_billing_date}</NavDropdown.Item>
+                                                            <li key={'electricity-' + item.id}>
+                                                                <NavDropdown.Item href="#action/3.1">
+                                                                    {item.name + ' ' + item.type + ' bill date ' + item.el_billing_date}</NavDropdown.Item>
                                                                 <NavDropdown.Divider/>
-                                                            </>
+                                                            </li>
                                                         )
                                                     }
-
                                                 })
                                             }
                                         </NavDropdown>

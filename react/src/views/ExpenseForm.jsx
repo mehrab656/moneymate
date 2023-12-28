@@ -6,7 +6,6 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import WizCard from "../components/WizCard";
 import {SettingsContext} from "../contexts/SettingsContext.jsx";
-
 import {
     TextField,
     Autocomplete,
@@ -14,7 +13,7 @@ import {
 
 import {makeStyles} from '@mui/styles';
 import MainLoader from "../components/MainLoader.jsx";
-
+import Swal from "sweetalert2";
 
 const useStyles = makeStyles({
     option: {
@@ -24,23 +23,35 @@ const useStyles = makeStyles({
     }
 });
 
+const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+    }
+});
+const initialExpenseData = {
+    id: null,
+    user_id: null,
+    account_id: '', // Set default value to an empty string
+    amount: '', // Set default value to an empty string
+    refundable_amount: 0, // Set default value to an empty string
+    category_id: null,
+    description: '',
+    reference: '',
+    date: '',
+    note: '',
+    attachment: ''
+};
 export default function ExpenseForm() {
     const classes = useStyles();
     let {id} = useParams();
 
-    const [expense, setExpense] = useState({
-        id: null,
-        user_id: null,
-        account_id: '', // Set default value to an empty string
-        amount: '', // Set default value to an empty string
-        refundable_amount: 0, // Set default value to an empty string
-        category_id: null,
-        description: '',
-        reference: '',
-        date: '',
-        note: '',
-        attachment: ''
-    });
+    const [expense, setExpense] = useState(initialExpenseData);
 
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
@@ -72,10 +83,6 @@ export default function ExpenseForm() {
 
         axiosClient.get('/expense-categories')
             .then(({data}) => {
-                if (data.categories.length > 0) {
-                    // setSelectedCategoryId(data.categories[0].id)
-                }
-
                 setExpenseCategories(data.categories);
             })
             .catch(error => {
@@ -95,7 +102,6 @@ export default function ExpenseForm() {
                 // handle error, e.g., show an error message to the user
             });
     }, [setExpenseCategories, setBankAccounts, setUsers]);
-
 
 
     //set default category value
@@ -184,25 +190,31 @@ export default function ExpenseForm() {
         formData.append('attachment', attachment);
 
         const url = expense.id ? `/expense/${expense.id}` : '/expense/add';
-        const notifications = expense.id ? 'Expense has been updated' : 'Expense Added';
+        const notifications = expense.id ? 'Expense has been updated' : 'New expense added';
         axiosClient.post(url, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
         }).then(({data}) => {
-            if (data.action_status === 'insufficient_balance') {
-                setInsufficientBalanceForCategory(data.message);
-            } else {
-                setNotification(notifications)
-                stay === true ? window.location.reload() : navigate('/expenses')
-            }
+            setNotification(notifications)
+            stay === true ? setExpense(initialExpenseData) : navigate('/expenses')
             setLoading(false)
         }).catch(err => {
             const response = err.response;
-            if (response && response.status === 422) {
-                setErrors(response.data.errors);
-                // event.currentTarget.disabled = false;
 
+            if (response && response.status === 400) {
+                Toast.fire({
+                    icon: "error",
+                    title: response.data.message
+                });
+            }
+
+            if (response && response.status === 422) {
+                Toast.fire({
+                    icon: "error",
+                    title: response.data.message,
+                });
+                setErrors(response.data.errors);
             }
             setLoading(false)
         });
@@ -217,7 +229,7 @@ export default function ExpenseForm() {
 
     return (
         <>
-        <MainLoader loaderVisible={loading} />
+            <MainLoader loaderVisible={loading}/>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 {expense.id && <h1 className="title-text mb-0">Update expense : {expense.description}</h1>}
                 {!expense.id && <h1 className="title-text mb-0">Add New expense</h1>}
@@ -391,10 +403,12 @@ export default function ExpenseForm() {
                             }
                             {!expense.id &&
                                 <>
-                                    <button onClick={(e) => expenseSubmit(e, true)} className={"custom-btn btn-add ml-3"}>
+                                    <button onClick={(e) => expenseSubmit(e, true)}
+                                            className={"custom-btn btn-add ml-3"}>
                                         Save
                                     </button>
-                                    <button onClick={(e) => expenseSubmit(e, false)} className={"custom-btn btn-add ml-3"}>
+                                    <button onClick={(e) => expenseSubmit(e, false)}
+                                            className={"custom-btn btn-add ml-3"}>
                                         Save and Exit
                                     </button>
                                 </>

@@ -1,3 +1,5 @@
+import Swal from "sweetalert2";
+
 export function compareDates(date) {
     const currentDate = new Date().getDate();
 
@@ -5,3 +7,5 @@ export function compareDates(date) {
     const res = billingDate - currentDate;
     return res >= 5 ? "success" : "danger";
 }
+
+

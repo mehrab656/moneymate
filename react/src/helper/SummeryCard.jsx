@@ -5,7 +5,7 @@ import axiosClient from "../axios-client.js";
 import SummeryCardRow from "./SummeryCardRow.jsx";
 
 
-const ElectricitySummeryCard = ({showModal, handelCloseModal, data, currency, modalType, Toast, navigation}) => {
+const SummeryCard = ({showModal, handelCloseModal, data, currency, modalType, Toast, navigation,loadingMethod}) => {
     const modalTitles = {
         "electricity": " Electricity Details",
         "internet": " Internet Details",
@@ -27,7 +27,6 @@ const ElectricitySummeryCard = ({showModal, handelCloseModal, data, currency, mo
             inputAutoTrim: true,
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
-            showLoaderOnConfirm: true,
             cancelButtonColor: '#d33',
             confirmButtonText: 'pay',
             inputValidator: (value) => {
@@ -42,17 +41,19 @@ const ElectricitySummeryCard = ({showModal, handelCloseModal, data, currency, mo
                     amount: result.value,
                     type: modalType
                 }).then(({data}) => {
-                    Swal.fire({
-                        title: data.status === 400 ? 'Failed' : 'Paid',
-                        text: data.message,
-                        icon: data.status === 200 ? 'success' : 'error',
-                    });
-                    navigation('/sectors')
+                   Toast.fire({
+                       icon: data.status === 200 ? 'success' : 'error',
+                       title: data.message,
+                   });
+                    navigation('/sectors');
                 }).catch(err => {
-                    Toast.fire({
-                        icon: "error",
-                        title: err.response.data.message,
-                    });
+                    if (err.response){
+                        Toast.fire({
+                            icon: "error",
+                            title: err.response.data.message,
+                        });
+                    }
+
                 })
 
             }
@@ -149,4 +150,4 @@ const ElectricitySummeryCard = ({showModal, handelCloseModal, data, currency, mo
         </>
     )
 }
-export default memo(ElectricitySummeryCard);
+export default memo(SummeryCard);

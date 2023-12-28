@@ -39,6 +39,7 @@ const initialSectorState = {
     int_note: '',
     internet_acc_no: null,
     internet_billing_date: null,
+    contract_period: null
 };
 const initialPaymentState = [
     {
@@ -112,6 +113,9 @@ function SectorCreate() {
         formData.append('internet_acc_no', sector.internet_acc_no);
         formData.append('internet_billing_date', sector.internet_billing_date);
         formData.append('int_note', sector.int_note);
+        if (id === null) {
+            formData.append('contract_period', sector.contract_period);
+        }
         //for payment
         if (id === null && paymentData && paymentData.length > 0) {
             paymentData.forEach(element => {
@@ -149,7 +153,6 @@ function SectorCreate() {
             setNotification(response.data.message);
             setErrors(response.data.errors);
             setLoading(false)
-            console.log(response)
         });
 
     };
@@ -296,7 +299,7 @@ function SectorCreate() {
                     </Typography>
                     <form>
                         <Grid container spacing={2}>
-                            <Grid item xs={12} sm={4}>
+                            <Grid item xs={12} sm={!sector.id ? 3 : 4}>
                                 <TextField
                                     fullWidth
                                     label="Account Number"
@@ -310,7 +313,7 @@ function SectorCreate() {
                                 {errors?.internet_acc_no &&
                                     <p className="error-message mt-2">{errors?.internet_acc_no[0]}</p>}
                             </Grid>
-                            <Grid item xs={12} sm={4}>
+                            <Grid item xs={12} sm={!sector.id ? 3 : 4}>
                                 <TextField
                                     fullWidth
                                     label="Billing Date"
@@ -325,7 +328,24 @@ function SectorCreate() {
                                     focused
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={4}>
+                            {
+                                !sector.id &&
+                                <Grid item xs={12} sm={3}>
+                                    <TextField
+                                        fullWidth
+                                        label="Contract period"
+                                        variant="outlined"
+                                        name="contract_period"
+                                        value={sector.contract_period}
+                                        onChange={ev => setSector({...sector, contract_period: ev.target.value})}
+                                        focused
+                                    />
+                                    {errors?.contract_period &&
+                                        <p className="error-message mt-2">{errors?.contract_period[0]}</p>}
+                                </Grid>
+                            }
+
+                            <Grid item xs={12} sm={!sector.id ? 3 : 4}>
                                 <TextField
                                     fullWidth
                                     label="Note"

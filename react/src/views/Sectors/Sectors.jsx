@@ -1,36 +1,65 @@
 import React, {useEffect, useState, useContext} from "react";
 import axiosClient from "../../axios-client.js";
 import Swal from "sweetalert2";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import Pagination from "react-bootstrap/Pagination";
 import WizCard from "../../components/WizCard.jsx";
-import {Button, Modal, Table} from "react-bootstrap";
+import { Modal, Table} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPlus} from "@fortawesome/free-solid-svg-icons";
+import {faEye, faEyeSlash, faPlus} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../../contexts/SettingsContext.jsx";
 import ActionButtonHelpers from "../../helper/ActionButtonHelpers.jsx";
 import {Tooltip} from "react-tooltip";
 import MainLoader from "../../components/MainLoader.jsx";
 import {compareDates} from "../../helper/HelperFunctions.js";
+import SummeryCard from "../../helper/SummeryCard.jsx";
 
 export default function Sectors() {
+    const {applicationSettings, userRole} = useContext(SettingsContext);
+    const {num_data_per_page, default_currency} = applicationSettings;
     const [loading, setLoading] = useState(false);
     const [sectors, setSectors] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
+    const navigate = useNavigate();
     const [totalCount, setTotalCount] = useState(0);
     const [modalSector, setModalSector] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [showHelperModel, setShowHelperModel] = useState(false);
+    const [showHelperModelType, setShowHelperModelType] = useState('');
+    const pageSize = num_data_per_page;
+    const totalPages = Math.ceil(totalCount / pageSize);
+    const [activeElectricityModal, setActiveElectricityModal] = useState('');
     const [incomeExpense, setIncomeExpense] = useState({
         income: 0,
         expense: 0
     });
-
-    const {applicationSettings, userRole} = useContext(SettingsContext);
-    const {num_data_per_page, default_currency} = applicationSettings;
-
-    const pageSize = num_data_per_page;
-    const totalPages = Math.ceil(totalCount / pageSize);
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
+    const [sector, setSector] = useState({
+        contract_end_date: '',
+        contract_start_date: '',
+        el_acc_no: '',
+        el_billing_date: '',
+        el_business_acc_no: '',
+        el_note: '',
+        el_premises_no: '',
+        id: null,
+        int_note: '',
+        internet_acc_no: '',
+        internet_billing_date: '',
+        name: '',
+        payments: [],
+    });
 
     const showSector = (sector) => {
         axiosClient(`/sectorsIncomeExpense/${sector.id}`).then(({data}) => {
@@ -41,15 +70,6 @@ export default function Sectors() {
         setModalSector(sector);
         setShowModal(true);
     };
-    const handleCloseModal = () => {
-        setShowModal(false);
-    };
-
-    useEffect(() => {
-        document.title = "Manage Sectors";
-        getSectors(currentPage, pageSize);
-    }, [currentPage, pageSize]);
-
     const getSectors = (page, pageSize) => {
         setLoading(true);
         axiosClient
@@ -63,6 +83,11 @@ export default function Sectors() {
                 setLoading(false);
             });
     };
+
+    useEffect(() => {
+        document.title = "Manage Sectors";
+        getSectors(currentPage, pageSize);
+    }, [currentPage, pageSize]);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
@@ -80,13 +105,6 @@ export default function Sectors() {
             </Pagination.Item>
         );
     }
-
-    // const filteredSectors = sectors.filter((sector) => {
-
-    //     return sector.investor_id.toLowerCase().includes(searchTerm.toLowerCase())
-    //         || sector.account_id.toLowerCase().includes(searchTerm.toLowerCase())
-    //         || sector.amount.toLowerCase().includes(searchTerm.toLowerCase())
-    // });
 
     const onDelete = (sector) => {
         Swal.fire({
@@ -151,7 +169,6 @@ export default function Sectors() {
     ];
 
 
-
     // handle pay
     const handlePay = async (payment) => {
         await Swal.fire({
@@ -187,6 +204,46 @@ export default function Sectors() {
             deleteRoute: "",
         },
     };
+    const handleCloseModal = () => {
+        setActiveElectricityModal('');
+        setShowModal(false);
+        setShowHelperModel(false);
+
+    };
+    const checkPayments = (payments, type) => {
+        let message = '';
+        for (let i = 0; i < payments.length; i++) {
+            const payment = payments[i];
+            if (payment.type === type && payment.status === 'unpaid') {
+                message = payment.date;
+                break;
+            }
+        }
+
+        return (
+            <span
+                className={message === '' ? 'text-success' : 'text-danger'}>{message === '' ? 'All Clear' : message}</span>
+        )
+    }
+
+    const showHelperModels = (sector, index, type = 'electricity') => {
+        setSector(sector);
+        setShowHelperModelType(type)
+        setShowHelperModel(true);
+
+        // if (type === 'internet') {
+        //     setActiveInternetModal(index);
+        //     setShowInternetModal(true);
+        // }
+        // if (type === 'electricity') {
+        //     setActiveElectricityModal(index);
+        //
+        // }
+        // if (type === 'cheque') {
+        //     setActiveChequeModal(index);
+        //     setShowChequeModal(true);
+        // }
+    }
 
     return (
         <div>
@@ -216,9 +273,9 @@ export default function Sectors() {
                         <thead>
                         <tr className={"text-center"}>
                             <th>Sector</th>
-                            <th>Electricity Billing Date</th>
-                            <th>Internet Billing Date</th>
-                            <th>Next Payment Date</th>
+                            <th>Electricity next payment</th>
+                            <th>Internet next payment</th>
+                            <th>Cheque next payment</th>
                             <th width='20%'>Action</th>
                         </tr>
                         </thead>
@@ -243,7 +300,7 @@ export default function Sectors() {
                                 <>
                                     {sectors &&
                                         sectors.length > 0 &&
-                                        sectors.map((sector) => {
+                                        sectors.map((sector, index) => {
                                             let breakStatement = false;
                                             let nextPayment;
                                             sector?.payments.map((payment) => {
@@ -260,45 +317,33 @@ export default function Sectors() {
                                                 <tr className={"text-center"} key={sector.id}>
                                                     <td>{sector.name}</td>
                                                     <td>
-                                                        <a
-                                                            className={
-                                                                "text-" + compareDates(sector.el_billing_date)
-                                                            }
+                                                        {checkPayments(sector.payments, 'electricity')}
+                                                        <a onClick={() => showHelperModels(sector, index)}
+                                                           style={{cursor: "pointer"}}
+                                                           className={index === activeElectricityModal ? 'text-primary fa-pull-right ' : 'text-muted fa-pull-right'}
                                                             data-tooltip-id='dewa-account'
-                                                            data-tooltip-content={
-                                                                "Premises Number: " + sector.el_premises_no
-                                                            }
-                                                        >
-                                                            {dateOrdinal(
-                                                                    new Date(sector.el_billing_date).getDate()
-                                                                ) +
-                                                                " of " +
-                                                                monthNames[new Date().getMonth()]}
+                                                           data-tooltip-content={"Show this electricity details"}>
+                                                            <span className="aside-menu-icon">
+                                                                <FontAwesomeIcon
+                                                                    icon={index === activeElectricityModal ? faEye : faEyeSlash}/>
+                                                            </span>
                                                         </a>
                                                         <Tooltip id='dewa-account'/>
                                                     </td>
                                                     <td>
-                                                        <a
-                                                            className={
-                                                                "text-" +
-                                                                compareDates(sector.internet_billing_date)
-                                                            }
+                                                        {checkPayments(sector.payments, 'internet')}
+                                                        <a onClick={() => showHelperModels(sector, index, 'internet')}
+                                                           style={{cursor: "pointer"}}
+                                                           className={index === activeElectricityModal ? 'text-primary fa-pull-right ' : 'text-muted fa-pull-right'}
                                                             data-tooltip-id='internet-account'
-                                                            data-tooltip-content={
-                                                                "Account Number: " + sector.internet_acc_no
-                                                            }
-                                                        >
-                                                            {dateOrdinal(
-                                                                    new Date(
-                                                                        sector.internet_billing_date
-                                                                    ).getDate()
-                                                                ) +
-                                                                " of " +
-                                                                monthNames[new Date().getMonth()]}
+                                                           data-tooltip-content={"Show this internet details"}>
+                                                    <span className="aside-menu-icon">
+                                                        <FontAwesomeIcon
+                                                            icon={index === activeElectricityModal ? faEye : faEyeSlash}/>
+                                                    </span>
                                                         </a>
                                                         <Tooltip id='internet-account'/>
                                                     </td>
-
                                                     <td>{
                                                         nextPayment ?
                                                             <>
@@ -311,8 +356,14 @@ export default function Sectors() {
                                                                 </a>
                                                                 <Tooltip id='next-payment-date'/>
                                                                 {compareDates(nextPayment.date) === 'danger' &&
-                                                                    <Button onClick={() => handlePay(nextPayment)}
-                                                                            className="ml-3 btn-sm">Paid</Button>}
+                                                                    <a className={"ml-3 fa-pull-right"}
+                                                                       onClick={() => handlePay(nextPayment)}
+                                                                       style={{cursor: "pointer"}}>
+                                                                        pay
+                                                                    </a>
+                                                                    // <Button onClick={() => handlePay(nextPayment)}
+                                                                    //         className="ml-3 btn-sm">Paid</Button>
+                                                                }
                                                             </> :
                                                             <>
                                                                 <a className="text-success">All Paid</a>
@@ -352,13 +403,18 @@ export default function Sectors() {
                 )}
             </WizCard>
 
-            <Modal
-                show={showModal}
-                centered
-                onHide={handleCloseModal}
-                className='custom-modal'
-                size="lg"
-            >
+            <SummeryCard
+                showModal={showHelperModel}
+                handelCloseModal={handleCloseModal}
+                data={sector}
+                currency={default_currency}
+                modalType={showHelperModelType}
+                Toast={Toast}
+                navigation = {useNavigate}
+                loadingMethod = {setLoading}
+            />
+
+            <Modal size="lg" show={showModal} centered onHide={handleCloseModal} className="custom-modal lg">
                 <Modal.Header closeButton>
                     <Modal.Title>
                         <span>Sector Details</span>
@@ -475,6 +531,7 @@ export default function Sectors() {
                             <th>Payment No.</th>
                             <th>Amount</th>
                             <th>Date</th>
+                            <th>Type</th>
                             <th>Status</th>
                         </tr>
                         </thead>
@@ -485,7 +542,8 @@ export default function Sectors() {
                                     <td>{i + 1}</td>
                                     <td>{data?.payment_number}</td>
                                     <td>{default_currency + ' ' + data?.amount}</td>
-                                    <td>{default_currency + ' ' + data?.date}</td>
+                                    <td>{data?.date}</td>
+                                    <td>{data?.type}</td>
                                     {data?.status === 'paid' ? <td style={{color: 'green'}}>{data?.status}</td> :
                                         <td style={{color: 'red'}}>{data?.status}</td>}
                                 </tr>
