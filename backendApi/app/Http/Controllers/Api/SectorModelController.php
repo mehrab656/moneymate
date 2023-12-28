@@ -8,6 +8,7 @@ use App\Http\Requests\SectorUpdateRequest;
 use App\Http\Resources\IncomeResource;
 use App\Http\Resources\InvestmentResource;
 use App\Http\Resources\SectorResource;
+use App\Models\BankAccount;
 use App\Models\Category;
 use App\Models\Expense;
 use App\Models\Investment;
@@ -315,7 +316,7 @@ class SectorModelController extends Controller {
 		];
 	}
 
-	public function payBills( $paymentID, Request $request ): array|RedirectResponse {
+	public function payBills( $paymentID, Request $request ) {
 		$id = abs( $paymentID );
 		if ( ! $id ) {
 			return [
@@ -341,6 +342,12 @@ class SectorModelController extends Controller {
 				'status'  => 200
 			];
 		}
+		$bankAccount = BankAccount::find( $sector->payment_account_id );
+		if ( $bankAccount->balance < $request->amount ) {
+			return response()->json( [
+				'message'       => 'Insufficient amount to make this expense',
+			],400 );
+		}
 		$expense = [
 			'user_id'           => Auth::user()->id,
 			'account_id'        => $sector->payment_account_id,
@@ -363,6 +370,9 @@ class SectorModelController extends Controller {
 				               'amount'     => $request->amount,
 				               'updated_at' => Carbon::now()->format( 'Y-m-d H:i:s' )
 			               ] );
+
+			$bankAccount->balance -= $request->amount;
+			$bankAccount->save();
 
 			//Add activity Log
 			storeActivityLog( [

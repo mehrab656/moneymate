@@ -65,17 +65,25 @@ class ExpenseController extends Controller {
 		$expense  = $request->validated();
 		$category = Category::findOrFail( $request->category_id );
 
+		//check balance amount to make a valid expense
+		$bankAccount = BankAccount::find( $request->account_id );
+
+		if ( $bankAccount->balance < $request->amount ) {
+			return response()->json( [
+				'message'       => 'Insufficient amount to make this expense',
+			],400 );
+		}
+
+
+		// Check Budget for this expense
 		$budgetCategory = BudgetCategory::where( 'category_id', $request->category_id )->first();
 
 		if ( $budgetCategory ) {
 			$budget = Budget::find( $budgetCategory->budget_id );
 			if ( $budget && $expense['amount'] > $budget->amount ) {
 				return response()->json( [
-					'action_status' => 'insufficient_balance',
 					'message'       => 'There is no sufficient budget for this category',
-					'expense'       => $expense,
-					'category'      => $category,
-				] );
+				],400 );
 			}
 		}
 
@@ -126,7 +134,6 @@ class ExpenseController extends Controller {
 		}
 
 		// Update the balance of the bank account
-		$bankAccount          = BankAccount::find( $request->account_id );
 		$bankAccount->balance -= $request->amount;
 		$bankAccount->save();
 
@@ -360,7 +367,7 @@ class ExpenseController extends Controller {
 	 * @return JsonResponse
 	 */
 	public function getCategoryExpensesGraphForCurrentMonth(): JsonResponse {
-		$currentMonth   = Carbon::now()->month;
+		$currentMonth = Carbon::now()->month;
 
 		$expenses = DB::table( 'expenses' )
 		              ->join( 'categories', 'expenses.category_id', '=', 'categories.id' )
