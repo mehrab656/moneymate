@@ -324,7 +324,8 @@ class SectorModelController extends Controller {
 				'status'  => 400,
 			];
 		}
-		$type = $request->type;
+		$isUpdated = false;
+		$type      = $request->type;
 
 		$search_criteria = $type === 'internet' ? 'internet' : ( $type === 'cheque' ? 'rent cost' : 'electricity' );
 		$sector          = DB::table( 'sectors' )->find( $request->sector_id );
@@ -344,9 +345,17 @@ class SectorModelController extends Controller {
 		}
 		$bankAccount = BankAccount::find( $sector->payment_account_id );
 		if ( $bankAccount->balance < $request->amount ) {
+			storeActivityLog( [
+				'user_id'      => Auth::user()->id,
+				'log_type'     => 'bill_pay',
+				'module'       => "$type-bill-payments",
+				'descriptions' => "tried to pay $type bill of an amount " . $request->amount . " was failed due to insufficient account balance.",
+				'data_records' => $request,
+			] );
+
 			return response()->json( [
-				'message'       => 'Insufficient amount to make this expense',
-			],400 );
+				'message' => 'Insufficient amount to pay this bill!',
+			], 400 );
 		}
 		$expense = [
 			'user_id'           => Auth::user()->id,
@@ -390,13 +399,12 @@ class SectorModelController extends Controller {
 			return redirect()->back()->withErrors( $e->getMessages() )->withInput();
 		}
 
-
 		DB::commit();
 
-		return [
-			'message' => $isUpdated ? 'Updated successfully!' : 'Unable to Update Bill',
-			'status'  => 200
-		];
+		return response()->json( [
+			'message' => $isUpdated ? 'Bill paid successfully!' : 'Unable to pay bill.',
+			'status'  => $isUpdated ? 200 : 400
+		] );
 	}
 
 	public function sectorList(): JsonResponse {
