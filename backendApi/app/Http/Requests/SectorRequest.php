@@ -20,6 +20,7 @@ class SectorRequest extends FormRequest {
 	public function rules(): array {
 		return [
 			'name'                  => 'required',
+			'payment_account_id'    => 'required',
 			'contract_start_date'   => 'required',
 			'contract_end_date'     => 'required',
 			'el_premises_no'        => 'required',
@@ -43,6 +44,7 @@ class SectorRequest extends FormRequest {
 	public function messages(): array {
 		return [
 			'sector_name.required'                => 'Sector name is required.',
+			'payment_account_id.required'         => 'Payment account is required.',
 			'contract_start_date.required'        => 'Contract start date is required.',
 			'contract_end_date.contract_end_date' => 'Contract end date is required.',
 			'el_premises_no.required'             => 'Electricity premises number is required.',

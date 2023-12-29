@@ -63,6 +63,7 @@ class SectorModelController extends Controller {
 
 		$sectorData = [
 			'name'                  => $sector['name'],
+			'payment_account_id'                  => $sector['payment_account_id'],
 			'contract_start_date'   => Carbon::parse( $sector['contract_start_date'] )->format( 'Y-m-d' ),
 			'contract_end_date'     => Carbon::parse( $sector['contract_end_date'] )->format( 'Y-m-d' ),
 			'el_premises_no'        => $sector['el_premises_no'],
