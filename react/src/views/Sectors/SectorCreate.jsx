@@ -61,6 +61,7 @@ function SectorCreate() {
     const [paymentData, setPaymentData] = useState(initialPaymentState);
     const [categoryName, setCategoryName] = useState([]);
 
+
     const handleChangeCategory = (event) => {
         const {
             target: {value},
