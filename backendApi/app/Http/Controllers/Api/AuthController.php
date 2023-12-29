@@ -115,7 +115,6 @@ class AuthController extends Controller
     {
         /** @var User $user */
         $user = $request->user();
-//	    Session::flush();
         $user->currentAccessToken()->delete();
         return response('', 204);
     }
