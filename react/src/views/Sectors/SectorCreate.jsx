@@ -12,6 +12,8 @@ import axiosClient from '../../axios-client';
 import MainLoader from '../../components/MainLoader';
 import {useStateContext} from "../../contexts/ContextProvider.jsx";
 
+const periods = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
+
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -30,6 +32,7 @@ const default_associative_categories = [
 
 const initialSectorState = {
     name: '',
+    payment_account_id:null,
     contract_start_date: '',
     contract_end_date: '',
     el_premises_no: null,
@@ -60,7 +63,19 @@ function SectorCreate() {
     const [sector, setSector] = useState(initialSectorState);
     const [paymentData, setPaymentData] = useState(initialPaymentState);
     const [categoryName, setCategoryName] = useState([]);
+    const [bankAccounts, setBankAccounts] = useState([])
 
+    console.log('sector', sector)
+
+    useEffect(()=>{
+        axiosClient.get('/all-bank-account')
+        .then(({data}) => {
+            setBankAccounts(data.data);
+        })
+        .catch(error => {
+            console.warn('Error fetching bank accounts:', error)
+        });
+    },[])
 
     const handleChangeCategory = (event) => {
         const {
@@ -74,6 +89,7 @@ function SectorCreate() {
 
     const handleInputChange = (e) => {
         const {name, value} = e.target;
+        console.log('name', name)
         setSector({...sector, [name]: value});
     };
 
@@ -101,6 +117,7 @@ function SectorCreate() {
         // Handle form submission, e.g., send data to an API
         let formData = new FormData();
         formData.append('name', sector.name);
+        formData.append('payment_account_id', sector.payment_account_id);
         formData.append('contract_start_date', sector.contract_start_date);
         formData.append('contract_end_date', sector.contract_end_date);
 
@@ -114,11 +131,11 @@ function SectorCreate() {
         formData.append('internet_acc_no', sector.internet_acc_no);
         formData.append('internet_billing_date', sector.internet_billing_date);
         formData.append('int_note', sector.int_note);
-        if (id === null) {
+        if (!id) {
             formData.append('contract_period', sector.contract_period);
         }
         //for payment
-        if (id === null && paymentData && paymentData.length > 0) {
+        if (!id && paymentData && paymentData.length > 0) {
             paymentData.forEach(element => {
                 formData.append('payment_amount[]', element.amount);
                 formData.append('payment_date[]', element.paymentDate);
@@ -126,7 +143,7 @@ function SectorCreate() {
             });
         }
         // for category
-        if (id === null && categoryName && categoryName.length > 0) {
+        if (!id && categoryName && categoryName.length > 0) {
             categoryName.forEach(element => {
                 formData.append('category_name[]', element);
             });
@@ -150,6 +167,7 @@ function SectorCreate() {
             }
             setLoading(false)
         }).catch((error) => {
+            console.log('error', error)
             const response = error.response;
             setNotification(response.data.message);
             setErrors(response.data.errors);
@@ -162,6 +180,7 @@ function SectorCreate() {
             setLoading(true);
             axiosClient.get(`/sector/${id}`)
                 .then(({data}) => {
+                    console.log({data})
                     setSector(data.data)
                     setLoading(false);
                 })
@@ -180,7 +199,7 @@ function SectorCreate() {
                     </Typography>
                     <form>
                         <Grid container spacing={2}>
-                            <Grid item xs={12} sm={4}>
+                            <Grid item xs={12} sm={3}>
                                 <TextField
                                     fullWidth
                                     label="Sector Name"
@@ -190,13 +209,13 @@ function SectorCreate() {
                                     onChange={handleInputChange}
                                     focused
                                 />
-                                {errors.name && <p className="error-message mt-2">{errors.name[0]}</p>}
+                                {errors?.name && <p className="error-message mt-2">{errors.name[0]}</p>}
                             </Grid>
 
-                            <Grid item xs={12} sm={4}>
+                            <Grid item xs={12} sm={3}>
                                 <TextField
                                     fullWidth
-                                    label="Contact Start Date"
+                                    label="Contract Start Date"
                                     type="date"
                                     variant="outlined"
                                     name="contract_start_date"
@@ -207,10 +226,10 @@ function SectorCreate() {
                                 {errors?.contract_start_date &&
                                     <p className="error-message mt-2">{errors?.contract_start_date[0]}</p>}
                             </Grid>
-                            <Grid item xs={12} sm={4}>
+                            <Grid item xs={12} sm={3}>
                                 <TextField
                                     fullWidth
-                                    label="Contact End Date"
+                                    label="Contract End Date"
                                     type="date"
                                     variant="outlined"
                                     name="contract_end_date"
@@ -218,6 +237,31 @@ function SectorCreate() {
                                     onChange={handleInputChange}
                                     focused
                                 />
+                                {errors?.contract_end_date &&
+                                    <p className="error-message mt-2">{errors?.contract_end_date[0]}</p>}
+                            </Grid>
+                            <Grid item xs={12} sm={3}>
+                                <Box sx={{ minWidth: 120 }}>
+                                    <FormControl fullWidth>
+                                    <InputLabel id="demo-simple-select-label">Payment Account</InputLabel>
+                                     <Select
+                                        focused
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        name='payment_account_id'
+                                        value={sector.payment_account_id}
+                                        label="Payment Account"
+                                        onChange={handleInputChange}
+                                        >
+                                        {bankAccounts.map((account,i)=>{
+                                            return(
+                                                <MenuItem key={account.id} value={account.id}>{account.bank_name} - {account.account_number} - Balance
+                                                ({account.balance})</MenuItem>
+                                            )
+                                        })}
+                                        </Select>
+                                    </FormControl>
+                                    </Box>
                                 {errors?.contract_end_date &&
                                     <p className="error-message mt-2">{errors?.contract_end_date[0]}</p>}
                             </Grid>
@@ -332,15 +376,26 @@ function SectorCreate() {
                             {
                                 !sector.id &&
                                 <Grid item xs={12} sm={3}>
-                                    <TextField
-                                        fullWidth
-                                        label="Contract period"
-                                        variant="outlined"
-                                        name="contract_period"
-                                        value={sector.contract_period}
-                                        onChange={ev => setSector({...sector, contract_period: ev.target.value})}
-                                        focused
-                                    />
+                                    <Box sx={{ minWidth: 120 }}>
+                                        <FormControl fullWidth>
+                                         <InputLabel id="demo-simple-select-label">Contract period</InputLabel>
+                                        <Select
+                                            focused
+                                            labelId="demo-simple-select-label"
+                                            id="demo-simple-select"
+                                            name="contract_period"
+                                            value={sector.contract_period}
+                                            label="Contract period"
+                                            onChange={ev => setSector({...sector, contract_period: ev.target.value})}
+                                            >
+                                            {periods.map((time,i)=>{
+                                                return(
+                                                    <MenuItem key={time} value={time}>{time}</MenuItem>
+                                                )
+                                            })}
+                                            </Select>
+                                        </FormControl>
+                                        </Box>
                                     {errors?.contract_period &&
                                         <p className="error-message mt-2">{errors?.contract_period[0]}</p>}
                                 </Grid>
@@ -403,6 +458,7 @@ function SectorCreate() {
                                             label="Amount"
                                             variant="outlined"
                                             name="amount"
+                                            type='number'
                                             value={payment.amount}
                                             onChange={(e) => handlePaymentInputChange(e, index)}
                                             focused
