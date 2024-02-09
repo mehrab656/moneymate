@@ -38,7 +38,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-//Route::middleware( 'auth:sanctum' )->group( function () {
+Route::middleware( 'auth:sanctum' )->group( function () {
 	Route::get( '/user', function ( Request $request ) {
 		return $request->user();
 	} );
@@ -194,7 +194,7 @@ use Illuminate\Support\Facades\Route;
 
 	//finance report
 	Route::get( '/getFinanceReport', [ FinanceController::class, 'getAccountStatement' ] );
-//} );
+} );
 
 
 Route::get( '/get-application-settings', [ ApplicationSettingsController::class, 'getApplicationSettings' ] );
