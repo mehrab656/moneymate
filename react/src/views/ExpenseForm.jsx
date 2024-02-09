@@ -196,7 +196,12 @@ export default function ExpenseForm() {
                 'Content-Type': 'multipart/form-data',
             },
         }).then(({data}) => {
-            setNotification(notifications)
+            // setNotification(notifications);
+            Toast.fire({
+                icon: "success",
+                title: notifications
+            });
+
             stay === true ? setExpense(initialExpenseData) : navigate('/expenses')
             setLoading(false)
         }).catch(err => {

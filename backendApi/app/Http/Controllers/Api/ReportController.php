@@ -88,12 +88,12 @@ class ReportController extends Controller {
 			$endDate = date( 'Y-m-d', strtotime( $endDate ) );
 		}
 
-		$query = Expense::select('expenses.*')->join( 'categories', 'categories.id', '=', 'expenses.category_id' )
-		                   ->where( 'type', 'expense' );
+		$query = Expense::select( 'expenses.*' )->join( 'categories', 'categories.id', '=', 'expenses.category_id' )
+		                ->where( 'type', 'expense' );
 
 		if ( $startDate ) {
 			$query = $query->where( 'date', '>=', $startDate )
-			                     ->where( 'date', '<=', $endDate );
+			               ->where( 'date', '<=', $endDate );
 		}
 		if ( $sec_id ) {
 			$query = $query->where( 'sector_id', $sec_id );
@@ -151,6 +151,60 @@ class ReportController extends Controller {
 			'totalInvestment' => $totalInvestment,
 		] );
 
+	}
+
+	public function overall( Request $request ) {
+		$startDate = $request->start_date;
+		$endDate   = $request->end_date;
+
+
+
+
+		if ( ! $startDate ) {
+			$startDate = date( 'Y-m-d', strtotime( '-1 year' ) );
+		}
+		if ( ! $endDate ) {
+			$endDate = Carbon::now()->toDateString();
+		}
+
+		$endDate   = Carbon::parse( $endDate )->format( 'Y-m-d' );
+		$startDate = Carbon::parse( $startDate )->format( 'Y-m-d' );
+
+		$investments = DB::table( 'investments' )->selectRaw( 'sum(amount) as amount, investor_id, name' )
+		                 ->join( 'users', 'investments.investor_id', '=', 'users.id' )
+		                 ->whereBetween( 'investment_date', [ $startDate, $endDate ] )
+		                 ->groupBy( [ 'investor_id', 'name' ] )->get();
+
+		$incomes = DB::table( 'incomes' )->selectRaw( 'sum(amount) as amount, category_id, name' )
+		             ->join( 'categories', 'incomes.category_id', '=', 'categories.id' )
+		             ->whereBetween( 'date', [ $startDate, $endDate ] )
+		             ->groupBy( [ 'category_id', 'name' ] )->get();
+
+		$expense = DB::table( 'expenses' )->selectRaw( 'COALESCE(sum(amount), 0) as amount, sector_id, sectors.name' )
+		             ->join( 'categories', 'expenses.category_id', '=', 'categories.id' )
+		             ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
+		             ->whereBetween( 'date', [ $startDate, $endDate ] )
+		             ->groupBy( [ 'sector_id', 'sectors.name' ] )->get();
+
+
+		return response()->json( [
+			'investments'     => $investments,
+			'incomes'         => $incomes,
+			'expenses'        => $expense,
+			'totalInvestment' => DB::table( 'investments' )->whereBetween( 'investment_date', [
+				$startDate,
+				$endDate
+			] )->sum( 'amount' ),
+			'totalExpense'    => DB::table( 'expenses' )->whereBetween( 'date', [
+				$startDate,
+				$endDate
+			] )->sum( 'amount' ),
+			'totalIncome'     => DB::table( 'incomes' )->whereBetween( 'date', [
+				$startDate,
+				$endDate
+			] )->sum( 'amount' ),
+			'length'          => max( count( $investments ), count( $incomes ), count( $expense ) )]
+		);
 	}
 }
 

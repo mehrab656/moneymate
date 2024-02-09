@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
 	    Schema::table('sectors', function($table) {
-		    $table->integer('payment_account_id')->after('name')->default(1);
+//		    $table->integer('payment_account_id')->after('name')->default(1);
 	    });
     }
 

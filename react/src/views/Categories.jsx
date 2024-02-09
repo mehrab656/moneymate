@@ -59,6 +59,7 @@ export default function Categories() {
             axiosClient.put(`/category/${category.id}`, category)
                 .then(() => {
                     setNotification("Category has been successfully updated");
+
                     setShowModal(false);
                     getCategories(currentPage, pageSize);
                     setCategory({
