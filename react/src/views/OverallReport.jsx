@@ -38,7 +38,7 @@ export default function OverallReport() {
     } = applicationSettings;
 
     const [tableRow, setTableRow] = useState([]);
-    let rows = [];
+    var rows = [];
     const overallReportRow = () => {
         for (let i = 0; i < overAllReport.length; i++) {
 
