@@ -123,9 +123,6 @@ export default function ExpenseReport() {
     return (
         <>
             <MainLoader loaderVisible={loading}/>
-            <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
-                <h1 className="title-text mb-0">Expense Report</h1>
-            </div>
             <WizCard className="animated fadeInDown wiz-card-mh expx">
                 <div className="row">
                     <form onSubmit={handleSubmit}>
@@ -207,7 +204,7 @@ export default function ExpenseReport() {
                     <Container>
                         <Row>
                             <Col xs={12} md={9}>
-                                <div className="table-responsive-sm">
+                                <div className="table-responsive-sm my-custom-scrollbar table-wrapper-scroll-y">
                                     <table className="table table-bordered custom-table">
                                         <thead>
                                         <tr className={'text-center'}>

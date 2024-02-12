@@ -16,7 +16,15 @@ const initialState = {
     totalExpense: 0,
     totalIncome: 0,
     length: 0,
-
+    refundable_amount: 0,
+    refunded_amount: 0,
+    market_receivable: 0,
+    account_receivable: 0,
+    lends: 0,
+    borrow: 0,
+    total_cash_in: 0,
+    total_cash_out: 0,
+    current_balance: 0,
 }
 export default function OverallReport() {
 
@@ -123,9 +131,9 @@ export default function OverallReport() {
                                 <table className="table table-bordered custom-table">
                                     <thead>
                                     <tr className={'text-center'}>
-                                        <th colSpan={3}><b>Investment</b></th>
-                                        <th colSpan={3}><b>Expense</b></th>
-                                        <th colSpan={3}><b>Income</b></th>
+                                        <th colSpan={3} className={'bg-info'}><b>Investment</b></th>
+                                        <th colSpan={3} className={'bg-warning'}><b>Expense</b></th>
+                                        <th colSpan={3} className={'bg-info'}><b>Income</b></th>
                                     </tr>
                                     <tr>
                                         <th>S/L</th>
@@ -154,12 +162,85 @@ export default function OverallReport() {
                                             tableRow
                                         }
                                         <tr>
-                                            <td colSpan={2}><b>Total</b></td>
-                                            <td><b>{overAllReport.totalInvestment}</b></td>
-                                            <td colSpan={2}><b>Total</b></td>
-                                            <td><b>{overAllReport.totalExpense}</b></td>
-                                            <td colSpan={2}><b>Total</b></td>
-                                            <td><b>{overAllReport.totalIncome}</b></td>
+                                            <td className={'table_total bg-info'} colSpan={2}><b>Total</b></td>
+                                            <td className={'amount bg-info'}><b>{overAllReport.totalInvestment}</b></td>
+                                            <td className={'table_total bg-warning'} colSpan={2}><b>Total</b></td>
+                                            <td className={'amount bg-warning'}><b>{overAllReport.totalExpense}</b></td>
+                                            <td className={'table_total bg-info'} colSpan={2}><b>Total</b></td>
+                                            <td className={'amount bg-info'}><b>{overAllReport.totalIncome}</b></td>
+                                        </tr>
+                                        </tbody>
+                                    )}
+                                </table>
+                            </div>
+
+                            <div className="table-responsive-sm">
+                                <table className="table table-bordered custom-table">
+                                    <thead>
+                                    <tr className={'text-center'}>
+                                        <th colSpan={3} className={"bg-info"}><b>Cash IN</b></th>
+                                        <th colSpan={3} className={'bg-primary'}><b>Cash OUT</b></th>
+                                        <th colSpan={4} rowSpan={2} className={'bg-success text-white'}><b>Final Summary</b></th>
+                                    </tr>
+                                    <tr>
+                                        <th>S/L</th>
+                                        <th>Details</th>
+                                        <th>Amount</th>
+                                        <th>S/L</th>
+                                        <th>Details</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                    </thead>
+                                    {loading && (
+                                        <tbody>
+                                        <tr>
+                                            <td colSpan={8} className="text-center">
+                                                Loading...
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    )}
+                                    {!loading && (
+                                        <tbody>
+                                        <tr>
+                                            <td className={'sl_class'}>1</td>
+                                            <td>Investment</td>
+                                            <td className={'amount'}>{overAllReport.totalInvestment}</td>
+                                            <td className={'sl_class'}>1</td>
+                                            <td>Expense</td>
+                                            <td className={'amount'}>{overAllReport.totalExpense}</td>
+                                            <td colSpan={2}>Current Balance</td>
+                                            <td colSpan={2} className={'amount'}>{overAllReport.current_balance}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className={'sl_class'}>2</td>
+                                            <td>Income</td>
+                                            <td className={'amount'}>{overAllReport.totalIncome}</td>
+                                            <td className={'sl_class'}>2</td>
+                                            <td>Lend to Others</td>
+                                            <td className={'amount'}>{overAllReport.lends}</td>
+                                            <td colSpan={2}>Account Receivable</td>
+                                            <td colSpan={2} className={'amount'}>{overAllReport.account_receivable}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className={'sl_class'}>3</td>
+                                            <td>Refunded Amount</td>
+                                            <td className={'amount'}>{overAllReport.refunded_amount}</td>
+                                            <td colSpan={3} rowSpan={2}></td>
+                                            <td colSpan={2}>Account Liability</td>
+                                            <td colSpan={2} className={'amount'}>{overAllReport.lends}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className={'sl_class'}>4</td>
+                                            <td>Loan</td>
+                                            <td className={'amount'}>{overAllReport.borrow}</td>
+                                            <td colSpan={4} rowSpan={2}></td>
+                                        </tr>
+                                        <tr>
+                                            <td className={'table_total bg-info'} colSpan={2}><b>Total</b></td>
+                                            <td className={'amount bg-info'}><b>{overAllReport.total_cash_in}</b></td>
+                                            <td className={'table_total'} colSpan={2}><b>Total</b></td>
+                                            <td className={'amount'}><b>{overAllReport.total_cash_out}</b></td>
                                         </tr>
                                         </tbody>
                                     )}

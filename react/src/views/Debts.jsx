@@ -305,7 +305,7 @@ export default function Debts() {
                                        
                                         <td className="text-center">
                                         <Tooltip title={debt?.note} arrow>
-                                            {debt?.note.length>7?debt?.note.split(' ').slice(0,3).join(' ')+`  ... 🅘`:debt?.note}
+                                            {debt.note?debt.note.split(' ').slice(0,3).join(' ')+` ....` :''}
                                         </Tooltip>
                                         </td>
                                       

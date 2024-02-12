@@ -857,3 +857,36 @@ select option:focus {
 .summery-card{
     z-index: -1;
 }
+.amount{
+    text-align: end;
+}
+.sl_class{
+    text-align: center;
+}
+.table_total{
+    text-align: center;
+}
+.investment-column{
+    background-color: #63ebe5;
+}
+.my-custom-scrollbar {
+    position: relative;
+    height: 400px;
+    overflow: auto;
+}
+.table-wrapper-scroll-y {
+    display: block;
+}
+.logo-bookingcom{
+    display: inline-block;
+    background: url('https://dashboard.hostaway.com/src/assets/images/logo/booking_logo.png') 50% no-repeat;
+    background-size: contain;
+    width: 128px;
+    height: 36px;
+}
+.logo-reservations {
+    width: 64px!important;
+    height: 24px!important;
+    vertical-align: middle;
+    float: right;
+}

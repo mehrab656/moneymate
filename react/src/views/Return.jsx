@@ -151,7 +151,7 @@ export default function Return() {
                             </div>
                         </div>
                     </div>
-                    <div className="table-responsive-sm">
+                    <div className="table-responsive-sm my-custom-scrollbar table-wrapper-scroll-y">
                         <table className="table table-bordered custom-table">
                             <thead>
                             <tr>

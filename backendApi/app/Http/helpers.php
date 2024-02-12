@@ -62,7 +62,7 @@ function storeActivityLog( array $data ): void {
 	}
 
 
-	$description = $data['descriptions']? $user['name'].' '.$data['descriptions'] :  build_activity_log_descriptions( $user['name'], $logType[ strtolower( $data['log_type'] ) ], $data['module'] );
+	$description = $data['descriptions'] ? $user['name'] . ' ' . $data['descriptions'] : build_activity_log_descriptions( $user['name'], $logType[ strtolower( $data['log_type'] ) ], $data['module'] );
 
 	$uid = random_string( 'alnum', 32 );
 
@@ -191,5 +191,9 @@ function is_ip_address( string $ip ): bool|string {
 
 		// 'basic' type treated as default
 		return (string) mt_rand();
+	}
+
+	function fix_number_format( $val ) {
+		return number_format( (float) $val, 2 );
 	}
 }

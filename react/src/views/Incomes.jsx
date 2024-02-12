@@ -6,12 +6,15 @@ import IncomeExportButton from "../components/IncomeExportButton.jsx";
 import WizCard from "../components/WizCard";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faDollar, faEdit, faPlus, faTrash} from "@fortawesome/free-solid-svg-icons";
+import {FaAirbnb, FaEvernote, FaMoneyBillAlt} from "react-icons/fa";
+
 import Pagination from "react-bootstrap/Pagination";
 import {SettingsContext} from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 import MainLoader from "../components/MainLoader.jsx";
 import {Modal} from "react-bootstrap";
 import IncomeModal from "../helper/IncomeModal.jsx";
+import {Tooltip} from "@mui/material";
 
 export default function Incomes() {
 
@@ -124,16 +127,16 @@ export default function Incomes() {
         setShowModal(false);
     };
     const actionParams = {
-        route:{
-            editRoute:'/income/',
-            viewRoute:'',
-            deleteRoute:''
+        route: {
+            editRoute: '/income/',
+            viewRoute: '',
+            deleteRoute: ''
         },
     }
 
     return (
         <div>
-         <MainLoader loaderVisible={loading} />
+            <MainLoader loaderVisible={loading}/>
 
 
             <WizCard className="animated fadeInDown">
@@ -154,7 +157,8 @@ export default function Incomes() {
                     <div className="col-2">
                         <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                             {userRole === 'admin' &&
-                                <Link className="btn-add align-right mr-3" to="/income/new"><FontAwesomeIcon icon={faPlus}/></Link>}
+                                <Link className="btn-add align-right mr-3" to="/income/new"><FontAwesomeIcon
+                                    icon={faPlus}/></Link>}
                             <IncomeExportButton/>
                         </div>
                     </div>
@@ -167,7 +171,7 @@ export default function Incomes() {
                         <tr className={'text-center'}>
                             <th>Date</th>
                             <th>Description</th>
-                            <th>Category</th>
+                            <th>Source</th>
                             <th>Amount</th>
                             {userRole === 'admin' && <th width="20%">Action</th>}
 
@@ -194,15 +198,35 @@ export default function Incomes() {
                                 filteredIncomes.map((income) => (
                                     <tr className={'text-center'} key={income.id}>
                                         <td>{income.date}</td>
-                                        <td>{income.description !== 'null' ? income.description : ''}</td>
+                                        <Tooltip title={income.reference} arrow>
+
+                                            <td>{income.description !== 'null' ? income.description : ''}
+
+                                                {
+                                                    income?.reference ? (
+                                                            income?.reference.includes('air') ?
+                                                                <FaAirbnb className={'logo-reservations'} color="red"/> :
+                                                                (income?.reference.includes('book') ?
+                                                                        <i className="logo-bookingcom logo-reservations"></i>
+                                                                        :
+                                                                        <FaMoneyBillAlt className={'logo-reservations'}
+                                                                                        fontSize={10} color="gray"/>
+                                                                )
+                                                        ) :
+                                                        ''
+                                                }
+
+                                            </td>
+                                        </Tooltip>
+
                                         <td>{income.category_name}</td>
                                         <td>{default_currency + ' ' + income.amount}</td>
                                         {userRole === 'admin' &&
-                                            <ActionButtonHelpers 
-                                              module={income}
-                                              showModule={showIncome}
-                                              deleteFunc={onDelete}
-                                              params={actionParams}
+                                            <ActionButtonHelpers
+                                                module={income}
+                                                showModule={showIncome}
+                                                deleteFunc={onDelete}
+                                                params={actionParams}
                                             />
                                         }
 

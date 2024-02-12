@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import axiosClient from "../axios-client.js";
-import {faPlus} from "@fortawesome/free-solid-svg-icons";
+import {faFileExport, faPlus} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 export default function ExpenseExportButton() {
@@ -28,11 +28,11 @@ export default function ExpenseExportButton() {
     };
 
     return (
-        <div>
+        // <div>
             <button className='btn-info' onClick={handleExportCsv} disabled={loading}>
-                <FontAwesomeIcon icon={faPlus}/>
+                <FontAwesomeIcon icon={faFileExport}/>
                 {/*{loading ? 'Exporting...' : 'Export Expense Data'}*/}
             </button>
-        </div>
+        // </div>
     );
 }

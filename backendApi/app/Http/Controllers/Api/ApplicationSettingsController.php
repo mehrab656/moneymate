@@ -60,13 +60,13 @@ class ApplicationSettingsController extends Controller {
 			'last_income_cat_id',
 			'last_income_cat_id',
 			'associative_categories',
-
 		];
 
 		$applicationSettings = Option::whereIn( 'key', $keys )->pluck( 'value', 'key' );
 
 		// Retrieve the specific Stripe product price by API ID
 		$targetPriceApiId = get_option( 'product_api_id' );
+
 		if ( $targetPriceApiId ) {
 			$stripe = new StripeClient( get_option( 'secret_key' ) );
 			$price  = $stripe->prices->retrieve( $targetPriceApiId );

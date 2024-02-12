@@ -161,22 +161,29 @@ export default function Expenses() {
     return (
         <div>
             <MainLoader loaderVisible={loading}/>
-            <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
-                <h1 className="title-text mb-0">Expense Histories</h1>
-                {userRole === 'admin' &&
-                    <Link className="btn-add align-right mr-3" to="/expense/new"><FontAwesomeIcon icon={faMinus}/> Add
-                        New</Link>}
-                <ExpenseExportButton/>
-            </div>
 
             <WizCard className="animated fadeInDown">
-                <div className="mb-4">
-                    <input className="custom-form-control"
-                           type="text"
-                           placeholder="Search Expense..."
-                           value={searchTerm}
-                           onChange={(e) => setSearchTerm(e.target.value)}/>
+                <div class="row">
+                    <div class="col-3">
+                        <h1 className="title-text mb-0">Expense Histories</h1>
+                    </div>
+                    <div class="col-7">
+                    <div className="mb-4">
+                            <input className="custom-form-control"
+                                   type="text"
+                                   placeholder="Search Expense..."
+                                   value={searchTerm}
+                                   onChange={(e) => setSearchTerm(e.target.value)}/>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <ExpenseExportButton/>
+                        {userRole === 'admin' &&
+                            <Link className="btn-add float-end" to="/expense/new"><FontAwesomeIcon icon={faMinus}/> Add
+                                New</Link>}
+                    </div>
                 </div>
+
                 <div className="table-responsive-sm">
                     <table className="table table-bordered custom-table">
                         <thead>
@@ -214,9 +221,9 @@ export default function Expenses() {
                                         <td>{expense.date}</td>
                                         <td className={'text-start'}>{expense.description}</td>
                                         <td className={'text-start'}>{expense.category_name}</td>
-                                        <td className={'text-end'}>{default_currency + ' ' + expense.amount}</td>
-                                        <td className={'text-end'}>{default_currency + ' ' + expense.refundable_amount}</td>
-                                        <td className={"text-end text-" + expense.refunded_txt_clr}>{default_currency + ' ' + expense.refunded_amount}</td>
+                                        <td className={'amount'}>{default_currency + ' ' + expense.amount}</td>
+                                        <td className={'amount'}>{default_currency + ' ' + expense.refundable_amount}</td>
+                                        <td className={"amount text-" + expense.refunded_txt_clr}>{default_currency + ' ' + expense.refunded_amount}</td>
                                         <td>
                                             <ActionButtonHelpers
                                                 module={expense}

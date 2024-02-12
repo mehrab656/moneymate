@@ -676,15 +676,15 @@ export default function DefaultLayout() {
             </Container>
 
 
-            <FloatingWhatsApp
-                phoneNumber="+971551258910"
-                accountName="Mehrab Hossain"
-                // avatar={avatar}
-                allowEsc
-                allowClickAway
-                notification
-                notificationSound
-            />
+            {/*<FloatingWhatsApp*/}
+            {/*    phoneNumber="+971551258910"*/}
+            {/*    accountName="Mehrab Hossain"*/}
+            {/*    // avatar={avatar}*/}
+            {/*    allowEsc*/}
+            {/*    allowClickAway*/}
+            {/*    notification*/}
+            {/*    notificationSound*/}
+            {/*/>*/}
         </>
     )
 }

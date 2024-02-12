@@ -12,6 +12,7 @@ use App\Models\Income;
 use App\Models\Investment;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +20,7 @@ use Illuminate\Support\Str;
 
 
 class ReportController extends Controller {
-	public function incomeReport( Request $request ): \Illuminate\Http\JsonResponse {
+	public function incomeReport( Request $request ): JsonResponse {
 		// Get the optional start_date and end_date parameters from the request
 		$startDate = $request->input( 'start_date' );
 		$endDate   = $request->input( 'end_date' );
@@ -71,30 +72,29 @@ class ReportController extends Controller {
 	/**
 	 * @param Request $request
 	 *
-	 * @return \Illuminate\Http\JsonResponse
+	 * @return JsonResponse
 	 */
 
-	public function expenseReport( Request $request ) {
+	public function expenseReport( Request $request ): JsonResponse {
 		$startDate = $request->start_date;
 		$endDate   = $request->end_date;
 		$cat_id    = $request->cat_id;
 		$sec_id    = $request->sec_id;
 
-		$response = [];
-		if ( $startDate ) {
-			$startDate = date( 'Y-m-d', strtotime( $startDate ) );
-		}
-		if ( $endDate ) {
-			$endDate = date( 'Y-m-d', strtotime( $endDate ) );
+		if ( $startDate && ! $endDate ) {
+			$endDate = Carbon::now()->toDateString();
+
 		}
 
 		$query = Expense::select( 'expenses.*' )->join( 'categories', 'categories.id', '=', 'expenses.category_id' )
 		                ->where( 'type', 'expense' );
 
-		if ( $startDate ) {
-			$query = $query->where( 'date', '>=', $startDate )
-			               ->where( 'date', '<=', $endDate );
+		if ( $startDate || $endDate ) {
+			$endDate   = Carbon::parse( $endDate )->format( 'Y-m-d' );
+			$startDate = Carbon::parse( $startDate )->format( 'Y-m-d' );
+			$query     = $query->whereBetween( 'date', [ $startDate, $endDate ] );
 		}
+
 		if ( $sec_id ) {
 			$query = $query->where( 'sector_id', $sec_id );
 		}
@@ -102,23 +102,14 @@ class ReportController extends Controller {
 			$query = $query->where( 'category_id', $cat_id );
 		}
 
-		$response['sql'] = Str::replaceArray( '?', $query->getBindings(), $query->toSql() );
-
+		//$response['sql'] = Str::replaceArray( '?', $query->getBindings(), $query->toSql() );//check the sql
 
 		$expensesRes = ExpenseReportResource::collection( $query->orderBy( 'date', 'DESC' )->get() );
 
-
-		$sum = 0;
-		foreach ( $expensesRes as $key => $expense ) {
-			if ( isset( $expense->amount ) ) {
-				$sum += $expense->amount;
-			}
-		}
-
-		$response['totalExpense'] = $sum;
-		$response['expenses']     = $expensesRes;
-
-		return response()->json( $response );
+		return response()->json( [
+			'totalExpense' => fix_number_format( $query->get()->sum( 'amount' ) ),
+			'expenses'     => $expensesRes
+		] );
 	}
 
 	public function investmentReport( Request $request ) {
@@ -148,17 +139,14 @@ class ReportController extends Controller {
 
 		return response()->json( [
 			'investments'     => $investments->get(),
-			'totalInvestment' => $totalInvestment,
+			'totalInvestment' => $totalInvestment //fix_number_format($totalInvestment),
 		] );
 
 	}
 
-	public function overall( Request $request ) {
+	public function overall( Request $request ): JsonResponse {
 		$startDate = $request->start_date;
 		$endDate   = $request->end_date;
-
-
-
 
 		if ( ! $startDate ) {
 			$startDate = date( 'Y-m-d', strtotime( '-1 year' ) );
@@ -169,6 +157,19 @@ class ReportController extends Controller {
 
 		$endDate   = Carbon::parse( $endDate )->format( 'Y-m-d' );
 		$startDate = Carbon::parse( $startDate )->format( 'Y-m-d' );
+
+		$lends  = DB::table( 'debts' )->whereBetween( 'date', [
+			$startDate,
+			$endDate
+		] )->where( 'type', '=', 'lend' )->sum( 'amount' );
+		$borrow = DB::table( 'debts' )->whereBetween( 'date', [
+			$startDate,
+			$endDate
+		] )->where( 'type', '=', 'borrow' )->sum( 'amount' );
+
+		$refund = DB::table( 'expenses' )
+		            ->where( 'refundable_amount', '>', 0 )
+		            ->whereBetween( 'date', [ $startDate, $endDate ] );
 
 		$investments = DB::table( 'investments' )->selectRaw( 'sum(amount) as amount, investor_id, name' )
 		                 ->join( 'users', 'investments.investor_id', '=', 'users.id' )
@@ -186,25 +187,51 @@ class ReportController extends Controller {
 		             ->whereBetween( 'date', [ $startDate, $endDate ] )
 		             ->groupBy( [ 'sector_id', 'sectors.name' ] )->get();
 
+		$totalInvestment = DB::table( 'investments' )->whereBetween( 'investment_date', [
+			$startDate,
+			$endDate
+		] )->sum( 'amount' );
+
+		$totalIncome = DB::table( 'incomes' )->whereBetween( 'date', [
+			$startDate,
+			$endDate
+		] )->sum( 'amount' );
+
+		$totalExpense = DB::table( 'expenses' )->whereBetween( 'date', [
+			$startDate,
+			$endDate
+		] )->sum( 'amount' );
+
+		$refundable_amount = $refund->sum( 'refundable_amount' );
+		$refunded_amount   = $refund->sum( 'refunded_amount' );
+
+		//Total Cash IN = Investment + Income + Refunded Amount + Loan(borrow)
+		$total_cash_in = $totalInvestment + $totalIncome + $refunded_amount + abs( $borrow );
+
+		//Total Cash Out = Expense + Loan(lend)
+		$total_cash_out    = $totalExpense + abs( $lends );
+		$market_receivable = $refundable_amount - $refunded_amount;
 
 		return response()->json( [
-			'investments'     => $investments,
-			'incomes'         => $incomes,
-			'expenses'        => $expense,
-			'totalInvestment' => DB::table( 'investments' )->whereBetween( 'investment_date', [
-				$startDate,
-				$endDate
-			] )->sum( 'amount' ),
-			'totalExpense'    => DB::table( 'expenses' )->whereBetween( 'date', [
-				$startDate,
-				$endDate
-			] )->sum( 'amount' ),
-			'totalIncome'     => DB::table( 'incomes' )->whereBetween( 'date', [
-				$startDate,
-				$endDate
-			] )->sum( 'amount' ),
-			'length'          => max( count( $investments ), count( $incomes ), count( $expense ) )]
-		);
+			'investments'        => $investments,
+			'incomes'            => $incomes,
+			'expenses'           => $expense,
+			'totalInvestment'    => fix_number_format( $totalInvestment ),
+			'totalExpense'       => fix_number_format( $totalExpense ),
+			'totalIncome'        => fix_number_format( $totalIncome ),
+			'length'             => max( count( $investments ), count( $incomes ), count( $expense ) ),
+			'refundable_amount'  => fix_number_format( $refundable_amount ),
+			'refunded_amount'    => fix_number_format( $refunded_amount ),
+			'market_receivable'  => fix_number_format( $refundable_amount - $refunded_amount ),
+			//only return from market
+			'account_receivable' => fix_number_format( $market_receivable + $lends ),
+			// return from market and lend to others
+			'lends'              => fix_number_format( abs( $lends ) ),
+			'borrow'             => fix_number_format( abs( $borrow ) ),
+			'total_cash_in'      => fix_number_format( $total_cash_in ),
+			'total_cash_out'     => fix_number_format( $total_cash_out ),
+			'current_balance'    => fix_number_format( $total_cash_in - $total_cash_out ),
+		] );
 	}
 }
 
