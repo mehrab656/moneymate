@@ -428,9 +428,11 @@ export default function DefaultLayout() {
                                             <NavDropdown.Item href="application-settings">Activity
                                                 Log</NavDropdown.Item>
                                             {userRole === 'admin' &&
-                                                <NavDropdown.Item><Link className={"header-dropdown-item"}
-                                                                        to="/application-settings">Application
-                                                    Settings</Link></NavDropdown.Item>
+                                                <NavDropdown.Item>
+                                                    <Link className={"header-dropdown-item"} to="/application-settings">
+                                                        Application Settings
+                                                    </Link>
+                                                </NavDropdown.Item>
                                             }
                                             <NavDropdown.Divider/>
                                             <NavDropdown.Item onClick={onLogout}>
