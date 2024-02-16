@@ -306,8 +306,6 @@ export default function OverallReport() {
                                     )}
                                 </table>
                             </div>
-
-
                         </div>
                     </div>
                 </div>
@@ -315,3 +313,4 @@ export default function OverallReport() {
         </>
     )
 }
+
