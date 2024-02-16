@@ -5,9 +5,7 @@ import {useStateContext} from "../contexts/ContextProvider.jsx";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import WizCard from "../components/WizCard";
-
 import {TextField, Autocomplete, Box, FormControl, InputLabel, Select, MenuItem} from "@mui/material";
-
 import {makeStyles} from "@mui/styles";
 import MainLoader from "../components/MainLoader.jsx";
 
@@ -45,7 +43,6 @@ export default function IncomeForm() {
     const [incomeCategories, setIncomeCategories] = useState([]);
     const [bankAccounts, setBankAccounts] = useState([]);
     const {setNotification} = useStateContext();
-    const [selectedCategoryId, setSelectedCategoryId] = useState("");
     const [selectedAccountId, setSelectedAccountId] = useState("");
     const [selectedIncomeType, setIncomeType] = useState("reservation");
     const navigate = useNavigate();
@@ -76,7 +73,6 @@ export default function IncomeForm() {
 
     //set default category value
     useEffect(() => {
-        console.log('foo-bar')
         if (incomeCategories && incomeCategories.length > 0 && !id) {
             setCategoryValue(incomeCategories[0]);
         }
@@ -85,10 +81,6 @@ export default function IncomeForm() {
         }
     }, []);
 
-    const handleCategoryChange = (event) => {
-        setSelectedCategoryId(event.target.value);
-    };
-
     useEffect(() => {
         // get the incomes first if its update
         if (id) {
@@ -96,10 +88,8 @@ export default function IncomeForm() {
             axiosClient
                 .get(`/income/${id}`)
                 .then(({data}) => {
-                    setSelectedCategoryId(data.category_id);
                     setSelectedAccountId(data.account_id);
                     setIncomeType(data.income_type);
-                    console.log(selectedIncomeType);
                     if (incomeCategories.length > 0) {
                         incomeCategories.forEach((element) => {
                             if (element.id === data.category_id) {
@@ -136,7 +126,6 @@ export default function IncomeForm() {
         setLoading(true);
         if (income.id) {
             const {
-                income_type,
                 description,
                 amount,
                 reference,
@@ -165,7 +154,7 @@ export default function IncomeForm() {
                         "Content-Type": "multipart/form-data",
                     },
                 })
-                .then(({data}) => {
+                .then(() => {
 
                     setNotification("Income data has been updated");
                     if (stay === true) {
@@ -213,13 +202,12 @@ export default function IncomeForm() {
                         "Content-Type": "multipart/form-data",
                     },
                 })
-                .then(({data}) => {
-                    console.log(data)
+                .then(() => {
                     setNotification("Income has been added.");
                     if (stay === true) {
-                        // window.location.reload();
+                        window.location.reload();
                     } else {
-                        // navigate("/incomes");
+                        navigate("/incomes");
                     }
                     setLoading(false);
                 })

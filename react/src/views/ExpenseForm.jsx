@@ -1,7 +1,6 @@
 import {useNavigate, useParams} from "react-router-dom";
 import React, {useContext, useEffect, useState} from "react";
 import axiosClient from "../axios-client.js";
-import {useStateContext} from "../contexts/ContextProvider.jsx";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import WizCard from "../components/WizCard";
@@ -58,13 +57,11 @@ export default function ExpenseForm() {
     const [expenseCategories, setExpenseCategories] = useState([]);
     const [bankAccounts, setBankAccounts] = useState([]);
     const [selectUserID, setUsers] = useState([]);
-    const {setNotification} = useStateContext();
     const [selectedAccountId, setSelectedAccountId] = useState('');
     const [selectedUserId, setSelectedUserId] = useState('');
     const navigate = useNavigate();
     const [insufficientBalanceForCategory, setInsufficientBalanceForCategory] = useState(null);
     const {applicationSettings} = useContext(SettingsContext);
-    // const [selectedCategoryId, setSelectedCategoryId] = useState('');
     const [categoryValue, setCategoryValue] = useState(null);
     const [storeCategoryValue, setStoreCategoryValue] = useState(null);
     const {

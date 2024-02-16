@@ -5,14 +5,12 @@ import Swal from 'sweetalert2';
 import IncomeExportButton from "../components/IncomeExportButton.jsx";
 import WizCard from "../components/WizCard";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faDollar, faEdit, faPlus, faTrash} from "@fortawesome/free-solid-svg-icons";
-import {FaAirbnb, FaEvernote, FaMoneyBillAlt} from "react-icons/fa";
-
+import {faPlus} from "@fortawesome/free-solid-svg-icons";
+import {FaAirbnb, FaMoneyBillAlt} from "react-icons/fa";
 import Pagination from "react-bootstrap/Pagination";
 import {SettingsContext} from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 import MainLoader from "../components/MainLoader.jsx";
-import {Modal} from "react-bootstrap";
 import IncomeModal from "../helper/IncomeModal.jsx";
 import {Tooltip} from "@mui/material";
 
@@ -199,35 +197,29 @@ export default function Incomes() {
                                     <tr className={'text-center'} key={income.id}>
                                         <td>{income.date}</td>
                                         <Tooltip title={income.reference} arrow>
-
                                             <td>{income.description !== 'null' ? income.description : ''}
-
                                                 {
                                                     income?.reference ? (
-                                                            income?.reference.includes('air') ?
-                                                                <FaAirbnb className={'logo-reservations'} color="red"/> :
-                                                                (income?.reference.includes('book') ?
-                                                                        <i className="logo-bookingcom logo-reservations"></i>
-                                                                        :
-                                                                        <FaMoneyBillAlt className={'logo-reservations'}
-                                                                                        fontSize={10} color="gray"/>
-                                                                )
-                                                        ) :
-                                                        ''
+                                                        income?.reference.includes('air') ?
+                                                            <FaAirbnb className={'logo-reservations'} color="red"/> :
+                                                            (income?.reference.includes('book') ?
+                                                                <i className="logo-bookingcom logo-reservations"></i> :
+                                                                <FaMoneyBillAlt className={'logo-reservations'}
+                                                                                fontSize={10} color="gray"/>)) : ''
                                                 }
-
                                             </td>
                                         </Tooltip>
-
                                         <td>{income.category_name}</td>
                                         <td>{default_currency + ' ' + income.amount}</td>
                                         {userRole === 'admin' &&
-                                            <ActionButtonHelpers
-                                                module={income}
-                                                showModule={showIncome}
-                                                deleteFunc={onDelete}
-                                                params={actionParams}
-                                            />
+                                            <td>
+                                                <ActionButtonHelpers
+                                                    module={income}
+                                                    showModule={showIncome}
+                                                    deleteFunc={onDelete}
+                                                    params={actionParams}
+                                                />
+                                            </td>
                                         }
 
                                     </tr>
