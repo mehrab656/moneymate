@@ -8,16 +8,18 @@ use App\Http\Requests\IncomeUpdateRequest;
 use App\Http\Resources\IncomeResource;
 use App\Models\BankAccount;
 use App\Models\Category;
-use App\Models\Expense;
 use App\Models\Income;
 use Carbon\Carbon;
+use DateTime;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Throwable;
 
 class IncomeController extends Controller {
 
@@ -28,7 +30,6 @@ class IncomeController extends Controller {
 	 */
 
 	public function index( Request $request ): JsonResponse {
-		$user     = Auth::user();
 		$page     = $request->query( 'page', 1 );
 		$pageSize = $request->query( 'pageSize', 10 );
 
@@ -54,6 +55,8 @@ class IncomeController extends Controller {
 	 * @param IncomeRequest $request
 	 *
 	 * @return JsonResponse
+	 * @throws Exception
+	 * @throws Throwable
 	 */
 	public function add( IncomeRequest $request ): JsonResponse {
 		$income   = $request->validated();
@@ -70,37 +73,170 @@ class IncomeController extends Controller {
 
 		$incomeDate = Carbon::parse( $income['date'] )->format( 'Y-m-d' );
 
-		$income = Income::create( [
-			'user_id'     => Auth::user()->id,
-			'account_id'  => $income['account_id'],
-			'amount'      => $income['amount'],
-			'category_id' => $income['category_id'],
-			'description' => $income['description'],
-			'note'        => $income['note'],
-			'reference'   => $income['reference'],
-			'date'        => $incomeDate,
-			'attachment'  => $income['attachment']
-		] );
+		if ( $income['income_type'] === 'reservation' ) {
+			$checkinDate  = new DateTime( $income['checkin_date'] );
+			$checkoutDate = new DateTime( $income['checkout_date'] );
 
+			$total_reservation_days = $checkoutDate->diff( $checkinDate )->format( "%a" );
 
-		// Update the balance of the bank account
-		$bankAccount          = BankAccount::find( $request->account_id );
-		$bankAccount->balance += $request->amount;
-		$bankAccount->save();
+			$daily_rent = $income['amount'] / $total_reservation_days;
 
-		storeActivityLog( [
-			'user_id'      => Auth::user()->id,
-			'log_type'     => 'create',
-			'module'       => 'income',
-			'descriptions' => "  added income.",
-			'data_records' => array_merge( json_decode( json_encode( $income ), true ), [ 'account_balance' => $bankAccount->balance ] ),
-		] );
+			try {
+				DB::beginTransaction();
+				// Update the balance of the bank account
+				$bankAccount          = BankAccount::find( $request->account_id );
+				$bankAccount->balance += $request->amount;
+				$bankAccount->save();
+
+				if ( $checkinDate->format( 'Y-m' ) === $checkoutDate->format( 'Y-m' ) ) {
+
+					$description = sprintf( '%s reservation of %d days from %s to %s',
+						$income['description'],
+						$total_reservation_days,
+						$checkinDate->format( 'Y-m-d' ),
+						$checkoutDate->format( 'Y-m-d' ),
+					);
+
+					$income = Income::create( [
+						'user_id'       => Auth::user()->id,
+						'account_id'    => $income['account_id'],
+						'amount'        => $daily_rent * $total_reservation_days,
+						'category_id'   => $income['category_id'],
+						'description'   => $description,
+						'note'          => $income['note'],
+						'reference'     => $income['reference'],
+						'date'          => $incomeDate,
+						'checkin_date'  => $checkinDate->format( 'Y-m-d' ),
+						'checkout_date' => $checkoutDate->format( 'Y-m-d' ),
+						'attachment'    => $income['attachment']
+					] );
+					storeActivityLog( [
+						'user_id'      => Auth::user()->id,
+						'log_type'     => 'create',
+						'module'       => 'income',
+						'descriptions' => "  added income.",
+						'data_records' => array_merge( json_decode( json_encode( [] ), true ), [ 'account_balance' => $bankAccount->balance ] ),
+					] );
+				} else {
+					$end_date         = $checkinDate->format( 'Y-m-t' ); //end date from check in date.
+					$first_month_days = (int) ( ( new DateTime( $end_date ) )->diff( $checkinDate )->format( "%a" ) ) + 1;
+					$start_date       = $checkoutDate->format( 'Y-m-01' ); //next month starting date;
+
+					$second_month_days  = $checkoutDate->diff( new DateTime( $start_date ) )->format( '%a' );
+					$first_month_amount = $daily_rent * $first_month_days;
+					$description_1      = sprintf( '%s reservation of %d days from %s to %s',
+						$income['description'],
+						$first_month_days,
+						$checkinDate->format( 'Y-m-d' ),
+						$start_date,
+					);
+					$income_first       = Income::create( [
+						'user_id'       => Auth::user()->id,
+						'account_id'    => $income['account_id'],
+						'amount'        => $first_month_amount,
+						'category_id'   => $income['category_id'],
+						'description'   => $description_1,
+						'note'          => $income['note'],
+						'reference'     => $income['reference'],
+						'date'          => $incomeDate,
+						'checkin_date'  => $checkinDate->format( 'Y-m-d' ),
+						'checkout_date' => $start_date,
+						'attachment'    => $income['attachment']
+					] );
+
+					storeActivityLog( [
+						'user_id'      => Auth::user()->id,
+						'log_type'     => 'create',
+						'module'       => 'income',
+						'descriptions' => "  added income.",
+						'data_records' => array_merge( json_decode( json_encode( $income_first ), true ), [ 'account_balance' => $bankAccount->balance ] ),
+					] );
+
+					if ( $second_month_days > 0 ) {
+						$description_2       = sprintf( '%s reservation of %d days from %s to %s',
+							$income['description'],
+							$second_month_days,
+							$start_date,
+							$checkoutDate->format( 'Y-m-d' ),
+						);
+						$second_month_amount = $daily_rent * $second_month_days;
+
+						$income_sec = Income::create( [
+							'user_id'       => Auth::user()->id,
+							'account_id'    => $income['account_id'],
+							'amount'        => $second_month_amount,
+							'category_id'   => $income['category_id'],
+							'description'   => $description_2,
+							'note'          => $income['note'],
+							'reference'     => $income['reference'],
+							'date'          => $incomeDate,
+							'checkin_date'  => $start_date,
+							'checkout_date' => $checkoutDate->format( 'Y-m-d' ),
+							'attachment'    => $income['attachment']
+						] );
+						storeActivityLog( [
+							'user_id'      => Auth::user()->id,
+							'log_type'     => 'create',
+							'module'       => 'income',
+							'descriptions' => "added new income.",
+							'data_records' => array_merge( json_decode( json_encode( $income_sec ), true ), [ 'account_balance' => $bankAccount->balance ] ),
+						] );
+					}
+				}
+				DB::commit();
+			} catch ( Throwable $e ) {
+				DB::rollBack();
+
+				return response()->json( [
+					'message' => 'Cannot add Income.',
+					'error'   => $e
+				] );
+			}
+		} else {
+
+			try {
+				DB::beginTransaction();
+				// Update the balance of the bank account
+				$bankAccount          = BankAccount::find( $request->account_id );
+				$bankAccount->balance += $request->amount;
+				$bankAccount->save();
+
+				$income = Income::create( [
+					'user_id'     => Auth::user()->id,
+					'account_id'  => $income['account_id'],
+					'amount'      => $income['amount'],
+					'category_id' => $income['category_id'],
+					'description' => $income['description'],
+					'note'        => $income['note'],
+					'reference'   => $income['reference'],
+					'income_type' => $income['income_type'],
+					'date'        => $incomeDate,
+					'attachment'  => $income['attachment']
+				] );
+				storeActivityLog( [
+					'user_id'      => Auth::user()->id,
+					'log_type'     => 'create',
+					'module'       => 'income',
+					'descriptions' => "added income.",
+					'data_records' => array_merge( json_decode( json_encode( [] ), true ), [ 'account_balance' => $bankAccount->balance ] ),
+				] );
+				DB::commit();
+
+			} catch ( Throwable $e ) {
+				DB::rollBack();
+
+				return response()->json( [
+					'message' => 'Cannot add Income.',
+				] );
+			}
+
+		}
+
 
 		return response()->json( [
 			'income'   => $income,
 			'category' => $category,
 		] );
-
 	}
 
 
@@ -109,6 +245,7 @@ class IncomeController extends Controller {
 	 * @param Income $income
 	 *
 	 * @return IncomeResource
+	 * @throws Exception
 	 */
 
 	public function update( IncomeUpdateRequest $request, Income $income ) {
@@ -233,6 +370,7 @@ class IncomeController extends Controller {
 	 * @param Income $income
 	 *
 	 * @return Response
+	 * @throws Exception
 	 */
 	public function destroy( Income $income ): Response {
 		$income->delete();
@@ -254,20 +392,21 @@ class IncomeController extends Controller {
 			'descriptions' => "",
 			'data_records' => array_merge( json_decode( json_encode( $income ), true ), [ 'account_balance' => $bankAccount->balance ] ),
 		] );
+
 		return response()->noContent();
 	}
 
 
-	public function exportIncomeCsv() {
+	public function exportIncomeCsv(): BinaryFileResponse {
 		$timestamp = now()->format( 'YmdHis' );
-		$filename  = "incomes_{$timestamp}.csv";
+		$filename  = "incomes_$timestamp.csv";
 
 		$headers = [
 			'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
 			,
 			'Content-type'        => 'text/csv'
 			,
-			'Content-Disposition' => "attachment; filename=\"{$filename}\""
+			'Content-Disposition' => "attachment; filename=\"$filename\""
 			,
 			'Expires'             => '0'
 			,
