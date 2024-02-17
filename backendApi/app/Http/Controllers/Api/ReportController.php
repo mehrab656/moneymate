@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ExpenseReportResource;
 use App\Http\Resources\IncomeReportResource;
+use App\Http\Resources\IncomeResource;
 use App\Http\Resources\InvestmentReportResource;
 use App\Http\Resources\InvestmentResource;
 use App\Models\Expense;
@@ -12,6 +13,7 @@ use App\Models\Income;
 use App\Models\Investment;
 use App\Models\User;
 use Carbon\Carbon;
+use DateTime;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -232,6 +234,80 @@ class ReportController extends Controller {
 			'total_cash_out'     => fix_number_format( $total_cash_out ),
 			'current_balance'    => fix_number_format( $total_cash_in - $total_cash_out ),
 		] );
+	}
+
+	/**
+	 * @throws \Exception
+	 */
+	public function monthlyReport( Request $request ) {
+
+		$incomeCategoryId = $request->category_id;
+		$fromDate         = $request->from_date;
+		$toDate           = $request->to_date;
+		$category         = DB::table( 'categories' )->find( $incomeCategoryId );
+		if ( ! $category ) {
+			return response()->json( [
+				'message' => "Income Category not Found!",
+				'status'  => 404
+			] );
+		}
+		$sector = DB::table( 'sectors' )->find( $category->sector_id );
+
+
+		if ( ! $sector ) {
+			return response()->json( [
+				'message' => "This income Category is not associated with any sector!",
+				'status'  => 404
+			] );
+		}
+
+		if ( strtotime( $fromDate ) < strtotime( $sector->contract_start_date ) ) {
+			return response()->json( [
+				'message' => "$sector->name contract has been started from $sector->contract_start_date. So date can't be found from submitted date.",
+				'status'  => 404
+			] );
+		}
+		if ( strtotime( $toDate ) > strtotime( $sector->contract_end_date ) ) {
+			return response()->json( [
+				'message' => "$sector->name contract will end on $sector->contract_end_date. So date can't be found after this contract end date.",
+				'status'  => 404
+			] );
+		}
+
+		$incomes = DB::table( 'incomes' )->selectRaw( 'amount,income_type,checkin_date,checkout_date,reference,date as income_date, description' )
+		             ->where( 'category_id', '=', $incomeCategoryId )
+		             ->whereBetween( 'date', [
+			             $fromDate,
+			             $toDate
+		             ] )
+		             ->get();
+
+		$sector_contract_month = ( new DateTime( $sector->contract_start_date ) )->diff( new DateTime( date( 'Y-m-d', strtotime( "+1 day", strtotime( $sector->contract_end_date ) ) ) ) );
+		$month                 = ( ( $sector_contract_month->y ) * 12 ) + ( $sector_contract_month->m );
+
+		$expense = DB::table( 'expenses' )->selectRaw( 'COALESCE(sum(amount), 0) as amount, categories.name' )
+		             ->join( 'categories', 'expenses.category_id', '=', 'categories.id' )
+		             ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
+		             ->whereBetween( 'date', [ $fromDate, $toDate ] )
+		             ->whereNot( 'categories.name', 'LIKE', '%rent%' )
+		             ->where( 'sector_id', '=', $category->sector_id )
+		             ->groupBy( [ 'categories.name' ] )->get();
+
+		$expense[] = (object) [
+			'amount' => $month > 0 ? round($sector->rent / $month,2) : 0,
+			'name'   => 'Rent'
+		];
+
+		return response()->json( [
+			'expenses'     => $expense,
+			'incomes'      => $incomes,
+			'sector'       => $sector,
+			'status'       => 200,
+			'length'       => max( count( $incomes ), count( $expense->toArray() ) ),
+			'totalIncome'  => fix_number_format($incomes->sum( 'amount' )),
+			'totalExpense' => fix_number_format($expense->sum( 'amount' ))
+		] );
+
 	}
 }
 

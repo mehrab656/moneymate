@@ -78,7 +78,6 @@ export default function OverallReport() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // setOverAllReport(initialState);
         getOverallReports();
     };
     const resetFilterParameter = () => {

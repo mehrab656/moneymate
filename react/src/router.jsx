@@ -35,6 +35,7 @@ import InvestmentPlanForm from "./views/InvestmentPlanForm.jsx";
 import OverallReport from "./views/OverallReport";
 import Sectors from "./views/Sectors/Sectors.jsx";
 import SectorCreate from "./views/Sectors/SectorCreate.jsx";
+import MonthlyReport from "./views/MonthlyReport.jsx";
 
 const router = createBrowserRouter([
 
@@ -196,6 +197,10 @@ const router = createBrowserRouter([
             {
                 path: '/all-report',
                 element: <OverallReport/>
+            },
+            {
+                path: '/monthly-report',
+                element: <MonthlyReport/>
             },
 
             {

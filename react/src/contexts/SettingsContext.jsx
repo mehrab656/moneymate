@@ -39,7 +39,6 @@ const SettingsProvider = ({children}) => {
                 })
                 .catch((error) => {
                 }).finally(() => {
-                setLoading(false);
             });
         }
 

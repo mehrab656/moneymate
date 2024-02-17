@@ -102,9 +102,6 @@ export default function IncomeReport() {
     return (
         <>
             <MainLoader loaderVisible={loading}/>
-            <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
-                <h1 className="title-text mb-0">Income Report</h1>
-            </div>
             <WizCard className="animated fadeInDown wiz-card-mh">
                 <div className="row">
                     <form onSubmit={handleIncomeFilterSubmit}>
@@ -159,8 +156,6 @@ export default function IncomeReport() {
                         </div>
                     </form>
                 </div>
-
-                <br/><br/>
                 <div className="row">
                     <div className="table-responsive-sm">
                         <table className="table table-bordered custom-table">

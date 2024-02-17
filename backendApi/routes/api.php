@@ -129,6 +129,7 @@ Route::middleware( 'auth:sanctum' )->group( function () {
 	Route::get( '/report/expense', [ ReportController::class, 'expenseReport' ] );
 	Route::get( '/report/investment', [ ReportController::class, 'investmentReport' ] );
 	Route::get( '/report/over-all', [ ReportController::class, 'overall' ] );
+	Route::get( '/report/get-monthly-report', [ ReportController::class, 'monthlyReport' ] );
 
 
 	// Debt Api

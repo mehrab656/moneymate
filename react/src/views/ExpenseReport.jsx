@@ -24,8 +24,8 @@ export default function ExpenseReport() {
     const [endDate, setEndDate] = useState(null);
     const [expenseCategories, setExpenseCategories] = useState([]);
     const [sectors, setSectors] = useState([]);
-    const [selectedCategoryId, setSelectedCategoryId] = useState('');
     const [selectedSectorId, setSelectedSectorId] = useState('');
+    const [selectedCategoryId, setSelectedCategoryId] = useState('');
     const [totalExpense, setTotalExpense] = useState(parseFloat(0).toFixed(2));
     const [activeModal, setActiveModal] = useState('')
     const [modalData, setModalData] = useState({
@@ -74,7 +74,7 @@ export default function ExpenseReport() {
                 setSectors(data.sectors);
             }).catch(error => {
             console.warn('Error Loading sectors: ', error);
-        })
+        });
     }, [setExpenseCategories]);
 
     const handleCloseModal = () => {
