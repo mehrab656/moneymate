@@ -70,8 +70,8 @@ class ExpenseController extends Controller {
 
 		if ( $bankAccount->balance < $request->amount ) {
 			return response()->json( [
-				'message'       => 'Insufficient amount to make this expense',
-			],400 );
+				'message' => 'Insufficient amount to make this expense',
+			], 400 );
 		}
 
 
@@ -82,8 +82,8 @@ class ExpenseController extends Controller {
 			$budget = Budget::find( $budgetCategory->budget_id );
 			if ( $budget && $expense['amount'] > $budget->amount ) {
 				return response()->json( [
-					'message'       => 'There is no sufficient budget for this category',
-				],400 );
+					'message' => 'There is no sufficient budget for this category',
+				], 400 );
 			}
 		}
 
@@ -175,10 +175,19 @@ class ExpenseController extends Controller {
 	 *
 	 * @return JsonResponse
 	 */
-	public function categories(): JsonResponse {
-		$categories = Category::where( 'type', 'expense' )->get();
+	public function categories( Request $request ): JsonResponse {
 
-		return response()->json( [ 'categories' => $categories ] );
+		$sectorID   = $request->sector_id;
+
+		$categories = DB::table( 'categories' )
+		                ->where( 'type', '=', 'expense' );
+
+		if ( $sectorID ) {
+			$sectorID   = abs( $sectorID );
+			$categories = $categories->where( 'sector_id', '=', $sectorID );
+		}
+
+		return response()->json( [ 'categories' => $categories->get() ] );
 	}
 
 

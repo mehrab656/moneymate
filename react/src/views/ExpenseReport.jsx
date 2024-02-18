@@ -60,14 +60,18 @@ export default function ExpenseReport() {
         setShowModal(true);
     }
     useEffect(() => {
-        axiosClient.get('/expense-categories')
+        axiosClient.get('/expense-categories', {
+            params: {sector_id: selectedSectorId ? selectedSectorId : null}
+        })
             .then(({data}) => {
                 setExpenseCategories(data.categories);
             })
             .catch(error => {
                 console.error('Error loading expense categories:', error);
-                // handle error, e.g., show an error message to the user
             });
+    }, [selectedSectorId]);
+
+    useEffect(() => {
 
         axiosClient.get('/sectors-list')
             .then(({data}) => {
@@ -75,7 +79,8 @@ export default function ExpenseReport() {
             }).catch(error => {
             console.warn('Error Loading sectors: ', error);
         });
-    }, [setExpenseCategories]);
+
+    },[])
 
     const handleCloseModal = () => {
         setActiveModal('');
@@ -257,8 +262,8 @@ export default function ExpenseReport() {
 
                                         <tfoot>
                                         <tr>
-                                            <td className={'text-center fw-bold'} colSpan={3}>Total Expense</td>
-                                            <td className={'text-end fw-bold'}>{default_currency + ' ' + parseFloat(totalExpense).toFixed(2)}</td>
+                                            <td className={'text-center fw-bold'} colSpan={2}>Total Expense</td>
+                                            <td className={'text-end fw-bold'} colSpan={2}>{default_currency + ' ' + totalExpense}</td>
                                         </tr>
                                         </tfoot>
                                     </table>

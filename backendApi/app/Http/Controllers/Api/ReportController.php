@@ -14,6 +14,7 @@ use App\Models\Investment;
 use App\Models\User;
 use Carbon\Carbon;
 use DateTime;
+use http\Env\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -103,8 +104,10 @@ class ReportController extends Controller {
 		if ( $cat_id ) {
 			$query = $query->where( 'category_id', $cat_id );
 		}
+		if ( ! $sec_id && ! $cat_id ) {
+			$query = $query->limit( 50 );
+		}
 
-		//$response['sql'] = Str::replaceArray( '?', $query->getBindings(), $query->toSql() );//check the sql
 
 		$expensesRes = ExpenseReportResource::collection( $query->orderBy( 'date', 'DESC' )->get() );
 
@@ -239,12 +242,20 @@ class ReportController extends Controller {
 	/**
 	 * @throws \Exception
 	 */
-	public function monthlyReport( Request $request ) {
+	public function monthlyReport( Request $request ): JsonResponse {
 
 		$incomeCategoryId = $request->category_id;
-		$fromDate         = $request->from_date;
-		$toDate           = $request->to_date;
-		$category         = DB::table( 'categories' )->find( $incomeCategoryId );
+		$fromDate         = date( 'Y-m-d', strtotime( $request->from_date ) );
+		$toDate           = ( new DateTime( $fromDate ) )->format( 'Y-m-t' );
+
+		if ( ! $incomeCategoryId || ! $fromDate ) {
+			return response()->json( [
+				'status'  => 301,
+				'message' => "Income Sector or Month is missing!"
+			] );
+		}
+
+		$category = DB::table( 'categories' )->find( $incomeCategoryId );
 		if ( ! $category ) {
 			return response()->json( [
 				'message' => "Income Category not Found!",
@@ -294,20 +305,40 @@ class ReportController extends Controller {
 		             ->groupBy( [ 'categories.name' ] )->get();
 
 		$expense[] = (object) [
-			'amount' => $month > 0 ? round($sector->rent / $month,2) : 0,
+			'amount' => $month > 0 ? round( $sector->rent / $month, 2 ) : 0,
 			'name'   => 'Rent'
 		];
 
 		return response()->json( [
-			'expenses'     => $expense,
-			'incomes'      => $incomes,
-			'sector'       => $sector,
-			'status'       => 200,
-			'length'       => max( count( $incomes ), count( $expense->toArray() ) ),
-			'totalIncome'  => fix_number_format($incomes->sum( 'amount' )),
-			'totalExpense' => fix_number_format($expense->sum( 'amount' ))
+			'status'         => 200,
+			'expenses'       => $expense,
+			'incomes'        => $incomes,
+			'sector'         => $sector,
+			'summery'        => $this->monthlySummery( $incomes->sum( 'amount' ), $expense->sum( 'amount' ) ),
+			'length'         => max( count( $incomes ), count( $expense->toArray() ) ),
+			'reportingMonth' => date( "F,Y", strtotime( $fromDate ) ),
 		] );
+	}
 
+	public function monthlySummery( $income, $expense ): array {
+
+		if ( $income > $expense ) {
+			$net   = $income - $expense;
+			$title = 'profit';
+		} else {
+			$net   = $expense - $income;
+			$title = 'loss';
+		}
+
+		$percent = ( $net * 100 ) / $expense;
+
+		return [
+			'totalIncome'  => fix_number_format( $income ),
+			'totalExpense' => fix_number_format( $expense ),
+			'net'          => fix_number_format( $net ),
+			'title'        => $title,
+			'netPercent'   => round( $percent, 2 ) . "%",
+		];
 	}
 }
 

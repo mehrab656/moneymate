@@ -3,7 +3,6 @@ import axiosClient from "../axios-client.js";
 import WizCard from "../components/WizCard";
 import {SettingsContext} from "../contexts/SettingsContext";
 import MainLoader from "../components/MainLoader.jsx";
-import OverallReportTable from "./OverallReportTable.jsx";
 import DatePicker from "react-datepicker";
 import MonthlyReportTable from "../components/MonthlyReportTable.jsx";
 
@@ -12,27 +11,25 @@ const initialState = {
     expenses: [],
     sector: {},
     length: 0,
-    totalIncome: '',
-    totalExpense: '',
+    netIncome: '',
+    netIncomePercent: '',
+    reportingMonth: '',
+    summery: []
 }
 export default function MonthlyReport() {
 
     const [overAllReport, setOverAllReport] = useState(initialState);
     const [loading, setLoading] = useState(false);
-    const {applicationSettings, userRole} = useContext(SettingsContext);
+    const {applicationSettings} = useContext(SettingsContext);
     const [fromDate, setFromDate] = useState(null);
-    const [toDate, setToDate] = useState(null);
-    const [selectedFilterValue, setFilterValue] = useState('');
     const [incomeCategories, setIncomeCategories] = useState([]);
     const [selectedCategoryId, setSelectedCategoryId] = useState('');
-    const {
-        default_currency,
-    } = applicationSettings;
+    const [alertMessage, setAlertMessage] = useState(null);
 
     const [tableRow, setTableRow] = useState([]);
     var rows = [];
     const overallReportRow = () => {
-
+        rows = [];
         for (let i = 0; i < overAllReport.length; i++) {
             rows.push(<MonthlyReportTable income={overAllReport.incomes[i]}
                                           expense={overAllReport.expenses[i]}
@@ -43,15 +40,20 @@ export default function MonthlyReport() {
         setTableRow(rows);
     }
     const getOverallReports = () => {
+        console.log('foobar')
         setLoading(true);
         try {
             axiosClient.get('/report/get-monthly-report', {
-                params: {from_date: fromDate, to_date: toDate, category_id: selectedCategoryId},
+                params: {from_date: fromDate, category_id: selectedCategoryId},
             }).then(({data}) => {
-                setOverAllReport(data);
-                rows = [];
-                overallReportRow()
+                if (data.status === 404) {
+                    setAlertMessage(data.message);
+                }else{
+                    setAlertMessage(null)
+                }
 
+                setOverAllReport(data);
+                overallReportRow();
                 setLoading(false);
             })
         } catch (error) {
@@ -60,9 +62,12 @@ export default function MonthlyReport() {
         }
     };
 
+    useEffect(() => {
+        document.title = "Monthly Reports";
+        getOverallReports();
+    }, [overAllReport.length]);
 
     useEffect(() => {
-        document.title = "Over-All Reports";
         axiosClient.get('/income-categories')
             .then(({data}) => {
                 setIncomeCategories(data.categories);
@@ -71,7 +76,7 @@ export default function MonthlyReport() {
                 console.error('Error loading income categories:', error);
                 // handle error, e.g., show an error message to the user
             });
-    }, [setIncomeCategories]);
+    }, []);
 
 
     const handleSubmit = (e) => {
@@ -80,221 +85,144 @@ export default function MonthlyReport() {
         getOverallReports();
     };
     const resetFilterParameter = () => {
+        setLoading(true);
         setFromDate(null);
-        setToDate(null);
         setSelectedCategoryId('');
-        getOverallReports();
+        setOverAllReport(initialState);
+        setLoading(false);
     };
 
-
-    const setFilterDates = (filterValue) => {
-        if (filterValue) {
-            const fromDate = new Date();
-            if (filterValue < 30) {
-                fromDate.setDate(fromDate.getDate() - filterValue);
-            }
-            if (filterValue >= 30) {
-                fromDate.setMonth(fromDate.getMonth() - (filterValue / 30));
-            }
-            setFromDate(fromDate);
-            setToDate(new Date());
-        } else {
-            setFromDate(null);
-            setToDate(null);
-        }
-    }
     return (
         <>
             <MainLoader loaderVisible={loading}/>
             <WizCard className="animated fadeInDown">
-                <h1 className="title-text text-center">Overall Reports</h1>
-                <div className="row">
-                    <form onSubmit={handleSubmit}>
-                        <div className="col-3">
-                            <div className="form-group">
-                                <label className="custom-form-label" htmlFor="income_category">Income Category</label>
-                                <select
-                                    className="custom-form-control"
-                                    value={selectedCategoryId}
-                                    id="income-category"
-                                    name="income-category"
-                                    onChange={(event) => {
-                                        const value = event.target.value || '';
-                                        setSelectedCategoryId(value);
-                                    }}>
-                                    <option defaultValue>Filter by income category</option>
-                                    {incomeCategories.map(category => (
-                                        <option key={category.id} value={category.id}>
-                                            {category.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-                        <div className="col-3">
-                            <div className="form-group">
-                                <label className="custom-form-label" htmlFor="from_date">From</label>
-                                <DatePicker
-                                    className="custom-form-control"
-                                    id="from_date"
-                                    selected={fromDate}
-                                    onChange={(date) => setFromDate(date)}
-                                    dateFormat="yyyy-MM-dd"
-                                />
-                            </div>
-                        </div>
-                        <div className="col-3">
-                            <div className="form-group">
-                                <label className="custom-form-label" htmlFor="to_date">To</label>
-                                <DatePicker
-                                    className="custom-form-control"
-                                    id="to_date"
-                                    selected={toDate}
-                                    onChange={(date) => setToDate(date)}
-                                    dateFormat="yyyy-MM-dd"
-                                />
-                            </div>
-                        </div>
-                        <div className="col-3 mt-4">
-                            <button className={'btn-add right mt-2'} type="submit">Filter</button>
-                            <button className="btn btn-warning ml-2" onClick={resetFilterParameter}>Reset</button>
-                        </div>
-                    </form>
+                <div className="row mb-3">
+                    <table>
+                        <tbody>
+                        <tr style={{border:'hidden'}}>
+                            <td>
+                                <form onSubmit={handleSubmit}>
+                                    <select
+                                        className="custom-form-control"
+                                        value={selectedCategoryId}
+                                        id="income-category"
+                                        name="income-category"
+                                        onChange={(event) => {
+                                            const value = event.target.value || '';
+                                            setSelectedCategoryId(value);
+                                        }}>
+                                        <option defaultValue>Filter by income category</option>
+                                        {incomeCategories.map(category => (
+                                            <option key={category.id} value={category.id}>
+                                                {category.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </form>
+                            </td>
+                            <td>
+                                <form onSubmit={handleSubmit}>
+                                    <DatePicker
+                                        label={"Select Report Month"}
+                                        className="custom-form-control"
+                                        id="from_date"
+                                        selected={fromDate}
+                                        onChange={(date) => setFromDate(date)}
+                                        dateFormat="MM/yyyy"
+                                        showMonthYearPicker
+                                    />
+                                </form>
+                            </td>
+                            <td width={'5%'}>
+                                <form onSubmit={handleSubmit}>
+                                    <button className={'btn-add right'} type="submit">Filter</button>
+                                </form>
+                            </td>
+                            <td>
+                                <button className="btn btn-warning" onClick={resetFilterParameter}>Reset</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
+
+                {
+                    alertMessage &&
+                    <div className="alert alert-danger" role="alert">
+                        {alertMessage}
+                    </div>
+                }
+
                 <div className="row">
                     <div className="col-12">
                         <div className="responsive" style={{overflow: 'auto'}}>
                             <div className="table-responsive-sm">
-                                <table className="table table-bordered custom-table">
+                                <table className="table  table-bordered">
                                     <thead>
                                     <tr className={'text-center'}>
-                                        <th colSpan={6} className={'bg-info'}><b>Income</b></th>
-                                        <th colSpan={3} className={'bg-warning'}><b>Expense</b></th>
+                                        <td colSpan={11} className={'bg-info'}>
+                                            <b>{overAllReport.sector?.name ?? 'Monthly report'}</b></td>
+                                    </tr>
+                                    <tr className={'text-center'}>
+                                        <td colSpan={2}><b>{'Reporting Month'}</b></td>
+                                        <td colSpan={9}><b>{overAllReport.reportingMonth}</b></td>
+                                    </tr>
+                                    <tr className={'text-center'}>
+                                        <td colSpan={5}><b>{'Incomes'}</b></td>
+                                        <td colSpan={1} rowSpan={13} width={'5%'}></td>
+                                        <td colSpan={5}><b>{'Expenses'}</b></td>
                                     </tr>
                                     <tr>
-                                        <th style={{background: '#d8f1f3'}}>S/L</th>
-                                        <th style={{background: '#d8f1f3'}} colSpan={4}>Description</th>
-                                        <th style={{background: '#d8f1f3'}}>amount</th>
-                                        <th style={{background: '#ffdd78'}}>S/L</th>
-                                        <th style={{background: '#ffdd78'}}>Sector</th>
-                                        <th style={{background: '#ffdd78'}}>Amount</th>
+                                        <td><b>{'S/L'}</b></td>
+                                        <td colSpan={3}><b>{'Description'}</b></td>
+                                        <td><b>{'Amount'}</b></td>
+                                        <td><b>{'S/L'}</b></td>
+                                        <td colSpan={3}><b>{'Description'}</b></td>
+                                        <td><b>{'Amount'}</b></td>
                                     </tr>
                                     </thead>
-                                    {loading && (
-                                        <tbody>
-                                        <tr>
-                                            <td colSpan={8} className="text-center">
-                                                Loading...
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    )}
-                                    {!loading && (
-                                        <tbody>
-                                        {
-                                            tableRow
-                                        }
-                                        <tr>
+                                    <tbody>
+                                    {
+                                        tableRow
+                                    }
 
-                                            <td className={'table_total bg-warning'} colSpan={5}><b>Total</b></td>
-                                            <td className={'amount bg-warning'}><b>{overAllReport.totalIncome}</b></td>
-                                            <td className={'table_total bg-info'} colSpan={2}><b>Total</b></td>
-                                            <td className={'amount bg-info'}><b>{overAllReport.totalExpense}</b></td>
-                                        </tr>
-                                        </tbody>
-                                    )}
+                                    <tr>
+                                        <td className={'table_total bg-warning'} colSpan={3}><b>Total</b></td>
+                                        <td className={'amount bg-warning'} colSpan={2}>
+                                            <b>{overAllReport.summery?.totalIncome}</b></td>
+                                        <td style={{borderTop: "hidden"}}></td>
+                                        <td className={'table_total bg-info'} colSpan={3}><b>Total</b></td>
+                                        <td className={'amount bg-info'} colSpan={2}>
+                                            <b>{overAllReport.summery?.totalExpense}</b>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colSpan={6}></td>
+                                        {/*<td rowSpan={4}></td>*/}
+                                        <td colSpan={5} rowSpan={3} contentEditable={true}>Remarks:</td>
+                                    </tr>
+                                    <tr>
+                                        <td colSpan={4}><b>Total Cost of {overAllReport.reportingMonth}</b></td>
+                                        <td colSpan={2} className={'amount'}>
+                                            <b>{overAllReport.summery?.totalExpense}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td colSpan={4}><b>Total Income of {overAllReport.reportingMonth}</b></td>
+                                        <td colSpan={2} className={'amount'}><b>{overAllReport.summery?.totalIncome}</b>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colSpan={4}>
+                                            <b>Net {overAllReport.summery?.title} of {overAllReport.reportingMonth}</b>
+                                        </td>
+                                        <td colSpan={2} className={'amount'}><b>{overAllReport.summery?.net}</b></td>
+                                        <td colSpan={3}><b>Net {overAllReport.summery?.title}</b></td>
+                                        <td className={'amount'} colSpan={2}><b>{overAllReport.summery?.netPercent}</b>
+                                        </td>
+                                    </tr>
+                                    </tbody>
                                 </table>
                             </div>
-
-                            {/*<div className="table-responsive-sm">*/}
-                            {/*    <table className="table table-bordered custom-table">*/}
-                            {/*        <thead>*/}
-                            {/*        <tr className={'text-center'}>*/}
-                            {/*            <th colSpan={3} className={"bg-success text-white"}><b>Cash IN</b></th>*/}
-                            {/*            <th colSpan={3} style={{background: '#dc3545', color: '#ffffff'}}><b>Cash*/}
-                            {/*                OUT</b></th>*/}
-                            {/*            <th colSpan={4} rowSpan={2} className={'bg-success text-white'}><b>Final*/}
-                            {/*                Summary</b></th>*/}
-                            {/*        </tr>*/}
-                            {/*        <tr>*/}
-                            {/*            <th style={{background: '#5bd99e'}}>S/L</th>*/}
-                            {/*            <th style={{background: '#5bd99e'}}>Details</th>*/}
-                            {/*            <th style={{background: '#5bd99e'}}>Amount</th>*/}
-                            {/*            <th style={{background: '#f58c96'}}>S/L</th>*/}
-                            {/*            <th style={{background: '#f58c96'}}>Details</th>*/}
-                            {/*            <th style={{background: '#f58c96'}}>Amount</th>*/}
-                            {/*        </tr>*/}
-                            {/*        </thead>*/}
-                            {/*        {loading && (*/}
-                            {/*            <tbody>*/}
-                            {/*            <tr>*/}
-                            {/*                <td colSpan={8} className="text-center">*/}
-                            {/*                    Loading...*/}
-                            {/*                </td>*/}
-                            {/*            </tr>*/}
-                            {/*            </tbody>*/}
-                            {/*        )}*/}
-                            {/*        {!loading && (*/}
-                            {/*            <tbody>*/}
-                            {/*            <tr>*/}
-                            {/*                <td style={{background: '#5bd99e'}} className={'sl_class'}>1</td>*/}
-                            {/*                <td style={{background: '#5bd99e'}}>Investment</td>*/}
-                            {/*                <td style={{background: '#5bd99e'}}*/}
-                            {/*                    className={'amount'}>{overAllReport.totalInvestment}</td>*/}
-                            {/*                <td style={{background: '#f58c96'}} className={'sl_class'}>1</td>*/}
-                            {/*                <td style={{background: '#f58c96'}}>Expense</td>*/}
-                            {/*                <td style={{background: '#f58c96'}}*/}
-                            {/*                    className={'amount'}>{overAllReport.totalExpense}</td>*/}
-                            {/*                <td style={{background: '#d8f1f3'}} colSpan={2}>Current Balance</td>*/}
-                            {/*                <td style={{background: '#d8f1f3'}} colSpan={2}*/}
-                            {/*                    className={'amount'}>{overAllReport.current_balance}</td>*/}
-                            {/*            </tr>*/}
-                            {/*            <tr>*/}
-                            {/*                <td style={{background: '#5bd99e'}} className={'sl_class'}>2</td>*/}
-                            {/*                <td style={{background: '#5bd99e'}}>Income</td>*/}
-                            {/*                <td style={{background: '#5bd99e'}}*/}
-                            {/*                    className={'amount'}>{overAllReport.totalIncome}</td>*/}
-                            {/*                <td style={{background: '#f58c96'}} className={'sl_class'}>2</td>*/}
-                            {/*                <td style={{background: '#f58c96'}}>Lend to Others</td>*/}
-                            {/*                <td style={{background: '#f58c96'}}*/}
-                            {/*                    className={'amount'}>{overAllReport.lends}</td>*/}
-                            {/*                <td style={{background: '#d8f1f3'}} colSpan={2}>Account Receivable</td>*/}
-                            {/*                <td style={{background: '#d8f1f3'}} colSpan={2}*/}
-                            {/*                    className={'amount'}>{overAllReport.account_receivable}</td>*/}
-                            {/*            </tr>*/}
-                            {/*            <tr>*/}
-                            {/*                <td style={{background: '#5bd99e'}} className={'sl_class'}>3</td>*/}
-                            {/*                <td style={{background: '#5bd99e'}}>Refunded Amount</td>*/}
-                            {/*                <td style={{background: '#5bd99e'}}*/}
-                            {/*                    className={'amount'}>{overAllReport.refunded_amount}</td>*/}
-                            {/*                <td style={{background: '#f58c96'}} colSpan={3} rowSpan={2}></td>*/}
-                            {/*                <td style={{background: '#d8f1f3'}} colSpan={2}>Account Liability</td>*/}
-                            {/*                <td style={{background: '#d8f1f3'}} colSpan={2}*/}
-                            {/*                    className={'amount'}>{overAllReport.borrow}</td>*/}
-                            {/*            </tr>*/}
-                            {/*            <tr>*/}
-                            {/*                <td style={{background: '#5bd99e'}} className={'sl_class'}>4</td>*/}
-                            {/*                <td style={{background: '#5bd99e'}}>Loan</td>*/}
-                            {/*                <td style={{background: '#5bd99e'}}*/}
-                            {/*                    className={'amount'}>{overAllReport.borrow}</td>*/}
-                            {/*                <td style={{background: '#d8f1f3'}} colSpan={4} rowSpan={2}></td>*/}
-                            {/*            </tr>*/}
-                            {/*            <tr>*/}
-                            {/*                <td style={{background: '#d8f1f3'}}*/}
-                            {/*                    className={'table_total bg-success text-white'} colSpan={2}><b>Total</b>*/}
-                            {/*                </td>*/}
-                            {/*                <td style={{background: '#d8f1f3'}}*/}
-                            {/*                    className={'amount bg-success text-white'}>*/}
-                            {/*                    <b>{overAllReport.total_cash_in}</b></td>*/}
-                            {/*                <td style={{background: '#dc3545', color: '#ffffff'}}*/}
-                            {/*                    className={'table_total'} colSpan={2}><b>Total</b></td>*/}
-                            {/*                <td style={{background: '#dc3545', color: '#ffffff'}} className={'amount'}>*/}
-                            {/*                    <b>{overAllReport.total_cash_out}</b></td>*/}
-                            {/*            </tr>*/}
-                            {/*            </tbody>*/}
-                            {/*        )}*/}
-                            {/*    </table>*/}
-                            {/*</div>*/}
                         </div>
                     </div>
                 </div>

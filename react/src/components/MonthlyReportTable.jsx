@@ -2,14 +2,13 @@ import React from 'react';
 import {FaAirbnb, FaMoneyBillAlt} from "react-icons/fa";
 
 const MonthlyReportTable = ({income, expense, sectorName, sl}) => {
-    console.log(sectorName)
     return (
         <tr>
             {
                 income ?
                     <>
-                        <td className={'sl_class'} style={{background: '#d8f1f3'}}>{sl + 1}</td>
-                        <td colSpan={4} style={{background: '#d8f1f3'}}>{income.description}
+                        <td className={'sl_class'}>{sl + 1}</td>
+                        <td colSpan={3}>{income.description}
                             <div className={'sub-text'}>
                                 <a href="#" style={{textDecoration: "none", marginRight: 10}}>{income.income_type}</a>
                                 <a href="#" style={{textDecoration: "none", marginRight: 10}}>{
@@ -32,23 +31,24 @@ const MonthlyReportTable = ({income, expense, sectorName, sl}) => {
                                 }
                             </div>
                         </td>
-                        <td className={'amount'} style={{background: '#d8f1f3'}}>{income.amount}</td>
+                        <td className={'amount'}>{income.amount}</td>
                     </>
                     :
                     <>
-                        <td className={'sl_class'} colSpan={6} style={{background: '#d8f1f3'}}><b>-</b></td>
+                        <td className={'sl_class'} colSpan={5}><b>-</b></td>
                     </>
             }
+            <td style={{borderTop:"hidden",borderBottom:"hidden"}}> </td>
             {
                 expense ?
                     <>
-                        <td className={'sl_class'} style={{background: '#ffdd78'}}>{sl + 1}</td>
-                        <td style={{background: '#ffdd78'}}>{expense.name}</td>
-                        <td className={'amount'} style={{background: '#ffdd78'}}>{expense.amount}</td>
+                        <td className={'sl_class'}>{sl + 1}</td>
+                        <td colSpan={3}>{expense.name}</td>
+                        <td className={'amount'}>{expense.amount}</td>
                     </>
                     :
                     <>
-                        <td className={'sl_class'} colSpan={3} style={{background: '#ffdd78'}}><b>-</b></td>
+                        <td className={'sl_class'} colSpan={5}><b>-</b></td>
                     </>
             }
         </tr>
