@@ -23,7 +23,7 @@ export default function Expenses() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [showModal, setShowModal] = useState(false);
-
+    const baseURL= `${window.__APP_CONFIG__.VITE_APP_BASE_URL}/api`
     const [expense, setExpense] = useState({
         id: null,
         user_id: null,
@@ -163,11 +163,11 @@ export default function Expenses() {
             <MainLoader loaderVisible={loading}/>
 
             <WizCard className="animated fadeInDown">
-                <div class="row">
-                    <div class="col-3">
+                <div className="row">
+                    <div className="col-3">
                         <h1 className="title-text mb-0">Expense Histories</h1>
                     </div>
-                    <div class="col-7">
+                    <div className="col-7">
                     <div className="mb-4">
                             <input className="custom-form-control"
                                    type="text"
@@ -176,7 +176,7 @@ export default function Expenses() {
                                    onChange={(e) => setSearchTerm(e.target.value)}/>
                         </div>
                     </div>
-                    <div class="col-2">
+                    <div className="col-2">
                         <ExpenseExportButton/>
                         {userRole === 'admin' &&
                             <Link className="btn-add float-end" to="/expense/new"><FontAwesomeIcon icon={faMinus}/> Add
@@ -190,11 +190,11 @@ export default function Expenses() {
                         <tr className={'text-center'}>
                             <th>Date</th>
                             <th>Details</th>
-                            <th>Sector</th>
+                            {/*<th>Sector</th>*/}
                             <th>Amount</th>
                             <th>Refundable amount</th>
                             <th>Refunded amount</th>
-                            <th width="20%">Action</th>
+                            <th>Action</th>
 
                         </tr>
                         </thead>
@@ -218,9 +218,15 @@ export default function Expenses() {
                             ) : (
                                 filteredExpenses.map((expense) => (
                                     <tr className={'text-center'} key={expense.id}>
-                                        <td>{expense.date}</td>
-                                        <td className={'text-start'}>{expense.description}</td>
-                                        <td className={'text-start'}>{expense.category_name}</td>
+                                        <td><small>{expense.date}</small></td>
+                                        <td className={'text-start'}>{expense.description}
+                                            <div>
+                                                <small>
+                                                    <a href={`/categories`}>{expense.category_name}</a>
+                                                </small>
+                                            </div>
+                                        </td>
+                                        {/*<td className={'text-start'}>{expense.category_name}</td>*/}
                                         <td className={'amount'}>{default_currency + ' ' + expense.amount}</td>
                                         <td className={'amount'}>{default_currency + ' ' + expense.refundable_amount}</td>
                                         <td className={"amount text-" + expense.refunded_txt_clr}>{default_currency + ' ' + expense.refunded_amount}</td>

@@ -14,13 +14,11 @@ export default function IncomeReport() {
     const [incomeReport, setIncomeReport] = useState([]);
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
-
     const [incomeCategories, setIncomeCategories] = useState([]);
     const [selectedCategoryId, setSelectedCategoryId] = useState('');
     const [totalIncome, setTotalIncome] = useState(parseFloat(0).toFixed(2))
     const [activeModal, setActiveModal] = useState('')
     const [showModal, setShowModal] = useState(false);
-
     const [modalData, setModalData] = useState({
         id: null,
         user_id: null,
@@ -35,29 +33,18 @@ export default function IncomeReport() {
         attachment: ''
     });
 
-    console.log(modalData)
-
-
     const {applicationSettings} = useContext(SettingsContext);
     let {
         default_currency
     } = applicationSettings;
 
-    if (default_currency === undefined) {
-        default_currency = 'AED ';
-    }
-
     useEffect(() => {
         axiosClient.get('/income-categories')
             .then(({data}) => {
                 setIncomeCategories(data.categories);
-                // if(data?.categories.length>0){
-                //     setSelectedCategoryId(data?.categories[0].id)
-                // }
             })
             .catch(error => {
                 console.error('Error loading income categories:', error);
-                // handle error, e.g., show an error message to the user
             });
     }, [setIncomeCategories]);
 

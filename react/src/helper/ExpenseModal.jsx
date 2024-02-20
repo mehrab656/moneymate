@@ -1,5 +1,4 @@
 import {Col, Container, Modal, Row} from "react-bootstrap";
-import DownloadAttachment from "../components/DownloadAttachment.jsx";
 import React, {memo} from "react";
 
 

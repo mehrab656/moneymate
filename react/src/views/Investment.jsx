@@ -9,7 +9,7 @@ import {faEdit, faMinus, faTrash} from "@fortawesome/free-solid-svg-icons";
 import Pagination from "react-bootstrap/Pagination";
 import {SettingsContext} from "../contexts/SettingsContext.jsx";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
-import { Modal } from "react-bootstrap";
+import {Modal} from "react-bootstrap";
 import {Tooltip} from "react-tooltip";
 import MainLoader from "../components/MainLoader.jsx";
 
@@ -23,7 +23,7 @@ export default function Investment() {
     const [modalInvest, setModalInvest] = useState(false)
     const [showModal, setShowModal] = useState(false);
 
-    const [name, setName] = useState(null) 
+    const [name, setName] = useState(null)
 
     const {applicationSettings, userRole} = useContext(SettingsContext);
     const {
@@ -59,8 +59,6 @@ export default function Investment() {
                 setLoading(false);
             })
     }
-
-
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
@@ -76,14 +74,6 @@ export default function Investment() {
             </Pagination.Item>
         );
     }
-
-    // const filteredInvestments = investments.filter((investment) => {
-
-    //     return investment.investor_id.toLowerCase().includes(searchTerm.toLowerCase())
-    //         || investment.account_id.toLowerCase().includes(searchTerm.toLowerCase())
-    //         || investment.amount.toLowerCase().includes(searchTerm.toLowerCase())
-    // });
-
 
     const onDelete = (investment) => {
         Swal.fire({
@@ -114,10 +104,10 @@ export default function Investment() {
     };
 
     const actionParams = {
-        route:{
-            editRoute:'/investment/',
-            viewRoute:'',
-            deleteRoute:''
+        route: {
+            editRoute: '/investment/',
+            viewRoute: '',
+            deleteRoute: ''
         },
     }
 
@@ -133,12 +123,13 @@ export default function Investment() {
 
     return (
         <div>
-        <MainLoader loaderVisible={loading} />
+            <MainLoader loaderVisible={loading}/>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Investments Histories</h1>
-                {userRole ==='admin' &&   <Link className="btn-add align-right mr-3" to="/investments/new"><FontAwesomeIcon icon={faMinus}/> Add
-                    New</Link>}
-              
+                {userRole === 'admin' &&
+                    <Link className="btn-add align-right mr-3" to="/investments/new"><FontAwesomeIcon
+                        icon={faMinus}/> Add
+                        New</Link>}
                 <ExpenseExportButton/>
             </div>
 
@@ -159,8 +150,7 @@ export default function Investment() {
                             <th>Amount</th>
                             <th>Date</th>
                             <th>Added By</th>
-                          <th width="20%">Action</th>
-                            
+                            <th>Action</th>
                         </tr>
                         </thead>
                         {loading && (
@@ -183,7 +173,7 @@ export default function Investment() {
                             ) : (
                                 investments.map((investment) => (
                                     <tr className={'text-center'} key={investment.id}>
-                                        <td>{initialName(investment.investor_name)+'-'+investment.id}</td>
+                                        <td>{initialName(investment.investor_name) + '-' + investment.id}</td>
 
                                         <td>
                                             <a
@@ -193,7 +183,7 @@ export default function Investment() {
                                             </a>
                                             <Tooltip id="investments-note"/>
                                         </td>
-                                        <td>{default_currency+ ' '+ investment.amount}</td>
+                                        <td>{default_currency + ' ' + investment.amount}</td>
                                         <td>{investment.investment_date}</td>
                                         <td>{investment.added_by_name}</td>
                                         {/* <td>
@@ -206,11 +196,11 @@ export default function Investment() {
                                         </td> */}
 
                                         <td>
-                                            <ActionButtonHelpers 
-                                              module={investment}
-                                              showModule={showInvestment}
-                                              deleteFunc={onDelete}
-                                              params={actionParams}
+                                            <ActionButtonHelpers
+                                                module={investment}
+                                                showModule={showInvestment}
+                                                deleteFunc={onDelete}
+                                                params={actionParams}
                                             />
                                         </td>
                                     </tr>
@@ -238,7 +228,6 @@ export default function Investment() {
             </WizCard>
 
 
-            
             <Modal show={showModal} centered onHide={handleCloseModal} className="custom-modal">
                 <Modal.Header closeButton>
                     <Modal.Title>
@@ -272,10 +261,10 @@ export default function Investment() {
                                 <strong>Date :</strong>
                             </td>
                             <td>
-                              {modalInvest?.investment_date}
+                                {modalInvest?.investment_date}
                             </td>
                         </tr>
-                       
+
                         </tbody>
                     </table>
                 </Modal.Body>

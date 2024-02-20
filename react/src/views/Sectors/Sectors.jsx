@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import {Link, useNavigate} from "react-router-dom";
 import Pagination from "react-bootstrap/Pagination";
 import WizCard from "../../components/WizCard.jsx";
-import { Modal, Table} from "react-bootstrap";
+import {Modal, Table} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye, faEyeSlash, faPlus} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../../contexts/SettingsContext.jsx";
@@ -21,7 +21,6 @@ export default function Sectors() {
     const [sectors, setSectors] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const navigate = useNavigate();
     const [totalCount, setTotalCount] = useState(0);
     const [modalSector, setModalSector] = useState(false);
     const [showModal, setShowModal] = useState(false);
@@ -29,7 +28,7 @@ export default function Sectors() {
     const [showHelperModelType, setShowHelperModelType] = useState('');
     const pageSize = num_data_per_page;
     const totalPages = Math.ceil(totalCount / pageSize);
-    const [activeElectricityModal, setActiveElectricityModal] = useState('');
+    const [activeElectricityModal, setActiveElectricityModal] = useState(null);
     const [incomeExpense, setIncomeExpense] = useState({
         income: 0,
         expense: 0
@@ -189,10 +188,17 @@ export default function Sectors() {
                         icon: data.status === 200 ? 'success' : 'error',
                     });
                     // window.location.reload();
-                }).catch(e)
-                {
-                    console.warn(e)
-                }
+                }).catch(err => {
+                    console.log({err})
+                    if (err.response) {
+                        Toast.fire({
+                            icon: "error",
+                            title: err.response.data.message,
+                        });
+                    }
+
+                })
+
             }
         })
     }
@@ -227,22 +233,10 @@ export default function Sectors() {
     }
 
     const showHelperModels = (sector, index, type = 'electricity') => {
+        setActiveElectricityModal(index);
         setSector(sector);
         setShowHelperModelType(type)
         setShowHelperModel(true);
-
-        // if (type === 'internet') {
-        //     setActiveInternetModal(index);
-        //     setShowInternetModal(true);
-        // }
-        // if (type === 'electricity') {
-        //     setActiveElectricityModal(index);
-        //
-        // }
-        // if (type === 'cheque') {
-        //     setActiveChequeModal(index);
-        //     setShowChequeModal(true);
-        // }
     }
 
     return (
@@ -276,7 +270,7 @@ export default function Sectors() {
                             <th>Electricity next payment</th>
                             <th>Internet next payment</th>
                             <th>Cheque next payment</th>
-                            <th width='20%'>Action</th>
+                            <th>Action</th>
                         </tr>
                         </thead>
                         {loading && (
@@ -321,7 +315,7 @@ export default function Sectors() {
                                                         <a onClick={() => showHelperModels(sector, index)}
                                                            style={{cursor: "pointer"}}
                                                            className={index === activeElectricityModal ? 'text-primary fa-pull-right ' : 'text-muted fa-pull-right'}
-                                                            data-tooltip-id='dewa-account'
+                                                           data-tooltip-id='dewa-account'
                                                            data-tooltip-content={"Show this electricity details"}>
                                                             <span className="aside-menu-icon">
                                                                 <FontAwesomeIcon
@@ -335,7 +329,7 @@ export default function Sectors() {
                                                         <a onClick={() => showHelperModels(sector, index, 'internet')}
                                                            style={{cursor: "pointer"}}
                                                            className={index === activeElectricityModal ? 'text-primary fa-pull-right ' : 'text-muted fa-pull-right'}
-                                                            data-tooltip-id='internet-account'
+                                                           data-tooltip-id='internet-account'
                                                            data-tooltip-content={"Show this internet details"}>
                                                     <span className="aside-menu-icon">
                                                         <FontAwesomeIcon
@@ -350,8 +344,7 @@ export default function Sectors() {
                                                                 <a
                                                                     className={"text-" + compareDates(nextPayment.date)}
                                                                     data-tooltip-id='next-payment-date'
-                                                                    data-tooltip-content={`Payment Due: ${default_currency} ${nextPayment.amount}`}
-                                                                >
+                                                                    data-tooltip-content={`Payment Due: ${default_currency} ${nextPayment.amount}`}>
                                                                     {monthNames[new Date(nextPayment.date).getMonth()] + " " + dateOrdinal(new Date(nextPayment.date).getDate()) + ", " + new Date(nextPayment.date).getFullYear()}
                                                                 </a>
                                                                 <Tooltip id='next-payment-date'/>
@@ -361,8 +354,6 @@ export default function Sectors() {
                                                                        style={{cursor: "pointer"}}>
                                                                         pay
                                                                     </a>
-                                                                    // <Button onClick={() => handlePay(nextPayment)}
-                                                                    //         className="ml-3 btn-sm">Paid</Button>
                                                                 }
                                                             </> :
                                                             <>
@@ -410,148 +401,91 @@ export default function Sectors() {
                 currency={default_currency}
                 modalType={showHelperModelType}
                 Toast={Toast}
-                navigation = {useNavigate}
-                loadingMethod = {setLoading}
+                navigation={useNavigate}
+                loadingMethod={setLoading}
             />
 
             <Modal size="lg" show={showModal} centered onHide={handleCloseModal} className="custom-modal lg">
                 <Modal.Header closeButton>
                     <Modal.Title>
-                        <span>Sector Details</span>
+                        <span>{modalSector?.name}</span>
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <h4 className="mt-3 mb-3">Sector Details </h4>
-                    <table className='table table-bordered table-striped mb-0'>
+                    <table className='table table-bordered border-primary '>
                         <tbody>
                         <tr>
-                            <td width='50%'>
-                                <strong>Sector :</strong>
-                            </td>
-                            <td> {modalSector?.name}</td>
+                            <td>Rent:<strong>{modalSector?.rent}</strong></td>
+                            <td>Contact Start:<strong> {modalSector?.contract_start_date}</strong></td>
+                            <td>Contact:<strong> {modalSector?.contract_end_date}</strong></td>
                         </tr>
                         <tr>
-                            <td width='50%'>
-                                <strong>Contact Start Date :</strong>
-                            </td>
-                            <td> {modalSector?.contract_start_date}</td>
+                            <td rowSpan={3}>DEWA account</td>
+                            <td>AC/No:<strong> {modalSector?.el_acc_no}</strong></td>
+                            <td>Business Num.:<strong> {modalSector?.el_business_acc_no}</strong></td>
                         </tr>
                         <tr>
-                            <td width='50%'>
-                                <strong>Contact End Date :</strong>
-                            </td>
-                            <td> {modalSector?.contract_end_date}</td>
+                            <td>Premises:<strong> {modalSector?.el_premises_no}</strong></td>
+                            <td>Billing Date:<strong> {modalSector?.el_billing_date}</strong></td>
                         </tr>
-                        </tbody>
-                    </table>
+                        <tr>
+                            <td colSpan={2}>Note:</td>
+                        </tr>
+                        <tr>
+                            <td rowSpan={2}>Internet</td>
+                            <td>Acc No:<strong> {modalSector?.internet_acc_no}</strong></td>
+                            <td>Billing Date:<strong> {modalSector?.internet_billing_date}</strong></td>
+                        </tr>
+                        <tr>
+                            <td colSpan={2}>{'Note: ' + modalSector?.int_note}</td>
+                        </tr>
 
-                    <h4 className="mt-3 mb-3">DEWA Details </h4>
-                    <table className='table table-bordered table-striped mb-0'>
-                        <tbody>
                         <tr>
-                            <td width='50%'>
-                                <strong>Electricity Acc No. :</strong>
-                            </td>
-                            <td> {modalSector?.el_acc_no}</td>
+                            <td rowSpan={2}>{' Income and Expense'}</td>
+                            <td colSpan={2}>Total
+                                Income: <strong>{default_currency + ' ' + incomeExpense.income}</strong></td>
                         </tr>
                         <tr>
-                            <td width='50%'>
-                                <strong>Electricity Business Acc No:</strong>
+                            <td colSpan={2}>
+                                Total Expense: <strong>{default_currency + ' ' + incomeExpense.expense}</strong>
                             </td>
-                            <td> {modalSector?.el_business_acc_no}</td>
                         </tr>
                         <tr>
-                            <td width='50%'>
-                                <strong>Electricity Billing Date :</strong>
-                            </td>
-                            <td> {modalSector?.el_billing_date}</td>
+                            <td colSpan={3}><strong>Payment Information</strong></td>
                         </tr>
-                        <tr>
-                            <td width='50%'>
-                                <strong>Electricity Premises No. :</strong>
-                            </td>
-                            <td> {modalSector?.el_premises_no}</td>
-                        </tr>
-                        <tr>
-                            <td width='50%'>
-                                <strong>Note:</strong>
-                            </td>
-                            <td> {modalSector?.el_note}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-                    <h4 className="mt-3 mb-3">Internet Details </h4>
-                    <table className='table table-bordered table-striped mb-0'>
-                        <tbody>
-                        <tr>
-                            <td width='50%'>
-                                <strong>Internet Acc No:</strong>
-                            </td>
-                            <td> {modalSector?.internet_acc_no}</td>
-                        </tr>
-                        <tr>
-                            <td width='50%'>
-                                <strong>Internet Billing Date:</strong>
-                            </td>
-                            <td> {modalSector?.internet_billing_date}</td>
-                        </tr>
-                        <tr>
-                            <td width='50%'>
-                                <strong>Note:</strong>
-                            </td>
-                            <td> {modalSector?.int_note}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-                    <h4 className="mt-3 mb-3">Income and Expense: </h4>
-                    <table className='table table-bordered table-striped mb-0'>
-                        <tbody>
-                        <tr>
-                            <td width='50%'>
-                                <strong>Total Income:</strong>
-                            </td>
-                            <td> {default_currency + ' ' + incomeExpense.income}</td>
-                        </tr>
-                        <tr>
-                            <td width='50%'>
-                                <strong>Total Expense:</strong>
-                            </td>
-                            <td> {default_currency + ' ' + incomeExpense.expense}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    <h4 className="mt-3 mb-3">Payment Info </h4>
-                    <Table responsive striped bordered hover variant="light">
-
-                        <thead>
                         <tr>
                             <th>#</th>
                             <th>Payment No.</th>
                             <th>Amount</th>
-                            <th>Date</th>
-                            <th>Type</th>
-                            <th>Status</th>
                         </tr>
-                        </thead>
-                        <tbody>
                         {modalSector?.payments && modalSector?.payments.length > 0 && modalSector?.payments.map((data, i) => {
-                            return (
-                                <tr key={data.id}>
+                            return (<tr key={data.id}>
                                     <td>{i + 1}</td>
-                                    <td>{data?.payment_number}</td>
-                                    <td>{default_currency + ' ' + data?.amount}</td>
-                                    <td>{data?.date}</td>
-                                    <td>{data?.type}</td>
-                                    {data?.status === 'paid' ? <td style={{color: 'green'}}>{data?.status}</td> :
-                                        <td style={{color: 'red'}}>{data?.status}</td>}
-                                </tr>
-                            )
-                        })}
+                                    <td >
+                                        {data?.payment_number}
+                                        <ul style={{display:"inline"}}>
+                                            ( <a href="#" style={{
+                                                textDecoration: "none",
+                                                marginRight: 10
+                                            }}>{data.date}</a>
 
+                                            <a href="#" style={{
+                                                textDecoration: "none",
+                                                marginRight: 10
+                                            }}>{data?.type}</a>)
+                                        </ul>
+                                    </td>
+                                <td>{default_currency + ' ' + data?.amount}
+                                    <div><a href="#" style={{
+                                        textDecoration: "none",
+                                        float: "right",
+                                        color: data?.status === 'paid' ? 'green' : 'red'
+                                    }}>{data?.status}</a></div>
+                                </td>
+                            </tr>)
+                        })}
                         </tbody>
-                    </Table>
+                    </table>
                 </Modal.Body>
                 <Modal.Footer>
                     <button className='btn btn-primary' onClick={handleCloseModal}>

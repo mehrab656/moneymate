@@ -5,22 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ExpenseReportResource;
 use App\Http\Resources\IncomeReportResource;
-use App\Http\Resources\IncomeResource;
-use App\Http\Resources\InvestmentReportResource;
-use App\Http\Resources\InvestmentResource;
 use App\Models\Expense;
 use App\Models\Income;
-use App\Models\Investment;
-use App\Models\User;
 use Carbon\Carbon;
 use DateTime;
-use http\Env\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-
 
 class ReportController extends Controller {
 	public function incomeReport( Request $request ): JsonResponse {
@@ -47,6 +38,7 @@ class ReportController extends Controller {
 		// Query the incomes based on the date range
 		$incomes = Income::where( 'date', '>=', $startDate )
 		                 ->where( 'date', '<=', $endDate )
+		                 ->whereNull( 'deleted_at' )
 		                 ->whereHas( 'category', function ( $query ) {
 			                 $query->where( 'type', 'income' );
 		                 } );
@@ -57,7 +49,7 @@ class ReportController extends Controller {
 		// Return the income report as a collection of IncomeReportResource
 		$incomesRes = IncomeReportResource::collection( $incomes->orderBy( 'date', 'DESC' )->get() );
 		$sum        = 0;
-		foreach ( $incomesRes as $key => $income ) {
+		foreach ( $incomesRes as $income ) {
 			if ( isset( $income->amount ) ) {
 				$sum += $income->amount;
 			}
@@ -90,7 +82,8 @@ class ReportController extends Controller {
 		}
 
 		$query = Expense::select( 'expenses.*' )->join( 'categories', 'categories.id', '=', 'expenses.category_id' )
-		                ->where( 'type', 'expense' );
+		                ->where( 'type', 'expense' )
+		                ->whereNull( 'expenses.deleted_at' );
 
 		if ( $startDate || $endDate ) {
 			$endDate   = Carbon::parse( $endDate )->format( 'Y-m-d' );
@@ -117,10 +110,9 @@ class ReportController extends Controller {
 		] );
 	}
 
-	public function investmentReport( Request $request ) {
+	public function investmentReport( Request $request ): JsonResponse {
 		$startDate = $request->start_date;
 		$endDate   = $request->end_date;
-
 
 		if ( $startDate || $endDate ) {
 			$endDate   = Carbon::parse( $endDate )->format( 'Y-m-d' );
@@ -128,10 +120,10 @@ class ReportController extends Controller {
 		}
 		if ( $startDate && ! $endDate ) {
 			$endDate = Carbon::now()->toDateString();
-
 		}
 		$investments = DB::table( 'investments' )->selectRaw( 'sum(amount) as amount, investor_id, name' )
 		                 ->join( 'users', 'investments.investor_id', '=', 'users.id' )
+		                 ->whereNull( 'investments.deleted_at' )
 		                 ->groupBy( [ 'investor_id', 'name' ] );
 
 		$totalInvestment = DB::table( 'investments' );
@@ -166,46 +158,57 @@ class ReportController extends Controller {
 		$lends  = DB::table( 'debts' )->whereBetween( 'date', [
 			$startDate,
 			$endDate
-		] )->where( 'type', '=', 'lend' )->sum( 'amount' );
+		] )->where( 'type', '=', 'lend' )
+		            ->whereNull( 'debts.deleted_at' )
+		            ->sum( 'amount' );
 		$borrow = DB::table( 'debts' )->whereBetween( 'date', [
 			$startDate,
 			$endDate
-		] )->where( 'type', '=', 'borrow' )->sum( 'amount' );
+		] )->where( 'type', '=', 'borrow' )
+		            ->whereNull( 'debts.deleted_at' )
+		            ->sum( 'amount' );
 
 		$refund = DB::table( 'expenses' )
 		            ->where( 'refundable_amount', '>', 0 )
+		            ->whereNull( 'deleted_at' )
 		            ->whereBetween( 'date', [ $startDate, $endDate ] );
 
 		$investments = DB::table( 'investments' )->selectRaw( 'sum(amount) as amount, investor_id, name' )
 		                 ->join( 'users', 'investments.investor_id', '=', 'users.id' )
 		                 ->whereBetween( 'investment_date', [ $startDate, $endDate ] )
-		                 ->groupBy( [ 'investor_id', 'name' ] )->get();
+		                 ->whereNull( 'investments.deleted_at' )
+		                 ->groupBy( [ 'investor_id', 'name' ] )
+		                 ->get();
 
 		$incomes = DB::table( 'incomes' )->selectRaw( 'sum(amount) as amount, category_id, name' )
 		             ->join( 'categories', 'incomes.category_id', '=', 'categories.id' )
 		             ->whereBetween( 'date', [ $startDate, $endDate ] )
-		             ->groupBy( [ 'category_id', 'name' ] )->get();
+		             ->whereNull( 'incomes.deleted_at' )
+		             ->groupBy( [ 'category_id', 'name' ] )
+		             ->get();
 
 		$expense = DB::table( 'expenses' )->selectRaw( 'COALESCE(sum(amount), 0) as amount, sector_id, sectors.name' )
 		             ->join( 'categories', 'expenses.category_id', '=', 'categories.id' )
 		             ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
 		             ->whereBetween( 'date', [ $startDate, $endDate ] )
-		             ->groupBy( [ 'sector_id', 'sectors.name' ] )->get();
+		             ->whereNull( 'expenses.deleted_at' )
+		             ->groupBy( [ 'sector_id', 'sectors.name' ] )
+		             ->get();
 
 		$totalInvestment = DB::table( 'investments' )->whereBetween( 'investment_date', [
 			$startDate,
 			$endDate
-		] )->sum( 'amount' );
+		] )->whereNull( 'deleted_at' )->sum( 'amount' );
 
 		$totalIncome = DB::table( 'incomes' )->whereBetween( 'date', [
 			$startDate,
 			$endDate
-		] )->sum( 'amount' );
+		] )->whereNull( 'deleted_at' )->sum( 'amount' );
 
 		$totalExpense = DB::table( 'expenses' )->whereBetween( 'date', [
 			$startDate,
 			$endDate
-		] )->sum( 'amount' );
+		] )->whereNull( 'deleted_at' )->sum( 'amount' );
 
 		$refundable_amount = $refund->sum( 'refundable_amount' );
 		$refunded_amount   = $refund->sum( 'refunded_amount' );
@@ -228,9 +231,7 @@ class ReportController extends Controller {
 			'refundable_amount'  => fix_number_format( $refundable_amount ),
 			'refunded_amount'    => fix_number_format( $refunded_amount ),
 			'market_receivable'  => fix_number_format( $refundable_amount - $refunded_amount ),
-			//only return from market
 			'account_receivable' => fix_number_format( $market_receivable + $lends ),
-			// return from market and lend to others
 			'lends'              => fix_number_format( abs( $lends ) ),
 			'borrow'             => fix_number_format( abs( $borrow ) ),
 			'total_cash_in'      => fix_number_format( $total_cash_in ),
@@ -264,7 +265,6 @@ class ReportController extends Controller {
 		}
 		$sector = DB::table( 'sectors' )->find( $category->sector_id );
 
-
 		if ( ! $sector ) {
 			return response()->json( [
 				'message' => "This income Category is not associated with any sector!",
@@ -278,6 +278,7 @@ class ReportController extends Controller {
 				'status'  => 404
 			] );
 		}
+
 		if ( strtotime( $toDate ) > strtotime( $sector->contract_end_date ) ) {
 			return response()->json( [
 				'message' => "$sector->name contract will end on $sector->contract_end_date. So date can't be found after this contract end date.",
@@ -291,6 +292,7 @@ class ReportController extends Controller {
 			             $fromDate,
 			             $toDate
 		             ] )
+		             ->whereNull( 'deleted_at' )
 		             ->get();
 
 		$sector_contract_month = ( new DateTime( $sector->contract_start_date ) )->diff( new DateTime( date( 'Y-m-d', strtotime( "+1 day", strtotime( $sector->contract_end_date ) ) ) ) );
@@ -302,7 +304,9 @@ class ReportController extends Controller {
 		             ->whereBetween( 'date', [ $fromDate, $toDate ] )
 		             ->whereNot( 'categories.name', 'LIKE', '%rent%' )
 		             ->where( 'sector_id', '=', $category->sector_id )
-		             ->groupBy( [ 'categories.name' ] )->get();
+		             ->groupBy( [ 'categories.name' ] )
+		             ->whereNull( 'expenses.deleted_at' )
+		             ->get();
 
 		$expense[] = (object) [
 			'amount' => $month > 0 ? round( $sector->rent / $month, 2 ) : 0,

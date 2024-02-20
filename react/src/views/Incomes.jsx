@@ -171,7 +171,7 @@ export default function Incomes() {
                             <th>Description</th>
                             <th>Source</th>
                             <th>Amount</th>
-                            {userRole === 'admin' && <th width="20%">Action</th>}
+                            {userRole === 'admin' && <th>Action</th>}
 
                         </tr>
                         </thead>
@@ -194,18 +194,17 @@ export default function Incomes() {
                                 </tr>
                             ) : (
                                 filteredIncomes.map((income) => (
-                                    <tr className={'text-center'} key={income.id}>
+                                    <tr key={income.id}>
                                         <td>{income.date}</td>
                                         <Tooltip title={income.reference} arrow>
-                                            <td>{income.description !== 'null' ? income.description : ''}
+                                            <td className={"income-description"}>{income.description !== 'null' ? income.description : ''}
                                                 {
                                                     income?.reference ? (
                                                         income?.reference.includes('air') ?
                                                             <FaAirbnb className={'logo-reservations'} color="red"/> :
                                                             (income?.reference.includes('book') ?
                                                                 <i className="logo-bookingcom logo-reservations"></i> :
-                                                                <FaMoneyBillAlt className={'logo-reservations'}
-                                                                                fontSize={10} color="gray"/>)) : ''
+                                                                <FaMoneyBillAlt className={'logo-reservations'} fontSize={10} color="gray"/>)) : ''
                                                 }
                                             </td>
                                         </Tooltip>

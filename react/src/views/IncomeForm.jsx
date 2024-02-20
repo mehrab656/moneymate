@@ -350,6 +350,8 @@ export default function IncomeForm() {
                                         <option key={"income_type_internet_bill"} value={'internet_bill'}>Internet
                                             Bill
                                         </option>
+                                        <option key={"income_type_rent"} value={'rent'}>Rent
+                                        </option>
                                     </select>
                                     {errors.account_id && (
                                         <p className='error-message mt-2'>{errors.account_id[0]}</p>

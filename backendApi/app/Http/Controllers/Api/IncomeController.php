@@ -119,6 +119,7 @@ class IncomeController extends Controller {
 					] );
 				} else {
 					$end_date         = $checkinDate->format( 'Y-m-t' ); //end date from check in date.
+
 					$first_month_days = (int) ( ( new DateTime( $end_date ) )->diff( $checkinDate )->format( "%a" ) ) + 1;
 					$start_date       = $checkoutDate->format( 'Y-m-01' ); //next month starting date;
 
@@ -138,7 +139,7 @@ class IncomeController extends Controller {
 						'description'   => $description_1,
 						'note'          => $income['note'],
 						'reference'     => $income['reference'],
-						'date'          => $incomeDate,
+						'date'          => $end_date,
 						'checkin_date'  => $checkinDate->format( 'Y-m-d' ),
 						'checkout_date' => $start_date,
 						'attachment'    => $income['attachment']
@@ -169,7 +170,7 @@ class IncomeController extends Controller {
 							'description'   => $description_2,
 							'note'          => $income['note'],
 							'reference'     => $income['reference'],
-							'date'          => $incomeDate,
+							'date'          => $start_date,
 							'checkin_date'  => $start_date,
 							'checkout_date' => $checkoutDate->format( 'Y-m-d' ),
 							'attachment'    => $income['attachment']
