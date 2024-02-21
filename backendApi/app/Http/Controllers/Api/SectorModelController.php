@@ -63,7 +63,7 @@ class SectorModelController extends Controller {
 
 		$sectorData = [
 			'name'                  => $sector['name'],
-			'payment_account_id'                  => $sector['payment_account_id'],
+			'payment_account_id'    => $sector['payment_account_id'],
 			'contract_start_date'   => Carbon::parse( $sector['contract_start_date'] )->format( 'Y-m-d' ),
 			'contract_end_date'     => Carbon::parse( $sector['contract_end_date'] )->format( 'Y-m-d' ),
 			'el_premises_no'        => $sector['el_premises_no'],
@@ -327,6 +327,7 @@ class SectorModelController extends Controller {
 		}
 		$isUpdated = false;
 		$type      = $request->type;
+		$date      = $request->date;
 
 		$search_criteria = $type === 'internet' ? 'internet' : ( $type === 'cheque' ? 'rent cost' : 'electricity' );
 		$sector          = DB::table( 'sectors' )->find( $request->sector_id );
@@ -367,7 +368,7 @@ class SectorModelController extends Controller {
 			'description'       => $request->payment_number,
 			'note'              => 'This expense was recorded while user paid from sector details directly.',
 			'reference'         => 'Automated Payment for : ' . $sector->name . strtoupper( $request->type ),
-			'date'              => Carbon::now()->format( 'Y-m-d' )
+			'date'              => $date
 		];
 
 		DB::beginTransaction();

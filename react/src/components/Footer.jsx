@@ -15,8 +15,8 @@ const Footer = () => {
                     alignItems: "center",
                     height: "100%",
                 }}>
-                <p>Company Name: {company_name} | Web Site: <a target="_blank" href={`${web_site}`}>{web_site}</a> |
-                    Phone: {phone} | Address: {address} </p>
+                <p>{company_name} | <a target="_blank" href={`${web_site}`}>{web_site}</a> |
+                    {phone} | {address} </p>
             </div>
         </footer>
     );

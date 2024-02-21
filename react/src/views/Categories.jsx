@@ -1,13 +1,12 @@
 import React, {useEffect, useState, useContext} from "react";
 import axiosClient from "../axios-client.js";
 import Swal from "sweetalert2";
-import {Link} from "react-router-dom";
 import Pagination from "react-bootstrap/Pagination";
 import WizCard from "../components/WizCard";
-import {Button, Form, Modal} from "react-bootstrap";
+import {Button, Modal} from "react-bootstrap";
 import {useStateContext} from "../contexts/ContextProvider";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faCoins, faEdit, faTrash} from "@fortawesome/free-solid-svg-icons";
+import {faCoins} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 import MainLoader from "../components/MainLoader.jsx";
@@ -79,7 +78,7 @@ export default function Categories() {
                 setLoading(false)
             });
         } else {
-            axiosClient.post('category/add', category).then(({data}) => {
+            axiosClient.post('category/add', category).then(() => {
                 setNotification(`${category.name} was successfully created`);
                 setShowModal(false);
                 getCategories(currentPage, pageSize);
@@ -127,8 +126,7 @@ export default function Categories() {
                             text: "Category has been deleted.",
                             icon: "success",
                         });
-                    })
-                    .catch((error) => {
+                    }).catch(() => {
                         Swal.fire({
                             title: "Error!",
                             text: "Category could not be deleted.",
@@ -221,7 +219,7 @@ export default function Categories() {
                         <tr>
                             <th>CATEGORY NAME</th>
                             <th className="text-center">CATEGORY TYPE</th>
-                            {userRole === 'admin' && <th className="text-center">ACTIONS</th>}
+                            {userRole === 'admin' && <th>ACTIONS</th>}
 
                         </tr>
                         </thead>

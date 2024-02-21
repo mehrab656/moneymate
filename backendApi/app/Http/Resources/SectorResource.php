@@ -8,6 +8,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * @property mixed $id
  * @property mixed $name
+ * @property mixed $rent
  * @property mixed $contract_start_date
  * @property mixed $contract_end_date
  * @property mixed $el_premises_no
@@ -30,6 +31,7 @@ class SectorResource extends JsonResource {
 		return [
 			'id'                    => $this->id,
 			'name'                  => $this->name,
+			'rent'                  => $this->rent,
 			'payment_account_id'    => $this->payment_account_id,
 			'contract_start_date'   => $this->contract_start_date,
 			'contract_end_date'     => $this->contract_end_date,

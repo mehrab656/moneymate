@@ -156,8 +156,6 @@ Route::middleware( 'auth:sanctum' )->group( function () {
 	// Subscription checking Api
 
 	Route::get( '/subscriptions', [ SubscriptionController::class, 'index' ] );
-
-
 	// Account Transfer Api
 
 	Route::get( '/transfer/histories', [ AccountTransferController::class, 'index' ] );
@@ -190,8 +188,6 @@ Route::middleware( 'auth:sanctum' )->group( function () {
 	Route::post( '/change-payment-status/{sector}', [ SectorModelController::class, 'changePaymentStatus' ] );
 	Route::post( '/pay-bill/{payment}', [ SectorModelController::class, 'payBills' ] );
 	Route::get( '/sectors-list', [ SectorModelController::class, 'sectorList' ] );
-//	Route::get('/sectors',[ SectorModelController::class,'index']);
-//	Route::get('/sectors',[ SectorModelController::class,'index']);
 
 	//finance report
 	Route::get( '/getFinanceReport', [ FinanceController::class, 'getAccountStatement' ] );

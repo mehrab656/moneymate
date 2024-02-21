@@ -885,12 +885,14 @@ select option:focus {
     height: 36px;
 }
 .logo-reservations {
-    width: 64px!important;
-    height: 24px!important;
+    width: 35px!important;
+    height: 17px!important;
     vertical-align: middle;
-    float: right;
 }
-
-.aside-menu-item .aside-link, .aside-menu-item a{
-    cursor: pointer !important;
+.income-description{
+    display: flex;
+    justify-content: space-between;
+}
+.aside-menu-item {
+    cursor: pointer;
 }

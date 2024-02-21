@@ -117,6 +117,8 @@ export default function ExpenseForm() {
             setLoading(true);
             axiosClient.get(`/expense/${id}`)
                 .then(({data}) => {
+                    console.log(data);
+                    console.log(categoryValue);
                     // setSelectedCategoryId(data.category_id);
                     setSelectedAccountId(data.account_id);
                     setSelectedUserId(data.user_id);

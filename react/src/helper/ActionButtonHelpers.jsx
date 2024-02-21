@@ -11,7 +11,7 @@ const ActionButtonHelpers = ({module, showModule, deleteFunc, params, editDropdo
     const navigate = useNavigate()
     return (
         <Dropdown>
-            <Dropdown.Toggle variant="success" id="expense-actions">
+            <Dropdown.Toggle variant="primary" className={"btn-sm"} id="expense-actions">
                 Actions
             </Dropdown.Toggle>
 

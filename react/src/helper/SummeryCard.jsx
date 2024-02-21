@@ -1,20 +1,18 @@
 import {Col, Container, Modal, Row, Table} from "react-bootstrap";
-import React, {memo, useState} from "react";
+import React, {memo} from "react";
 import Swal from "sweetalert2";
 import axiosClient from "../axios-client.js";
 import SummeryCardRow from "./SummeryCardRow.jsx";
 
 
-const SummeryCard = ({showModal, handelCloseModal, data, currency, modalType, Toast, navigation,loadingMethod}) => {
+const SummeryCard = ({showModal, handelCloseModal, data, currency, modalType, Toast, navigation}) => {
     const modalTitles = {
         "electricity": " Electricity Details",
         "internet": " Internet Details",
         "cheque": " Cheque Details",
     }
 
-    // const [showElectricityModal, setElectricityShowModal] = useState(showModal);
-
-    const handelPayment = async (payment) => {
+    const handelPayment = async ({payment}) => {
         // setElectricityShowModal(false);
         handelCloseModal(); //otherwise input filed of swal will not work
 
@@ -36,19 +34,20 @@ const SummeryCard = ({showModal, handelCloseModal, data, currency, modalType, To
             }
         }).then((result) => {
             if (result.isConfirmed) {
-               axiosClient.post(`/pay-bill/${payment.id}`, {
+                axiosClient.post(`/pay-bill/${payment.id}`, {
                     ...payment,
                     amount: result.value,
-                    type: modalType
+                    type: modalType,
+                    date: payment.date,
                 }).then(({data}) => {
-                   Toast.fire({
-                       icon: data.status === 200 ? 'success' : 'error',
-                       title: data.message,
-                   });
+                    Toast.fire({
+                        icon: data.status === 200 ? 'success' : 'error',
+                        title: data.message,
+                    });
                     navigation('/sectors');
                 }).catch(err => {
                     console.log({err})
-                    if (err.response){
+                    if (err.response) {
                         Toast.fire({
                             icon: "error",
                             title: err.response.data.message,
@@ -60,7 +59,6 @@ const SummeryCard = ({showModal, handelCloseModal, data, currency, modalType, To
             }
         })
     }
-
     return (
         <>
             <Modal show={showModal} centered onHide={handelCloseModal} className="custom-modal modal-lg">
@@ -71,25 +69,50 @@ const SummeryCard = ({showModal, handelCloseModal, data, currency, modalType, To
                 </Modal.Header>
                 <Modal.Body>
                     <Container>
-                        <Row className={'border p-2'}>
-                            <strong className={'text-primary'}>Account</strong>
+                        {
+                            modalType === 'electricity' &&
+                            <>
+                                <Row className={'border p-2'}>
+                                    <strong className={'text-primary'}>Account</strong>
+                                    <Col xs={12} md={4}>
+                                        <strong>{'Account No: '}</strong>{data.el_acc_no}
+                                    </Col>
+                                    <Col xs={12} md={4}>
+                                        <strong>{'Business ID: '}</strong>{data.el_business_acc_no}
+                                    </Col>
+                                    <Col xs={12} md={4}>
+                                        <strong>{'Premises Number: '}</strong>{data.el_premises_no}
+                                    </Col>
+                                </Row>
+                                <Row className={'border p-2'}>
+                                    <strong className={'text-primary'}>Notes</strong>
+                                    <Col xs={12} md={6}>
+                                        {data.el_note ?? 'Nothing Found!'}
+                                    </Col>
+                                </Row>
+                            </>
+                        }
+                        {
+                            modalType === 'internet' &&
+                            <>
+                                <Row className={'border p-2'}>
+                                    <strong className={'text-primary'}>Account</strong>
+                                    <Col xs={12} md={6}>
+                                        <strong>{'Account No: '}</strong>{data.internet_acc_no}
+                                    </Col>
+                                    <Col xs={12} md={6}>
+                                        <strong>{'Billing Date: '}</strong>{data.internet_billing_date}
+                                    </Col>
+                                </Row>
+                                <Row className={'border p-2'}>
+                                    <strong className={'text-primary'}>Notes</strong>
+                                    <Col xs={12} md={6}>
+                                        {data.int_note ?? 'Nothing Found!'}
+                                    </Col>
+                                </Row>
+                            </>
+                        }
 
-                            <Col xs={12} md={4}>
-                                <strong>{'Account No: '}</strong>{data.el_acc_no}
-                            </Col>
-                            <Col xs={12} md={4}>
-                                <strong>{'Business ID: '}</strong>{data.el_business_acc_no}
-                            </Col>
-                            <Col xs={12} md={4}>
-                                <strong>{'Premises Number: '}</strong>{data.el_premises_no}
-                            </Col>
-                        </Row>
-                        <Row className={'border p-2'}>
-                            <strong className={'text-primary'}>Notes</strong>
-                            <Col xs={12} md={6}>
-                                {data.el_note ?? 'Nothing Found!'}
-                            </Col>
-                        </Row>
                         <Row className={'border p-2'}>
                             <strong className={'text-primary'}>Payment History</strong>
                             <Table responsive striped bordered hover variant="light">
