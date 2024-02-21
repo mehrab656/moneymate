@@ -23,7 +23,13 @@ import {
     faSection,
     faTachometerAlt,
     faWallet,
-    faBell
+    faBell,
+    faSitemap,
+    faBuildingColumns,
+    faHandHoldingDollar,
+    faChartSimple,
+    faChartLine,
+    faCity
 } from '@fortawesome/free-solid-svg-icons';
 import {SettingsContext, SettingsProvider} from "../contexts/SettingsContext.jsx";
 import Footer from "./Footer.jsx";
@@ -144,16 +150,16 @@ export default function DefaultLayout() {
     const toggleSidebar = () => {
         setShowSidebar(!showSidebar);
     };
-    const [anchorEl, setAnchorEl] = useState(null);
 
-
-    const handleOpenPopover = (event) => {
-        setAnchorEl(event.currentTarget);
+    const [submenuTransactionVisible, setSubmenuTransactionVisible] = useState(false);
+    const [submenuReportVisible, setSubmenuReportVisible] = useState(false);
+    const [submenuBankAccVisible, setSubmenuBankAccVisible] = useState(false);
+    const toggleSubmenu = (type) => {
+        if(type ==='transaction'){setSubmenuTransactionVisible(!submenuTransactionVisible);}
+        if(type ==='report'){setSubmenuReportVisible(!submenuReportVisible);}
+        if(type ==='bankAcc'){setSubmenuBankAccVisible(!submenuBankAccVisible);}
     };
 
-    const handleClosePopover = () => {
-        setAnchorEl(null);
-    };
 
     return (
         <>
@@ -209,6 +215,7 @@ export default function DefaultLayout() {
                                                 </Link>
                                             </li>
                                         }
+                                       
 
                                         <li className="aside-menu-item">
                                             <Link
@@ -228,79 +235,154 @@ export default function DefaultLayout() {
                                                 <span className="aside-menu-text"> Categories</span>
                                             </Link>
                                         </li>
-                                        <li className="aside-menu-item">
-                                            <Link
-                                                to="/banks"
-                                                className={isActive('/banks') ? 'active' : ''}>
-                                                <span className="aside-menu-icon"><FontAwesomeIcon icon={faDollarSign}/></span>
-                                                <span className="aside-menu-text"> Banks</span>
-                                            </Link>
-                                        </li>
-                                        <li className="aside-menu-item">
-                                            <Link
-                                                to="/accounts"
-                                                className={isActive('/accounts') ? 'active' : ''}>
-                                                <span className="aside-menu-icon"><FontAwesomeIcon icon={faMoneyCheck}/></span>
-                                                <span className="aside-menu-text"> Accounts</span>
-                                            </Link>
-                                        </li>
 
                                         <li className="aside-menu-item">
-                                            <Link
-                                                to="/bank-account/transfer-histories"
-                                                className={isActive('/bank-account/transfer-histories') ? 'active' : ''}>
+                                            <a
+                                               className='dropdown-menu'>
                                                 <span className="aside-menu-icon"><FontAwesomeIcon
-                                                    icon={faExchange}/></span>
-                                                <span className="aside-menu-text"> Balance Transfer</span>
-                                            </Link>
-                                        </li>
+                                                    icon={faMoneyBill}/></span>
+                                                <span className="aside-menu-text" onClick={(e)=> toggleSubmenu('transaction')}>Transactions</span>
+                                                <span className="submenu-toggle-icon">{submenuTransactionVisible ? '▲' : '▼'}</span>
 
+                                            </a>
+                                            {submenuTransactionVisible && (
+                                                <ul className="submenu">
+                                                    <li className="aside-menu-item">
+                                                        <Link
+                                                            to="/investments"
+                                                            className={isActive('/investments') ? 'active' : ''}>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                icon={faMoneyBillTrendUp}/></span>
+                                                            <span className="aside-menu-text"> Investments</span>
+                                                        </Link>
+                                                    </li>
+                                                    <li className="aside-menu-item">
+                                                        <Link to="/expenses" className={isActive('/expenses') ? 'active' : ''}>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon icon={faMoneyBill}/></span>
+                                                            <span className="aside-menu-text"> Expenses</span>
+                                                        </Link>
+                                                    </li>
+                                                    <li className="aside-menu-item">
+                                                        <Link to="/incomes" className={isActive('/incomes') ? 'active' : ''}>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                icon={faDollar}/></span>
+                                                            <span className="aside-menu-text"> Incomes</span>
+                                                        </Link>
+                                                        </li>
+                                                    <li className="aside-menu-item">
+                                                        <Link to="/returns" className={isActive('/returns') ? 'active' : ''}>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                icon={faHandHoldingDollar}/></span>
+                                                            <span className="aside-menu-text"> Returns</span>
+                                                        </Link>
+                                                    </li>
+                                                  
+                                                </ul>
+                                            )}
+                                        </li>
                                         <li className="aside-menu-item">
-                                            <Link
-                                                to="/debts"
-                                                className={isActive('/debts') ? 'active' : ''}>
+                                            <a
+                                               className='dropdown-menu'>
                                                 <span className="aside-menu-icon"><FontAwesomeIcon
-                                                    icon={faMailBulk}/></span>
-                                                <span className="aside-menu-text"> Debts/Loans</span>
-                                            </Link>
+                                                    icon={faSitemap}/></span>
+                                                <span className="aside-menu-text" onClick={(e)=> toggleSubmenu('report')}>Reports</span>
+                                                <span className="submenu-toggle-icon">{submenuReportVisible ? '▲' : '▼'}</span>
+
+                                            </a>
+                                            {submenuReportVisible && (
+                                                <ul className="submenu">
+                                                    <li className="aside-menu-item">
+                                                        <Link to="/income-report"
+                                                            className={isActive('/income-report') ? 'active' : ''}>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                icon={faChartBar}/></span>
+                                                            <span className="aside-menu-text"> Income Report</span>
+                                                        </Link>
+                                                    </li>
+                                                    <li className="aside-menu-item">
+                                                        <Link to="/expense-report"
+                                                            className={isActive('/expense-report') ? 'active' : ''}>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                icon={faChartPie}/></span>
+                                                            <span className="aside-menu-text"> Expense Report</span>
+                                                        </Link>
+                                                    </li>
+                                                    <li className="aside-menu-item">
+                                                        <Link to="/investment-report"
+                                                            className={isActive('/investment-report') ? 'active' : ''}>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                icon={faMoneyBillTrendUp}/></span>
+                                                            <span className="aside-menu-text"> Investment Report</span>
+                                                        </Link>
+                                                    </li>
+                                                    <li className="aside-menu-item">
+                                                        <Link to="/monthly-report"
+                                                            className={isActive('/monthly-report') ? 'active' : ''}>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                icon={faChartLine}/></span>
+                                                            <span className="aside-menu-text"> Monthly Report</span>
+                                                        </Link>
+                                                    </li>
+                                                    <li className="aside-menu-item">
+                                                        <Link to="/all-report"
+                                                            className={isActive('/all-report') ? 'active' : ''}>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                icon={faChartSimple}/></span>
+                                                            <span className="aside-menu-text"> Overall Report</span>
+                                                        </Link>
+                                                    </li>
+                                                </ul>
+                                            )}
                                         </li>
                                         <li className="aside-menu-item">
-                                            <Link
-                                                to="/investments"
-                                                className={isActive('/investments') ? 'active' : ''}>
+                                            <a
+                                                className='dropdown-menu'>
                                                 <span className="aside-menu-icon"><FontAwesomeIcon
-                                                    icon={faMoneyBillTrendUp}/></span>
-                                                <span className="aside-menu-text"> Investments</span>
-                                            </Link>
+                                                    icon={faBuildingColumns}/></span>
+                                                <span className="aside-menu-text" onClick={(e)=> toggleSubmenu('bankAcc')}>Bank & Acc.</span>
+                                                <span className="submenu-toggle-icon">{submenuBankAccVisible ? '▲' : '▼'}</span>
+
+                                            </a>
+                                            {submenuBankAccVisible && (
+                                                <ul className="submenu">
+                                                    <li className="aside-menu-item">
+                                                        <Link
+                                                            to="/banks"
+                                                            className={isActive('/banks') ? 'active' : ''}>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon icon={faCity}/></span>
+                                                            <span className="aside-menu-text"> Banks</span>
+                                                        </Link>
+                                                    </li>
+                                                    <li className="aside-menu-item">
+                                                        <Link
+                                                            to="/accounts"
+                                                            className={isActive('/accounts') ? 'active' : ''}>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon icon={faMoneyCheck}/></span>
+                                                            <span className="aside-menu-text"> Accounts</span>
+                                                        </Link>
+                                                    </li>
+                                                    <li className="aside-menu-item">
+                                                        <Link
+                                                            to="/bank-account/transfer-histories"
+                                                            className={isActive('/bank-account/transfer-histories') ? 'active' : ''}>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                icon={faExchange}/></span>
+                                                            <span className="aside-menu-text"> Balance Transfer</span>
+                                                        </Link>
+                                                    </li>
+                                                    <li className="aside-menu-item">
+                                                        <Link
+                                                            to="/debts"
+                                                            className={isActive('/debts') ? 'active' : ''}>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                icon={faMailBulk}/></span>
+                                                            <span className="aside-menu-text"> Debts/Loans</span>
+                                                        </Link>
+                                                    </li>
+                                                </ul>
+                                            )}
                                         </li>
-                                        <li className="aside-menu-item">
-                                            <Link to="/investment-plan"
-                                                  className={isActive('/investment-plan') ? 'active' : ''}>
-                                                <span className="aside-menu-icon"><FontAwesomeIcon
-                                                    icon={faExchange}/></span>
-                                                <span className="aside-menu-text">Investment Plan</span>
-                                            </Link>
-                                        </li>
-                                        <li className="aside-menu-item">
-                                            <Link to="/incomes" className={isActive('/incomes') ? 'active' : ''}>
-                                                <span className="aside-menu-icon"><FontAwesomeIcon
-                                                    icon={faDollar}/></span>
-                                                <span className="aside-menu-text"> Incomes</span>
-                                            </Link>
-                                        </li>
-                                        <li className="aside-menu-item">
-                                            <Link to="/returns" className={isActive('/returns') ? 'active' : ''}>
-                                                <span className="aside-menu-icon"><FontAwesomeIcon
-                                                    icon={faDollar}/></span>
-                                                <span className="aside-menu-text"> Returns</span>
-                                            </Link>
-                                        </li>
-                                        <li className="aside-menu-item">
-                                            <Link to="/expenses" className={isActive('/expenses') ? 'active' : ''}>
-                                                <span className="aside-menu-icon"><FontAwesomeIcon icon={faMoneyBill}/></span>
-                                                <span className="aside-menu-text"> Expenses</span>
-                                            </Link>
-                                        </li>
+                                       
                                         <li className="aside-menu-item">
                                             <Link to="/budgets" className={isActive('/budgets') ? 'active' : ''}>
                                                 <span className="aside-menu-icon"><FontAwesomeIcon
@@ -309,46 +391,16 @@ export default function DefaultLayout() {
                                             </Link>
                                         </li>
                                         <li className="aside-menu-item">
-                                            <Link to="/income-report"
-                                                  className={isActive('/income-report') ? 'active' : ''}>
-                                                <span className="aside-menu-icon"><FontAwesomeIcon
-                                                    icon={faChartBar}/></span>
-                                                <span className="aside-menu-text"> Income Report</span>
-                                            </Link>
-                                        </li>
-                                        <li className="aside-menu-item">
-                                            <Link to="/expense-report"
-                                                  className={isActive('/expense-report') ? 'active' : ''}>
-                                                <span className="aside-menu-icon"><FontAwesomeIcon
-                                                    icon={faChartPie}/></span>
-                                                <span className="aside-menu-text"> Expense Report</span>
-                                            </Link>
-                                        </li>
-                                        <li className="aside-menu-item">
-                                            <Link to="/investment-report"
-                                                  className={isActive('/investment-report') ? 'active' : ''}>
-                                                <span className="aside-menu-icon"><FontAwesomeIcon
-                                                    icon={faMoneyBillTrendUp}/></span>
-                                                <span className="aside-menu-text"> Investment Report</span>
-                                            </Link>
-                                        </li>
+                                                        <Link to="/investment-plan"
+                                                  className={isActive('/investment-plan') ? 'active' : ''}>
+                                                  <span className="aside-menu-icon"><FontAwesomeIcon
+                                                      icon={faExchange}/></span>
+                                                  <span className="aside-menu-text">Investment Plan</span>
+                                              </Link>
+                                          </li>
 
-                                        <li className="aside-menu-item">
-                                            <Link to="/all-report"
-                                                  className={isActive('/all-report') ? 'active' : ''}>
-                                                <span className="aside-menu-icon"><FontAwesomeIcon
-                                                    icon={faDollar}/></span>
-                                                <span className="aside-menu-text"> Overall Report</span>
-                                            </Link>
-                                        </li>
-                                        <li className="aside-menu-item">
-                                            <Link to="/monthly-report"
-                                                  className={isActive('/monthly-report') ? 'active' : ''}>
-                                                <span className="aside-menu-icon"><FontAwesomeIcon
-                                                    icon={faDollar}/></span>
-                                                <span className="aside-menu-text"> Monthly Report</span>
-                                            </Link>
-                                        </li>
+                                    
+                                      
                                         <li className="aside-menu-item">
                                             <Link to="/calendar" className={isActive('/calendar') ? 'active' : ''}>
                                                 <span className="aside-menu-icon"><FontAwesomeIcon

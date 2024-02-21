@@ -890,3 +890,7 @@ select option:focus {
     vertical-align: middle;
     float: right;
 }
+
+.aside-menu-item .aside-link, .aside-menu-item a{
+    cursor: pointer !important;
+}
