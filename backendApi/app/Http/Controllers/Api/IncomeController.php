@@ -31,7 +31,7 @@ class IncomeController extends Controller {
 
 	public function index( Request $request ): JsonResponse {
 		$page     = $request->query( 'page', 1 );
-		$pageSize = $request->query( 'pageSize', 10 );
+		$pageSize = $request->query( 'pageSize', 1000 );
 
 		$incomes = Income::whereHas( 'category', function ( $query ) {
 			$query->where( 'type', 'income' );
@@ -39,6 +39,7 @@ class IncomeController extends Controller {
 		                 ->take( $pageSize )
 		                 ->orderBy( 'id', 'desc' )
 		                 ->get();
+
 
 		$totalCount = Income::whereHas( 'category', function ( $query ) {
 			$query->where( 'type', 'income' );
@@ -118,7 +119,7 @@ class IncomeController extends Controller {
 						'data_records' => array_merge( json_decode( json_encode( [] ), true ), [ 'account_balance' => $bankAccount->balance ] ),
 					] );
 				} else {
-					$end_date         = $checkinDate->format( 'Y-m-t' ); //end date from check in date.
+					$end_date = $checkinDate->format( 'Y-m-t' ); //end date from check in date.
 
 					$first_month_days = (int) ( ( new DateTime( $end_date ) )->diff( $checkinDate )->format( "%a" ) ) + 1;
 					$start_date       = $checkoutDate->format( 'Y-m-01' ); //next month starting date;
@@ -193,6 +194,11 @@ class IncomeController extends Controller {
 					'error'   => $e
 				] );
 			}
+
+			return response()->json( [
+				'income'   => $income,
+				'category' => $category,
+			] );
 		} else {
 
 			try {
@@ -221,6 +227,7 @@ class IncomeController extends Controller {
 					'descriptions' => "added income.",
 					'data_records' => array_merge( json_decode( json_encode( [] ), true ), [ 'account_balance' => $bankAccount->balance ] ),
 				] );
+
 				DB::commit();
 
 			} catch ( Throwable $e ) {
@@ -231,13 +238,14 @@ class IncomeController extends Controller {
 				] );
 			}
 
+			return response()->json( [
+				'income'   => $income,
+				'category' => $category,
+			] );
+
 		}
 
 
-		return response()->json( [
-			'income'   => $income,
-			'category' => $category,
-		] );
 	}
 
 

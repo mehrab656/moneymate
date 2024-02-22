@@ -149,7 +149,7 @@ class ReportController extends Controller {
 			$startDate = date( 'Y-m-d', strtotime( '-1 year' ) );
 		}
 		if ( ! $endDate ) {
-			$endDate = Carbon::now()->toDateString();
+			$endDate = date( 'Y-m-d', strtotime( '+1 year' ) );
 		}
 
 		$endDate   = Carbon::parse( $endDate )->format( 'Y-m-d' );
