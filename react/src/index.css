@@ -893,3 +893,6 @@ select option:focus {
     display: flex;
     justify-content: space-between;
 }
+.aside-menu-item {
+    cursor: pointer;
+}
