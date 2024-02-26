@@ -195,7 +195,7 @@ export default function Incomes() {
                             ) : (
                                 filteredIncomes.map((income) => (
                                     <tr key={income.id}>
-                                        <td>{income.date}</td>
+                                        <td><small>{income.date}</small></td>
                                         <Tooltip title={income.reference} arrow>
                                             <td className={"income-description"}>{income.description !== 'null' ? income.description : ''}
                                                 {

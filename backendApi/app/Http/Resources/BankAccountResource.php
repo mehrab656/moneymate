@@ -32,7 +32,7 @@ class BankAccountResource extends JsonResource
             'account_name' => $this->account_name,
             'bank_name' => $this->bankName->bank_name,
             'account_number' => $this->account_number,
-            'balance' => $this->balance,
+            'balance' => fix_number_format($this->balance),
             'bank_name_id' => $this->bankName->id,
         ];
     }

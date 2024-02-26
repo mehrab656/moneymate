@@ -14,6 +14,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller {
+	/**
+	 * @throws \Exception
+	 */
 	public function incomeReport( Request $request ): JsonResponse {
 		// Get the optional start_date and end_date parameters from the request
 		$startDate = $request->input( 'start_date' );
@@ -26,30 +29,33 @@ class ReportController extends Controller {
 		if ( $endDate ) {
 			$endDate = date( 'Y-m-d', strtotime( $endDate ) );
 		}
-		// Calculate the default date range (last 3 months)
-		if ( empty( $startDate ) ) {
-			$startDate = Carbon::now()->subMonths( 3 )->toDateString();
-		}
 
-		if ( empty( $endDate ) ) {
+		if ( $startDate && empty( $endDate ) ) {
 			$endDate = Carbon::now()->toDateString();
 		}
 
+		if ( $endDate && empty( $startDate ) ) {
+			$startDate = ( new DateTime( $endDate ) )->format( 'Y-m-01' );
+		}
+
+
 		// Query the incomes based on the date range
-		$incomes = Income::where( 'date', '>=', $startDate )
-		                 ->where( 'date', '<=', $endDate )
-		                 ->whereNull( 'deleted_at' )
-		                 ->whereHas( 'category', function ( $query ) {
-			                 $query->where( 'type', 'income' );
-		                 } );
+		$query = Income::whereNull( 'deleted_at' )
+		               ->whereHas( 'category', function ( $query ) {
+			               $query->where( 'type', 'income' );
+		               } );
+
+		if ( $startDate && $endDate ) {
+			$query = $query->whereBetween( 'date', [ $startDate, $endDate ] );
+		}
 		if ( $cat_id ) {
-			$incomes = $incomes->where( 'category_id', $cat_id );
+			$query = $query->where( 'category_id', $cat_id );
 		}
 
 		// Return the income report as a collection of IncomeReportResource
-		$incomesRes = IncomeReportResource::collection( $incomes->orderBy( 'date', 'DESC' )->get() );
-		$sum        = 0;
-		foreach ( $incomesRes as $income ) {
+		$incomes = IncomeReportResource::collection( $query->orderBy( 'date', 'DESC' )->get() );
+		$sum     = 0;
+		foreach ( $incomes as $income ) {
 			if ( isset( $income->amount ) ) {
 				$sum += $income->amount;
 			}
@@ -57,9 +63,10 @@ class ReportController extends Controller {
 
 		return response()->json( [
 			'totalIncome' => $sum,
-			'incomes'     => $incomesRes,
-			'startDate'   => date( 'y-m-d', strtotime( $request->start_date ) ),
-			'endDate'     => date( 'y-m-d', strtotime( $request->end_date ) )
+			'incomes'     => $incomes,
+			'startDate'   => $startDate ? date( 'y-m-d', strtotime( $startDate ) ) : null,
+			'endDate'     => $endDate ? date( 'y-m-d', strtotime( $endDate ) ) : null,
+			'category_id' => $cat_id ?: null
 		] );
 	}
 
@@ -68,6 +75,7 @@ class ReportController extends Controller {
 	 * @param Request $request
 	 *
 	 * @return JsonResponse
+	 * @throws \Exception
 	 */
 
 	public function expenseReport( Request $request ): JsonResponse {
@@ -76,9 +84,19 @@ class ReportController extends Controller {
 		$cat_id    = $request->cat_id;
 		$sec_id    = $request->sec_id;
 
-		if ( $startDate && ! $endDate ) {
-			$endDate = Carbon::now()->toDateString();
+		if ( $startDate ) {
+			$startDate = date( 'Y-m-d', strtotime( $startDate ) );
+		}
+		if ( $endDate ) {
+			$endDate = date( 'Y-m-d', strtotime( $endDate ) );
+		}
 
+		if ( $startDate && empty( $endDate ) ) {
+			$endDate = Carbon::now()->toDateString();
+		}
+
+		if ( $endDate && empty( $startDate ) ) {
+			$startDate = ( new DateTime( $endDate ) )->format( 'Y-m-01' );
 		}
 
 		$query = Expense::select( 'expenses.*' )->join( 'categories', 'categories.id', '=', 'expenses.category_id' )
@@ -86,9 +104,7 @@ class ReportController extends Controller {
 		                ->whereNull( 'expenses.deleted_at' );
 
 		if ( $startDate || $endDate ) {
-			$endDate   = Carbon::parse( $endDate )->format( 'Y-m-d' );
-			$startDate = Carbon::parse( $startDate )->format( 'Y-m-d' );
-			$query     = $query->whereBetween( 'date', [ $startDate, $endDate ] );
+			$query = $query->whereBetween( 'date', [ $startDate, $endDate ] );
 		}
 
 		if ( $sec_id ) {
@@ -106,7 +122,11 @@ class ReportController extends Controller {
 
 		return response()->json( [
 			'totalExpense' => fix_number_format( $query->get()->sum( 'amount' ) ),
-			'expenses'     => $expensesRes
+			'expenses'     => $expensesRes,
+			'start_date'   => $startDate ?: null,
+			'end_date'     => $endDate ?: null,
+			'sector_id'    => $sec_id ?: null,
+			'category_id'  => $cat_id ?: null,
 		] );
 	}
 
@@ -141,74 +161,77 @@ class ReportController extends Controller {
 
 	}
 
+	/**
+	 * @throws \Exception
+	 */
 	public function overall( Request $request ): JsonResponse {
 		$startDate = $request->start_date;
 		$endDate   = $request->end_date;
 
-		if ( ! $startDate ) {
-			$startDate = date( 'Y-m-d', strtotime( '-1 year' ) );
+		if ( $startDate ) {
+			$startDate = date( 'Y-m-d', strtotime( $startDate ) );
 		}
-		if ( ! $endDate ) {
-			$endDate = date( 'Y-m-d', strtotime( '+1 year' ) );
+		if ( $endDate ) {
+			$endDate = date( 'Y-m-d', strtotime( $endDate ) );
 		}
 
-		$endDate   = Carbon::parse( $endDate )->format( 'Y-m-d' );
-		$startDate = Carbon::parse( $startDate )->format( 'Y-m-d' );
+		if ( $startDate && empty( $endDate ) ) {
+			$endDate = Carbon::now()->toDateString();
+		}
 
-		$lends  = DB::table( 'debts' )->whereBetween( 'date', [
-			$startDate,
-			$endDate
-		] )->where( 'type', '=', 'lend' )
-		            ->whereNull( 'debts.deleted_at' )
-		            ->sum( 'amount' );
-		$borrow = DB::table( 'debts' )->whereBetween( 'date', [
-			$startDate,
-			$endDate
-		] )->where( 'type', '=', 'borrow' )
-		            ->whereNull( 'debts.deleted_at' )
-		            ->sum( 'amount' );
+		if ( $endDate && empty( $startDate ) ) {
+			$startDate = ( new DateTime( $endDate ) )->format( 'Y-m-01' );
+		}
+
+		$lends  = DB::table( 'debts' )->where( 'type', '=', 'lend' )
+		            ->whereNull( 'debts.deleted_at' );
+		$borrow = DB::table( 'debts' )->where( 'type', '=', 'borrow' )
+		            ->whereNull( 'debts.deleted_at' );
 
 		$refund = DB::table( 'expenses' )
 		            ->where( 'refundable_amount', '>', 0 )
-		            ->whereNull( 'deleted_at' )
-		            ->whereBetween( 'date', [ $startDate, $endDate ] );
+		            ->whereNull( 'deleted_at' );
 
 		$investments = DB::table( 'investments' )->selectRaw( 'sum(amount) as amount, investor_id, name' )
 		                 ->join( 'users', 'investments.investor_id', '=', 'users.id' )
-		                 ->whereBetween( 'investment_date', [ $startDate, $endDate ] )
 		                 ->whereNull( 'investments.deleted_at' )
-		                 ->groupBy( [ 'investor_id', 'name' ] )
-		                 ->get();
+		                 ->groupBy( [ 'investor_id', 'name' ] );
 
 		$incomes = DB::table( 'incomes' )->selectRaw( 'sum(amount) as amount, category_id, name' )
 		             ->join( 'categories', 'incomes.category_id', '=', 'categories.id' )
-		             ->whereBetween( 'date', [ $startDate, $endDate ] )
 		             ->whereNull( 'incomes.deleted_at' )
-		             ->groupBy( [ 'category_id', 'name' ] )
-		             ->get();
+		             ->groupBy( [ 'category_id', 'name' ] );
 
 		$expense = DB::table( 'expenses' )->selectRaw( 'COALESCE(sum(amount), 0) as amount, sector_id, sectors.name' )
 		             ->join( 'categories', 'expenses.category_id', '=', 'categories.id' )
 		             ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
-		             ->whereBetween( 'date', [ $startDate, $endDate ] )
 		             ->whereNull( 'expenses.deleted_at' )
-		             ->groupBy( [ 'sector_id', 'sectors.name' ] )
-		             ->get();
+		             ->groupBy( [ 'sector_id', 'sectors.name' ] );
+		$totalInvestment = DB::table( 'investments' )->whereNull( 'deleted_at' );
+		$totalIncome = DB::table( 'incomes' )->whereNull( 'deleted_at' );
+		$totalExpense = DB::table( 'expenses' )->whereNull( 'deleted_at' );
 
-		$totalInvestment = DB::table( 'investments' )->whereBetween( 'investment_date', [
-			$startDate,
-			$endDate
-		] )->whereNull( 'deleted_at' )->sum( 'amount' );
+		if ($startDate && $endDate){
+			$lends = $lends->whereBetween( 'date', [ $startDate, $endDate ] );
+			$borrow = $borrow->whereBetween( 'date', [ $startDate, $endDate ] );
+			$refund = $refund->whereBetween( 'date', [ $startDate, $endDate ] );
+			$incomes = $incomes->whereBetween( 'date', [ $startDate, $endDate ] );
+			$expense = $expense->whereBetween( 'date', [ $startDate, $endDate ] );
+			$investments = $investments->whereBetween( 'investment_date', [ $startDate, $endDate ] );
+			$totalInvestment = $totalInvestment->whereBetween( 'investment_date', [ $startDate, $endDate ] );
+			$totalIncome = $totalIncome->whereBetween( 'date', [ $startDate, $endDate ] );
+			$totalExpense = $totalExpense->whereBetween( 'date', [ $startDate, $endDate ] );
+		}
 
-		$totalIncome = DB::table( 'incomes' )->whereBetween( 'date', [
-			$startDate,
-			$endDate
-		] )->whereNull( 'deleted_at' )->sum( 'amount' );
-
-		$totalExpense = DB::table( 'expenses' )->whereBetween( 'date', [
-			$startDate,
-			$endDate
-		] )->whereNull( 'deleted_at' )->sum( 'amount' );
+		$lends = $lends->sum( 'amount' );
+		$borrow = $borrow->sum( 'amount' );
+		$refund = $refund->whereBetween( 'date', [ $startDate, $endDate ] );
+		$incomes = $incomes->get();
+		$expense = $expense->get();
+		$investments = $investments->get();
+		$totalInvestment = $totalInvestment->sum( 'amount' );
+		$totalIncome = $totalIncome->sum( 'amount' );
+		$totalExpense = $totalExpense->sum( 'amount' );
 
 		$refundable_amount = $refund->sum( 'refundable_amount' );
 		$refunded_amount   = $refund->sum( 'refunded_amount' );
@@ -249,10 +272,12 @@ class ReportController extends Controller {
 		$fromDate         = date( 'Y-m-d', strtotime( $request->from_date ) );
 		$toDate           = ( new DateTime( $fromDate ) )->format( 'Y-m-t' );
 
+
+
 		if ( ! $incomeCategoryId || ! $fromDate ) {
 			return response()->json( [
-				'status'  => 301,
-				'message' => "Income Sector or Month is missing!"
+				'status'  => 404,
+				'message' => "Select Income sector or Month."
 			] );
 		}
 

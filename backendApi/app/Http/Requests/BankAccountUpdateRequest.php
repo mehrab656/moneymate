@@ -26,7 +26,7 @@ class BankAccountUpdateRequest extends FormRequest
             //'user_id' => 'required',
             'account_name' => 'required|string',
             'account_number' => 'required|string',
-            'balance' => 'required|numeric',
+            'balance' => 'required',
             'bank_name_id' => 'required|integer',
         ];
     }

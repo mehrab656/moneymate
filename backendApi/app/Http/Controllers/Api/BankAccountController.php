@@ -139,6 +139,7 @@ class BankAccountController extends Controller {
 	 */
 	public function update( BankAccountUpdateRequest $request, BankAccount $bankAccount ): BankAccountResource {
 		$data = $request->validated();
+		$data['balance'] = str_replace(',','',$data['balance']);
 		$bankAccount->update( $data );
 
 		return new BankAccountResource( $bankAccount );
@@ -154,7 +155,7 @@ class BankAccountController extends Controller {
 		$totalAccount = BankAccount::sum( 'balance' );
 
 		return response()->json( [
-			'balance' => $totalAccount
+			'balance' => fix_number_format($totalAccount)
 		] );
 	}
 
@@ -168,7 +169,7 @@ class BankAccountController extends Controller {
 		$totalWallet  = Wallet::sum( 'balance' );
 
 		return response()->json( [
-			'balance' => $totalAccount + $totalWallet
+			'balance' =>fix_number_format( $totalAccount + $totalWallet)
 		] );
 	}
 

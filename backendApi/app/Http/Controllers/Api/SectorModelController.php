@@ -252,27 +252,50 @@ class SectorModelController extends Controller {
 		$paymentDetails = DB::table( 'payments' )->find( $id );
 
 		if ( ! $paymentDetails ) {
-			return [ 'message' => 'No Payment Details was found', 'status' => 200 ];
+			return response()->json( [
+				'message'     => 'Not Found!',
+				'description' => 'No Payment Details was found.',
+			], 404 );
 		}
+
 
 		$sector = DB::table( 'sectors' )->find( $paymentDetails->sector_id );
 
 		if ( ! $sector ) {
-			return [ 'message' => 'No Sectors were found according to this payment term!', 'status' => 200 ];
+			return response()->json( [
+				'message'     => 'Not Found!',
+				'description' => 'No associative payment sectors were found according to this payment term.',
+			], 404 );
 		}
+
+		$bankAccount = BankAccount::find( $sector->payment_account_id );
+		if ( ! $bankAccount ) {
+			return response()->json( [
+				'message'     => 'Not Found!',
+				'description' => 'Associated Bank account with this payment was not found.',
+			], 404 );
+		}
+
+		if ($paymentDetails->amount>$bankAccount->balance){
+			return response()->json( [
+				'message'     => 'Insufficient Balance!',
+				'description' => 'Insufficient account balance to pay this amount.',
+			], 400 );
+		}
+
 
 		$category = DB::table( 'categories' )
 		              ->where( 'sector_id', '=', $sector->id )
 		              ->where( function ( $query ) {
-			              $query->where( 'name', 'LIKE', '%apartment%' )
+			              $query->where( 'name', 'LIKE', '%cheque%' )
 			                    ->orWhere( 'name', 'LIKE', '%rent%' );
 		              } )->first();
 
 		if ( ! $category ) {
-			return [
-				'message' => 'No Associative category were found according to this payment term!',
-				'status'  => 200
-			];
+			return response()->json( [
+				'message'     => 'Not Found!',
+				'description' => 'No Associative category were found according to this payment term.',
+			], 404 );
 		}
 
 		$expense = [
@@ -294,6 +317,9 @@ class SectorModelController extends Controller {
 			$isUpdated = DB::table( 'payments' )
 			               ->where( 'id', $id )
 			               ->update( [ 'status' => 'paid' ] );
+			$bankAccount->balance -= $paymentDetails->amount;
+			$bankAccount->save();
+
 		} catch ( ValidationException $e ) {
 			DB::rollBack();
 
@@ -305,16 +331,16 @@ class SectorModelController extends Controller {
 			'user_id'      => Auth::user()->id,
 			'log_type'     => 'edit',
 			'module'       => 'sectors',
-			'descriptions' => 'updated payment status.',
+			'descriptions' => $isUpdated?'updated payment status.':'User tried to update payment details.',
 			'data_records' => $expense,
 		] );
 
 		DB::commit();
 
-		return [
-			'message' => $isUpdated ? 'Payment was marked as paid!' : 'Unable to mark payment as paid',
-			'status'  => 200
-		];
+		return response()->json( [
+			'message'     => 'Success!',
+			'description' => 'Payment details was updated.',
+		] );
 	}
 
 	public function payBills( $paymentID, Request $request ) {

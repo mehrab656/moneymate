@@ -29,7 +29,14 @@ import {
     faHandHoldingDollar,
     faChartSimple,
     faChartLine,
-    faCity
+    faCity,
+    faArrowTurnDown,
+    faLevelDown,
+    faArrowTrendDown,
+    faAnglesDown,
+    faArrowDownUpAcrossLine,
+    faArrowDownZA,
+    faArrowDownLong, faArrowUp
 } from '@fortawesome/free-solid-svg-icons';
 import {SettingsContext, SettingsProvider} from "../contexts/SettingsContext.jsx";
 import Footer from "./Footer.jsx";
@@ -56,9 +63,7 @@ export default function DefaultLayout() {
     const [notifications, setNotifications] = useState([]);
     const {applicationSettings, userRole, setUserRole} = useContext(SettingsContext);
     let {
-        default_currency,
-        registration_type
-    } = applicationSettings;
+        default_currency} = applicationSettings;
 
     const {data: getSectorsData} = useGetSectorsDataQuery({token})
     const {data: getFinancialReportData} = useGetFinancialReportDataQuery({token})
@@ -154,10 +159,20 @@ export default function DefaultLayout() {
     const [submenuTransactionVisible, setSubmenuTransactionVisible] = useState(false);
     const [submenuReportVisible, setSubmenuReportVisible] = useState(false);
     const [submenuBankAccVisible, setSubmenuBankAccVisible] = useState(false);
+    const [submenuSettingsVisible, setSubmenuSettingsVisible] = useState(false);
     const toggleSubmenu = (type) => {
-        if(type ==='transaction'){setSubmenuTransactionVisible(!submenuTransactionVisible);}
-        if(type ==='report'){setSubmenuReportVisible(!submenuReportVisible);}
-        if(type ==='bankAcc'){setSubmenuBankAccVisible(!submenuBankAccVisible);}
+        if (type === 'transaction') {
+            setSubmenuTransactionVisible(!submenuTransactionVisible);
+        }
+        if (type === 'report') {
+            setSubmenuReportVisible(!submenuReportVisible);
+        }
+        if (type === 'bankAcc') {
+            setSubmenuBankAccVisible(!submenuBankAccVisible);
+        }
+        if (type === 'settings') {
+            setSubmenuSettingsVisible(!submenuSettingsVisible);
+        }
     };
 
 
@@ -192,30 +207,6 @@ export default function DefaultLayout() {
                                             </Link>
                                         </li>
 
-                                        {userRole === 'admin' &&
-                                            <li className="aside-menu-item">
-                                                <Link
-                                                    to="/users"
-                                                    className={isActive('/users') ? 'active' : ''}>
-                                                    <span className="aside-menu-icon"><FontAwesomeIcon
-                                                        icon={faEdit}/></span>
-                                                    <span className="aside-menu-text"> Manage Users </span>
-                                                </Link>
-                                            </li>
-                                        }
-
-                                        {userRole === 'user' &&
-                                            <li className="aside-menu-item">
-                                                <Link
-                                                    to={'/users/' + user.id}
-                                                    className={isActive('/users') ? 'active' : ''}>
-                                                    <span className="aside-menu-icon"><FontAwesomeIcon
-                                                        icon={faEdit}/></span>
-                                                    <span className="aside-menu-text"> Manage Profile </span>
-                                                </Link>
-                                            </li>
-                                        }
-                                       
 
                                         <li className="aside-menu-item">
                                             <Link
@@ -237,12 +228,13 @@ export default function DefaultLayout() {
                                         </li>
 
                                         <li className="aside-menu-item">
-                                            <a
+                                            <a onClick={(e) => toggleSubmenu('transaction')}
                                                className='dropdown-menu'>
                                                 <span className="aside-menu-icon"><FontAwesomeIcon
                                                     icon={faMoneyBill}/></span>
-                                                <span className="aside-menu-text" onClick={(e)=> toggleSubmenu('transaction')}>Transactions</span>
-                                                <span className="submenu-toggle-icon">{submenuTransactionVisible ? '▲' : '▼'}</span>
+                                                <span className="aside-menu-text">Transactions</span>
+                                                <span
+                                                    className="submenu-toggle-icon">{submenuTransactionVisible ? '▲' : '▼'}</span>
 
                                             </a>
                                             {submenuTransactionVisible && (
@@ -257,43 +249,49 @@ export default function DefaultLayout() {
                                                         </Link>
                                                     </li>
                                                     <li className="aside-menu-item">
-                                                        <Link to="/expenses" className={isActive('/expenses') ? 'active' : ''}>
-                                                            <span className="aside-menu-icon"><FontAwesomeIcon icon={faMoneyBill}/></span>
+                                                        <Link to="/expenses"
+                                                              className={isActive('/expenses') ? 'active' : ''}>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                icon={faMoneyBill}/></span>
                                                             <span className="aside-menu-text"> Expenses</span>
                                                         </Link>
                                                     </li>
                                                     <li className="aside-menu-item">
-                                                        <Link to="/incomes" className={isActive('/incomes') ? 'active' : ''}>
+                                                        <Link to="/incomes"
+                                                              className={isActive('/incomes') ? 'active' : ''}>
                                                             <span className="aside-menu-icon"><FontAwesomeIcon
                                                                 icon={faDollar}/></span>
                                                             <span className="aside-menu-text"> Incomes</span>
                                                         </Link>
-                                                        </li>
+                                                    </li>
                                                     <li className="aside-menu-item">
-                                                        <Link to="/returns" className={isActive('/returns') ? 'active' : ''}>
+                                                        <Link to="/returns"
+                                                              className={isActive('/returns') ? 'active' : ''}>
                                                             <span className="aside-menu-icon"><FontAwesomeIcon
                                                                 icon={faHandHoldingDollar}/></span>
                                                             <span className="aside-menu-text"> Returns</span>
                                                         </Link>
                                                     </li>
-                                                  
+
                                                 </ul>
                                             )}
                                         </li>
                                         <li className="aside-menu-item">
-                                            <a
+                                            <a onClick={(e) => toggleSubmenu('report')}
                                                className='dropdown-menu'>
                                                 <span className="aside-menu-icon"><FontAwesomeIcon
                                                     icon={faSitemap}/></span>
-                                                <span className="aside-menu-text" onClick={(e)=> toggleSubmenu('report')}>Reports</span>
-                                                <span className="submenu-toggle-icon">{submenuReportVisible ? '▲' : '▼'}</span>
+                                                <span className="aside-menu-text"
+                                                >Reports</span>
+                                                <span
+                                                    className="submenu-toggle-icon">{submenuReportVisible ? '▲' : '▼'}</span>
 
                                             </a>
                                             {submenuReportVisible && (
                                                 <ul className="submenu">
                                                     <li className="aside-menu-item">
                                                         <Link to="/income-report"
-                                                            className={isActive('/income-report') ? 'active' : ''}>
+                                                              className={isActive('/income-report') ? 'active' : ''}>
                                                             <span className="aside-menu-icon"><FontAwesomeIcon
                                                                 icon={faChartBar}/></span>
                                                             <span className="aside-menu-text"> Income Report</span>
@@ -301,7 +299,7 @@ export default function DefaultLayout() {
                                                     </li>
                                                     <li className="aside-menu-item">
                                                         <Link to="/expense-report"
-                                                            className={isActive('/expense-report') ? 'active' : ''}>
+                                                              className={isActive('/expense-report') ? 'active' : ''}>
                                                             <span className="aside-menu-icon"><FontAwesomeIcon
                                                                 icon={faChartPie}/></span>
                                                             <span className="aside-menu-text"> Expense Report</span>
@@ -309,7 +307,7 @@ export default function DefaultLayout() {
                                                     </li>
                                                     <li className="aside-menu-item">
                                                         <Link to="/investment-report"
-                                                            className={isActive('/investment-report') ? 'active' : ''}>
+                                                              className={isActive('/investment-report') ? 'active' : ''}>
                                                             <span className="aside-menu-icon"><FontAwesomeIcon
                                                                 icon={faMoneyBillTrendUp}/></span>
                                                             <span className="aside-menu-text"> Investment Report</span>
@@ -317,7 +315,7 @@ export default function DefaultLayout() {
                                                     </li>
                                                     <li className="aside-menu-item">
                                                         <Link to="/monthly-report"
-                                                            className={isActive('/monthly-report') ? 'active' : ''}>
+                                                              className={isActive('/monthly-report') ? 'active' : ''}>
                                                             <span className="aside-menu-icon"><FontAwesomeIcon
                                                                 icon={faChartLine}/></span>
                                                             <span className="aside-menu-text"> Monthly Report</span>
@@ -325,7 +323,7 @@ export default function DefaultLayout() {
                                                     </li>
                                                     <li className="aside-menu-item">
                                                         <Link to="/all-report"
-                                                            className={isActive('/all-report') ? 'active' : ''}>
+                                                              className={isActive('/all-report') ? 'active' : ''}>
                                                             <span className="aside-menu-icon"><FontAwesomeIcon
                                                                 icon={faChartSimple}/></span>
                                                             <span className="aside-menu-text"> Overall Report</span>
@@ -335,12 +333,13 @@ export default function DefaultLayout() {
                                             )}
                                         </li>
                                         <li className="aside-menu-item">
-                                            <a
-                                                className='dropdown-menu'>
+                                            <a onClick={(e) => toggleSubmenu('bankAcc')}
+                                               className='dropdown-menu'>
                                                 <span className="aside-menu-icon"><FontAwesomeIcon
                                                     icon={faBuildingColumns}/></span>
-                                                <span className="aside-menu-text" onClick={(e)=> toggleSubmenu('bankAcc')}>Bank & Acc.</span>
-                                                <span className="submenu-toggle-icon">{submenuBankAccVisible ? '▲' : '▼'}</span>
+                                                <span className="aside-menu-text">Bank & Acc.</span>
+                                                <span
+                                                    className="submenu-toggle-icon">{submenuBankAccVisible ? '▲' : '▼'}</span>
 
                                             </a>
                                             {submenuBankAccVisible && (
@@ -349,7 +348,8 @@ export default function DefaultLayout() {
                                                         <Link
                                                             to="/banks"
                                                             className={isActive('/banks') ? 'active' : ''}>
-                                                            <span className="aside-menu-icon"><FontAwesomeIcon icon={faCity}/></span>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                icon={faCity}/></span>
                                                             <span className="aside-menu-text"> Banks</span>
                                                         </Link>
                                                     </li>
@@ -357,7 +357,8 @@ export default function DefaultLayout() {
                                                         <Link
                                                             to="/accounts"
                                                             className={isActive('/accounts') ? 'active' : ''}>
-                                                            <span className="aside-menu-icon"><FontAwesomeIcon icon={faMoneyCheck}/></span>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                icon={faMoneyCheck}/></span>
                                                             <span className="aside-menu-text"> Accounts</span>
                                                         </Link>
                                                     </li>
@@ -382,7 +383,6 @@ export default function DefaultLayout() {
                                                 </ul>
                                             )}
                                         </li>
-                                       
                                         <li className="aside-menu-item">
                                             <Link to="/budgets" className={isActive('/budgets') ? 'active' : ''}>
                                                 <span className="aside-menu-icon"><FontAwesomeIcon
@@ -391,16 +391,13 @@ export default function DefaultLayout() {
                                             </Link>
                                         </li>
                                         <li className="aside-menu-item">
-                                                        <Link to="/investment-plan"
+                                            <Link to="/investment-plan"
                                                   className={isActive('/investment-plan') ? 'active' : ''}>
                                                   <span className="aside-menu-icon"><FontAwesomeIcon
                                                       icon={faExchange}/></span>
-                                                  <span className="aside-menu-text">Investment Plan</span>
-                                              </Link>
-                                          </li>
-
-                                    
-                                      
+                                                <span className="aside-menu-text">Investment Plan</span>
+                                            </Link>
+                                        </li>
                                         <li className="aside-menu-item">
                                             <Link to="/calendar" className={isActive('/calendar') ? 'active' : ''}>
                                                 <span className="aside-menu-icon"><FontAwesomeIcon
@@ -409,7 +406,7 @@ export default function DefaultLayout() {
                                             </Link>
                                         </li>
 
-                                        {registration_type === 'subscription' && userRole === 'admin' &&
+                                        { userRole === 'admin' &&
                                             <li className="aside-menu-item">
                                                 <Link to="/subscription-history"
                                                       className={isActive('/subscription-history') ? 'active' : ''}>
@@ -418,17 +415,51 @@ export default function DefaultLayout() {
                                                 </Link>
                                             </li>
                                         }
-
-
                                         {userRole === 'admin' &&
                                             <li className="aside-menu-item">
-                                                <Link
-                                                    to="/application-settings"
-                                                    className={isActive('/application-settings') ? 'active' : ''}>
+                                                <a
+                                                    className='dropdown-menu'
+                                                    onClick={(e) => toggleSubmenu('settings')}>
+                                                <span className="aside-menu-icon"><FontAwesomeIcon
+                                                    icon={faCogs}/></span>
+                                                    <span className="aside-menu-text">Settings</span>
+                                                    <span
+                                                        className="submenu-toggle-icon">{submenuSettingsVisible ? '▲' : '▼'}</span>
+
+                                                </a>
+                                                {submenuSettingsVisible && (
+                                                    <ul className="submenu">
+                                                        <li className="aside-menu-item">
+                                                            <Link to="/application-settings"
+                                                                  className={isActive('/application-settings') ? 'active' : ''}>
+                                                                <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                    icon={faCogs}/></span>
+                                                                <span
+                                                                    className="aside-menu-text"> Application Settings </span>
+                                                            </Link>
+                                                        </li>
+                                                        <li className="aside-menu-item">
+                                                            <Link
+                                                                to="/users"
+                                                                className={isActive('/users') ? 'active' : ''}>
                                                     <span className="aside-menu-icon"><FontAwesomeIcon
-                                                        icon={faCogs}/></span>
-                                                    <span className="aside-menu-text"> Application Settings </span>
-                                                </Link>
+                                                        icon={faEdit}/></span>
+                                                                <span
+                                                                    className="aside-menu-text"> Manage Users </span>
+                                                            </Link>
+                                                        </li>
+                                                        <li className="aside-menu-item">
+                                                            <Link
+                                                                to={'/users/' + user.id}
+                                                                className={isActive('/users') ? 'active' : ''}>
+                                                    <span className="aside-menu-icon"><FontAwesomeIcon
+                                                        icon={faEdit}/></span>
+                                                                <span
+                                                                    className="aside-menu-text"> Manage Profile </span>
+                                                            </Link>
+                                                        </li>
+                                                    </ul>
+                                                )}
                                             </li>
                                         }
                                     </ul>
@@ -525,16 +556,16 @@ export default function DefaultLayout() {
 
                 {/* Offcanvas Sidebar */}
                 <Offcanvas show={showSidebar} onHide={toggleSidebar} placement="start">
-                    <Offcanvas.Header closeButton>
-                        <Offcanvas.Title>Moneymate</Offcanvas.Title>
-                    </Offcanvas.Header>
+                    {/*<Offcanvas.Header closeButton>*/}
+                    {/*    <Offcanvas.Title>Finance</Offcanvas.Title>*/}
+                    {/*</Offcanvas.Header>*/}
                     <Offcanvas.Body>
                         {/* Sidebar menu items go here */}
                         <div className={`wrapper`}
                              id="wrappingContent">
                             <aside className="wrapping-aside overflow-auto h-100">
                                 <div className="aside-content">
-                                <ul className="aside-menu">
+                                    <ul className="aside-menu">
                                         <li className="aside-menu-item">
                                             <Link
                                                 to="/dashboard"
@@ -568,7 +599,7 @@ export default function DefaultLayout() {
                                                 </Link>
                                             </li>
                                         }
-                                       
+
 
                                         <li className="aside-menu-item">
                                             <Link
@@ -591,11 +622,13 @@ export default function DefaultLayout() {
 
                                         <li className="aside-menu-item">
                                             <a
-                                               className='dropdown-menu'>
+                                                className='dropdown-menu'>
                                                 <span className="aside-menu-icon"><FontAwesomeIcon
                                                     icon={faMoneyBill}/></span>
-                                                <span className="aside-menu-text" onClick={(e)=> toggleSubmenu('transaction')}>Transactions</span>
-                                                <span className="submenu-toggle-icon">{submenuTransactionVisible ? '▲' : '▼'}</span>
+                                                <span className="aside-menu-text"
+                                                      onClick={(e) => toggleSubmenu('transaction')}>Transactions</span>
+                                                <span
+                                                    className="submenu-toggle-icon">{submenuTransactionVisible ? '▲' : '▼'}</span>
 
                                             </a>
                                             {submenuTransactionVisible && (
@@ -610,43 +643,49 @@ export default function DefaultLayout() {
                                                         </Link>
                                                     </li>
                                                     <li className="aside-menu-item">
-                                                        <Link to="/expenses" className={isActive('/expenses') ? 'active' : ''}>
-                                                            <span className="aside-menu-icon"><FontAwesomeIcon icon={faMoneyBill}/></span>
+                                                        <Link to="/expenses"
+                                                              className={isActive('/expenses') ? 'active' : ''}>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                icon={faMoneyBill}/></span>
                                                             <span className="aside-menu-text"> Expenses</span>
                                                         </Link>
                                                     </li>
                                                     <li className="aside-menu-item">
-                                                        <Link to="/incomes" className={isActive('/incomes') ? 'active' : ''}>
+                                                        <Link to="/incomes"
+                                                              className={isActive('/incomes') ? 'active' : ''}>
                                                             <span className="aside-menu-icon"><FontAwesomeIcon
                                                                 icon={faDollar}/></span>
                                                             <span className="aside-menu-text"> Incomes</span>
                                                         </Link>
-                                                        </li>
+                                                    </li>
                                                     <li className="aside-menu-item">
-                                                        <Link to="/returns" className={isActive('/returns') ? 'active' : ''}>
+                                                        <Link to="/returns"
+                                                              className={isActive('/returns') ? 'active' : ''}>
                                                             <span className="aside-menu-icon"><FontAwesomeIcon
                                                                 icon={faHandHoldingDollar}/></span>
                                                             <span className="aside-menu-text"> Returns</span>
                                                         </Link>
                                                     </li>
-                                                  
+
                                                 </ul>
                                             )}
                                         </li>
                                         <li className="aside-menu-item">
                                             <a
-                                               className='dropdown-menu'>
+                                                className='dropdown-menu'>
                                                 <span className="aside-menu-icon"><FontAwesomeIcon
                                                     icon={faSitemap}/></span>
-                                                <span className="aside-menu-text" onClick={(e)=> toggleSubmenu('report')}>Reports</span>
-                                                <span className="submenu-toggle-icon">{submenuReportVisible ? '▲' : '▼'}</span>
+                                                <span className="aside-menu-text"
+                                                      onClick={(e) => toggleSubmenu('report')}>Reports</span>
+                                                <span
+                                                    className="submenu-toggle-icon">{submenuReportVisible ? '▲' : '▼'}</span>
 
                                             </a>
                                             {submenuReportVisible && (
                                                 <ul className="submenu">
                                                     <li className="aside-menu-item">
                                                         <Link to="/income-report"
-                                                            className={isActive('/income-report') ? 'active' : ''}>
+                                                              className={isActive('/income-report') ? 'active' : ''}>
                                                             <span className="aside-menu-icon"><FontAwesomeIcon
                                                                 icon={faChartBar}/></span>
                                                             <span className="aside-menu-text"> Income Report</span>
@@ -654,7 +693,7 @@ export default function DefaultLayout() {
                                                     </li>
                                                     <li className="aside-menu-item">
                                                         <Link to="/expense-report"
-                                                            className={isActive('/expense-report') ? 'active' : ''}>
+                                                              className={isActive('/expense-report') ? 'active' : ''}>
                                                             <span className="aside-menu-icon"><FontAwesomeIcon
                                                                 icon={faChartPie}/></span>
                                                             <span className="aside-menu-text"> Expense Report</span>
@@ -662,7 +701,7 @@ export default function DefaultLayout() {
                                                     </li>
                                                     <li className="aside-menu-item">
                                                         <Link to="/investment-report"
-                                                            className={isActive('/investment-report') ? 'active' : ''}>
+                                                              className={isActive('/investment-report') ? 'active' : ''}>
                                                             <span className="aside-menu-icon"><FontAwesomeIcon
                                                                 icon={faMoneyBillTrendUp}/></span>
                                                             <span className="aside-menu-text"> Investment Report</span>
@@ -670,7 +709,7 @@ export default function DefaultLayout() {
                                                     </li>
                                                     <li className="aside-menu-item">
                                                         <Link to="/monthly-report"
-                                                            className={isActive('/monthly-report') ? 'active' : ''}>
+                                                              className={isActive('/monthly-report') ? 'active' : ''}>
                                                             <span className="aside-menu-icon"><FontAwesomeIcon
                                                                 icon={faChartLine}/></span>
                                                             <span className="aside-menu-text"> Monthly Report</span>
@@ -678,7 +717,7 @@ export default function DefaultLayout() {
                                                     </li>
                                                     <li className="aside-menu-item">
                                                         <Link to="/all-report"
-                                                            className={isActive('/all-report') ? 'active' : ''}>
+                                                              className={isActive('/all-report') ? 'active' : ''}>
                                                             <span className="aside-menu-icon"><FontAwesomeIcon
                                                                 icon={faChartSimple}/></span>
                                                             <span className="aside-menu-text"> Overall Report</span>
@@ -692,8 +731,10 @@ export default function DefaultLayout() {
                                                 className='dropdown-menu'>
                                                 <span className="aside-menu-icon"><FontAwesomeIcon
                                                     icon={faBuildingColumns}/></span>
-                                                <span className="aside-menu-text" onClick={(e)=> toggleSubmenu('bankAcc')}>Bank & Acc.</span>
-                                                <span className="submenu-toggle-icon">{submenuBankAccVisible ? '▲' : '▼'}</span>
+                                                <span className="aside-menu-text"
+                                                      onClick={(e) => toggleSubmenu('bankAcc')}>Bank & Acc.</span>
+                                                <span
+                                                    className="submenu-toggle-icon">{submenuBankAccVisible ? '▲' : '▼'}</span>
 
                                             </a>
                                             {submenuBankAccVisible && (
@@ -702,7 +743,8 @@ export default function DefaultLayout() {
                                                         <Link
                                                             to="/banks"
                                                             className={isActive('/banks') ? 'active' : ''}>
-                                                            <span className="aside-menu-icon"><FontAwesomeIcon icon={faCity}/></span>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                icon={faCity}/></span>
                                                             <span className="aside-menu-text"> Banks</span>
                                                         </Link>
                                                     </li>
@@ -710,7 +752,8 @@ export default function DefaultLayout() {
                                                         <Link
                                                             to="/accounts"
                                                             className={isActive('/accounts') ? 'active' : ''}>
-                                                            <span className="aside-menu-icon"><FontAwesomeIcon icon={faMoneyCheck}/></span>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                icon={faMoneyCheck}/></span>
                                                             <span className="aside-menu-text"> Accounts</span>
                                                         </Link>
                                                     </li>
@@ -735,7 +778,7 @@ export default function DefaultLayout() {
                                                 </ul>
                                             )}
                                         </li>
-                                       
+
                                         <li className="aside-menu-item">
                                             <Link to="/budgets" className={isActive('/budgets') ? 'active' : ''}>
                                                 <span className="aside-menu-icon"><FontAwesomeIcon
@@ -744,16 +787,15 @@ export default function DefaultLayout() {
                                             </Link>
                                         </li>
                                         <li className="aside-menu-item">
-                                                        <Link to="/investment-plan"
+                                            <Link to="/investment-plan"
                                                   className={isActive('/investment-plan') ? 'active' : ''}>
                                                   <span className="aside-menu-icon"><FontAwesomeIcon
                                                       icon={faExchange}/></span>
-                                                  <span className="aside-menu-text">Investment Plan</span>
-                                              </Link>
-                                          </li>
+                                                <span className="aside-menu-text">Investment Plan</span>
+                                            </Link>
+                                        </li>
 
-                                    
-                                      
+
                                         <li className="aside-menu-item">
                                             <Link to="/calendar" className={isActive('/calendar') ? 'active' : ''}>
                                                 <span className="aside-menu-icon"><FontAwesomeIcon
@@ -762,7 +804,7 @@ export default function DefaultLayout() {
                                             </Link>
                                         </li>
 
-                                        {registration_type === 'subscription' && userRole === 'admin' &&
+                                        { userRole === 'admin' &&
                                             <li className="aside-menu-item">
                                                 <Link to="/subscription-history"
                                                       className={isActive('/subscription-history') ? 'active' : ''}>

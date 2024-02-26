@@ -20,7 +20,6 @@ export default function MonthlyReport() {
 
     const [overAllReport, setOverAllReport] = useState(initialState);
     const [loading, setLoading] = useState(false);
-    const {applicationSettings} = useContext(SettingsContext);
     const [fromDate, setFromDate] = useState(null);
     const [incomeCategories, setIncomeCategories] = useState([]);
     const [selectedCategoryId, setSelectedCategoryId] = useState('');
@@ -40,7 +39,6 @@ export default function MonthlyReport() {
         setTableRow(rows);
     }
     const getOverallReports = () => {
-        console.log('foobar')
         setLoading(true);
         try {
             axiosClient.get('/report/get-monthly-report', {
@@ -48,7 +46,7 @@ export default function MonthlyReport() {
             }).then(({data}) => {
                 if (data.status === 404) {
                     setAlertMessage(data.message);
-                }else{
+                } else {
                     setAlertMessage(null)
                 }
 
@@ -90,6 +88,7 @@ export default function MonthlyReport() {
         setSelectedCategoryId('');
         setOverAllReport(initialState);
         setLoading(false);
+        setAlertMessage(null);
     };
 
     return (
@@ -99,7 +98,7 @@ export default function MonthlyReport() {
                 <div className="row mb-3">
                     <table>
                         <tbody>
-                        <tr style={{border:'hidden'}}>
+                        <tr style={{border: 'hidden'}}>
                             <td>
                                 <form onSubmit={handleSubmit}>
                                     <select

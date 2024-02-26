@@ -182,18 +182,21 @@ export default function Sectors() {
         }).then((result) => {
             if (result.isConfirmed) {
                 axiosClient.post(`/change-payment-status/${payment.id}`).then(({data}) => {
-                    Swal.fire({
-                        title: data.status === 400 ? 'Failed' : 'Paid',
-                        text: data.message,
-                        icon: data.status === 200 ? 'success' : 'error',
+                    Toast.fire({
+                        icon: "success",
+                        title: data.message,
+                        text: data.description,
                     });
-                    // window.location.reload();
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 5000)
                 }).catch(err => {
-                    console.log({err})
                     if (err.response) {
                         Toast.fire({
                             icon: "error",
                             title: err.response.data.message,
+                            text: err.response.data.description,
+                            timer: 5000
                         });
                     }
 
@@ -460,21 +463,21 @@ export default function Sectors() {
                         </tr>
                         {modalSector?.payments && modalSector?.payments.length > 0 && modalSector?.payments.map((data, i) => {
                             return (<tr key={data.id}>
-                                    <td>{i + 1}</td>
-                                    <td >
-                                        {data?.payment_number}
-                                        <ul style={{display:"inline"}}>
-                                            ( <a href="#" style={{
-                                                textDecoration: "none",
-                                                marginRight: 10
-                                            }}>{data.date}</a>
+                                <td>{i + 1}</td>
+                                <td>
+                                    {data?.payment_number}
+                                    <ul style={{display: "inline"}}>
+                                        ( <a href="#" style={{
+                                        textDecoration: "none",
+                                        marginRight: 10
+                                    }}>{data.date}</a>
 
-                                            <a href="#" style={{
-                                                textDecoration: "none",
-                                                marginRight: 10
-                                            }}>{data?.type}</a>)
-                                        </ul>
-                                    </td>
+                                        <a href="#" style={{
+                                            textDecoration: "none",
+                                            marginRight: 10
+                                        }}>{data?.type}</a>)
+                                    </ul>
+                                </td>
                                 <td>{default_currency + ' ' + data?.amount}
                                     <div><a href="#" style={{
                                         textDecoration: "none",

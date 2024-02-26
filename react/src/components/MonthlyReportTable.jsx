@@ -15,7 +15,7 @@ const MonthlyReportTable = ({income, expense, sectorName, sl}) => {
                                     income?.reference.includes('air') ?
                                         <FaAirbnb className={'logo-reservations'} color="red"/> :
                                         (income?.reference.includes('book') ?
-                                            <i className="logo-bookingcom"></i> :
+                                            <i className="logo-bookingcom logo-reservations"></i> :
                                             <FaMoneyBillAlt fontSize={20} color="gray"/>)
                                 }</a>
                                 {

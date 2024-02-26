@@ -226,8 +226,6 @@ export default function IncomeForm() {
         });
     };
 
-//   console.log('reference', income.reference)
-
     return (
         <>
             <MainLoader loaderVisible={loading}/>

@@ -37,7 +37,7 @@ class IncomeController extends Controller {
 			$query->where( 'type', 'income' );
 		} )->skip( ( $page - 1 ) * $pageSize )
 		                 ->take( $pageSize )
-		                 ->orderBy( 'id', 'desc' )
+		                 ->orderBy( 'date', 'desc' )
 		                 ->get();
 
 
