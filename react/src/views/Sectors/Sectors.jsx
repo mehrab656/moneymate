@@ -182,6 +182,7 @@ export default function Sectors() {
         }).then((result) => {
             if (result.isConfirmed) {
                 axiosClient.post(`/change-payment-status/${payment.id}`).then(({data}) => {
+                    // @todo Check ME
                     Toast.fire({
                         icon: "success",
                         title: data.message,
@@ -199,7 +200,6 @@ export default function Sectors() {
                             timer: 5000
                         });
                     }
-
                 })
 
             }

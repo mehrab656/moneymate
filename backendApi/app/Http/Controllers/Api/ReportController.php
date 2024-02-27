@@ -276,9 +276,8 @@ class ReportController extends Controller {
 
 		if ( ! $incomeCategoryId || ! $fromDate ) {
 			return response()->json( [
-				'status'  => 404,
 				'message' => "Select Income sector or Month."
-			] );
+			],404 );
 		}
 
 		$category = DB::table( 'categories' )->find( $incomeCategoryId );
@@ -286,7 +285,7 @@ class ReportController extends Controller {
 			return response()->json( [
 				'message' => "Income Category not Found!",
 				'status'  => 404
-			] );
+			],404 );
 		}
 		$sector = DB::table( 'sectors' )->find( $category->sector_id );
 
@@ -339,7 +338,6 @@ class ReportController extends Controller {
 		];
 
 		return response()->json( [
-			'status'         => 200,
 			'expenses'       => $expense,
 			'incomes'        => $incomes,
 			'sector'         => $sector,

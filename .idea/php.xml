@@ -143,6 +143,9 @@
       <path value="$PROJECT_DIR$/backendApi/vendor/encore/laravel-admin" />
       <path value="$PROJECT_DIR$/backendApi/vendor/symfony/dom-crawler" />
       <path value="$PROJECT_DIR$/backendApi/vendor/twilio/sdk" />
+      <path value="$PROJECT_DIR$/backendApi/vendor/berkayk/onesignal-laravel" />
+      <path value="$PROJECT_DIR$/backendApi/vendor/symfony/psr-http-message-bridge" />
+      <path value="$PROJECT_DIR$/backendApi/vendor/laravel-notification-channels/onesignal" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.1" />

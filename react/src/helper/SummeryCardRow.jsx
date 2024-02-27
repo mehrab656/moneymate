@@ -5,7 +5,6 @@ import React, {memo} from "react";
 
 
 const SummeryCardRow = ({item, handelPayment, currency}) => {
-
     return (
         <tr key={item.id}>
             <td>{item?.payment_number}</td>

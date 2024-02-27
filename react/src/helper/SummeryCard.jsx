@@ -12,7 +12,7 @@ const SummeryCard = ({showModal, handelCloseModal, data, currency, modalType, To
         "cheque": " Cheque Details",
     }
 
-    const handelPayment = async ({payment}) => {
+    const handelPayment = async (payment) => {
         // setElectricityShowModal(false);
         handelCloseModal(); //otherwise input filed of swal will not work
 
@@ -46,14 +46,12 @@ const SummeryCard = ({showModal, handelCloseModal, data, currency, modalType, To
                     });
                     navigation('/sectors');
                 }).catch(err => {
-                    console.log({err})
                     if (err.response) {
                         Toast.fire({
                             icon: "error",
                             title: err.response.data.message,
                         });
                     }
-
                 })
 
             }

@@ -7,6 +7,16 @@
     <title>Personal Finance</title>
     <base href="/">
     <script src="/config.js"></script>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        OneSignalDeferred.push(function(OneSignal) {
+            OneSignal.init({
+                appId: "9e8e0cc0-c0cd-4f4a-931c-89c7188a9a8d",
+            });
+        });
+    </script>
+
 </head>
 <body>
 <div id="root"></div>

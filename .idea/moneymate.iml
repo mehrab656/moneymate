@@ -135,8 +135,12 @@
       <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/encore/laravel-admin" />
       <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/symfony/dom-crawler" />
       <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/twilio/sdk" />
+      <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/berkayk/onesignal-laravel" />
+      <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/laravel-notification-channels/onesignal" />
+      <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/symfony/psr-http-message-bridge" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="OneSignalSDK.page" level="application" />
   </component>
 </module>
