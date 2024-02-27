@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ExpenseReportResource;
+use App\Http\Resources\ExpenseResource;
 use App\Http\Resources\IncomeReportResource;
+use App\Http\Resources\IncomeResource;
 use App\Models\Expense;
 use App\Models\Income;
 use Carbon\Carbon;
@@ -12,6 +14,7 @@ use DateTime;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use function Laravel\Prompts\table;
 
 class ReportController extends Controller {
 	/**
@@ -202,36 +205,36 @@ class ReportController extends Controller {
 		             ->whereNull( 'incomes.deleted_at' )
 		             ->groupBy( [ 'category_id', 'name' ] );
 
-		$expense = DB::table( 'expenses' )->selectRaw( 'COALESCE(sum(amount), 0) as amount, sector_id, sectors.name' )
-		             ->join( 'categories', 'expenses.category_id', '=', 'categories.id' )
-		             ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
-		             ->whereNull( 'expenses.deleted_at' )
-		             ->groupBy( [ 'sector_id', 'sectors.name' ] );
+		$expense         = DB::table( 'expenses' )->selectRaw( 'COALESCE(sum(amount), 0) as amount, sector_id, sectors.name' )
+		                     ->join( 'categories', 'expenses.category_id', '=', 'categories.id' )
+		                     ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
+		                     ->whereNull( 'expenses.deleted_at' )
+		                     ->groupBy( [ 'sector_id', 'sectors.name' ] );
 		$totalInvestment = DB::table( 'investments' )->whereNull( 'deleted_at' );
-		$totalIncome = DB::table( 'incomes' )->whereNull( 'deleted_at' );
-		$totalExpense = DB::table( 'expenses' )->whereNull( 'deleted_at' );
+		$totalIncome     = DB::table( 'incomes' )->whereNull( 'deleted_at' );
+		$totalExpense    = DB::table( 'expenses' )->whereNull( 'deleted_at' );
 
-		if ($startDate && $endDate){
-			$lends = $lends->whereBetween( 'date', [ $startDate, $endDate ] );
-			$borrow = $borrow->whereBetween( 'date', [ $startDate, $endDate ] );
-			$refund = $refund->whereBetween( 'date', [ $startDate, $endDate ] );
-			$incomes = $incomes->whereBetween( 'date', [ $startDate, $endDate ] );
-			$expense = $expense->whereBetween( 'date', [ $startDate, $endDate ] );
-			$investments = $investments->whereBetween( 'investment_date', [ $startDate, $endDate ] );
+		if ( $startDate && $endDate ) {
+			$lends           = $lends->whereBetween( 'date', [ $startDate, $endDate ] );
+			$borrow          = $borrow->whereBetween( 'date', [ $startDate, $endDate ] );
+			$refund          = $refund->whereBetween( 'date', [ $startDate, $endDate ] );
+			$incomes         = $incomes->whereBetween( 'date', [ $startDate, $endDate ] );
+			$expense         = $expense->whereBetween( 'date', [ $startDate, $endDate ] );
+			$investments     = $investments->whereBetween( 'investment_date', [ $startDate, $endDate ] );
 			$totalInvestment = $totalInvestment->whereBetween( 'investment_date', [ $startDate, $endDate ] );
-			$totalIncome = $totalIncome->whereBetween( 'date', [ $startDate, $endDate ] );
-			$totalExpense = $totalExpense->whereBetween( 'date', [ $startDate, $endDate ] );
+			$totalIncome     = $totalIncome->whereBetween( 'date', [ $startDate, $endDate ] );
+			$totalExpense    = $totalExpense->whereBetween( 'date', [ $startDate, $endDate ] );
 		}
 
-		$lends = $lends->sum( 'amount' );
-		$borrow = $borrow->sum( 'amount' );
-		$refund = $refund->whereBetween( 'date', [ $startDate, $endDate ] );
-		$incomes = $incomes->get();
-		$expense = $expense->get();
-		$investments = $investments->get();
+		$lends           = $lends->sum( 'amount' );
+		$borrow          = $borrow->sum( 'amount' );
+		$refund          = $refund->whereBetween( 'date', [ $startDate, $endDate ] );
+		$incomes         = $incomes->get();
+		$expense         = $expense->get();
+		$investments     = $investments->get();
 		$totalInvestment = $totalInvestment->sum( 'amount' );
-		$totalIncome = $totalIncome->sum( 'amount' );
-		$totalExpense = $totalExpense->sum( 'amount' );
+		$totalIncome     = $totalIncome->sum( 'amount' );
+		$totalExpense    = $totalExpense->sum( 'amount' );
 
 		$refundable_amount = $refund->sum( 'refundable_amount' );
 		$refunded_amount   = $refund->sum( 'refunded_amount' );
@@ -273,11 +276,10 @@ class ReportController extends Controller {
 		$toDate           = ( new DateTime( $fromDate ) )->format( 'Y-m-t' );
 
 
-
 		if ( ! $incomeCategoryId || ! $fromDate ) {
 			return response()->json( [
 				'message' => "Select Income sector or Month."
-			],404 );
+			], 404 );
 		}
 
 		$category = DB::table( 'categories' )->find( $incomeCategoryId );
@@ -285,7 +287,7 @@ class ReportController extends Controller {
 			return response()->json( [
 				'message' => "Income Category not Found!",
 				'status'  => 404
-			],404 );
+			], 404 );
 		}
 		$sector = DB::table( 'sectors' )->find( $category->sector_id );
 
@@ -368,13 +370,52 @@ class ReportController extends Controller {
 		];
 	}
 
-	public function calenderReport (){
-		$incomes = Income::whereNull('deleted_at')->orderBy( 'date', 'desc' )->get();
-		$expenses = Expense::whereNull('deleted_at')->orderBy( 'date', 'desc' )->get();
+	public function calenderReport() {
+		$incomeQuery = Income::whereNull( 'deleted_at' )->orderBy( 'date', 'desc' )->get();
+		$expenseQuery    = Expense::whereNull( 'deleted_at' )->orderBy( 'date', 'desc' )->get();
+		$payments = DB::table('payments')->where([
+			'status'=>'unpaid',
+		])->whereNull('deleted_at')->get();
+
+
+
+		$incomes      = IncomeResource::collection( $incomeQuery );
+		$expenses      = IncomeResource::collection( $expenseQuery );
+		$calenderDara = [];
+
+		foreach ( $incomes as $income ) {
+
+			$calenderDara[] = (object) [
+				'additionalData' => $income,
+				'classNames'     => "income-event",
+				'color'          => "rgb(65, 147, 136)",
+				"start"          => $income->date,
+				"title"          => $income->category->name
+			];
+		}
+
+		foreach ( $expenses as $expense ) {
+			$calenderDara[] = (object) [
+				'additionalData' => $expense,
+				'classNames'     => "expense-event",
+				'color'          => "rgb(214, 62, 99)",
+				"start"          => $expense->date,
+				"title"          => $expense->category->name
+			];
+		}
+
+		foreach ($payments as $payment){
+			$calenderDara[] = (object) [
+				'additionalData' => $payment,
+				'classNames'     => "payment-event",
+				'color'          => "rgb(253, 126, 20)",
+				"start"          => $payment->date,
+				"title"          => $payment->payment_number
+			];
+		}
 
 		return response()->json( [
-			'incomes'  => IncomeResource::collection( $incomes),
-			'expenses'  => ExpenseResource::collection( $expenses),
+			'calenderData'=>$calenderDara
 		] );
 	}
 

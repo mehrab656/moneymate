@@ -16,59 +16,18 @@ export default function Calendar() {
     const [textInput, setTextInput] = useState('');
     const [descriptionInput, setDescriptionInput] = useState('');
 
-    const fetchData = () => {
-        setLoading(true);
-        axiosClient
-            .get('/incomes')
-            .then(({data}) => {
-                const transformedIncomeData = transformIncomeData(data.data);
-                axiosClient
-                    .get('/expenses')
-                    .then(({data}) => {
-                        const transformedExpenseData = transformExpenseData(data.data);
-                        setCalendarData([...transformedIncomeData, ...transformedExpenseData]);
-                    })
-                    .catch((error) => {
-                        console.warn('Unable to fetch data', error);
-                    })
-                    .finally(() => {
-                        setLoading(false);
-                    });
-            })
-            .catch((error) => {
-                console.warn('Unable to fetch data', error);
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-    };
-
     useEffect(() => {
         document.title = "Calender";
-        fetchData();
-    }, []);
 
-    console.log({calendarData})
+        setLoading(true);
 
-    function transformIncomeData(incomeData) {
-        return incomeData.map((income) => ({
-            title: income.category_name,
-            start: income.date,
-            color: 'rgb(65, 147, 136)',
-            additionalData: income,
-            classNames: 'income-event',
-        }));
-    }
-
-    function transformExpenseData(expenseData) {
-        return expenseData.map((expense) => ({
-            title: expense.category_name,
-            start: expense.date,
-            color: 'rgb(214, 62, 99)',
-            additionalData: expense,
-            classNames: 'expense-event',
-        }));
-    }
+        axiosClient.get('/calender-report').then(({data:{calenderData}})=>{
+            setCalendarData(calenderData);
+            setLoading(false);
+        }).catch(()=>{
+            console.warn('fetch error')
+        })
+    },[])
 
     const handleDateSelect = (arg) => {
         setSelectedEvent(null);
@@ -91,7 +50,7 @@ export default function Calendar() {
 
     return (
         <div>
-         <MainLoader loaderVisible={loading} />
+            <MainLoader loaderVisible={loading}/>
             <FullCalendar
                 plugins={[dayGridPlugin, interactionPlugin]}
                 initialView="dayGridMonth"
@@ -100,7 +59,8 @@ export default function Calendar() {
                 select={handleDateSelect}
                 eventClick={handleEventClick}
             />
-            <Modal show={showModal} onHide={handleCloseModal} size="lg" id="modalFillIn" centered className="custom-modal">
+            <Modal show={showModal} onHide={handleCloseModal} size="lg" id="modalFillIn" centered
+                   className="custom-modal">
                 <Modal.Header closeButton>
                     <Modal.Title>
                         {selectedEvent?.additionalData?.category_name ?? 'N/A'}
