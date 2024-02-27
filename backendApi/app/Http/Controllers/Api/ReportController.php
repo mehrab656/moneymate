@@ -367,5 +367,17 @@ class ReportController extends Controller {
 			'netPercent'   => round( $percent, 2 ) . "%",
 		];
 	}
+
+	public function calenderReport (){
+		$incomes = Income::whereNull('deleted_at')->orderBy( 'date', 'desc' )->get();
+		$expenses = Expense::whereNull('deleted_at')->orderBy( 'date', 'desc' )->get();
+
+		return response()->json( [
+			'incomes'  => IncomeResource::collection( $incomes),
+			'expenses'  => ExpenseResource::collection( $expenses),
+		] );
+	}
+
+
 }
 

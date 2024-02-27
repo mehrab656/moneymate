@@ -48,6 +48,8 @@ export default function Calendar() {
         fetchData();
     }, []);
 
+    console.log({calendarData})
+
     function transformIncomeData(incomeData) {
         return incomeData.map((income) => ({
             title: income.category_name,
