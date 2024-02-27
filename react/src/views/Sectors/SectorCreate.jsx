@@ -216,7 +216,7 @@ function SectorCreate() {
                                 name="contract_start_date"
                                 value={sector.contract_start_date}
                                 onChange={handleInputChange}
-                                focused={true}
+                                // focused={true}
                             />
                             {errors?.contract_start_date &&
                                 <p className="error-message mt-2">{errors?.contract_start_date[0]}</p>}
@@ -230,7 +230,7 @@ function SectorCreate() {
                                 name="contract_end_date"
                                 value={sector.contract_end_date}
                                 onChange={handleInputChange}
-                                focused={true}
+                                // focused={true}
                             />
                             {errors?.contract_end_date &&
                                 <p className="error-message mt-2">{errors?.contract_end_date[0]}</p>}
@@ -240,7 +240,7 @@ function SectorCreate() {
                                 <FormControl fullWidth>
                                     <InputLabel id="demo-simple-select-label">Payment Account</InputLabel>
                                     <Select
-                                        focused={true}
+                                        // focused={true}
                                         labelId="demo-simple-select-label"
                                         id="demo-simple-select"
                                         name='payment_account_id'
@@ -250,9 +250,7 @@ function SectorCreate() {
                                     >
                                         {bankAccounts.map((account, i) => {
                                             return <MenuItem key={account.id + i}
-                                                             value={account.id}>{account.bank_name} - {account.account_number} -
-                                                Balance
-                                                ({account.balance})</MenuItem>
+                                                             value={account.id}>{account.bank_name} - {account.account_number}</MenuItem>
                                         })}
                                     </Select>
                                 </FormControl>
@@ -281,7 +279,7 @@ function SectorCreate() {
                                 name="el_premises_no"
                                 value={sector.el_premises_no}
                                 onChange={ev => setSector({...sector, el_premises_no: ev.target.value})}
-                                focused={true}
+                                // focused={true}
                             />
                             {errors?.el_premises_no &&
                                 <p className="error-message mt-2">{errors?.el_premises_no[0]}</p>}
@@ -295,7 +293,7 @@ function SectorCreate() {
                                 name="el_business_acc_no"
                                 value={sector.el_business_acc_no}
                                 onChange={ev => setSector({...sector, el_business_acc_no: ev.target.value})}
-                                focused={true}
+                                // focused={true}
                             />
                             {errors?.el_business_acc_no &&
                                 <p className="error-message mt-2">{errors?.el_business_acc_no[0]}</p>}
@@ -309,7 +307,7 @@ function SectorCreate() {
                                 name="el_acc_no"
                                 value={sector.el_acc_no}
                                 onChange={ev => setSector({...sector, el_acc_no: ev.target.value})}
-                                focused={true}
+                                // focused={true}
                             />
                             {errors?.el_acc_no && <p className="error-message mt-2">{errors?.el_acc_no[0]}</p>}
                         </Grid>
@@ -322,7 +320,7 @@ function SectorCreate() {
                                 name="el_billing_date"
                                 value={sector.el_billing_date}
                                 onChange={ev => setSector({...sector, el_billing_date: ev.target.value})}
-                                focused={true}
+                                // focused={true}
                             />
                             {errors?.el_billing_date &&
                                 <p className="error-message mt-2">{errors?.el_billing_date[0]}</p>}
@@ -345,10 +343,10 @@ function SectorCreate() {
                                 label="Account Number"
                                 variant="outlined"
                                 name="internet_acc_no"
-                                type="number"
+                                type="text"
                                 value={sector.internet_acc_no}
                                 onChange={ev => setSector({...sector, internet_acc_no: ev.target.value})}
-                                focused={true}
+                                // focused={true}
                             />
                             {errors?.internet_acc_no &&
                                 <p className="error-message mt-2">{errors?.internet_acc_no[0]}</p>}
@@ -365,7 +363,7 @@ function SectorCreate() {
                                     ...sector,
                                     internet_billing_date: ev.target.value
                                 })}
-                                focused={true}
+                                // focused={true}
                             />
                         </Grid>
                         {
@@ -375,7 +373,7 @@ function SectorCreate() {
                                     <FormControl fullWidth>
                                         <InputLabel id="demo-simple-select-label">Contract period</InputLabel>
                                         <Select
-                                            focused={true}
+                                            // focused={true}
                                             labelId="demo-simple-select-label"
                                             id="demo-simple-select"
                                             name="contract_period"
@@ -402,7 +400,7 @@ function SectorCreate() {
                                 name="note"
                                 value={sector.int_note}
                                 onChange={ev => setSector({...sector, int_note: ev.target.value})}
-                                focused={true}
+                                // focused={true}
                             />
                             {errors?.int_note &&
                                 <p className="error-message mt-2">{errors?.int_note[0]}</p>}
@@ -429,7 +427,7 @@ function SectorCreate() {
                                     name="paymentNumber"
                                     value={payment.paymentNumber}
                                     onChange={(e) => handlePaymentInputChange(e, index)}
-                                    focused={true}
+                                    // focused={true}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={4}>
@@ -441,7 +439,7 @@ function SectorCreate() {
                                     name="paymentDate"
                                     value={payment.paymentDate}
                                     onChange={(e) => handlePaymentInputChange(e, index)}
-                                    focused={true}
+                                    // focused={true}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={2}>
@@ -453,7 +451,7 @@ function SectorCreate() {
                                     type='number'
                                     value={payment.amount}
                                     onChange={(e) => handlePaymentInputChange(e, index)}
-                                    focused={true}
+                                    // focused={true}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={2}>
