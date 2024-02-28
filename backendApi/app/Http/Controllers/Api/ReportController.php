@@ -371,16 +371,15 @@ class ReportController extends Controller {
 	}
 
 	public function calenderReport() {
-		$incomeQuery = Income::whereNull( 'deleted_at' )->orderBy( 'date', 'desc' )->get();
-		$expenseQuery    = Expense::whereNull( 'deleted_at' )->orderBy( 'date', 'desc' )->get();
-		$payments = DB::table('payments')->where([
-			'status'=>'unpaid',
-		])->whereNull('deleted_at')->get();
-
+		$incomeQuery  = Income::whereNull( 'deleted_at' )->orderBy( 'date', 'desc' )->get();
+		$expenseQuery = Expense::whereNull( 'deleted_at' )->orderBy( 'date', 'desc' )->get();
+		$payments     = DB::table( 'payments' )->where( [
+			'status' => 'unpaid',
+		] )->whereNull( 'deleted_at' )->get();
 
 
 		$incomes      = IncomeResource::collection( $incomeQuery );
-		$expenses      = IncomeResource::collection( $expenseQuery );
+		$expenses     = IncomeResource::collection( $expenseQuery );
 		$calenderDara = [];
 
 		foreach ( $incomes as $income ) {
@@ -404,18 +403,19 @@ class ReportController extends Controller {
 			];
 		}
 
-		foreach ($payments as $payment){
+		foreach ( $payments as $payment ) {
+
 			$calenderDara[] = (object) [
-				'additionalData' => $payment,
-				'classNames'     => "payment-event",
-				'color'          => "rgb(253, 126, 20)",
+				"additionalData" => $payment,
+				"classNames"     => "payment-event",
+				"color"          => "rgb(237, 19, 19)",
 				"start"          => $payment->date,
 				"title"          => $payment->payment_number
 			];
 		}
 
 		return response()->json( [
-			'calenderData'=>$calenderDara
+			'calenderData' => $calenderDara
 		] );
 	}
 
