@@ -5,6 +5,7 @@ import {SettingsContext} from "../contexts/SettingsContext";
 import MainLoader from "../components/MainLoader.jsx";
 import DatePicker from "react-datepicker";
 import MonthlyReportTable from "../components/MonthlyReportTable.jsx";
+import Swal from "sweetalert2";
 
 const initialState = {
     incomes: [],
@@ -18,52 +19,60 @@ const initialState = {
 }
 export default function MonthlyReport() {
 
-    const [overAllReport, setOverAllReport] = useState(initialState);
+    const [monthlyReport, setMonthlyReport] = useState(initialState);
     const [loading, setLoading] = useState(false);
     const [fromDate, setFromDate] = useState(null);
     const [incomeCategories, setIncomeCategories] = useState([]);
     const [selectedCategoryId, setSelectedCategoryId] = useState('');
     const [alertMessage, setAlertMessage] = useState(null);
-
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
     const [tableRow, setTableRow] = useState([]);
     var rows = [];
     const overallReportRow = () => {
         rows = [];
-        for (let i = 0; i < overAllReport.length; i++) {
-            rows.push(<MonthlyReportTable income={overAllReport.incomes[i]}
-                                          expense={overAllReport.expenses[i]}
-                                          sectorName={overAllReport.sector.name}
+        for (let i = 0; i < monthlyReport.length; i++) {
+            rows.push(<MonthlyReportTable income={monthlyReport.incomes[i]}
+                                          expense={monthlyReport.expenses[i]}
+                                          sectorName={monthlyReport.sector.name}
                                           sl={i}
                                           key={i}/>);
         }
         setTableRow(rows);
     }
-    const getOverallReports = () => {
+    const getMonthlyReports = () => {
         setLoading(true);
-        try {
-            axiosClient.get('/report/get-monthly-report', {
-                params: {from_date: fromDate, category_id: selectedCategoryId},
-            }).then(({data}) => {
-                if (data.status === 404) {
-                    setAlertMessage(data.message);
-                } else {
-                    setAlertMessage(null)
-                }
 
-                setOverAllReport(data);
-                overallReportRow();
-                setLoading(false);
-            })
-        } catch (error) {
-            console.warn(error);
+        axiosClient.get('/report/get-monthly-report', {
+            params: {from_date: fromDate, category_id: selectedCategoryId},
+        }).then(({data}) => {
+            setAlertMessage(null)
+            setMonthlyReport(data);
+            overallReportRow();
             setLoading(false);
-        }
+        }).catch(err => {
+            setAlertMessage(err.response.data.message);
+            setTimeout(() => {
+                setAlertMessage(null)
+            }, 3000);
+            setLoading(false);
+        });
+        setLoading(false);
     };
 
     useEffect(() => {
         document.title = "Monthly Reports";
-        getOverallReports();
-    }, [overAllReport.length]);
+        // getMonthlyReports();
+    }, []);
 
     useEffect(() => {
         axiosClient.get('/income-categories')
@@ -79,14 +88,13 @@ export default function MonthlyReport() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // setOverAllReport(initialState);
-        getOverallReports();
+        getMonthlyReports();
     };
     const resetFilterParameter = () => {
         setLoading(true);
         setFromDate(null);
         setSelectedCategoryId('');
-        setOverAllReport(initialState);
+        setMonthlyReport(initialState);
         setLoading(false);
         setAlertMessage(null);
     };
@@ -160,11 +168,11 @@ export default function MonthlyReport() {
                                     <thead>
                                     <tr className={'text-center'}>
                                         <td colSpan={11} className={'bg-info'}>
-                                            <b>{overAllReport.sector?.name ?? 'Monthly report'}</b></td>
+                                            <b>{monthlyReport.sector?.name ?? 'Monthly report'}</b></td>
                                     </tr>
                                     <tr className={'text-center'}>
                                         <td colSpan={2}><b>{'Reporting Month'}</b></td>
-                                        <td colSpan={9}><b>{overAllReport.reportingMonth}</b></td>
+                                        <td colSpan={9}><b>{monthlyReport.reportingMonth}</b></td>
                                     </tr>
                                     <tr className={'text-center'}>
                                         <td colSpan={5}><b>{'Incomes'}</b></td>
@@ -188,35 +196,35 @@ export default function MonthlyReport() {
                                     <tr>
                                         <td className={'table_total bg-warning'} colSpan={3}><b>Total</b></td>
                                         <td className={'amount bg-warning'} colSpan={2}>
-                                            <b>{overAllReport.summery?.totalIncome}</b></td>
+                                            <b>{monthlyReport.summery?.totalIncome}</b></td>
                                         <td style={{borderTop: "hidden"}}></td>
                                         <td className={'table_total bg-info'} colSpan={3}><b>Total</b></td>
                                         <td className={'amount bg-info'} colSpan={2}>
-                                            <b>{overAllReport.summery?.totalExpense}</b>
+                                            <b>{monthlyReport.summery?.totalExpense}</b>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td colSpan={6}></td>
                                         {/*<td rowSpan={4}></td>*/}
-                                        <td colSpan={5} rowSpan={3} contentEditable={true}>Remarks:</td>
+                                        <td colSpan={5} rowSpan={3}>Remarks:</td>
                                     </tr>
                                     <tr>
-                                        <td colSpan={4}><b>Total Cost of {overAllReport.reportingMonth}</b></td>
+                                        <td colSpan={4}><b>Total Cost of {monthlyReport.reportingMonth}</b></td>
                                         <td colSpan={2} className={'amount'}>
-                                            <b>{overAllReport.summery?.totalExpense}</b></td>
+                                            <b>{monthlyReport.summery?.totalExpense}</b></td>
                                     </tr>
                                     <tr>
-                                        <td colSpan={4}><b>Total Income of {overAllReport.reportingMonth}</b></td>
-                                        <td colSpan={2} className={'amount'}><b>{overAllReport.summery?.totalIncome}</b>
+                                        <td colSpan={4}><b>Total Income of {monthlyReport.reportingMonth}</b></td>
+                                        <td colSpan={2} className={'amount'}><b>{monthlyReport.summery?.totalIncome}</b>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td colSpan={4}>
-                                            <b>Net {overAllReport.summery?.title} of {overAllReport.reportingMonth}</b>
+                                            <b>Net {monthlyReport.summery?.title} of {monthlyReport.reportingMonth}</b>
                                         </td>
-                                        <td colSpan={2} className={'amount'}><b>{overAllReport.summery?.net}</b></td>
-                                        <td colSpan={3}><b>Net {overAllReport.summery?.title}</b></td>
-                                        <td className={'amount'} colSpan={2}><b>{overAllReport.summery?.netPercent}</b>
+                                        <td colSpan={2} className={'amount'}><b>{monthlyReport.summery?.net}</b></td>
+                                        <td colSpan={3}><b>Net {monthlyReport.summery?.title}</b></td>
+                                        <td className={'amount'} colSpan={2}><b>{monthlyReport.summery?.netPercent}</b>
                                         </td>
                                     </tr>
                                     </tbody>

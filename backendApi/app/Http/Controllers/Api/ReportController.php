@@ -279,14 +279,13 @@ class ReportController extends Controller {
 		if ( ! $incomeCategoryId || ! $fromDate ) {
 			return response()->json( [
 				'message' => "Select Income sector or Month."
-			], 404 );
+			], 400 );
 		}
 
 		$category = DB::table( 'categories' )->find( $incomeCategoryId );
 		if ( ! $category ) {
 			return response()->json( [
 				'message' => "Income Category not Found!",
-				'status'  => 404
 			], 404 );
 		}
 		$sector = DB::table( 'sectors' )->find( $category->sector_id );
@@ -294,22 +293,19 @@ class ReportController extends Controller {
 		if ( ! $sector ) {
 			return response()->json( [
 				'message' => "This income Category is not associated with any sector!",
-				'status'  => 404
-			] );
+			],400 );
 		}
 
 		if ( strtotime( $fromDate ) < strtotime( $sector->contract_start_date ) ) {
 			return response()->json( [
 				'message' => "$sector->name contract has been started from $sector->contract_start_date. So date can't be found from submitted date.",
-				'status'  => 404
-			] );
+			],400 );
 		}
 
 		if ( strtotime( $toDate ) > strtotime( $sector->contract_end_date ) ) {
 			return response()->json( [
 				'message' => "$sector->name contract will end on $sector->contract_end_date. So date can't be found after this contract end date.",
-				'status'  => 404
-			] );
+			],400 );
 		}
 
 		$incomes = DB::table( 'incomes' )->selectRaw( 'amount,income_type,checkin_date,checkout_date,reference,date as income_date, description' )

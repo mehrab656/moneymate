@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\FinanceController;
 use App\Http\Controllers\Api\IncomeController;
 use App\Http\Controllers\Api\InvestmentController;
 use App\Http\Controllers\Api\LendController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\SectorModelController;
 use App\Http\Controllers\Api\SubscriptionController;
@@ -195,6 +196,10 @@ Route::middleware( 'auth:sanctum' )->group( function () {
 
 	//finance report
 	Route::get( '/getFinanceReport', [ FinanceController::class, 'getAccountStatement' ] );
+
+	//send notifications
+
+	Route::get('upcoming-payments',[ NotificationController::class,'sendUpcomingPaymentsNotification']);
 } );
 
 
