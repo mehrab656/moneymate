@@ -224,11 +224,11 @@ class ReportController extends Controller {
 			$totalInvestment = $totalInvestment->whereBetween( 'investment_date', [ $startDate, $endDate ] );
 			$totalIncome     = $totalIncome->whereBetween( 'date', [ $startDate, $endDate ] );
 			$totalExpense    = $totalExpense->whereBetween( 'date', [ $startDate, $endDate ] );
+			$refund          = $refund->whereBetween( 'date', [ $startDate, $endDate ] );
 		}
 
 		$lends           = $lends->sum( 'amount' );
 		$borrow          = $borrow->sum( 'amount' );
-		$refund          = $refund->whereBetween( 'date', [ $startDate, $endDate ] );
 		$incomes         = $incomes->get();
 		$expense         = $expense->get();
 		$investments     = $investments->get();

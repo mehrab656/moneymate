@@ -46,6 +46,8 @@ export default function IncomeForm() {
     const [selectedAccountId, setSelectedAccountId] = useState("");
     const [selectedIncomeType, setIncomeType] = useState("reservation");
     const navigate = useNavigate();
+    const [reservationValidation, setReservationValidation] = useState('Select check in and check out dates.');
+    const [reservationValidationClass, setReservationValidationClass] = useState('primary');
 
     const [categoryValue, setCategoryValue] = useState(null);
     const [storeCategoryValue, setStoreCategoryValue] = useState(null);
@@ -76,9 +78,7 @@ export default function IncomeForm() {
         if (incomeCategories && incomeCategories.length > 0 && !id) {
             setCategoryValue(incomeCategories[0]);
         }
-        if (storeCategoryValue !== null && id) {
-            setCategoryValue(storeCategoryValue);
-        }
+
     }, []);
 
     useEffect(() => {
@@ -89,11 +89,10 @@ export default function IncomeForm() {
                 .get(`/income/${id}`)
                 .then(({data}) => {
                     setSelectedAccountId(data.account_id);
-                    setIncomeType(data.income_type);
                     if (incomeCategories.length > 0) {
                         incomeCategories.forEach((element) => {
                             if (element.id === data.category_id) {
-                                setStoreCategoryValue(element);
+                                setCategoryValue(element);
                             }
                         });
                     }
@@ -108,7 +107,7 @@ export default function IncomeForm() {
                     setLoading(false);
                 });
         }
-    }, [id, incomeCategories]);
+    }, []);
 
     // set default date(today)
     useEffect(() => {
@@ -317,7 +316,7 @@ export default function IncomeForm() {
                                                 <MenuItem value={'booking'}>Booking.com</MenuItem>
                                                 <MenuItem value={'vrbo'}>VRBO</MenuItem>
                                                 <MenuItem value={'expedia'}>Expedia</MenuItem>
-                                                <MenuItem value={'cash'}>Cash</MenuItem>
+                                                <MenuItem value={'Cash'}>Cash</MenuItem>
                                                 <MenuItem value={'cheque'}>Cheque</MenuItem>
                                             </Select>
                                         </FormControl>
@@ -363,7 +362,7 @@ export default function IncomeForm() {
                                         </label>
                                         <DatePicker
                                             className='custom-form-control'
-                                            selected={income.checkin_date ? new Date(income.checkin_date) : new Date()}
+                                            selected={income.checkin_date ? new Date(income.checkin_date) : null}
                                             onChange={(date) => {
                                                 const selectedDate = date ? new Date(date) : null;
                                                 const updatedDate =
@@ -477,21 +476,31 @@ export default function IncomeForm() {
                                         </label>
                                         <DatePicker
                                             className='custom-form-control'
-                                            selected={income.checkout_date ? new Date(income.checkout_date) : new Date()}
+                                            selected={income.checkout_date ? new Date(income.checkout_date) : null}
                                             onChange={(date) => {
-                                                const selectedDate = date ? new Date(date) : null;
-                                                const updatedDate =
-                                                    selectedDate && !income.date
-                                                        ? new Date(
-                                                            selectedDate.getTime() + 24 * 60 * 60 * 1000
-                                                        )
-                                                        : selectedDate;
-                                                setIncome({
-                                                    ...income,
-                                                    checkout_date: updatedDate
-                                                        ? updatedDate.toISOString().split("T")[0]
-                                                        : "",
-                                                });
+                                                const selectedDate = date.toISOString().split("T")[0];
+
+                                                // const updatedDate = selectedDate && !income.date ? new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000) : selectedDate;
+                                                setIncome({...income, checkout_date: selectedDate});
+                                                if (!income.checkin_date) {
+                                                    setReservationValidation('Select Checkin Date first');
+                                                    setReservationValidationClass('danger');
+                                                }
+                                                if (income.checkin_date === selectedDate) {
+                                                    setReservationValidation('Same day check in and check out.');
+                                                    setReservationValidationClass('warning');
+                                                }
+                                                if (income.checkin_date > selectedDate) {
+                                                    setReservationValidation('Checkout date can not be back date than check in date');
+                                                    setReservationValidationClass('danger');
+                                                }
+                                                if (selectedDate > income.checkin_date) {
+                                                    const checkin = new Date(income.checkin_date);
+                                                    const checkout = new Date(selectedDate);
+                                                    const diff = (checkout - checkin) / (1000 * 60 * 60 * 24);
+                                                    setReservationValidation(`${diff} nights`);
+                                                    setReservationValidationClass('success');
+                                                }
                                             }}
                                             dateFormat='yyyy-MM-dd'
                                             placeholderText='Checkout Date'
@@ -499,6 +508,10 @@ export default function IncomeForm() {
                                         {errors.date && (
                                             <p className='error-message mt-2'>{errors.date[0]}</p>
                                         )}
+                                        <span
+                                            className={'text-' + reservationValidationClass}>
+                                                <small>{reservationValidation}</small>
+                                            </span>
                                     </div>
                                 }
                             </div>

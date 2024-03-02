@@ -199,7 +199,6 @@ Route::middleware( 'auth:sanctum' )->group( function () {
 
 	//send notifications
 
-	Route::get('upcoming-payments',[ NotificationController::class,'sendUpcomingPaymentsNotification']);
 } );
 
 
@@ -220,6 +219,8 @@ Route::get('migrate', function(){
 	\Artisan::call('migrate');
 	dd('New Files has been Migrated');
 });
+Route::get('upcoming-payments',[ NotificationController::class,'sendUpcomingPaymentsNotification']);
+
 
 
 

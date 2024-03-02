@@ -36,6 +36,7 @@ export default function Dashboard() {
             setLoading(true);
             axiosClient.get('/dashboard-data')
                 .then(({data}) => {
+                    console.log(data.expense_of_this_month)
                     setIncomes(data.income_of_this_month);
                     setExpenses(data.expense_of_this_month);
                     setTotalAccountBalance(data.total_balance);

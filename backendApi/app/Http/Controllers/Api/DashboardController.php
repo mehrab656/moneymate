@@ -45,8 +45,7 @@ class DashboardController extends Controller {
 			[
 				Carbon::now()->startOfMonth(),
 				Carbon::now()->endOfMonth()
-			] )
-		                                                  ->sum( 'amount' );
+			] )->sum( 'amount' );
 
 		return response()->json( [
 			'income_of_this_month'                    => $incomeOfThisMonth,
@@ -66,7 +65,7 @@ class DashboardController extends Controller {
 	 * @return array
 	 */
 	public function getActiveBudgets(): array {
-		$currentDate = Carbon::now()->toDateString();
+		$currentDate   = Carbon::now()->toDateString();
 		$activeBudgets = Budget::where( 'start_date', '<=', $currentDate )
 		                       ->where( 'end_date', '>=', $currentDate )
 		                       ->get();

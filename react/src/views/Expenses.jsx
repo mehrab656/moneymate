@@ -179,8 +179,7 @@ export default function Expenses() {
                     <div className="col-2">
                         <ExpenseExportButton/>
                         {userRole === 'admin' &&
-                            <Link className="btn-add float-end" to="/expense/new"><FontAwesomeIcon icon={faMinus}/> Add
-                                New</Link>}
+                            <Link className="btn-add float-end" to="/expense/new"><FontAwesomeIcon icon={faMinus}/> Add New</Link>}
                     </div>
                 </div>
 
@@ -257,13 +256,14 @@ export default function Expenses() {
                             disabled={currentPage === totalPages}
                             onClick={() => handlePageChange(currentPage + 1)}
                         />
+
                     </Pagination>
                 )}
 
             </WizCard>
             <ExpenseModal showModal={showModal}
                           handelCloseModal={handleCloseModal}
-                          title={'Expense Details'}
+                          title={'Expense Details '}
                           data={expense}
                           currency={default_currency}
             />
