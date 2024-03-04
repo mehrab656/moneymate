@@ -9,13 +9,16 @@ import {
     faArrowsToEye,
     faEye,
     faEyeDropper,
-    faEyeSlash,
+    faEyeSlash, faFilter,
     faListAlt,
     faStreetView
 } from "@fortawesome/free-solid-svg-icons";
 import ExpenseModal from "../helper/ExpenseModal.jsx";
 import {Tooltip} from "react-tooltip";
 import {Col, Container, Row} from "react-bootstrap";
+import NavDropdown from "react-bootstrap/NavDropdown";
+import {Link} from "react-router-dom";
+import ExpenseFilter from "../helper/filter-icons/ExpenseFilter.jsx";
 
 export default function ExpenseReport() {
     const [loading, setLoading] = useState(false);
@@ -24,10 +27,11 @@ export default function ExpenseReport() {
     const [endDate, setEndDate] = useState(null);
     const [expenseCategories, setExpenseCategories] = useState([]);
     const [sectors, setSectors] = useState([]);
-    const [selectedSectorId, setSelectedSectorId] = useState('');
-    const [selectedCategoryId, setSelectedCategoryId] = useState('');
+    const [selectedSectorId, setSelectedSectorId] = useState(null);
+    const [selectedCategoryId, setSelectedCategoryId] = useState(null);
     const [totalExpense, setTotalExpense] = useState(parseFloat(0).toFixed(2));
-    const [activeModal, setActiveModal] = useState('')
+    const [searchParoms, setSearchParoms] = useState(null);
+    const [activeModal, setActiveModal] = useState('');
     const [modalData, setModalData] = useState({
         id: null,
         user_id: null,
@@ -42,6 +46,7 @@ export default function ExpenseReport() {
         note: '',
         attachment: ''
     });
+    const [hasFilter, setHasFilter] = useState(false);
 
     const [showModal, setShowModal] = useState(false);
 
@@ -80,7 +85,7 @@ export default function ExpenseReport() {
             console.warn('Error Loading sectors: ', error);
         });
 
-    },[])
+    }, [])
 
     const handleCloseModal = () => {
         setActiveModal('');
@@ -95,7 +100,8 @@ export default function ExpenseReport() {
                     start_date: startDate,
                     end_date: endDate,
                     cat_id: selectedCategoryId,
-                    sec_id: selectedSectorId
+                    sec_id: selectedSectorId,
+                    search_terms: searchParoms
                 },
             })
             .then(({data}) => {
@@ -114,14 +120,16 @@ export default function ExpenseReport() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setHasFilter(true);
         getExpenseReport();
     };
 
     const resetFilterParameter = () => {
         setStartDate(null);
         setEndDate(null);
-        setSelectedCategoryId('');
-        setSelectedSectorId('')
+        setSelectedCategoryId(null);
+        setSelectedSectorId(null);
+        setHasFilter(false);
         getExpenseReport();
     };
 
@@ -130,83 +138,26 @@ export default function ExpenseReport() {
             <MainLoader loaderVisible={loading}/>
             <WizCard className="animated fadeInDown wiz-card-mh expx">
                 <div className="row">
-                    <form onSubmit={handleSubmit}>
-                        <div className="col-3">
-                            <div className="form-group">
-                                <label className="custom-form-label" htmlFor="expense_category">Sectors</label>
-                                <select
-                                    className="custom-form-control"
-                                    value={selectedSectorId}
-                                    id="sector"
-                                    name="sector"
-                                    onChange={(event) => {
-                                        const value = event.target.value || '';
-                                        setSelectedSectorId(value);
-                                    }}>
-                                    <option defaultValue>Filter By Sectors</option>
-                                    {sectors.map(sector => (
-                                        <option key={"sec-" + sector.id} value={sector.id}>
-                                            {sector.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-                        <div className="col-3">
-                            <div className="form-group">
-                                <label className="custom-form-label" htmlFor="expense_category">Expense Category</label>
-                                <select
-                                    className="custom-form-control"
-                                    value={selectedCategoryId}
-                                    id="expense-category"
-                                    name="expense-category"
-                                    onChange={(event) => {
-                                        const value = event.target.value || '';
-                                        setSelectedCategoryId(value);
-                                    }}>
-                                    <option defaultValue>Filter By Category</option>
-                                    {expenseCategories.map(category => (
-                                        <option key={'cat-' + category.id} value={category.id}>
-                                            {category.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-                        <div className="col-2">
-                            <div className="form-group">
-                                <label className="custom-form-label" htmlFor="start_date">Start Date</label>
-                                <DatePicker
-                                    className="custom-form-control"
-                                    id="start_date"
-                                    selected={startDate}
-                                    onChange={(date) => setStartDate(date)}
-                                    dateFormat="yyyy-MM-dd"
-                                />
-                            </div>
-                        </div>
-                        <div className="col-2">
-                            <div className="form-group">
-                                <label className="custom-form-label" htmlFor="end_date">End Date:</label>
-                                <DatePicker
-                                    className="custom-form-control"
-                                    id="end_date"
-                                    selected={endDate}
-                                    onChange={(date) => setEndDate(date)}
-                                    dateFormat="yyyy-MM-dd"
-                                />
-                            </div>
-                        </div>
-                        <div className="col-2 mt-4">
-                            <button className={'btn-add right mt-2'} type="submit">Filter</button>
-                            <button className="btn btn-warning ml-2" onClick={resetFilterParameter}>Reset</button>
-                        </div>
-                    </form>
-                </div>
-
-                <br/>
-                <div className="row">
                     <Container>
+                        <Row>
+                            <ExpenseFilter
+                                handleSubmit={handleSubmit}
+                                selectedSectorId={selectedSectorId}
+                                setSelectedSectorId={setSelectedSectorId}
+                                sectors={sectors}
+                                selectedCategoryId={selectedCategoryId}
+                                setSelectedCategoryId={setSelectedCategoryId}
+                                expenseCategories={expenseCategories}
+                                startDate={startDate}
+                                setStartDate={setStartDate}
+                                endDate={endDate}
+                                setEndDate={setEndDate}
+                                searchParoms={searchParoms}
+                                setSearchParoms={setSearchParoms}
+                                resetFilterParameter={resetFilterParameter}
+                                hasFilter={hasFilter}
+                            />
+                        </Row>
                         <Row>
                             <Col xs={12} md={9}>
                                 <div className="table-responsive-sm my-custom-scrollbar table-wrapper-scroll-y">
@@ -263,7 +214,8 @@ export default function ExpenseReport() {
                                         <tfoot>
                                         <tr>
                                             <td className={'text-center fw-bold'} colSpan={2}>Total Expense</td>
-                                            <td className={'text-end fw-bold'} colSpan={2}>{default_currency + ' ' + totalExpense}</td>
+                                            <td className={'text-end fw-bold'}
+                                                colSpan={2}>{default_currency + ' ' + totalExpense}</td>
                                         </tr>
                                         </tfoot>
                                     </table>
@@ -271,7 +223,7 @@ export default function ExpenseReport() {
 
                             </Col>
                             <Col xs={12} md={3}>
-                                <div className="card quater-card summery-card">
+                                <div className="card ">
                                     <div className="card-block">
                                         <h6 className="text-muted m-b-20">Total Expense</h6>
                                         <h4>{default_currency + ' ' + totalExpense}</h4>

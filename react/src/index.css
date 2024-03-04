@@ -896,3 +896,7 @@ select option:focus {
 .aside-menu-item {
     cursor: pointer;
 }
+.filter-icon{
+    display: flex;
+    flex-direction: row-reverse;
+}
