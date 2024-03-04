@@ -36,7 +36,17 @@ export default function Return() {
         totalRefundedPercent: 0,
         totalRemainingPercent: 0
     };
-
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
 
     const pageSize = num_data_per_page;
     const totalPages = Math.ceil(totalCount / pageSize);
@@ -55,27 +65,29 @@ export default function Return() {
     const submitForUpdate = (event) => {
         event.preventDefault();
         setLoading(true)
-        if (parseFloat(marketReturn.return_amount) > (parseFloat(marketReturn.refundable_amount) - parseFloat(marketReturn.refunded_amount))) {
-            setErrors({
-                type: ['Return amount can\'t exceed the remaining refundable amount.']
-            });
-        } else {
-            setErrors(null);
-            axiosClient.post(`/return/${marketReturn.id}`, marketReturn)
-                .then(({data}) => {
-                    setNotification("Return added");
-                    setShowModal(false);
-                    getMarketReturns(currentPage, pageSize);
-                    setMarketReturn(data);
-                    setLoading(false)
-                }).catch(error => {
-                const response = error.response;
-                if (response && response.status === 422) {
-                    setErrors(response.data.errors);
-                }
+        axiosClient.post(`/return/${marketReturn.id}`, marketReturn)
+            .then(({data}) => {
+                console.log(data);
+                setShowModal(false);
+                getMarketReturns(currentPage, pageSize);
+                setMarketReturn(data);
+                Toast.fire({
+                    icon: 'success',
+                    title: data.message,
+                    text: data.description,
+                });
                 setLoading(false)
-            });
-        }
+
+            }).catch(error => {
+            if (error.response) {
+                Toast.fire({
+                    icon: "error",
+                    title: error.response.data.message,
+                    text: error.response.data.description,
+                });
+            }
+            setLoading(false)
+        });
     };
 
     const edit = (marketReturn) => {
@@ -85,10 +97,6 @@ export default function Return() {
     };
 
 
-    useEffect(() => {
-        document.title = "Market Returns";
-        getMarketReturns(currentPage, pageSize);
-    }, [currentPage, pageSize]); // Fetch marketReturns when currentPage or pageSize changes
 
     const getMarketReturns = (page, pageSize) => {
         setLoading(true);
@@ -103,6 +111,11 @@ export default function Return() {
                 setLoading(false);
             });
     };
+
+    useEffect(() => {
+        document.title = "Market Returns";
+        getMarketReturns(currentPage, pageSize);
+    }, [currentPage, pageSize]); // Fetch marketReturns when currentPage or pageSize changes
 
     const handlePageChange = (page) => {
         setCurrentPage(page);

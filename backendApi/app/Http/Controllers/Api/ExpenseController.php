@@ -177,7 +177,7 @@ class ExpenseController extends Controller {
 	 */
 	public function categories( Request $request ): JsonResponse {
 
-		$sectorID   = $request->sector_id;
+		$sectorID = $request->sector_id;
 
 		$categories = DB::table( 'categories' )
 		                ->where( 'type', '=', 'expense' );
@@ -435,22 +435,32 @@ class ExpenseController extends Controller {
 	public function updateReturn( UpdateExpenseRequest $request, Expense $return ) {
 		$data = $request->validated();
 
+		$refundableAmount = $return->refundable_amount; // Actual Return amount
+		$refundedAmount   = $return->refunded_amount; // Already refund amount
+		$refundAmount     = $data['return_amount']; // just now return amount
+		$remainingAmount  = $refundableAmount - $refundedAmount; // just now return amount
+
+		if ( $refundAmount > $remainingAmount ) {
+			return response()->json( [
+				'message'     => 'Incorrect Return Amount',
+				'description' => "Remaining amount is $remainingAmount. Return amount can't be exceeded!",
+			], 400 );
+		}
+
 		DB::beginTransaction();
 		try {
 			//first update bank account to adjust the balance from return
 			$bankAccount          = BankAccount::find( $return->account_id );
-			$bankAccount->balance += $request->return_amount;
+			$bankAccount->balance += $refundAmount;
 			$bankAccount->save();
 			// now time to update the expense field refunded amount.
-
-			$refunded_amount = $return->refunded_amount + $request->return_amount;
-			$return->update( [ 'refunded_amount' => $refunded_amount ] );
+			$return->update( [ 'refunded_amount' => $refundedAmount + $refundAmount ] );
 
 			storeActivityLog( [
 				'user_id'      => Auth::user()->id,
 				'log_type'     => 'update',
 				'module'       => 'return',
-				'descriptions' => "  added returns. Amount: $request->return_amount",
+				'descriptions' => "added returns. Amount: $refundAmount",
 				'data_records' => $data,
 			] );
 
@@ -464,7 +474,9 @@ class ExpenseController extends Controller {
 		DB::commit();
 
 		return response()->json( [
-			'data' => $return
+			'message'     => 'Success',
+			'description' => "New return adjusted successfully!",
+			'data'        => $return
 		] );
 	}
 

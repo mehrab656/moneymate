@@ -23,7 +23,6 @@ use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WalletController;
 use Illuminate\Http\Request;
-use Illuminate\Support\Env;
 use Illuminate\Support\Facades\Route;
 
 
@@ -84,6 +83,7 @@ Route::middleware( 'auth:sanctum' )->group( function () {
 	// Income Api
 	Route::get( '/incomes', [ IncomeController::class, 'index' ] );
 	Route::post( '/income/add', [ IncomeController::class, 'add' ] );
+	Route::post( '/income/add-csv', [ IncomeController::class, 'addIncomeFromCSV' ] );
 	Route::get( '/income-categories', [ IncomeController::class, 'categories' ] );
 	Route::delete( '/income/{income}', [ IncomeController::class, 'destroy' ] );
 	Route::get( 'income/{income}', [ IncomeController::class, 'show' ] );
@@ -207,16 +207,16 @@ Route::get( '/get-associative-categories', [ ApplicationSettingsController::clas
 Route::post( '/signup', [ AuthController::class, 'signup' ] );
 Route::post( '/login', [ AuthController::class, 'login' ] );
 Route::get( 'reboot', function () {
-	\Artisan::call( 'cache:clear' );
-	\Artisan::call( 'config:clear' );
-	\Artisan::call( 'route:clear' );
+	Artisan::call( 'cache:clear' );
+	Artisan::call( 'config:clear' );
+	Artisan::call( 'route:clear' );
 	Artisan::call('view:clear');
 	Artisan::call('key:generate');
 
 	dd( "Application Cache was removed" );
 } );
 Route::get('migrate', function(){
-	\Artisan::call('migrate');
+	Artisan::call('migrate');
 	dd('New Files has been Migrated');
 });
 Route::get('upcoming-payments',[ NotificationController::class,'sendUpcomingPaymentsNotification']);

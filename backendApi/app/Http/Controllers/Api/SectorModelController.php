@@ -280,7 +280,7 @@ class SectorModelController extends Controller {
 			return response()->json( [
 				'message'     => 'Insufficient Balance!',
 				'description' => 'Insufficient account balance to pay this amount.',
-			], 400 );
+			], 404 );
 		}
 
 

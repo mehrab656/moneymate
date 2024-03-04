@@ -31,7 +31,7 @@ class ExpenseRequest extends FormRequest
             'user_id' => 'required',
             'account_id' => 'required',
             'amount' => 'required|numeric',
-            'refundable_amount' => 'nullable',
+            'refundable_amount' => '>:return_amount',
             'category_id' => 'required',
             'description' => 'nullable|string',
             'attachment' => 'nullable|file',
