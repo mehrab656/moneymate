@@ -1,13 +1,15 @@
 import {useNavigate, useParams} from "react-router-dom";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import axiosClient from "../axios-client.js";
-import {useStateContext} from "../contexts/ContextProvider.jsx";
+import {Toast, useStateContext} from "../contexts/ContextProvider.jsx";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import WizCard from "../components/WizCard";
 import {TextField, Autocomplete, Box, FormControl, InputLabel, Select, MenuItem} from "@mui/material";
 import {makeStyles} from "@mui/styles";
 import MainLoader from "../components/MainLoader.jsx";
+import {Button, Modal, Row} from "react-bootstrap";
+import {CAlert} from '@coreui/react';
 
 const useStyles = makeStyles({
     option: {
@@ -225,6 +227,59 @@ export default function IncomeForm() {
         });
     };
 
+    const [csvFile, setCSVFile] = useState({})
+    const handelCSVFileInputChange = (event) => {
+        const file = event.target.files[0];
+        setCSVFile({file: file})
+
+    }
+    const [showCSVModal, setShowCSVModal] = useState(false)
+    const handelCSVModal = (event) => {
+        setShowCSVModal(true);
+    }
+    const handleCloseModal = () => {
+        setShowCSVModal(false);
+    };
+
+    const submitCSVFile = (e) => {
+        e.preventDefault();
+        setLoading(true);
+        // e.target.disabled = true;
+        axiosClient.post(`/income/add-csv`, csvFile, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        }).then(({data}) => {
+            setLoading(false);
+
+            Toast.fire({
+                icon: "success",
+                title: "Added",
+                text: "Income added for " + data.income.description,
+            });
+            setTimeout(() => {
+                window.location.reload();
+            }, 5000)
+        }).catch(err => {
+            setLoading(false);
+            e.target.disabled = false;
+            let errorInfo = [];
+            const error = err.response.data.error;
+            if (Object.keys(error).length > 0) {
+                errorInfo = error.errorInfo;
+            } else {
+                errorInfo = ["Syntax or Internal Code error"]
+            }
+
+            Toast.fire({
+                icon: "error",
+                title: err.response.data.message,
+                text: errorInfo.toString(),
+            });
+        });
+        setLoading(true);
+    }
+
     return (
         <>
             <MainLoader loaderVisible={loading}/>
@@ -232,7 +287,19 @@ export default function IncomeForm() {
                 {income.id && (
                     <h1 className='title-text mb-0'>{income.description}</h1>
                 )}
-                {!income.id && <h1 className='title-text mb-0'>Add New Income</h1>}
+                {!income.id &&
+                    <>
+                        <Row>
+                            {/*<CAlert color="info">*/}
+                            {/*    A simple info alert—check it out!*/}
+                            {/*</CAlert>*/}
+                            <div className={"col-6"}><h1 className='title-text mb-0 d-inline'>Add New Income</h1></div>
+                            <div className={"col-6 text-end"}>
+                                <i><u><a onClick={handelCSVModal} className={"text-primary"}>add income by csv?</a></u></i>
+                            </div>
+                        </Row>
+                    </>
+                }
 
                 {loading && <div className='text-center'>Loading...</div>}
 
@@ -547,6 +614,37 @@ export default function IncomeForm() {
                     </form>
                 )}
             </WizCard>
+
+            <Modal show={showCSVModal} centered onHide={handleCloseModal} className="custom-modal">
+                <Modal.Header closeButton>
+                    <Modal.Title>
+                        <span>{"Upload Income Data by CSV file"}</span>
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <form className="custom-form">
+
+                        <div className="form-group">
+                            <label className='custom-form-label' htmlFor='csv_file'>
+                                Upload CSV file
+                            </label>
+                            <input
+                                className='custom-form-control'
+                                type='file'
+                                id={"csv_file"}
+                                onChange={handelCSVFileInputChange}
+                                placeholder='Attach CSV file here'
+                            />
+                        </div>
+                    </form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button loading className="btn-sm load" variant="primary" onClick={submitCSVFile}>
+                        Update
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
         </>
     );
 }

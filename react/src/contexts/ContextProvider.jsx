@@ -1,5 +1,6 @@
 import {createContext, useContext, useEffect, useState} from "react";
 import axiosClient from "../axios-client.js";
+import Swal from "sweetalert2";
 
 const StateContext = createContext({
     currentUser: null,
@@ -12,7 +13,17 @@ const StateContext = createContext({
     setNotification: () => {
     }
 })
-
+export const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+    }
+});
 export const ContextProvider = ({children}) => {
     const [user, setUser] = useState({});
     const [token, _setToken] = useState(localStorage.getItem('ACCESS_TOKEN'));

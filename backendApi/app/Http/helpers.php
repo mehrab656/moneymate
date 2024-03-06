@@ -69,6 +69,7 @@ function storeActivityLog( array $data ): void {
 
 	( new ActivityLogModel() )->create( [
 		'user_id'      => $userID,
+		'object_id'    => $data['object_id'],
 		'log_type'     => strtolower( $data['log_type'] ),
 		'uid'          => $uid,
 		'data_records' => $data_records,
@@ -195,5 +196,17 @@ function is_ip_address( string $ip ): bool|string {
 
 	function fix_number_format( $val ) {
 		return number_format( (float) $val, 2 );
+	}
+
+	/**
+	 * Build Description for Income Entry
+	 */
+	function buildIncomeDescription( $description, $reservationDays, $checkInDate, $checkoutDate ): string {
+		return sprintf( '%s reservation of %s days from %s to %s',
+			$description,
+			$reservationDays,
+			$checkInDate->format( 'Y-m-d' ),
+			$checkoutDate->format( 'Y-m-d' ),
+		);
 	}
 }

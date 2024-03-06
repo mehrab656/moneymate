@@ -64,7 +64,7 @@ export default function Return() {
 
     const submitForUpdate = (event) => {
         event.preventDefault();
-        setLoading(true)
+        setLoading(true);
         axiosClient.post(`/return/${marketReturn.id}`, marketReturn)
             .then(({data}) => {
                 console.log(data);
