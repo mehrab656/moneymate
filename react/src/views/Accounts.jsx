@@ -16,6 +16,7 @@ import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward';
 import AddCardTwoToneIcon from '@mui/icons-material/AddCardTwoTone';
 import RemoveTwoToneIcon from '@mui/icons-material/RemoveTwoTone';
 import MainLoader from "../components/MainLoader.jsx";
+import { notification } from "../components/ToastNotification.jsx";
 
 export default function Accounts() {
 
@@ -162,7 +163,7 @@ export default function Accounts() {
         setLoading(true)
         if (bankAccount.id) {
             axiosClient.put(`/bank-account/${bankAccount.id}`, bankAccount)
-                .then(() => {
+                .then((data) => {
                     setNotification("Bank account information has been updated");
                     setShowModal(false);
                     getAccounts(currentPage, pageSize);
@@ -180,20 +181,26 @@ export default function Accounts() {
                         account_number: '',
                         balance: ''
                     });
+
+                    notification("success",data.message,data.description)
+
+
                     setLoading(false)
-                }).catch(error => {
-                const response = error.response;
+                }).catch(err => {
+                const response = err.response;
                 if (response && response.status === 409) {
-                    setErrors({...errors, account_name: 'Account name already exists'});
+                    setErrors({...err, account_name: 'Account name already exists'});
                 } else if (response && response.status === 422) {
-                    setErrors(response.data.errors);
+                    setErrors(response.data.err);
                 }
+
+                notification("error",err.response.data.message,err.response.data.description,5000)
                 setLoading(false)
             });
         } else {
             axiosClient.post('/bank-account/add', bankAccount)
-                .then(({data}) => {
-                    setNotification('Bank account has been added');
+                .then((data) => {
+                    // setNotification('Bank account has been added');
                     setShowModal(false);
                     getAccounts(currentPage, pageSize);
                     getAccountBalances();
@@ -210,14 +217,23 @@ export default function Accounts() {
                         account_number: '',
                         balance: ''
                     });
+
+                    const icon= 'success';
+                    const  title= 'Bank account has been added';
+                    const text= ''
+                    
+                    notification(icon,title,text)
+
                     setLoading(false)
-                }).catch(error => {
-                const response = error.response;
+                }).catch(err => {
+                const response = err.response;
                 if (response && response.status === 409) {
-                    setErrors({...errors, account_name: 'Account name already exists'});
+                    setErrors({...err, account_name: 'Account name already exists'});
                 } else if (response && response.status === 422) {
-                    setErrors(response.data.errors);
+                    setErrors(response.data.err);
                 }
+                notification("error",err.response.data.message,err.response.data.description,5000)
+
                 setLoading(false)
             });
 
@@ -236,17 +252,19 @@ export default function Accounts() {
             if (result.isConfirmed) {
                 axiosClient.delete(`/bank-account/${account.id}`).then(() => {
                     getAccounts(currentPage, pageSize);
-                    Swal.fire({
-                        title: 'Deleted!',
-                        text: 'Bank has been deleted.',
-                        icon: 'success',
-                    });
+                  
+                    const icon= 'success';
+                    const  title= 'Deleted!';
+                    const text= 'Bank has been deleted.'
+
+                    notification(icon,title,text)
+
                 }).catch((error) => {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Bank Account could not be deleted.',
-                        icon: 'error',
-                    });
+                       const icon= 'error';
+                       const title= 'Error!';
+                       const text= 'Bank Account could not be deleted.';
+                    notification(icon,title,text,5000)
+
                 });
             }
         });

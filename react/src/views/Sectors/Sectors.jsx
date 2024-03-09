@@ -13,6 +13,7 @@ import {Tooltip} from "react-tooltip";
 import MainLoader from "../../components/MainLoader.jsx";
 import {compareDates} from "../../helper/HelperFunctions.js";
 import SummeryCard from "../../helper/SummeryCard.jsx";
+import { notification } from "../../components/ToastNotification.jsx";
 
 export default function Sectors() {
     const {applicationSettings, userRole} = useContext(SettingsContext);
@@ -119,21 +120,27 @@ export default function Sectors() {
                     .delete(`sector/${sector.id}`)
                     .then(() => {
                         getSectors();
-                        Swal.fire({
-                            title: "Deleted!",
-                            text: "sector has been deleted.",
-                            icon: "success",
-                        });
+
+                        const icon= 'success';
+                        const  title= 'Deleted!';
+                        const text= 'Sector has been deleted.'
+                        
+                        notification(icon,title,text)
                     })
-                    .catch((error) => {
-                        Swal.fire({
-                            title: "Error!",
-                            text: error,
-                            icon: "error",
-                        }).then(r => {
-                            console.warn(r);
-                        });
-                    });
+                    .catch(err => {
+                        if (err.response) {
+                            const icon= 'error';
+                            const title= err.response.data.message;
+                            const text= err.response.data.description;
+                            notification(icon,title,text,5000)
+                            // Toast.fire({
+                            //     icon: "error",
+                            //     title: err.response.data.message,
+                            //     text: err.response.data.description,
+                            //     timer: 5000
+                            // });
+                        }
+                    })
             }
         });
     };
@@ -182,23 +189,18 @@ export default function Sectors() {
         }).then((result) => {
             if (result.isConfirmed) {
                 axiosClient.post(`/change-payment-status/${payment.id}`).then(({data}) => {
-                    // @todo Check ME
-                    Toast.fire({
-                        icon: "success",
-                        title: data.message,
-                        text: data.description,
-                    });
+                       
+                    notification('success','Deleted','Bank has been deleted.')
+
                     setTimeout(() => {
                         window.location.reload();
                     }, 5000)
                 }).catch(err => {
-                    if (err.response) {
-                        Toast.fire({
-                            icon: "error",
-                            title: err.response.data.message,
-                            text: err.response.data.description,
-                            timer: 5000
-                        });
+                    console.log({err})
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
+                        
                     }
                 })
 

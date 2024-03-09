@@ -42,7 +42,7 @@ $app->singleton(
 );
 $app->register(  Berkayk\OneSignal\OneSignalServiceProvider::class );
 
-class_alias('Berkayk\OneSignal\OneSignalFacade','Onesignal');
+// class_alias('Berkayk\OneSignal\OneSignalFacade','Onesignal');
 /*
 |--------------------------------------------------------------------------
 | Return The Application

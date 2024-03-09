@@ -11,6 +11,7 @@ import {faBank, faEdit, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 import MainLoader from "../components/MainLoader.jsx";
+import { notification } from "../components/ToastNotification.jsx";
 
 export default function Banks() {
     const [loading, setLoading] = useState(false);
@@ -95,13 +96,19 @@ export default function Banks() {
             axiosClient
                 .put(`/bank-names/${bank.id}`, bank)
                 .then(() => {
-                    setNotification("Bank name has been updated");
+                    // setNotification("Bank name has been updated");
                     setShowModal(false);
                     getBankNames(currentPage, pageSize);
                     setBank({
                         id: null,
                         bank_name: ""
                     });
+
+                    const icon= 'success';
+                    const  title= 'Bank name has been updated';
+                    const text= ''
+                    
+                    notification(icon,title,text)
                     setLoading(false)
                 })
                 .catch((error) => {
@@ -111,19 +118,30 @@ export default function Banks() {
                     } else if (response && response.status === 422) {
                         setErrors(response.data.errors);
                     }
+
+                    const icon= 'error';
+                    const title= error.response.data.message;
+                    const text= error.response.data.description;
+                    notification(icon,title,text,5000)
                     setLoading(false)
                 });
         } else {
             axiosClient
                 .post("/bank-names", bank)
                 .then(({data}) => {
-                    setNotification(`${bank.bank_name} has been created`);
+                    // setNotification(`${bank.bank_name} has been created`);
                     setShowModal(false);
                     getBankNames(currentPage, pageSize);
                     setBank({
                         id: null,
                         bank_name: ""
                     });
+
+                    const icon= 'success';
+                    const  title= `${bank.bank_name} has been created`;
+                    const text= ''
+                    
+                    notification(icon,title,text)
                     setLoading(false)
                 })
                 .catch((error) => {
@@ -133,6 +151,11 @@ export default function Banks() {
                     } else if (response && response.status === 422) {
                         setErrors(response.data.errors);
                     }
+
+                    const icon= 'error';
+                    const title= error.response.data.message;
+                    const text= error.response.data.description;
+                    notification(icon,title,text,5000)
                     setLoading(false)
                 });
         }
@@ -156,17 +179,18 @@ export default function Banks() {
             if (result.isConfirmed) {
                 axiosClient.delete(`/bank-names/${bank.id}`).then(() => {
                     getBankNames(currentPage, pageSize);
-                    Swal.fire({
-                        title: 'Deleted!',
-                        text: 'Bank has been deleted.',
-                        icon: 'success',
-                    });
+                    const icon= 'success';
+                    const  title= 'Deleted!';
+                    const text= 'Bank has been deleted.'
+                    
+                    notification(icon,title,text)
+
                 }).catch((error) => {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Bank could not be deleted.',
-                        icon: 'error',
-                    });
+                    const icon= 'error';
+                    const title= 'Bank could not be deleted.';
+                    const text= '';
+                    notification(icon,title,text,5000)
+                    
                 });
             }
         });

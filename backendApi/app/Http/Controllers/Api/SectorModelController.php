@@ -329,6 +329,7 @@ class SectorModelController extends Controller {
 		//Add activity Log
 		storeActivityLog( [
 			'user_id'      => Auth::user()->id,
+			'object_id'      => $id,
 			'log_type'     => 'edit',
 			'module'       => 'sectors',
 			'descriptions' => $isUpdated?'updated payment status.':'User tried to update payment details.',

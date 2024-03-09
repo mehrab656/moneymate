@@ -6,6 +6,7 @@ import WizCard from "../components/WizCard";
 import {SettingsContext} from "../contexts/SettingsContext";
 import MainLoader from "../components/MainLoader.jsx";
 import { Autocomplete, Box, Chip, TextField } from "@mui/material";
+import { notification } from "../components/ToastNotification.jsx";
 export default function ApplicationSettingsForm() {
     const [applicationSettings, setApplicationSettings] = useState({
         company_name: "",
@@ -92,9 +93,15 @@ export default function ApplicationSettingsForm() {
         axiosClient
             .put("/store-application-setting", applicationSettings)
             .then(() => {
-                setNotification("Application settings have been updated");
+                // setNotification("Application settings have been updated");
                 navigate("/application-settings");
                 setSettingsContext(applicationSettings); // Update settings in the context
+
+                const icon= 'success';
+                const  title= 'Application settings have been updated';
+                
+                notification(icon,title)
+
                 setLoading(false)
             })
             .catch((error) => {
@@ -102,6 +109,11 @@ export default function ApplicationSettingsForm() {
                 if (response && response.status === 422) {
                     setErrors(response.data.errors);
                 }
+
+                const icon= 'error';
+                const title= error.response.data.message;
+                const text= error.response.data.description;
+                notification(icon,title,text,5000)
                 setLoading(false)
             })
             .finally(() => {
