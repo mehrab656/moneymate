@@ -254,13 +254,18 @@ class IncomeController extends Controller {
 		$file         = $request->file( 'file' );
 		$fileContents = file( $file->getPathname() );
 		$headers      = str_getcsv( $fileContents[0] );
-		$values       = str_getcsv( $fileContents[1] );
+		$values       = str_getcsv( $fileContents[4] );
 		$data         = [];
+
 
 
 		foreach ( $headers as $key => $header ) {
 			$data[ $header ] = $values[ $key ];
 		}
+		echo '<pre>';
+		print_r($data);
+		echo '</pre>';
+		exit();
 		$referenceNumber = $values[1];
 
 		$category = DB::table( 'categories' )->select( [ "categories.id","categories.name", "sectors.payment_account_id","channels.channel_name" ] )
