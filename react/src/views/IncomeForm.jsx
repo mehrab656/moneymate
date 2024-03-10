@@ -11,6 +11,11 @@ import MainLoader from "../components/MainLoader.jsx";
 import {Button, Modal, Row} from "react-bootstrap";
 import {CAlert} from '@coreui/react';
 
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormLabel from '@mui/material/FormLabel';
+
 const useStyles = makeStyles({
     option: {
         "&:hover": {
@@ -37,7 +42,7 @@ export default function IncomeForm() {
         checkout_date: null,
         deposit: null,
         note: "",
-        attachment: "",
+        attachment: ""
     });
 
     const [errors, setErrors] = useState({});
@@ -109,7 +114,9 @@ export default function IncomeForm() {
                     setLoading(false);
                 });
         }
-    }, []);
+    }, [incomeCategories]);
+
+    console.log('income', income)
 
     // set default date(today)
     useEffect(() => {
@@ -280,6 +287,15 @@ export default function IncomeForm() {
         setLoading(true);
     }
 
+
+    // handle channel
+    const [channel, setChannel] = useState('airbnb')
+    const handleChangeToggle = (event) => {
+        setChannel(event.target.value)
+      };
+
+      console.log('toggle', channel)
+
     return (
         <>
             <MainLoader loaderVisible={loading}/>
@@ -383,7 +399,7 @@ export default function IncomeForm() {
                                                 <MenuItem value={'booking'}>Booking.com</MenuItem>
                                                 <MenuItem value={'vrbo'}>VRBO</MenuItem>
                                                 <MenuItem value={'expedia'}>Expedia</MenuItem>
-                                                <MenuItem value={'Cash'}>Cash</MenuItem>
+                                                <MenuItem value={'cash'}>Cash</MenuItem>
                                                 <MenuItem value={'cheque'}>Cheque</MenuItem>
                                             </Select>
                                         </FormControl>
@@ -636,6 +652,27 @@ export default function IncomeForm() {
                                 placeholder='Attach CSV file here'
                             />
                         </div>
+
+                        <FormControl>
+                            <FormLabel id="demo-controlled-radio-buttons-group">Channels</FormLabel>
+                            <RadioGroup
+                                aria-labelledby="demo-controlled-radio-buttons-group"
+                                name="controlled-radio-buttons-group"
+                                value={channel}
+                                onChange={handleChangeToggle}
+                            >
+                            <Box display={'flex'}>
+                                <FormControlLabel value="airbnb" control={<Radio />} label="Air BNB" />
+                                <FormControlLabel value="booking" control={<Radio />} label="Booking" />
+                                <FormControlLabel value="vrbo" control={<Radio />} label="VRBO" />
+                                <FormControlLabel value="experia" control={<Radio />} label="Experia" />
+
+                            </Box>
+                                
+                            </RadioGroup>
+                            </FormControl>
+
+
                     </form>
                 </Modal.Body>
                 <Modal.Footer>

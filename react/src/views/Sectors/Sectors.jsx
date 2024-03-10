@@ -190,13 +190,12 @@ export default function Sectors() {
             if (result.isConfirmed) {
                 axiosClient.post(`/change-payment-status/${payment.id}`).then(({data}) => {
                        
-                    notification('success','Deleted','Bank has been deleted.')
+                    notification('success',data?.message,data?.description)
 
                     setTimeout(() => {
                         window.location.reload();
                     }, 5000)
                 }).catch(err => {
-                    console.log({err})
                     if (err.response) { 
                         const error = err.response.data
                         notification('error',error?.message,error.description)
