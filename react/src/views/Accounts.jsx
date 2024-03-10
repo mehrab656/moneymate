@@ -164,7 +164,7 @@ export default function Accounts() {
         if (bankAccount.id) {
             axiosClient.put(`/bank-account/${bankAccount.id}`, bankAccount)
                 .then((data) => {
-                    setNotification("Bank account information has been updated");
+                    // setNotification("Bank account information has been updated");
                     setShowModal(false);
                     getAccounts(currentPage, pageSize);
                     getAccountBalances();
@@ -183,19 +183,11 @@ export default function Accounts() {
                     });
 
                     notification("success",data.message,data.description)
-
-
                     setLoading(false)
                 }).catch(err => {
-                const response = err.response;
-                if (response && response.status === 409) {
-                    setErrors({...err, account_name: 'Account name already exists'});
-                } else if (response && response.status === 422) {
-                    setErrors(response.data.err);
-                }
-
-                notification("error",err.response.data.message,err.response.data.description,5000)
-                setLoading(false)
+                    const error = err.response.data
+                    notification('error',error?.message,error.description)
+                    setLoading(false)
             });
         } else {
             axiosClient.post('/bank-account/add', bankAccount)
@@ -217,25 +209,14 @@ export default function Accounts() {
                         account_number: '',
                         balance: ''
                     });
-
-                    const icon= 'success';
-                    const  title= 'Bank account has been added';
-                    const text= ''
-                    
-                    notification(icon,title,text)
+                    notification("success",data.message,data.description)
 
                     setLoading(false)
                 }).catch(err => {
-                const response = err.response;
-                if (response && response.status === 409) {
-                    setErrors({...err, account_name: 'Account name already exists'});
-                } else if (response && response.status === 422) {
-                    setErrors(response.data.err);
-                }
-                notification("error",err.response.data.message,err.response.data.description,5000)
-
-                setLoading(false)
-            });
+                    const error = err.response.data
+                    notification('error',error?.message,error.description)
+                    setLoading(false)
+                });
 
         }
     }
@@ -250,22 +231,14 @@ export default function Accounts() {
             cancelButtonText: 'Cancel',
         }).then((result) => {
             if (result.isConfirmed) {
-                axiosClient.delete(`/bank-account/${account.id}`).then(() => {
+                axiosClient.delete(`/bank-account/${account.id}`).then(({data}) => {
                     getAccounts(currentPage, pageSize);
-                  
-                    const icon= 'success';
-                    const  title= 'Deleted!';
-                    const text= 'Bank has been deleted.'
-
-                    notification(icon,title,text)
-
-                }).catch((error) => {
-                       const icon= 'error';
-                       const title= 'Error!';
-                       const text= 'Bank Account could not be deleted.';
-                    notification(icon,title,text,5000)
-
-                });
+                    notification('success',data?.message,data?.description)
+                }).catch(err => {
+                    const error = err.response.data
+                    notification('error',error?.message,error.description)
+                    setLoading(false)
+            });
             }
         });
     };

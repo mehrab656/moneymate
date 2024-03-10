@@ -31,7 +31,11 @@ class ApplicationSettingsController extends Controller {
 			] );
 		}
 
-		return response()->json( [ 'application_settings' => ApplicationSettingsResource::collection( Option::all() ) ] );
+		return response()->json( [ 
+			'application_settings' => ApplicationSettingsResource::collection( Option::all() ) ,
+			'message'     => 'Success!',
+			'description' => 'Application settings have been updated',
+		] );
 	}
 
 

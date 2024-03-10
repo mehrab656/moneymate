@@ -118,27 +118,14 @@ export default function Sectors() {
             if (result.isConfirmed) {
                 axiosClient
                     .delete(`sector/${sector.id}`)
-                    .then(() => {
+                    .then((data) => {
                         getSectors();
-
-                        const icon= 'success';
-                        const  title= 'Deleted!';
-                        const text= 'Sector has been deleted.'
-                        
-                        notification(icon,title,text)
+                        notification('success',data?.message,data?.description)
                     })
                     .catch(err => {
-                        if (err.response) {
-                            const icon= 'error';
-                            const title= err.response.data.message;
-                            const text= err.response.data.description;
-                            notification(icon,title,text,5000)
-                            // Toast.fire({
-                            //     icon: "error",
-                            //     title: err.response.data.message,
-                            //     text: err.response.data.description,
-                            //     timer: 5000
-                            // });
+                        if (err.response) { 
+                            const error = err.response.data
+                            notification('error',error?.message,error.description)
                         }
                     })
             }

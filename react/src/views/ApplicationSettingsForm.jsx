@@ -92,29 +92,19 @@ export default function ApplicationSettingsForm() {
         setLoading(true)
         axiosClient
             .put("/store-application-setting", applicationSettings)
-            .then(() => {
+            .then((data) => {
                 // setNotification("Application settings have been updated");
                 navigate("/application-settings");
                 setSettingsContext(applicationSettings); // Update settings in the context
 
-                const icon= 'success';
-                const  title= 'Application settings have been updated';
-                
-                notification(icon,title)
-
+                notification('success',data?.message,data?.description)
                 setLoading(false)
             })
-            .catch((error) => {
-                const response = error.response;
-                if (response && response.status === 422) {
-                    setErrors(response.data.errors);
+            .catch(err => {
+                if (err.response) { 
+                    const error = err.response.data
+                    notification('error',error?.message,error.description)
                 }
-
-                const icon= 'error';
-                const title= error.response.data.message;
-                const text= error.response.data.description;
-                notification(icon,title,text,5000)
-                setLoading(false)
             })
             .finally(() => {
                 setSaving(false);

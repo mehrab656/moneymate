@@ -84,7 +84,11 @@ class BankAccountController extends Controller {
 		}
 
 
-		return response()->json( [ 'bank_account' => $bankAccount ] );
+		return response()->json( [ 
+			'bank_account' => $bankAccount,
+		    'message'     => 'Success!',
+			'description' => 'Bank account information has been stored!.',
+		] );
 
 	}
 
