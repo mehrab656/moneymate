@@ -19,7 +19,7 @@ const SummeryCard = ({showModal, handelCloseModal, data, currency, modalType, To
         await Swal.fire({
             title: "What is the bill amount?",
             // text: "Are You sure the payment has paid!",
-            inputLabel: `${payment.payment_number} `,
+            inputLabel: `${payment.payment_number}`,
             input: "number",
             inputAutoFocus: true,
             inputAutoTrim: true,
@@ -53,7 +53,6 @@ const SummeryCard = ({showModal, handelCloseModal, data, currency, modalType, To
                         });
                     }
                 })
-
             }
         })
     }
