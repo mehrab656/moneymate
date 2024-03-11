@@ -82,8 +82,10 @@ class IncomeController extends Controller {
 
 			try {
 				DB::beginTransaction();
-				$isUpdated = ( new BankAccount )->updateBalance( $income['account_id'], $income['amount'] );
-				if ( ! $isUpdated ) {
+				$account = ( new BankAccount )->updateBalance( $income['account_id'], $income['amount'] );
+				if ( ! $account['status'] ) {
+					DB::rollBack();
+
 					return response()->json( [
 						'message'     => 'Failed!',
 						'description' => "Failed to update Bank Account!",
@@ -91,11 +93,11 @@ class IncomeController extends Controller {
 				}
 
 				if ( $checkinDate->format( 'Y-m' ) === $checkoutDate->format( 'Y-m' ) ) {
-
 					$description = buildIncomeDescription( $income['description'],
 						$total_reservation_days,
 						$checkinDate->format( 'Y-m-d' ),
 						$checkoutDate->format( 'Y-m-d' ) );
+
 
 					$income = Income::create( [
 						'user_id'       => Auth::user()->id,
@@ -116,23 +118,23 @@ class IncomeController extends Controller {
 						'log_type'     => 'create',
 						'module'       => 'income',
 						'descriptions' => "  added income.",
-						'data_records' => array_merge( json_decode( json_encode( [] ), true ), [ 'account_balance' => $bankAccount->balance ] ),
+						'data_records' => array_merge( json_decode( json_encode( [] ), true ), $account ),
 					] );
 				} else {
-					$end_date = $checkinDate->format( 'Y-m-t' ); //end date from check in date.
 
-					$first_month_days = (int) ( ( new DateTime( $end_date ) )->diff( $checkinDate )->format( "%a" ) ) + 1;
-					$start_date       = $checkoutDate->format( 'Y-m-01' ); //next month starting date;
+					$end_date                  = $checkinDate->format( 'Y-m-t' ); //end date from check in date. Format: "YYYY-mm-dd"
+					$first_month_days          = (int) ( ( new DateTime( $end_date ) )->diff( $checkinDate )->format( "%a" ) ) + 1;
+					$first_month_amount        = $daily_rent * $first_month_days;
+					$second_month_startingDate = $checkoutDate->format( 'Y-m-01' ); //next month starting date;
 
-					$second_month_days  = $checkoutDate->diff( new DateTime( $start_date ) )->format( '%a' );
-					$first_month_amount = $daily_rent * $first_month_days;
-					$description_1      = sprintf( '%s reservation of %d days from %s to %s',
+					$description_1 = sprintf( '%s reservation of %d days from %s to %s',
 						$income['description'],
 						$first_month_days,
-						$checkinDate->format( 'Y-m-d' ),
-						$start_date,
+						$checkinDate->format( "y-m-d" ),
+						$second_month_startingDate,
 					);
-					$income_first       = Income::create( [
+
+					$income_first = Income::create( [
 						'user_id'       => Auth::user()->id,
 						'account_id'    => $income['account_id'],
 						'amount'        => $first_month_amount,
@@ -142,23 +144,27 @@ class IncomeController extends Controller {
 						'reference'     => $income['reference'],
 						'date'          => $end_date,
 						'checkin_date'  => $checkinDate->format( 'Y-m-d' ),
-						'checkout_date' => $start_date,
+						'checkout_date' => $second_month_startingDate,
 						'attachment'    => $income['attachment']
 					] );
-
 					storeActivityLog( [
 						'user_id'      => Auth::user()->id,
+						'object_id'    => $income_first['id'],
 						'log_type'     => 'create',
 						'module'       => 'income',
 						'descriptions' => "  added income.",
-						'data_records' => array_merge( json_decode( json_encode( $income_first ), true ), [ 'account_balance' => $bankAccount->balance ] ),
+						'data_records' => array_merge( json_decode( json_encode( $income_first ), true ), $account ),
 					] );
+
+					$second_month_startingDate = $checkoutDate->format( 'Y-m-01' ); //next month starting date;
+
+					$second_month_days = $checkoutDate->diff( new DateTime( $second_month_startingDate ) )->format( '%a' );
 
 					if ( $second_month_days > 0 ) {
 						$description_2       = sprintf( '%s reservation of %d days from %s to %s',
 							$income['description'],
 							$second_month_days,
-							$start_date,
+							$second_month_startingDate,
 							$checkoutDate->format( 'Y-m-d' ),
 						);
 						$second_month_amount = $daily_rent * $second_month_days;
@@ -171,17 +177,18 @@ class IncomeController extends Controller {
 							'description'   => $description_2,
 							'note'          => $income['note'],
 							'reference'     => $income['reference'],
-							'date'          => $start_date,
-							'checkin_date'  => $start_date,
+							'date'          => $second_month_startingDate,
+							'checkin_date'  => $second_month_startingDate,
 							'checkout_date' => $checkoutDate->format( 'Y-m-d' ),
 							'attachment'    => $income['attachment']
 						] );
 						storeActivityLog( [
 							'user_id'      => Auth::user()->id,
+							'object_id'    => $income_sec['id'],
 							'log_type'     => 'create',
 							'module'       => 'income',
 							'descriptions' => "added new income.",
-							'data_records' => array_merge( json_decode( json_encode( $income_sec ), true ), [ 'account_balance' => $bankAccount->balance ] ),
+							'data_records' => array_merge( json_decode( json_encode( $income_sec ), true ), $account ),
 						] );
 					}
 				}
@@ -190,22 +197,25 @@ class IncomeController extends Controller {
 				DB::rollBack();
 
 				return response()->json( [
-					'message' => 'Cannot add Income.',
+					'message' => 'Something provided wrong data!',
 					'error'   => $e
 				] );
 			}
-
-			return response()->json( [
-				'income' => $income,
-			] );
 		} else {
 
 			try {
 				DB::beginTransaction();
 				// Update the balance of the bank account
-				$bankAccount          = BankAccount::find( $request->account_id );
-				$bankAccount->balance += $request->amount;
-				$bankAccount->save();
+
+				$account = ( new BankAccount )->updateBalance( $income['account_id'], $income['amount'] );
+				if ( ! $account['status'] ) {
+					DB::rollBack();
+
+					return response()->json( [
+						'message'     => 'Failed!',
+						'description' => "Failed to update Bank Account!",
+					], 400 );
+				}
 
 				$income = Income::create( [
 					'user_id'     => Auth::user()->id,
@@ -221,10 +231,11 @@ class IncomeController extends Controller {
 				] );
 				storeActivityLog( [
 					'user_id'      => Auth::user()->id,
+					'object_id'    => $income['id'],
 					'log_type'     => 'create',
 					'module'       => 'income',
 					'descriptions' => "added income.",
-					'data_records' => array_merge( json_decode( json_encode( [] ), true ), [ 'account_balance' => $bankAccount->balance ] ),
+					'data_records' => array_merge( json_decode( json_encode( $income ), true ), $account ),
 				] );
 
 				DB::commit();
@@ -233,17 +244,16 @@ class IncomeController extends Controller {
 				DB::rollBack();
 
 				return response()->json( [
-					'message' => 'Cannot add Income.',
-				] );
+					'message'     => 'Cannot add Income.',
+					'description' => $e,
+				], 400 );
 			}
-
-			return response()->json( [
-				'income' => $income,
-			] );
-
 		}
-
-
+		return response()->json( [
+			'message'     => 'Income added',
+			'description' => 'Income was successfully added.',
+			'income'      => $income,
+		] );
 	}
 
 
@@ -490,10 +500,10 @@ class IncomeController extends Controller {
 		$fileContents = file( $file->getPathname() );
 
 		if ( $channel === 'airbnb' ) {
-			$income = (new Income())->mapCSVWithAirbnb($fileContents);
+			$income = ( new Income() )->mapCSVWithAirbnb( $fileContents );
 		}
 		if ( $channel === 'booking.com' ) {
-			$income = (new Income())->mapCSVWithBooking($fileContents);
+			$income = ( new Income() )->mapCSVWithBooking( $fileContents );
 		}
 		echo '</pre>';
 		print_r( $income );

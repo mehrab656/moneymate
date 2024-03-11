@@ -116,8 +116,6 @@ export default function IncomeForm() {
         }
     }, [incomeCategories]);
 
-    console.log('income', income)
-
     // set default date(today)
     useEffect(() => {
         if (income?.date === null) {
@@ -292,9 +290,7 @@ export default function IncomeForm() {
     const [channel, setChannel] = useState('airbnb')
     const handleChangeToggle = (event) => {
         setChannel(event.target.value)
-      };
-
-      console.log('toggle', channel)
+    };
 
     return (
         <>
@@ -661,16 +657,16 @@ export default function IncomeForm() {
                                 value={channel}
                                 onChange={handleChangeToggle}
                             >
-                            <Box display={'flex'}>
-                                <FormControlLabel value="airbnb" control={<Radio />} label="Air BNB" />
-                                <FormControlLabel value="booking" control={<Radio />} label="Booking" />
-                                <FormControlLabel value="vrbo" control={<Radio />} label="VRBO" />
-                                <FormControlLabel value="experia" control={<Radio />} label="Experia" />
+                                <Box display={'flex'}>
+                                    <FormControlLabel value="airbnb" control={<Radio/>} label="Air BNB"/>
+                                    <FormControlLabel value="booking" control={<Radio/>} label="Booking"/>
+                                    <FormControlLabel value="vrbo" control={<Radio/>} label="VRBO"/>
+                                    <FormControlLabel value="experia" control={<Radio/>} label="Experia"/>
 
-                            </Box>
-                                
+                                </Box>
+
                             </RadioGroup>
-                            </FormControl>
+                        </FormControl>
 
 
                     </form>
