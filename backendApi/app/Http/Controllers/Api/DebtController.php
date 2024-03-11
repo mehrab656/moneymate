@@ -80,20 +80,18 @@ class DebtController extends Controller {
 			'date'       => $debt['date'],
 			'note'       => $debt['note']
 		] );
-
 		$bankAccount = BankAccount::find( $debt->account_id );
 
 		// Means you are lending money to someone.
 
 		if ( $debt['type'] === 'lend' ) {
-			$lendData = [
+			$lendData = Lend::create( [
 				'amount'     => $debt->amount,
 				'account_id' => $debt->account_id,
 				'date'       => $debt['date'],
 				'debt_id'    => $debt->id,
 				'note'       => $debt['note']
-			];
-			Lend::create( $lendData );
+			] );
 
 			// Update Associated bank account by decreasing account balance
 			$bankAccount->balance -= $request->amount;
@@ -101,6 +99,7 @@ class DebtController extends Controller {
 
 			storeActivityLog( [
 				'user_id'      => Auth::user()->id,
+				'object_id'     => $debt['id'],
 				'log_type'     => 'create',
 				'module'       => 'Debt',
 				'descriptions' => " lend an amount of $debtAmount to $person",
@@ -139,6 +138,7 @@ class DebtController extends Controller {
 
 			storeActivityLog( [
 				'user_id'      => Auth::user()->id,
+				'object_id'     => $lendData['id'],
 				'log_type'     => 'create',
 				'module'       => 'Debt',
 				'descriptions' => " has borrowed an amount of $borrowAmount from $person",
@@ -223,6 +223,7 @@ class DebtController extends Controller {
 		Debt::where( 'id', $id )->delete();
 		storeActivityLog( [
 			'user_id'      => Auth::user()->id,
+			'object_id'     => $id,
 			'log_type'     => 'delete',
 			'module'       => 'Debt',
 			'descriptions' => "",

@@ -48,6 +48,7 @@ class BorrowController extends Controller {
 
 			storeActivityLog( [
 				'user_id'      => Auth::user()->id,
+				'object_id'     => $borrow->id,
 				'log_type'     => 'update',
 				'module'       => 'Borrow',
 				'descriptions' => "has borrow some more amount of $request->amount From $debt->person",
@@ -156,6 +157,7 @@ class BorrowController extends Controller {
 
 			storeActivityLog( [
 				'user_id'      => Auth::user()->id,
+				'object_id'     => $repayment->id,
 				'log_type'     => 'update',
 				'module'       => 'Borrow',
 				'descriptions' => "has paid an amount of $request->amount to $debt->person",

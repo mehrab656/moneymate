@@ -115,6 +115,7 @@ class IncomeController extends Controller {
 					] );
 					storeActivityLog( [
 						'user_id'      => Auth::user()->id,
+						'object_id'     => $income['id'],
 						'log_type'     => 'create',
 						'module'       => 'income',
 						'descriptions' => "  added income.",
@@ -305,6 +306,7 @@ class IncomeController extends Controller {
 
 		storeActivityLog( [
 			'user_id'      => Auth::user()->id,
+			'object_id'     => $income->id,
 			'log_type'     => 'edit',
 			'module'       => 'income',
 			'descriptions' => "",
@@ -404,6 +406,7 @@ class IncomeController extends Controller {
 
 		storeActivityLog( [
 			'user_id'      => Auth::user()->id,
+			'object_id'     => $income->id,
 			'log_type'     => 'delete',
 			'module'       => 'income',
 			'descriptions' => "",
@@ -630,6 +633,7 @@ class IncomeController extends Controller {
 
 				storeActivityLog( [
 					'user_id'      => Auth::user()->id,
+					'object_id'     => $income_first['id'],
 					'log_type'     => 'create',
 					'module'       => 'income',
 					'descriptions' => "  added income.",
@@ -660,6 +664,7 @@ class IncomeController extends Controller {
 					] );
 					storeActivityLog( [
 						'user_id'      => Auth::user()->id,
+						'object_id'     => $income_sec['id'],
 						'log_type'     => 'create',
 						'module'       => 'income',
 						'descriptions' => "added new income.",

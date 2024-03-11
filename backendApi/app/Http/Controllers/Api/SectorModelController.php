@@ -149,6 +149,7 @@ class SectorModelController extends Controller {
 			//Add activity Log
 			storeActivityLog( [
 				'user_id'      => Auth::user()->id,
+				'object_id'    => $sector['id'],
 				'log_type'     => 'create',
 				'module'       => 'sectors',
 				'descriptions' => '',
@@ -192,6 +193,7 @@ class SectorModelController extends Controller {
 		$sector->save();
 		storeActivityLog( [
 			'user_id'      => Auth::user()->id,
+			'object_id'    => $sector['id'],
 			'log_type'     => 'Update',
 			'module'       => 'Sector',
 			'descriptions' => "",
@@ -276,7 +278,7 @@ class SectorModelController extends Controller {
 			], 404 );
 		}
 
-		if ($paymentDetails->amount>$bankAccount->balance){
+		if ( $paymentDetails->amount > $bankAccount->balance ) {
 			return response()->json( [
 				'message'     => 'Insufficient Balance!',
 				'description' => 'Insufficient account balance to pay this amount.',
@@ -314,9 +316,9 @@ class SectorModelController extends Controller {
 		DB::beginTransaction();
 		try {
 			Expense::create( $expense );
-			$isUpdated = DB::table( 'payments' )
-			               ->where( 'id', $id )
-			               ->update( [ 'status' => 'paid' ] );
+			$isUpdated            = DB::table( 'payments' )
+			                          ->where( 'id', $id )
+			                          ->update( [ 'status' => 'paid' ] );
 			$bankAccount->balance -= $paymentDetails->amount;
 			$bankAccount->save();
 
@@ -329,10 +331,10 @@ class SectorModelController extends Controller {
 		//Add activity Log
 		storeActivityLog( [
 			'user_id'      => Auth::user()->id,
-			'object_id'      => $id,
+			'object_id'    => $id,
 			'log_type'     => 'edit',
 			'module'       => 'sectors',
-			'descriptions' => $isUpdated?'updated payment status.':'User tried to update payment details.',
+			'descriptions' => $isUpdated ? 'updated payment status.' : 'User tried to update payment details.',
 			'data_records' => $expense,
 		] );
 
@@ -376,6 +378,7 @@ class SectorModelController extends Controller {
 		if ( $bankAccount->balance < $request->amount ) {
 			storeActivityLog( [
 				'user_id'      => Auth::user()->id,
+				'object_id'    => $id,
 				'log_type'     => 'bill_pay',
 				'module'       => "$type-bill-payments",
 				'descriptions' => "tried to pay $type bill of an amount " . $request->amount . " was failed due to insufficient account balance.",
@@ -386,21 +389,20 @@ class SectorModelController extends Controller {
 				'message' => 'Insufficient amount to pay this bill!',
 			], 400 );
 		}
-		$expense = [
-			'user_id'           => Auth::user()->id,
-			'account_id'        => $sector->payment_account_id,
-			'amount'            => $request->amount,
-			'refundable_amount' => 0,
-			'category_id'       => $category->id,
-			'description'       => $request->payment_number,
-			'note'              => 'This expense was recorded while user paid from sector details directly.',
-			'reference'         => 'Automated Payment for : ' . $sector->name . strtoupper( $request->type ),
-			'date'              => $date
-		];
 
 		DB::beginTransaction();
 		try {
-			Expense::create( $expense );
+			$expense   = Expense::create( [
+				'user_id'           => Auth::user()->id,
+				'account_id'        => $sector->payment_account_id,
+				'amount'            => $request->amount,
+				'refundable_amount' => 0,
+				'category_id'       => $category->id,
+				'description'       => $request->payment_number,
+				'note'              => 'This expense was recorded while user paid from sector details directly.',
+				'reference'         => 'Automated Payment for : ' . $sector->name . strtoupper( $request->type ),
+				'date'              => $date
+			] );
 			$isUpdated = DB::table( 'payments' )
 			               ->where( 'id', $id )
 			               ->update( [
@@ -415,6 +417,7 @@ class SectorModelController extends Controller {
 			//Add activity Log
 			storeActivityLog( [
 				'user_id'      => Auth::user()->id,
+				'object_id'    => $expense['id'],
 				'log_type'     => 'update',
 				'module'       => "$type-payments",
 				'descriptions' => "Add $type bill payment on" . $request->payment_number . ' ' . $request->amount,

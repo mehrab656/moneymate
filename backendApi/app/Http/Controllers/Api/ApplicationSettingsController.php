@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Auth;
 use Stripe\StripeClient;
 
 class ApplicationSettingsController extends Controller {
+	/**
+	 * @throws \Exception
+	 */
 	public function storeApplicationSetting( Request $request ): JsonResponse {
 
 		$inputs = $request->except( '_token' );
@@ -24,6 +27,7 @@ class ApplicationSettingsController extends Controller {
 
 			storeActivityLog( [
 				'user_id'      => Auth::user()->id,
+				'object_id'     => $option->id,
 				'log_type'     => 'edit',
 				'module'       => 'settings',
 				'descriptions' => '',

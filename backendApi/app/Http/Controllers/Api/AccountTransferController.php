@@ -128,8 +128,9 @@ class AccountTransferController extends Controller {
 
 			storeActivityLog( [
 				'user_id'      => Auth::user()->id,
+				'object_id'     => $transfer->id,
 				'log_type'     => 'edit',
-				'module'       => 'sectors',
+				'module'       => 'transfer',
 				'descriptions' => 'has transfer an amount from '.$fromAccount->bankName->bank_name.'('.$fromAccount->account_name.')'.' to '.$toAccount->bankName->bank_name.'('.$toAccount->account_name.')'.' an amount of '.$amount,
 				'data_records' => $transfer,
 			] );

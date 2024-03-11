@@ -55,6 +55,7 @@ class LendController extends Controller
 
 	    storeActivityLog( [
 		    'user_id'      => Auth::user()->id,
+		    'object_id'     => $lend['id'],
 		    'log_type'     => 'edit',
 		    'module'       => 'lend',
 		    'descriptions' => "",
@@ -102,6 +103,7 @@ class LendController extends Controller
 
 	    storeActivityLog( [
 		    'user_id'      => Auth::user()->id,
+		    'object_id'     => $debtCollection['id'],
 		    'log_type'     => 'edit',
 		    'module'       => 'Debt',
 		    'descriptions' => "",
