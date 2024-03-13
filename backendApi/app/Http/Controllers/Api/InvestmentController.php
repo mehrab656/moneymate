@@ -67,6 +67,7 @@ class InvestmentController extends Controller {
 
 		storeActivityLog( [
 			'user_id'      => Auth::user()->id,
+			'object_id'     => $invest['id'],
 			'log_type'     => 'create',
 			'module'       => 'investment',
 			'descriptions' => "",
@@ -126,6 +127,7 @@ class InvestmentController extends Controller {
 
 			storeActivityLog( [
 				'user_id'      => Auth::user()->id,
+				'object_id'     => $investment->id,
 				'log_type'     => 'edit',
 				'module'       => 'investment',
 				'descriptions' => "",
@@ -163,6 +165,7 @@ class InvestmentController extends Controller {
 		}
 		storeActivityLog( [
 			'user_id'      => Auth::user()->id,
+			'object_id'     => $investment->id,
 			'log_type'     => 'delete',
 			'module'       => 'investment',
 			'descriptions' => "",

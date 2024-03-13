@@ -69,6 +69,7 @@ class BankAccountController extends Controller {
 
 			storeActivityLog( [
 				'user_id'      => Auth::user()->id,
+				'object_id'     => $bankAccount->id,
 				'log_type'     => 'create',
 				'module'       => 'Account',
 				'descriptions' => '',
@@ -116,6 +117,7 @@ class BankAccountController extends Controller {
 			$bankAccount->delete();
 			storeActivityLog( [
 				'user_id'      => Auth::user()->id,
+				'object_id'     => $bankAccount->id,
 				'log_type'     => 'delete',
 				'module'       => 'Bank Account',
 				'descriptions' => '',

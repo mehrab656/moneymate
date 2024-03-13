@@ -202,11 +202,13 @@ function is_ip_address( string $ip ): bool|string {
 	 * Build Description for Income Entry
 	 */
 	function buildIncomeDescription( $description, $reservationDays, $checkInDate, $checkoutDate ): string {
+
 		return sprintf( '%s reservation of %s days from %s to %s',
 			$description,
 			$reservationDays,
-			$checkInDate->format( 'Y-m-d' ),
-			$checkoutDate->format( 'Y-m-d' ),
+			$checkInDate,
+			$checkoutDate,
 		);
 	}
+
 }

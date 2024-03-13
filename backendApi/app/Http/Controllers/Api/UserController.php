@@ -52,6 +52,7 @@ class UserController extends Controller
         $user = User::create($data);
 	    storeActivityLog( [
 		    'user_id'      => Auth::user()->id,
+		    'object_id'    => $user['id'],
 		    'log_type'     => 'create',
 		    'module'       => 'user',
 		    'descriptions' => "",

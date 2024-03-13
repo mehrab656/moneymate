@@ -165,6 +165,7 @@ class ExpenseController extends Controller {
 
 		storeActivityLog( [
 			'user_id'      => Auth::user()->id,
+			'object_id'     => $expense['id'],
 			'log_type'     => 'create',
 			'module'       => 'expense',
 			'descriptions' => "",
@@ -226,6 +227,7 @@ class ExpenseController extends Controller {
 
 		storeActivityLog( [
 			'user_id'      => Auth::user()->id,
+			'object_id'     => $expense->id,
 			'log_type'     => 'delete',
 			'module'       => 'expense',
 			'descriptions' => "",
@@ -295,6 +297,7 @@ class ExpenseController extends Controller {
 		}
 		storeActivityLog( [
 			'user_id'      => Auth::user()->id,
+			'object_id'     => $expense->id,
 			'log_type'     => 'edit',
 			'module'       => 'expense',
 			'descriptions' => "",
@@ -476,6 +479,7 @@ class ExpenseController extends Controller {
 
 			storeActivityLog( [
 				'user_id'      => Auth::user()->id,
+				'object_id'     => $return->id,
 				'log_type'     => 'update',
 				'module'       => 'return',
 				'descriptions' => "added returns. Amount: $refundAmount",

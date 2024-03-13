@@ -7,6 +7,7 @@ use App\Http\Requests\BankNameRequest;
 use App\Http\Requests\BankNameUpdateRequest;
 use App\Http\Resources\BankNameResource;
 use App\Models\BankName;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -67,6 +68,7 @@ class BankNameController extends Controller {
 
 			storeActivityLog( [
 				'user_id'      => Auth::user()->id,
+				'object_id'     => $bankName->id,
 				'log_type'     => 'create',
 				'module'       => 'sectors',
 				'descriptions' => '',
@@ -99,6 +101,7 @@ class BankNameController extends Controller {
 
 	/**
 	 * Update the specified resource in storage.
+	 * @throws Exception
 	 */
 	public function update( BankNameUpdateRequest $request, BankName $bankName ): BankNameResource {
 		$data = $request->validated();
@@ -108,6 +111,7 @@ class BankNameController extends Controller {
 		$bankName->update( $data );
 		storeActivityLog( [
 			'user_id'      => Auth::user()->id,
+			'object_id'     => $bankName->id,
 			'log_type'     => 'edit',
 			'module'       => 'bank',
 			'descriptions' => '',
@@ -132,6 +136,7 @@ class BankNameController extends Controller {
 		$bankName->delete();
 		storeActivityLog( [
 			'user_id'      => Auth::user()->id,
+			'object_id'     => $bankName->id,
 			'log_type'     => 'delete',
 			'module'       => 'bank',
 			'descriptions' => '',

@@ -45,6 +45,7 @@ class CategoryController extends Controller {
 		$category = $this->categoryRepository->create( $categoryData );
 		storeActivityLog( [
 			'user_id'      => Auth::user()->id,
+			'object_id'     => $category->id,
 			'log_type'     => 'create',
 			'module'       => 'Category',
 			'descriptions' => "",
@@ -70,6 +71,7 @@ class CategoryController extends Controller {
 
 		storeActivityLog( [
 			'user_id'      => Auth::user()->id,
+			'object_id'     => $category->id,
 			'log_type'     => 'edit',
 			'module'       => 'Category',
 			'descriptions' => "",
@@ -98,6 +100,7 @@ class CategoryController extends Controller {
 		$this->categoryRepository->delete( $category );
 		storeActivityLog( [
 			'user_id'      => Auth::user()->id,
+			'object_id'     => $category->id,
 			'log_type'     => 'delete',
 			'module'       => 'Category',
 			'descriptions' => "",
