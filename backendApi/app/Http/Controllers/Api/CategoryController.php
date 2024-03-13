@@ -51,7 +51,12 @@ class CategoryController extends Controller {
 			'data_records' => $category,
 		] );
 
-		return response()->json( [ 'category' => $category ] );
+		// return response()->json( [ 'category' => $category ] );
+
+		return response()->json( [
+			'message'     => 'Success!',
+			'description' => 'Category successfully created!.',
+		] );
 	}
 
 	public function show( Category $category ): CategoryResource {
@@ -74,7 +79,11 @@ class CategoryController extends Controller {
 			],
 		] );
 
-		return new CategoryResource( $category );
+		// return new CategoryResource( $category );
+		return response()->json( [
+			'message'     => 'Success!',
+			'description' => 'Category successfully updated!.',
+		] );
 	}
 
 
@@ -97,7 +106,11 @@ class CategoryController extends Controller {
 			],
 		] );
 
-		return response()->json( [ 'message' => 'Category deleted' ] );
+		// return response()->json( [ 'message' => 'Category deleted' ] );
+		return response()->json( [
+			'message'     => 'Success!',
+			'description' => 'Category successfully deleted!.',
+		] );
 	}
 
 }

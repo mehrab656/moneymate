@@ -10,6 +10,7 @@ import {faCoins} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 import MainLoader from "../components/MainLoader.jsx";
+import { notification } from "../components/ToastNotification.jsx";
 
 export default function Categories() {
     const [loading, setLoading] = useState(false);
@@ -56,8 +57,8 @@ export default function Categories() {
         setLoading(true)
         if (category.id) {
             axiosClient.put(`/category/${category.id}`, category)
-                .then(() => {
-                    setNotification("Category has been successfully updated");
+                .then((data) => {
+                    // setNotification("Category has been successfully updated");
 
                     setShowModal(false);
                     getCategories(currentPage, pageSize);
@@ -67,19 +68,25 @@ export default function Categories() {
                         type: 'income',
                         sector_id:null
                     });
+
+                    notification('success',data?.message,data?.description)
                     setLoading(false)
-                }).catch(error => {
-                const response = error.response;
-                if (response && response.status === 409) {
-                    setErrors({name: ['Category name already exists']});
-                } else if (response && response.status === 422) {
-                    setErrors(response.data.errors);
+                }).catch(err => {
+                // const response = error.response;
+                // if (response && response.status === 409) {
+                //     setErrors({name: ['Category name already exists']});
+                // } else if (response && response.status === 422) {
+                //     setErrors(response.data.errors);
+                // }
+                if (err.response) { 
+                    const error = err.response.data
+                    notification('error',error?.message,error.description)
                 }
                 setLoading(false)
             });
         } else {
-            axiosClient.post('category/add', category).then(() => {
-                setNotification(`${category.name} was successfully created`);
+            axiosClient.post('category/add', category).then((data) => {
+                // setNotification(`${category.name} was successfully created`);
                 setShowModal(false);
                 getCategories(currentPage, pageSize);
                 setCategory({
@@ -88,13 +95,19 @@ export default function Categories() {
                     type: 'income',
                     sector_id: null
                 });
+
+                notification('success',data?.message,data?.description)
                 setLoading(false)
-            }).catch(error => {
-                const response = error.response;
-                if (response && response.status === 409) {
-                    setErrors({name: ['Category name already exists']});
-                } else if (response && response.status === 422) {
-                    setErrors(response.data.errors);
+            }).catch(err => {
+                // const response = error.response;
+                // if (response && response.status === 409) {
+                //     setErrors({name: ['Category name already exists']});
+                // } else if (response && response.status === 422) {
+                //     setErrors(response.data.errors);
+                // }
+                if (err.response) { 
+                    const error = err.response.data
+                    notification('error',error?.message,error.description)
                 }
                 setLoading(false)
             });
@@ -119,20 +132,23 @@ export default function Categories() {
             if (result.isConfirmed) {
                 axiosClient
                     .delete(`category/${category.id}`)
-                    .then(() => {
+                    .then((data) => {
                         getCategories(currentPage, pageSize);
-                        Swal.fire({
-                            title: "Deleted!",
-                            text: "Category has been deleted.",
-                            icon: "success",
-                        });
-                    }).catch(() => {
-                        Swal.fire({
-                            title: "Error!",
-                            text: "Category could not be deleted.",
-                            icon: "error",
-                        });
-                    });
+                        // Swal.fire({
+                        //     title: "Deleted!",
+                        //     text: "Category has been deleted.",
+                        //     icon: "success",
+                        // });
+
+                        notification('success',data?.message,data?.description)
+
+                        
+                    }).catch(err => {
+                        if (err.response) { 
+                            const error = err.response.data
+                            notification('error',error?.message,error.description)
+                        }
+                    })
             }
         });
     };

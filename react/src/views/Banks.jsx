@@ -95,7 +95,7 @@ export default function Banks() {
         if (bank.id) {
             axiosClient
                 .put(`/bank-names/${bank.id}`, bank)
-                .then(() => {
+                .then((data) => {
                     // setNotification("Bank name has been updated");
                     setShowModal(false);
                     getBankNames(currentPage, pageSize);
@@ -103,26 +103,21 @@ export default function Banks() {
                         id: null,
                         bank_name: ""
                     });
-
-                    const icon= 'success';
-                    const  title= 'Bank name has been updated';
-                    const text= ''
-                    
-                    notification(icon,title,text)
+                    notification('success',data?.message,data?.description)
                     setLoading(false)
                 })
-                .catch((error) => {
-                    const response = error.response;
-                    if (response && response.status === 409) {
-                        setErrors({bank_name: ["Bank name already exists"]});
-                    } else if (response && response.status === 422) {
-                        setErrors(response.data.errors);
-                    }
+                .catch((err) => {
+                    // const response = error.response;
+                    // if (response && response.status === 409) {
+                    //     setErrors({bank_name: ["Bank name already exists"]});
+                    // } else if (response && response.status === 422) {
+                    //     setErrors(response.data.errors);
+                    // }
 
-                    const icon= 'error';
-                    const title= error.response.data.message;
-                    const text= error.response.data.description;
-                    notification(icon,title,text,5000)
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
+                    }
                     setLoading(false)
                 });
         } else {
@@ -136,26 +131,21 @@ export default function Banks() {
                         id: null,
                         bank_name: ""
                     });
-
-                    const icon= 'success';
-                    const  title= `${bank.bank_name} has been created`;
-                    const text= ''
-                    
-                    notification(icon,title,text)
+                    notification('success',data?.message,data?.description)
                     setLoading(false)
                 })
-                .catch((error) => {
-                    const response = error.response;
-                    if (response && response.status === 409) {
-                        setErrors({bank_name: ["Bank name already exists"]});
-                    } else if (response && response.status === 422) {
-                        setErrors(response.data.errors);
-                    }
+                .catch((err) => {
+                    // const response = error.response;
+                    // if (response && response.status === 409) {
+                    //     setErrors({bank_name: ["Bank name already exists"]});
+                    // } else if (response && response.status === 422) {
+                    //     setErrors(response.data.errors);
+                    // }
 
-                    const icon= 'error';
-                    const title= error.response.data.message;
-                    const text= error.response.data.description;
-                    notification(icon,title,text,5000)
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
+                    }
                     setLoading(false)
                 });
         }
@@ -177,20 +167,14 @@ export default function Banks() {
             cancelButtonText: 'Cancel',
         }).then((result) => {
             if (result.isConfirmed) {
-                axiosClient.delete(`/bank-names/${bank.id}`).then(() => {
+                axiosClient.delete(`/bank-names/${bank.id}`).then((data) => {
                     getBankNames(currentPage, pageSize);
-                    const icon= 'success';
-                    const  title= 'Deleted!';
-                    const text= 'Bank has been deleted.'
-                    
-                    notification(icon,title,text)
-
-                }).catch((error) => {
-                    const icon= 'error';
-                    const title= 'Bank could not be deleted.';
-                    const text= '';
-                    notification(icon,title,text,5000)
-                    
+                    notification('success',data?.message,data?.description)
+                }).catch((err) => {
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
+                    }
                 });
             }
         });

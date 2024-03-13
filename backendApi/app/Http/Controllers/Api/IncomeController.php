@@ -197,6 +197,8 @@ class IncomeController extends Controller {
 
 			return response()->json( [
 				'income' => $income,
+				'message'     => 'Success!',
+				'description' => 'Income has been added.',
 			] );
 		} else {
 
@@ -239,6 +241,8 @@ class IncomeController extends Controller {
 
 			return response()->json( [
 				'income' => $income,
+				'message'     => 'Success!',
+				'description' => 'Income has been added.',
 			] );
 
 		}
@@ -487,7 +491,11 @@ class IncomeController extends Controller {
 			'data_records' => array_merge( json_decode( json_encode( $income ), true ), [ 'account_balance' => $accountBalance ] ),
 		] );
 
-		return new IncomeResource( $income );
+		// return new IncomeResource( $income );
+		return response()->json( [
+			'message'     => 'Success!',
+			'description' => 'Income data has been updated.',
+		] );
 	}
 
 
@@ -586,7 +594,12 @@ class IncomeController extends Controller {
 			'data_records' => array_merge( json_decode( json_encode( $income ), true ), [ 'account_balance' => $bankAccount->balance ] ),
 		] );
 
-		return response()->noContent();
+		// return response()->noContent();
+
+		return response()->json( [
+			'message'     => 'Success!',
+			'description' => 'Income has been deleted.',
+		] );
 	}
 
 

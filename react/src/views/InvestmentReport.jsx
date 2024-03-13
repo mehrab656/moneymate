@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect, useRef, useState} from "react";
 import axiosClient from "../axios-client.js";
 import SummeryCard from "../components/SummeryCard";
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
@@ -7,8 +7,11 @@ import {SettingsContext} from "../contexts/SettingsContext";
 import DatePicker from "react-datepicker";
 import InvestmentReportChart from "../components/InvestmentReportChart.jsx";
 import MainLoader from "../components/MainLoader.jsx";
+import ReactToPrint from "react-to-print";
+import { Box, Button } from "@mui/material";
 
 export default function InvestmentReport() {
+    const componentRef  = useRef()
 
     const [getTotalInvestments, setTotalInvestments] = useState(0);
     const [investments, setInvestments] = useState([]);
@@ -82,7 +85,7 @@ export default function InvestmentReport() {
                             </div>
                         </form>
                     </div>
-                    <div className="row">
+                    <div className="row" ref={componentRef}>
                         <div className="col-12">
                             <h1 className="title-text text-center">Total Investment Reports</h1>
                             <table className="table table-bordered custom-table">
@@ -120,6 +123,7 @@ export default function InvestmentReport() {
                 <div className="row">
                     <div className="mb-4">
                         <SummeryCard value={getTotalInvestments} summary="Total Investments" icon={<AttachMoneyIcon/>} iconClassName="icon-success" currency={default_currency}/>
+                        
                     </div>
 
                     <div>
@@ -129,6 +133,13 @@ export default function InvestmentReport() {
                                                    checkLoading={loading}
                                                    title="Investment chart"/>
                         </WizCard>
+
+                        <Box sx={{mt:1}} display={'flex'} justifyContent={'center'} alignItems={'center'} >
+                         <ReactToPrint
+                             trigger={() => <Button sx={{ml:1}} variant="outlined">Print</Button>}
+                             content={()=> componentRef.current}
+                         />
+                        </Box>
                     </div>
                 </div>
             </div>

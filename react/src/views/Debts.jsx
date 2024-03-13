@@ -13,6 +13,7 @@ import {SettingsContext} from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 import MainLoader from "../components/MainLoader.jsx";
 import { Tooltip } from "@mui/material";
+import { notification } from "../components/ToastNotification.jsx";
 
 export default function Debts() {
 
@@ -143,39 +144,58 @@ export default function Debts() {
             };
 
             axiosClient.post('/debts/store', debtData)
-                .then(response => {
-                    if (response.data.status === 'insufficient_balance') {
-                        setNotification(response.data.message);
-                    }
+                .then((data) => {
+                    // if (response.data.status === 'insufficient_balance') {
+                    //     setNotification(response.data.message);
+                    // }
 
-                    if (response.data.status === 'success') {
-                        setNotification(response.data.message);
-                        getDebts(currentPage, pageSize);
-                        setShowModal(false);
+                    // if (response.data.status === 'success') {
+                    //     setNotification(response.data.message);
+                    //     getDebts(currentPage, pageSize);
+                    //     setShowModal(false);
 
-                        setDebt({
-                            id: null,
-                            amount: null,
-                            account_id: null,
-                            type: '',
-                            person: '',
-                            date: null,
-                            note: ''
-                        });
-                        setDate(null);
-                        setErrors(null);
-                    }
+                    //     setDebt({
+                    //         id: null,
+                    //         amount: null,
+                    //         account_id: null,
+                    //         type: '',
+                    //         person: '',
+                    //         date: null,
+                    //         note: ''
+                    //     });
+                    //     setDate(null);
+                    //     setErrors(null);
+                    // }
+                    // if (response.data.status === 'fail') {
+                    //     setNotification(response.data.message);
+                    // }
 
-                    if (response.data.status === 'fail') {
-                        setNotification(response.data.message);
-                    }
+                    getDebts(currentPage, pageSize);
+                    setShowModal(false);
+
+                    setDebt({
+                        id: null,
+                        amount: null,
+                        account_id: null,
+                        type: '',
+                        person: '',
+                        date: null,
+                        note: ''
+                    });
+                    setDate(null);
+                    setErrors(null);
+
+                    notification('success',data?.message,data?.description)
                     setLoading(false);
                 })
-                .catch(error => {
-                    // Handle error
+                .catch(err => {
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
+                    }
                     setLoading(false);
-                    console.warn('Error creating debt:', error);
-                    setErrors(error.response.data.errors); // Set the error messages received from the server
+                    // console.warn('Error creating debt:', error);
+                    // setErrors(error.response.data.errors); // Set the error messages received from the server
                 })
                 .finally(() => {
                     setLoading(false);
@@ -195,21 +215,16 @@ export default function Debts() {
             if (result.isConfirmed) {
                 axiosClient
                     .delete(`/debts/delete/${debt.id}`)
-                    .then(() => {
+                    .then((data) => {
                         getDebts(currentPage, pageSize);
-                        Swal.fire({
-                            title: "Deleted!",
-                            text: "debt has been deleted.",
-                            icon: "success",
-                        });
+                        notification('success',data?.message,data?.description)
                     })
-                    .catch((error) => {
-                        Swal.fire({
-                            title: "Error!",
-                            text: "debt could not be deleted.",
-                            icon: "error",
-                        });
-                    });
+                    .catch(err => {
+                        if (err.response) { 
+                            const error = err.response.data
+                            notification('error',error?.message,error.description)
+                        }
+                    })
             }
         });
     };

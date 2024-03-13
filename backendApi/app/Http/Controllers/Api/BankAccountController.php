@@ -131,7 +131,11 @@ class BankAccountController extends Controller {
 		}
 
 
-		return response()->noContent();
+		// return response()->noContent();
+		return response()->json( [
+			'message'     => 'Success!',
+			'description' => 'Bank account deleted!',
+		] );
 	}
 
 

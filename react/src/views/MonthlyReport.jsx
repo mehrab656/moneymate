@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect, useRef, useState} from "react";
 import axiosClient from "../axios-client.js";
 import WizCard from "../components/WizCard";
 import {SettingsContext} from "../contexts/SettingsContext";
@@ -6,6 +6,8 @@ import MainLoader from "../components/MainLoader.jsx";
 import DatePicker from "react-datepicker";
 import MonthlyReportTable from "../components/MonthlyReportTable.jsx";
 import Swal from "sweetalert2";
+import ReactToPrint from 'react-to-print'
+import { Button } from "@mui/material";
 
 const initialState = {
     incomes: [],
@@ -18,6 +20,7 @@ const initialState = {
     summery: []
 }
 export default function MonthlyReport() {
+    const componentRef  = useRef()
 
     const [monthlyReport, setMonthlyReport] = useState(initialState);
     const [loading, setLoading] = useState(false);
@@ -145,9 +148,16 @@ export default function MonthlyReport() {
                                     <button className={'btn-add right'} type="submit">Filter</button>
                                 </form>
                             </td>
-                            <td>
+                            <td  width={'5%'}>
                                 <button className="btn btn-warning" onClick={resetFilterParameter}>Reset</button>
                             </td>
+                            <td >
+                                <ReactToPrint
+                                    trigger={() => <Button variant="outlined">Print</Button>}
+                                    content={()=> componentRef.current}
+                                />
+                            </td>
+                           
                         </tr>
                         </tbody>
                     </table>
@@ -160,7 +170,7 @@ export default function MonthlyReport() {
                     </div>
                 }
 
-                <div className="row">
+                <div className="row" ref={componentRef}>
                     <div className="col-12">
                         <div className="responsive" style={{overflow: 'auto'}}>
                             <div className="table-responsive-sm">

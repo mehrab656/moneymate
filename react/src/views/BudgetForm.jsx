@@ -7,6 +7,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import {useStateContext} from "../contexts/ContextProvider.jsx";
 import WizCard from "../components/WizCard";
 import MainLoader from "../components/MainLoader.jsx";
+import { notification } from "../components/ToastNotification.jsx";
 
 export default function BudgetForm() {
     const [errors, setErrors] = useState({});
@@ -93,14 +94,18 @@ export default function BudgetForm() {
             axiosClient
                 .put(`/budgets/${budget.id}`, updatedBudget)
                 .then(({data}) => {
-                    setNotification(`${data.budget_name} was successfully updated`);
+                    notification('success',data?.message,data?.description)
                     navigate("/budgets");
                     setLoading(false);
                 })
-                .catch((error) => {
-                    const response = error.response;
-                    if (response && response.status === 422) {
-                        setErrors(response.data.errors);
+                .catch((err) => {
+                    // const response = error.response;
+                    // if (response && response.status === 422) {
+                    //     setErrors(response.data.errors);
+                    // }
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
                     }
                     setLoading(false);
                 });
@@ -108,14 +113,19 @@ export default function BudgetForm() {
             axiosClient
                 .post("/budgets", updatedBudget)
                 .then(({data}) => {
-                    setNotification(`${data.budget_name} was successfully created`);
+                    // setNotification(`${data.budget_name} was successfully created`);
+                    notification('success',data?.message,data?.description)
                     navigate("/budgets");
                     setLoading(false);
                 })
-                .catch((error) => {
-                    const response = error.response;
-                    if (response && response.status === 422) {
-                        setErrors(response.data.errors);
+                .catch((err) => {
+                    // const response = error.response;
+                    // if (response && response.status === 422) {
+                    //     setErrors(response.data.errors);
+                    // }
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
                     }
                     setLoading(false);
                 });

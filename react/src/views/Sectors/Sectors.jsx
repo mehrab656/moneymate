@@ -186,7 +186,6 @@ export default function Sectors() {
                     if (err.response) { 
                         const error = err.response.data
                         notification('error',error?.message,error.description)
-                        
                     }
                 })
 

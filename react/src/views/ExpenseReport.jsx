@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect, useRef, useState} from "react";
 import axiosClient from "../axios-client.js";
 import DatePicker from 'react-datepicker';
 import WizCard from "../components/WizCard";
@@ -19,8 +19,11 @@ import {Col, Container, Row} from "react-bootstrap";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import {Link} from "react-router-dom";
 import ExpenseFilter from "../helper/filter-icons/ExpenseFilter.jsx";
+import { Box, Button } from "@mui/material";
+import ReactToPrint from "react-to-print";
 
 export default function ExpenseReport() {
+    const componentRef  = useRef()
     const [loading, setLoading] = useState(false);
     const [expenseReport, setExpenseReport] = useState([]);
     const [startDate, setStartDate] = useState(null);
@@ -159,7 +162,7 @@ export default function ExpenseReport() {
                             />
                         </Row>
                         <Row>
-                            <Col xs={12} md={9}>
+                            <Col xs={12} md={9} ref={componentRef}>
                                 <div className="table-responsive-sm my-custom-scrollbar table-wrapper-scroll-y">
                                     <table className="table table-bordered custom-table">
                                         <thead>
@@ -230,6 +233,13 @@ export default function ExpenseReport() {
                                         <p className="text-muted">Total expense amount</p>
                                     </div>
                                 </div>
+
+                                <Box display={'flex'} justifyContent={'center'} alignItems={'center'} >
+                                <ReactToPrint
+                                    trigger={() => <Button sx={{ml:1}} variant="outlined">Print</Button>}
+                                    content={()=> componentRef.current}
+                                />
+                                </Box>
 
                             </Col>
                         </Row>
