@@ -12,6 +12,7 @@ import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 import {Modal} from "react-bootstrap";
 import {Tooltip} from "react-tooltip";
 import MainLoader from "../components/MainLoader.jsx";
+import { notification } from "../components/ToastNotification.jsx";
 
 
 export default function Investment() {
@@ -85,20 +86,15 @@ export default function Investment() {
             cancelButtonText: 'Cancel',
         }).then((result) => {
             if (result.isConfirmed) {
-                axiosClient.delete(`investment/${investment.id}`).then((res) => {
+                axiosClient.delete(`investment/${investment.id}`).then((data) => {
                     getInvestments();
-                    Swal.fire({
-                        title: 'Deleted!',
-                        text: 'investment has been deleted.',
-                        icon: 'success',
-                    });
-                }).catch((error) => {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'investment could not be deleted.',
-                        icon: 'error',
-                    });
-                });
+                    notification('success',data?.message,data?.description)
+                }).catch(err => {
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
+                    }
+                })
             }
         });
     };

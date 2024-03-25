@@ -69,9 +69,13 @@ class ExpenseController extends Controller {
 		$bankAccount = BankAccount::find( $request->account_id );
 
 		if ( $bankAccount->balance < $request->amount ) {
+			// return response()->json( [
+			// 	'message' => 'Insufficient amount to make this expense',
+			// ], 400 );
 			return response()->json( [
-				'message' => 'Insufficient amount to make this expense',
-			], 400 );
+				'message'     => 'Error!',
+				'description' => 'Insufficient amount to make this expense.',
+			] );
 		}
 
 
@@ -81,9 +85,13 @@ class ExpenseController extends Controller {
 		if ( $budgetCategory ) {
 			$budget = Budget::find( $budgetCategory->budget_id );
 			if ( $budget && $expense['amount'] > $budget->amount ) {
+				// return response()->json( [
+				// 	'message' => 'There is no sufficient budget for this category',
+				// ], 400 );
 				return response()->json( [
-					'message' => 'There is no sufficient budget for this category',
-				], 400 );
+					'message'     => 'Error!',
+					'description' => 'There is no sufficient budget for this category',
+				] );
 			}
 		}
 
@@ -164,9 +172,15 @@ class ExpenseController extends Controller {
 			'data_records' => array_merge( json_decode( json_encode( $expense ), true ), [ 'account_balance' => $bankAccount->balance ] ),
 		] );
 
+		// return response()->json( [
+		// 	'expense'  => $expense,
+		// 	'category' => $category,
+		// ] );
 		return response()->json( [
+			'message'     => 'Success!',
+			'description' => 'Expense added successfully!.',
 			'expense'  => $expense,
-			'category' => $category,
+			'category' => $category
 		] );
 	}
 
@@ -290,7 +304,11 @@ class ExpenseController extends Controller {
 			'data_records' => array_merge( json_decode( json_encode( $expense ), true ), [ 'account_balance' => $accountBalance ] ),
 		] );
 
-		return new ExpenseResource( $expense );
+		// return new ExpenseResource( $expense );
+		return response()->json( [
+			'message'     => 'Success!',
+			'description' => 'Expense successfully updated!.',
+		] );
 	}
 
 

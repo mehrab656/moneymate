@@ -74,8 +74,13 @@ class InvestmentController extends Controller {
 			'data_records' => array_merge( json_decode( json_encode( $invest ), true ), [ 'account_balance' => $bankAccount->balance ] ),
 		] );
 
+		// return response()->json( [
+		// 	'invest' => $invest,
+		// ] );
 		return response()->json( [
 			'invest' => $invest,
+			'message'     => 'Success!',
+			'description' => 'Investment created!.',
 		] );
 	}
 
@@ -136,7 +141,11 @@ class InvestmentController extends Controller {
 		}
 		DB::commit();
 
-		return new InvestmentResource( $investment );
+		// return new InvestmentResource( $investment );
+		return response()->json( [
+			'message'     => 'Success!',
+			'description' => 'Investment updated!.',
+		] );
 	}
 
 	/**
@@ -163,7 +172,11 @@ class InvestmentController extends Controller {
 			'data_records' => array_merge( json_decode( json_encode( $investment ), true ), [ 'account_balance' => $bankAccount->balance ] ),
 		] );
 
-		return response()->noContent();
+		// return response()->noContent();
+		return response()->json( [
+			'message'     => 'Success!',
+			'description' => 'Investment deleted!.',
+		] );
 	}
 
 	public function addPlan( Request $request ) {

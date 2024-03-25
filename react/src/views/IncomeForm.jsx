@@ -15,6 +15,7 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
+import { notification } from "../components/ToastNotification.jsx";
 
 const useStyles = makeStyles({
     option: {
@@ -160,9 +161,9 @@ export default function IncomeForm() {
                         "Content-Type": "multipart/form-data",
                     },
                 })
-                .then(() => {
-
-                    setNotification("Income data has been updated");
+                .then((data) => {
+                    notification('success',data?.message,data?.description)
+                    // setNotification("Income data has been updated");
                     if (stay === true) {
                         window.location.reload();
                     } else {
@@ -171,9 +172,9 @@ export default function IncomeForm() {
                     setLoading(false);
                 })
                 .catch((err) => {
-                    const response = err.response;
-                    if (response && response.status === 422) {
-                        setErrors(response.data.errors);
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
                     }
                     setLoading(false);
                 });
@@ -209,7 +210,8 @@ export default function IncomeForm() {
                     },
                 })
                 .then(() => {
-                    setNotification("Income has been added.");
+                    // setNotification("Income has been added.");
+                    notification('success',data?.message,data?.description)
                     if (stay === true) {
                         window.location.reload();
                     } else {
@@ -217,9 +219,11 @@ export default function IncomeForm() {
                     }
                     setLoading(false);
                 })
-                .catch((error) => {
-                    const response = error.response;
-                    setErrors(response.data.errors);
+                .catch((err) => {
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
+                    }
                     setLoading(false);
                 });
         }
@@ -257,11 +261,7 @@ export default function IncomeForm() {
         }).then(({data}) => {
             setLoading(false);
 
-            Toast.fire({
-                icon: "success",
-                title: "Added",
-                text: "Income added for " + data.income.description,
-            });
+            notification('success',data?.message,data?.description)
             setTimeout(() => {
                 window.location.reload();
             }, 5000)
@@ -276,11 +276,10 @@ export default function IncomeForm() {
                 errorInfo = ["Syntax or Internal Code error"]
             }
 
-            Toast.fire({
-                icon: "error",
-                title: err.response.data.message,
-                text: errorInfo.toString(),
-            });
+            if (err.response) { 
+                const error = err.response.data
+                notification('error',error?.message,error.description)
+            }
         });
         setLoading(true);
     }

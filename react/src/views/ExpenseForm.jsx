@@ -13,6 +13,7 @@ import {
 import {makeStyles} from '@mui/styles';
 import MainLoader from "../components/MainLoader.jsx";
 import Swal from "sweetalert2";
+import { notification } from "../components/ToastNotification.jsx";
 
 const useStyles = makeStyles({
     option: {
@@ -194,29 +195,34 @@ export default function ExpenseForm() {
             },
         }).then(({data}) => {
             // setNotification(notifications);
-            Toast.fire({
-                icon: "success",
-                title: notifications
-            });
-
+            // Toast.fire({
+            //     icon: "success",
+            //     title: notifications
+            // });
+            notification('success',data?.message,data?.description)
             stay === true ? setExpense(initialExpenseData) : navigate('/expenses')
             setLoading(false)
         }).catch(err => {
-            const response = err.response;
+            // const response = err.response;
 
-            if (response && response.status === 400) {
-                Toast.fire({
-                    icon: "error",
-                    title: response.data.message
-                });
-            }
+            // if (response && response.status === 400) {
+            //     Toast.fire({
+            //         icon: "error",
+            //         title: response.data.message
+            //     });
+            // }
 
-            if (response && response.status === 422) {
-                Toast.fire({
-                    icon: "error",
-                    title: response.data.message,
-                });
-                setErrors(response.data.errors);
+            // if (response && response.status === 422) {
+            //     Toast.fire({
+            //         icon: "error",
+            //         title: response.data.message,
+            //     });
+            //     setErrors(response.data.errors);
+            // }
+
+            if (err.response) { 
+                const error = err.response.data
+                notification('error',error?.message,error.description)
             }
             setLoading(false)
         });

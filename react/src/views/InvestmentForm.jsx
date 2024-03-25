@@ -137,15 +137,20 @@ export default function InvestmentForm() {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
-            }).then(() => {
-                setNotification('Investments data has been updated')
+            }).then((data) => {
+                // setNotification('Investments data has been updated')
+                notification('success',data?.message,data?.description)
                 navigate('/investments');
                 setLoading(false)
             })
                 .catch(err => {
-                    const response = err.response;
-                    if (response && response.status === 422) {
-                        setErrors(response.data.errors);
+                    // const response = err.response;
+                    // if (response && response.status === 422) {
+                    //     setErrors(response.data.errors);
+                    // }
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
                     }
                     setLoading(false)
                 });
@@ -165,18 +170,24 @@ export default function InvestmentForm() {
                 },
             })
                 .then(({data}) => {
-                    if (data.action_status === 'insufficient_balance') {
-                        setInsufficientBalanceForCategory(data.message);
-                    } else {
-                        setNotification('Investments has been added.');
-                        navigate('/investments');
-                    }
+                    // if (data.action_status === 'insufficient_balance') {
+                    //     setInsufficientBalanceForCategory(data.message);
+                    // } else {
+                    //     setNotification('Investments has been added.');
+                    // }
+                    notification('success',data?.message,data?.description)
+                    navigate('/investments');
+
                     setLoading(false)
                 })
                 .catch((error) => {
                     setLoading(false)
-                    const response = error.response;
-                    setErrors(response.data.errors);
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
+                    }
+                    // const response = error.response;
+                    // setErrors(response.data.errors);
                 });
         }
     };

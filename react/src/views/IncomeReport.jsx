@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect, useRef, useState} from "react";
 import axiosClient from "../axios-client.js";
 import DatePicker from 'react-datepicker';
 import WizCard from "../components/WizCard";
@@ -8,8 +8,11 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
 import ExpenseModal from "../helper/ExpenseModal.jsx";
 import IncomeModal from "../helper/IncomeModal.jsx";
+import { Button } from "@mui/material";
+import ReactToPrint from 'react-to-print'
 
 export default function IncomeReport() {
+    const componentRef  = useRef()
     const [loading, setLoading] = useState(false);
     const [incomeReport, setIncomeReport] = useState([]);
     const [startDate, setStartDate] = useState(null);
@@ -140,10 +143,14 @@ export default function IncomeReport() {
                         <div className="col-2 mt-4">
                             <button className={'btn-add right mt-2'} type="submit">Filter</button>
                             <button className="btn btn-warning ml-2" onClick={resetFilterParameter}>Reset</button>
+                            <ReactToPrint
+                                trigger={() => <Button sx={{ml:1}} variant="outlined">Print</Button>}
+                                content={()=> componentRef.current}
+                             />
                         </div>
                     </form>
                 </div>
-                <div className="row">
+                <div className="row" ref={componentRef}>
                     <div className="table-responsive-sm">
                         <table className="table table-bordered custom-table">
                             <thead>

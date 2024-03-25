@@ -14,6 +14,7 @@ import Dropdown from "react-bootstrap/Dropdown"
 import ActionButtonHelpers from "../helper/ActionButtonHelpers";
 import MainLoader from "../components/MainLoader.jsx";
 import ExpenseModal from "../helper/ExpenseModal.jsx";
+import { notification } from "../components/ToastNotification.jsx";
 
 export default function Expenses() {
 
@@ -129,21 +130,15 @@ export default function Expenses() {
                 cancelButtonText: 'Cancel',
             }).then((result) => {
                 if (result.isConfirmed) {
-                    axiosClient.delete(`expense/${expense.id}`).then(() => {
+                    axiosClient.delete(`expense/${expense.id}`).then((data) => {
                         getExpenses();
-                        Swal.fire({
-                            title: 'Deleted!',
-                            text: 'Expense has been deleted.',
-                            icon: 'success',
-                        });
-                    }).catch((error) => {
-                        console.warn(error);
-                        Swal.fire({
-                            title: 'Error!',
-                            text: 'Expense could not be deleted.',
-                            icon: 'error',
-                        });
-                    });
+                        notification('success',data?.message,data?.description)
+                    }).catch(err => {
+                        if (err.response) { 
+                            const error = err.response.data
+                            notification('error',error?.message,error.description)
+                        }
+                    })
                 }
             });
         }

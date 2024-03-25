@@ -1,10 +1,13 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect, useRef, useState} from "react";
 import axiosClient from "../axios-client.js";
 import WizCard from "../components/WizCard";
 import {SettingsContext} from "../contexts/SettingsContext";
 import MainLoader from "../components/MainLoader.jsx";
 import OverallReportTable from "./OverallReportTable.jsx";
 import DatePicker from "react-datepicker";
+import ReactToPrint from 'react-to-print'
+import { Button } from "@mui/material";
+
 
 const initialState = {
     investments: [],
@@ -25,6 +28,7 @@ const initialState = {
     current_balance: 0,
 }
 export default function OverallReport() {
+    const componentRef  = useRef()
 
     const [overAllReport, setOverAllReport] = useState(initialState);
     const [loading, setLoading] = useState(false);
@@ -163,10 +167,14 @@ export default function OverallReport() {
                         <div className="col-3 mt-4">
                             <button className={'btn-add right mt-2'} type="submit">Filter</button>
                             <button className="btn btn-warning ml-2" onClick={resetFilterParameter}>Reset</button>
+                            <ReactToPrint
+                                trigger={() => <Button sx={{ml:1}} variant="outlined">Print</Button>}
+                                content={()=> componentRef.current}
+                             />
                         </div>
                     </form>
                 </div>
-                <div className="row">
+                <div className="row"  ref={componentRef}>
                     <div className="col-12">
                         <div className="responsive" style={{overflow: 'auto'}}>
                             <div className="table-responsive-sm">

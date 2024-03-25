@@ -13,6 +13,7 @@ import {useStateContext} from "../contexts/ContextProvider";
 import {SettingsContext} from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 import MainLoader from "../components/MainLoader.jsx";
+import { notification } from "../components/ToastNotification.jsx";
 
 export default function Budgets() {
 
@@ -157,7 +158,7 @@ export default function Budgets() {
             axiosClient
                 .put(`/budgets/${budget.id}`, updatedBudget)
                 .then(({data}) => {
-                    setNotification(`${data.budget_name} was successfully updated`);
+                    // setNotification(`${data.budget_name} was successfully updated`);
                     getBudgets(currentPage, pageSize);
                     setShowModal(false);
                     setBudget({
@@ -168,12 +169,18 @@ export default function Budgets() {
                         end_date: "",
                         use_id: null,
                     });
+
+                    notification('success',data?.message,data?.description)
                     setLoading(false);
                 })
-                .catch((error) => {
-                    const response = error.response;
-                    if (response && response.status === 422) {
-                        setErrors(response.data.errors);
+                .catch((err) => {
+                    // const response = error.response;
+                    // if (response && response.status === 422) {
+                    //     setErrors(response.data.errors);
+                    // }
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
                     }
                     setLoading(false);
                 });
@@ -182,9 +189,9 @@ export default function Budgets() {
                 .post("/budgets", updatedBudget)
                 .then(({data}) => {
                     if (data && data.status === 422) {
-                        setNotification(data.message);
+                        // setNotification(data.message);
                     } else {
-                        setNotification(`${data.budget_name} was successfully created`);
+                        // setNotification(`${data.budget_name} was successfully created`);
                         getBudgets(currentPage, pageSize);
                         setShowModal(false);
                         setBudget({
@@ -196,15 +203,22 @@ export default function Budgets() {
                             use_id: null,
                         });
                     }
+
+                    notification('success',data?.message,data?.description)
+
                     setLoading(false);
                 })
-                .catch((error) => {
-                    const response = error.response;
-                    if (response && response.status === 422) {
-                        setErrors(response.data.errors);
-                    } else if (response && response.status === 400)
-                    {
-                        setBudgetOverlap(response.data.message);
+                .catch((err) => {
+                    // const response = error.response;
+                    // if (response && response.status === 422) {
+                    //     setErrors(response.data.errors);
+                    // } else if (response && response.status === 400)
+                    // {
+                    //     setBudgetOverlap(response.data.message);
+                    // }
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
                     }
                     setLoading(false);
                 });

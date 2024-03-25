@@ -56,10 +56,14 @@ class DebtController extends Controller {
 			$borrowAmount = $debt['amount'];
 		} else {
 			if ( $debt['amount'] > $selectedBankAccount->balance ) {
+				// return response()->json( [
+				// 	'status'            => 'insufficient_balance',
+				// 	'message'           => 'Insufficient balance in the selected bank account. Please use another bank account to repay.',
+				// 	'available_balance' => $selectedBankAccount->balance
+				// ] );
 				return response()->json( [
-					'status'            => 'insufficient_balance',
-					'message'           => 'Insufficient balance in the selected bank account. Please use another bank account to repay.',
-					'available_balance' => $selectedBankAccount->balance
+					'message'     => 'Insufficient_balance',
+					'description' => 'Insufficient balance in the selected bank account. Please use another bank account to repay.',
 				] );
 			}
 
@@ -106,11 +110,16 @@ class DebtController extends Controller {
 				],
 			] );
 
+			// return response()->json( [
+			// 	'status'          => 'success',
+			// 	'message'         => 'Lend created successfully',
+			// 	'debt'            => $debt,
+			// 	'bankAccountInfo' => $bankAccount
+			// ] );
+
 			return response()->json( [
-				'status'          => 'success',
-				'message'         => 'Lend created successfully',
-				'debt'            => $debt,
-				'bankAccountInfo' => $bankAccount
+				'message'     => 'Success!',
+				'description' => 'Lend created successfully',
 			] );
 
 		}
@@ -144,18 +153,28 @@ class DebtController extends Controller {
 				],
 			] );
 
+			// return response()->json( [
+			// 	'status'          => 'success',
+			// 	'message'         => 'Borrow created successfully',
+			// 	'debt'            => $debt,
+			// 	'bankAccountInfo' => $bankAccount
+			// ] );
 			return response()->json( [
-				'status'          => 'success',
-				'message'         => 'Borrow created successfully',
-				'debt'            => $debt,
-				'bankAccountInfo' => $bankAccount
+				'message'     => 'Success!',
+				'description' => 'Borrow created successfully',
 			] );
+			
 		}
 
 
+		// return response()->json( [
+		// 	'status'  => 'fail',
+		// 	'message' => 'Something went wrong'
+		// ] );
+
 		return response()->json( [
-			'status'  => 'fail',
-			'message' => 'Something went wrong'
+			'message'  => 'Error',
+			'description' => 'Something went wrong'
 		] );
 	}
 
@@ -228,8 +247,12 @@ class DebtController extends Controller {
 			],
 		] );
 
+		// return response()->json( [
+		// 	'message' => 'Debt removed'
+		// ] );
 		return response()->json( [
-			'message' => 'Debt removed'
+			'message'     => 'Success!',
+			'description' => 'Debt removed',
 		] );
 	}
 }

@@ -84,7 +84,11 @@ class BudgetController extends Controller
         // Attach categories to the budget
         $budget->categories()->attach($validatedData['categories']);
 
-        return response()->json($budget, 201);
+        // return response()->json($budget, 201);
+        return response()->json( [
+			'message'     => 'Success!',
+			'description' => 'Budget successfully Created!',
+		] );
     }
 
 
@@ -119,7 +123,13 @@ class BudgetController extends Controller
 
         // Sync categories for the budget
         $budget->categories()->sync($validatedData['categories']);
-        return response()->json($budget);
+        
+        // return response()->json($budget);
+
+        return response()->json( [
+			'message'     => 'Success!',
+			'description' => 'Budget successfully updated',
+		] );
     }
 
 

@@ -84,7 +84,11 @@ class BankNameController extends Controller {
 			], 500 );
 		}
 
-		return response()->json( $bankName, 201 );
+		// return response()->json( $bankName, 201 );
+		return response()->json( [
+			'message'     => 'Success!',
+			'description' => 'New Bank name created!',
+		] );
 	}
 
 
@@ -117,7 +121,12 @@ class BankNameController extends Controller {
 			],
 		] );
 
-		return new BankNameResource( $bankName );
+		// return new BankNameResource( $bankName );
+
+		return response()->json( [
+			'message'     => 'Success!',
+			'description' => 'New Bank name updated!',
+		] );
 	}
 
 	/**
@@ -134,6 +143,10 @@ class BankNameController extends Controller {
 			'data_records' => $bankName
 		] );
 
-		return response()->json( null, 204 );
+		// return response()->json( null, 204 );
+		return response()->json( [
+			'message'     => 'Success!',
+			'description' => 'Bank has been deleted.',
+		] );
 	}
 }
