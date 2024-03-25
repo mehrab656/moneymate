@@ -44,6 +44,7 @@ class SectorResource extends JsonResource {
 			'internet_billing_date' => $this->internet_billing_date,
 			'int_note'              => $this->int_note,
 			'payments'              => $this->payments,
+			'channels'              => $this->channels,
 		];
 	}
 }

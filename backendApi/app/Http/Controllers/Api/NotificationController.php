@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
-use Onesignal;
+//use Onesignal;
 
 class NotificationController extends Controller {
 
@@ -21,15 +21,15 @@ class NotificationController extends Controller {
 
 		if ( $payments ) {
 			$list = $this->makeList( $payments );
-			OneSignal::sendNotificationToAll(
-				$list,
-				'http://localhost:3000/sectors',
-				null,
-				null,
-				null,
-				"Hey Heads Up! Payments are coming soon",
-				"Subtitles",
-			);
+//			OneSignal::sendNotificationToAll(
+//				$list,
+//				'http://localhost:3000/sectors',
+//				null,
+//				null,
+//				null,
+//				"Hey Heads Up! Payments are coming soon",
+//				"Subtitles",
+//			);
 		}
 	}
 

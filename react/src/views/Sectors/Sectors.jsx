@@ -13,7 +13,7 @@ import {Tooltip} from "react-tooltip";
 import MainLoader from "../../components/MainLoader.jsx";
 import {compareDates} from "../../helper/HelperFunctions.js";
 import SummeryCard from "../../helper/SummeryCard.jsx";
-import { notification } from "../../components/ToastNotification.jsx";
+import {notification} from "../../components/ToastNotification.jsx";
 
 export default function Sectors() {
     const {applicationSettings, userRole} = useContext(SettingsContext);
@@ -63,7 +63,7 @@ export default function Sectors() {
 
     const showSector = (sector) => {
         axiosClient(`/sectorsIncomeExpense/${sector.id}`).then(({data}) => {
-            setIncomeExpense(data)
+            setIncomeExpense(data);
         }).catch(e => {
             console.warn(e)
         })
@@ -120,12 +120,12 @@ export default function Sectors() {
                     .delete(`sector/${sector.id}`)
                     .then((data) => {
                         getSectors();
-                        notification('success',data?.message,data?.description)
+                        notification('success', data?.message, data?.description)
                     })
                     .catch(err => {
-                        if (err.response) { 
+                        if (err.response) {
                             const error = err.response.data
-                            notification('error',error?.message,error.description)
+                            notification('error', error?.message, error.description)
                         }
                     })
             }
@@ -176,17 +176,17 @@ export default function Sectors() {
         }).then((result) => {
             if (result.isConfirmed) {
                 axiosClient.post(`/change-payment-status/${payment.id}`).then(({data}) => {
-                       
-                    notification('success',data?.message,data?.description)
+
+                    notification('success', data?.message, data?.description)
 
                     setTimeout(() => {
                         window.location.reload();
                     }, 5000)
                 }).catch(err => {
-                    if (err.response) { 
+                    if (err.response) {
                         const error = err.response.data
-                        notification('error',error?.message,error.description)
-                        
+                        notification('error', error?.message, error.description)
+
                     }
                 })
 
@@ -219,7 +219,7 @@ export default function Sectors() {
 
         return (
             <span
-                className={message === '' ? 'text-success' : 'text-danger'}>{message === '' ? 'All Clear' : message}</span>
+                className={message === '' ? 'text-success' : 'text-warning'}>{message === '' ? 'All Clear' : message}</span>
         )
     }
 
@@ -292,7 +292,7 @@ export default function Sectors() {
                                                 if (breakStatement) {
                                                     return;
                                                 }
-                                                if (payment.status === "unpaid") {
+                                                if (payment.status === "unpaid" && payment.type === 'cheque') {
                                                     nextPayment = payment;
                                                     breakStatement = true;
                                                 }
@@ -441,6 +441,28 @@ export default function Sectors() {
                                 Total Expense: <strong>{default_currency + ' ' + incomeExpense.expense}</strong>
                             </td>
                         </tr>
+
+                        {modalSector?.channels && modalSector?.channels.length > 0 &&
+                            <>
+                                <tr>
+                                    <td rowSpan={modalSector.channels.length+1}>{'Channels'}</td>
+                                </tr>
+                                {
+                                    modalSector?.channels.map((data, i) => {
+                                        return (
+                                            <tr key={"channel-row-" + i}>
+                                                <td colSpan={2}>{data.channel_name} listing reference
+                                                    id <strong>{data.reference_id}</strong> and listed
+                                                    on {data.listing_date}
+                                                </td>
+                                            </tr>
+                                        )
+                                    })
+                                }
+                            </>
+
+                        }
+
                         <tr>
                             <td colSpan={3}><strong>Payment Information</strong></td>
                         </tr>

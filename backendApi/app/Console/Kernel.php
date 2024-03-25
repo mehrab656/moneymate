@@ -17,7 +17,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
 //         $schedule->command('inspire')->everyMinute();
-         $schedule->call('App\Http\Controllers\Api\NotificationController@sendPushNotification')->everyFourHours();
+//         $schedule->call('App\Http\Controllers\Api\NotificationController@sendPushNotification')->everyFourHours();
     }
 
     /**

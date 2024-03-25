@@ -18,4 +18,7 @@ class SectorModel extends Model
 	public function payments(): HasMany {
 		return $this->hasMany(PaymentModel::class,'sector_id');
 	}
+	public function channels(): HasMany {
+		return $this->hasMany(Channel::class,'sector_id');
+	}
 }

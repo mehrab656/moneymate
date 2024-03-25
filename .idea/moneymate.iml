@@ -8,6 +8,7 @@
       <sourceFolder url="file://$MODULE_DIR$/backendApi/tests" isTestSource="true" packagePrefix="Tests\" />
       <sourceFolder url="file://$MODULE_DIR$/backendApi/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/spec" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/backendApi/spec" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/symfony/string" />
       <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/nette/utils" />
@@ -134,10 +135,7 @@
       <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/laravel-admin-ext/log-viewer" />
       <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/encore/laravel-admin" />
       <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/symfony/dom-crawler" />
-      <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/twilio/sdk" />
-      <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/berkayk/onesignal-laravel" />
-      <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/laravel-notification-channels/onesignal" />
-      <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/symfony/psr-http-message-bridge" />
+      <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/carbonphp/carbon-doctrine-types" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

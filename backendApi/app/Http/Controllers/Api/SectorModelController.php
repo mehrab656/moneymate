@@ -10,6 +10,7 @@ use App\Http\Resources\InvestmentResource;
 use App\Http\Resources\SectorResource;
 use App\Models\BankAccount;
 use App\Models\Category;
+use App\Models\Channel;
 use App\Models\Expense;
 use App\Models\Investment;
 use App\Models\PaymentModel;
@@ -57,6 +58,15 @@ class SectorModelController extends Controller {
 		$payment['numbers'] = $sector['payment_number'];
 		$payment['amount']  = $sector['payment_amount'];
 		$payment['date']    = $sector['payment_date'];
+
+
+
+		$channel            = [
+			'channel_name' => $sector['channel_name'],
+			'reference_id' => $sector['reference_id'],
+			'listing_date' => $sector['listing_date'],
+		];
+
 		if ( isset( $sector['category_name'] ) ) {
 			$associativeCategories = $sector['category_name'];
 		}
@@ -124,15 +134,28 @@ class SectorModelController extends Controller {
 					] );
 				}
 			}
+			//Now enter the channel ids
+			if ( ! empty( $channel['channel_name'] ) ) {
+				for ( $i = 0; $i < count( $channel['channel_name'] ); $i ++ ) {
+					Channel::create( [
+						'sector_id'    => $sector['id'],
+						'channel_name' => $channel['channel_name'][ $i ],
+						'reference_id' => $channel['reference_id'][ $i ],
+						'listing_date' => $channel['listing_date'][ $i ],
+					] );
+				}
+			}
 
 			//now update the category
 			//first add a default category according the sector for income
-			Category::create( [
-				'sector_id' => $sector['id'],
-				'user_id'   => auth()->user()->id,
-				'name'      => $sector['name'],
-				'type'      => 'income',
-			] );
+			{
+				Category::create( [
+					'sector_id' => $sector['id'],
+					'user_id'   => auth()->user()->id,
+					'name'      => $sector['name'],
+					'type'      => 'income',
+				] );
+			}
 
 			//now check if there is any associative category.
 			if ( ! empty( $associativeCategories ) ) {

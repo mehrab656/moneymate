@@ -16,9 +16,6 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Twilio\Exceptions\ConfigurationException;
-use Twilio\Exceptions\TwilioException;
-use Twilio\Rest\Client;
 
 class DebtController extends Controller {
 
@@ -122,15 +119,14 @@ class DebtController extends Controller {
 		// Means you are lending money form someone.
 
 		if ( $debt['type'] === 'borrow' ) {
-			$borrowData = [
+			$borrowData = Borrow::create( [
 				'amount'     => ( $debt->amount * - 1 ),
 				'account_id' => $debt->account_id,
 				'date'       => $debt->date,
 				'debt_id'    => $debt->id,
 				'note'       => $debt['note']
 
-			];
-			Borrow::create( $borrowData );
+			] );
 
 			// Update Associated bank account by increasing account balance
 			$bankAccount->balance += $request->amount;
@@ -138,7 +134,7 @@ class DebtController extends Controller {
 
 			storeActivityLog( [
 				'user_id'      => Auth::user()->id,
-				'object_id'     => $lendData['id'],
+				'object_id'     => $borrowData['id'],
 				'log_type'     => 'create',
 				'module'       => 'Debt',
 				'descriptions' => " has borrowed an amount of $borrowAmount from $person",

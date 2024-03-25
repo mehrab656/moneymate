@@ -67,7 +67,6 @@ export default function Return() {
         setLoading(true);
         axiosClient.post(`/return/${marketReturn.id}`, marketReturn)
             .then(({data}) => {
-                console.log(data);
                 setShowModal(false);
                 getMarketReturns(currentPage, pageSize);
                 setMarketReturn(data);

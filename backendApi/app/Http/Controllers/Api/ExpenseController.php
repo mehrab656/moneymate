@@ -21,10 +21,8 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use mysql_xdevapi\Exception;
 use Nette\Schema\ValidationException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExpenseController extends Controller {
 	/**
@@ -62,7 +60,9 @@ class ExpenseController extends Controller {
 	 * @return JsonResponse
 	 */
 	public function add( ExpenseRequest $request ): JsonResponse {
+
 		$expense  = $request->validated();
+
 		$category = Category::findOrFail( $request->category_id );
 
 		//check balance amount to make a valid expense
@@ -105,9 +105,9 @@ class ExpenseController extends Controller {
 			'category_id'       => $expense['category_id'],
 			'description'       => $expense['description'],
 			'note'              => $expense['note'],
-			'reference'         => $expense['reference'],
+			'reference'         => array_key_exists('reference',$expense)?$expense['reference']:null,
 			'date'              => $expenseDate,
-			'attachment'        => $expense['attachment']
+			'attachment'        => array_key_exists('attachment',$expense)?$expense['attachment']:null
 		] );
 
 		// Check if expense category falls within any budget's categories

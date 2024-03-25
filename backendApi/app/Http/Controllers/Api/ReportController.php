@@ -293,19 +293,19 @@ class ReportController extends Controller {
 		if ( ! $sector ) {
 			return response()->json( [
 				'message' => "This income Category is not associated with any sector!",
-			],400 );
+			], 400 );
 		}
 
 		if ( strtotime( $fromDate ) < strtotime( $sector->contract_start_date ) ) {
 			return response()->json( [
 				'message' => "$sector->name contract has been started from $sector->contract_start_date. So date can't be found from submitted date.",
-			],400 );
+			], 400 );
 		}
 
 		if ( strtotime( $toDate ) > strtotime( $sector->contract_end_date ) ) {
 			return response()->json( [
 				'message' => "$sector->name contract will end on $sector->contract_end_date. So date can't be found after this contract end date.",
-			],400 );
+			], 400 );
 		}
 
 		$incomes = DB::table( 'incomes' )->selectRaw( 'amount,income_type,checkin_date,checkout_date,reference,date as income_date, description' )
@@ -354,8 +354,10 @@ class ReportController extends Controller {
 			$net   = $expense - $income;
 			$title = 'loss';
 		}
-
-		$percent = ( $net * 100 ) / $expense;
+		$percent = 0;
+		if ( $expense > 0 ) {
+			$percent = ( $net * 100 ) / $expense;
+		}
 
 		return [
 			'totalIncome'  => fix_number_format( $income ),
