@@ -296,11 +296,11 @@ class ReportController extends Controller {
 			], 400 );
 		}
 
-		if ( strtotime( $fromDate ) < strtotime( $sector->contract_start_date ) ) {
-			return response()->json( [
-				'message' => "$sector->name contract has been started from $sector->contract_start_date. So date can't be found from submitted date.",
-			], 400 );
-		}
+//		if ( strtotime( $fromDate ) < strtotime( $sector->contract_start_date ) ) {
+//			return response()->json( [
+//				'message' => "$sector->name contract has been started from $sector->contract_start_date. So date can't be found from submitted date.",
+//			], 400 );
+//		}
 
 		if ( strtotime( $toDate ) > strtotime( $sector->contract_end_date ) ) {
 			return response()->json( [

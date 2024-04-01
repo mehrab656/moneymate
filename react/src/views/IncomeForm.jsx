@@ -16,6 +16,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
 import { notification } from "../components/ToastNotification.jsx";
+import {reservationValidationBuilder} from "../helper/HelperFunctions.js";
 
 const useStyles = makeStyles({
     option: {
@@ -25,26 +26,28 @@ const useStyles = makeStyles({
     },
 });
 
+const _initialIncome = {
+    id: null,
+    user_id: null,
+    income_type: "reservation",
+    account_id: "", // Set default value to an empty string
+    amount: "", // Set default value to an empty string
+    category_id: null,
+    description: "",
+    reference: "",
+    date: null,
+    checkin_date: null,
+    checkout_date: null,
+    deposit: null,
+    note: "",
+    attachment: ""
+};
+
 export default function IncomeForm() {
     const classes = useStyles();
     let {id} = useParams();
 
-    const [income, setIncome] = useState({
-        id: null,
-        user_id: null,
-        income_type: "reservation",
-        account_id: "", // Set default value to an empty string
-        amount: "", // Set default value to an empty string
-        category_id: null,
-        description: "",
-        reference: "",
-        date: null,
-        checkin_date: null,
-        checkout_date: null,
-        deposit: null,
-        note: "",
-        attachment: ""
-    });
+    const [income, setIncome] = useState(_initialIncome);
 
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
@@ -56,11 +59,9 @@ export default function IncomeForm() {
     const navigate = useNavigate();
     const [reservationValidation, setReservationValidation] = useState('Select check in and check out dates.');
     const [reservationValidationClass, setReservationValidationClass] = useState('primary');
-
     const [categoryValue, setCategoryValue] = useState(null);
-    const [storeCategoryValue, setStoreCategoryValue] = useState(null);
-    useEffect(() => {
 
+    useEffect(() => {
         axiosClient
             .get("/all-bank-account")
             .then(({data}) => {
@@ -109,6 +110,10 @@ export default function IncomeForm() {
                         ...data,
                         date: data.date || "", // Set to empty string if the value is null or undefined
                     }));
+
+                    const validation = reservationValidationBuilder(income.checkin_date,income.checkout_date);
+                    setReservationValidation(validation.message);
+                    setReservationValidationClass(validation.class);
                     setLoading(false);
                 })
                 .catch(() => {
@@ -140,7 +145,8 @@ export default function IncomeForm() {
                 checkin_date,
                 checkout_date,
                 note,
-                attachment
+                attachment,
+                income_type
             } = income;
             const formData = new FormData();
             formData.append("account_id", selectedAccountId);
@@ -154,6 +160,7 @@ export default function IncomeForm() {
             formData.append("checkin_date", checkin_date);
             formData.append("checkout_date", checkout_date);
             formData.append("attachment", attachment);
+            formData.append("income_type", income_type);
 
             axiosClient
                 .post(`/income/${income.id}`, formData, {
@@ -163,7 +170,7 @@ export default function IncomeForm() {
                 })
                 .then((data) => {
                     notification('success',data?.message,data?.description)
-                    // setNotification("Income data has been updated");
+                    setNotification("Income data has been updated");
                     if (stay === true) {
                         window.location.reload();
                     } else {
@@ -209,14 +216,17 @@ export default function IncomeForm() {
                         "Content-Type": "multipart/form-data",
                     },
                 })
-                .then(() => {
+                .then((data) => {
                     // setNotification("Income has been added.");
-                    notification('success',data?.message,data?.description)
-                    if (stay === true) {
-                        window.location.reload();
-                    } else {
-                        navigate("/incomes");
-                    }
+                    notification('success',data?.message,data?.description);
+                    setTimeout(() => {
+                        if (stay === true) {
+                            window.location.reload();
+                        } else {
+                            navigate("/incomes");
+                        }
+                    }, 5000)
+
                     setLoading(false);
                 })
                 .catch((err) => {
@@ -386,7 +396,7 @@ export default function IncomeForm() {
                                             <Select
                                                 labelId='demo-simple-select-label'
                                                 id='demo-simple-select'
-                                                value={income.reference}
+                                                value={income.reference.toLowerCase()}
                                                 label='Reference'
                                                 onChange={(e) => setIncome({...income, reference: e.target.value})}
                                             >
@@ -558,27 +568,13 @@ export default function IncomeForm() {
                                             onChange={(date) => {
                                                 const selectedDate = date.toISOString().split("T")[0];
 
+
                                                 // const updatedDate = selectedDate && !income.date ? new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000) : selectedDate;
                                                 setIncome({...income, checkout_date: selectedDate});
-                                                if (!income.checkin_date) {
-                                                    setReservationValidation('Select Checkin Date first');
-                                                    setReservationValidationClass('danger');
-                                                }
-                                                if (income.checkin_date === selectedDate) {
-                                                    setReservationValidation('Same day check in and check out.');
-                                                    setReservationValidationClass('warning');
-                                                }
-                                                if (income.checkin_date > selectedDate) {
-                                                    setReservationValidation('Checkout date can not be back date than check in date');
-                                                    setReservationValidationClass('danger');
-                                                }
-                                                if (selectedDate > income.checkin_date) {
-                                                    const checkin = new Date(income.checkin_date);
-                                                    const checkout = new Date(selectedDate);
-                                                    const diff = (checkout - checkin) / (1000 * 60 * 60 * 24);
-                                                    setReservationValidation(`${diff} nights`);
-                                                    setReservationValidationClass('success');
-                                                }
+
+                                                const validation = reservationValidationBuilder(income.checkin_date,selectedDate);
+                                                setReservationValidation(validation.message);
+                                                setReservationValidationClass(validation.class);
                                             }}
                                             dateFormat='yyyy-MM-dd'
                                             placeholderText='Checkout Date'

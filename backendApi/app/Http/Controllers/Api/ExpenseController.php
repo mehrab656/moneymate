@@ -480,7 +480,7 @@ class ExpenseController extends Controller {
 			storeActivityLog( [
 				'user_id'      => Auth::user()->id,
 				'object_id'     => $return->id,
-				'log_type'     => 'update',
+				'log_type'     => 'edit',
 				'module'       => 'return',
 				'descriptions' => "added returns. Amount: $refundAmount",
 				'data_records' => $data,

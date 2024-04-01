@@ -216,11 +216,12 @@ class SectorModelController extends Controller {
 		$sector->save();
 		storeActivityLog( [
 			'user_id'      => Auth::user()->id,
-			'object_id'    => $sector['id'],
-			'log_type'     => 'Update',
+			'object_id'    => $sector->id,
+			'log_type'     => 'edit',
 			'module'       => 'Sector',
 			'descriptions' => "",
-			'data_records' => $sector
+			'data_records' => json_decode( json_encode( $sector ), true ),
+
 		] );
 
 		return new SectorResource( $sector );
@@ -441,7 +442,7 @@ class SectorModelController extends Controller {
 			storeActivityLog( [
 				'user_id'      => Auth::user()->id,
 				'object_id'    => $expense['id'],
-				'log_type'     => 'update',
+				'log_type'     => 'edit',
 				'module'       => "$type-payments",
 				'descriptions' => "Add $type bill payment on" . $request->payment_number . ' ' . $request->amount,
 				'data_records' => $expense,
