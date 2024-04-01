@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Nette\Schema\ValidationException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Throwable;
 
 class ExpenseController extends Controller {
 	/**
@@ -69,13 +70,10 @@ class ExpenseController extends Controller {
 		$bankAccount = BankAccount::find( $request->account_id );
 
 		if ( $bankAccount->balance < $request->amount ) {
-			// return response()->json( [
-			// 	'message' => 'Insufficient amount to make this expense',
-			// ], 400 );
 			return response()->json( [
 				'message'     => 'Error!',
 				'description' => 'Insufficient amount to make this expense.',
-			] );
+			],400 );
 		}
 
 
@@ -103,74 +101,95 @@ class ExpenseController extends Controller {
 			$expense['attachment'] = $filename; // Store only the filename
 		}
 
+		try {
+			DB::beginTransaction();
+			$expenseDate = Carbon::parse( $expense['date'] )->format( 'Y-m-d' );
+			$expense     = Expense::create( [
+				'user_id'           => $expense['user_id'],
+				'account_id'        => $expense['account_id'],
+				'amount'            => $expense['amount'],
+				'refundable_amount' => $expense['refundable_amount']??0,
+				'category_id'       => $expense['category_id'],
+				'description'       => $expense['description'],
+				'note'              => $expense['note'],
+				'reference'         => array_key_exists('reference',$expense)?$expense['reference']:null,
+				'date'              => $expenseDate,
+				'attachment'        => array_key_exists('attachment',$expense)?$expense['attachment']:null
+			] );
 
-		$expenseDate = Carbon::parse( $expense['date'] )->format( 'Y-m-d' );
-		$expense     = Expense::create( [
-			'user_id'           => $expense['user_id'],
-			'account_id'        => $expense['account_id'],
-			'amount'            => $expense['amount'],
-			'refundable_amount' => $expense['refundable_amount'] ?? 0,
-			'category_id'       => $expense['category_id'],
-			'description'       => $expense['description'],
-			'note'              => $expense['note'],
-			'reference'         => array_key_exists('reference',$expense)?$expense['reference']:null,
-			'date'              => $expenseDate,
-			'attachment'        => array_key_exists('attachment',$expense)?$expense['attachment']:null
-		] );
+			// Check if expense category falls within any budget's categories
+			$budgets = Budget::where( 'start_date', '<=', Carbon::now() )
+			                 ->with( 'categories' )
+			                 ->get();
 
-		// Check if expense category falls within any budget's categories
-		$budgets = Budget::where( 'start_date', '<=', Carbon::now() )
-		                 ->with( 'categories' )
-		                 ->get();
+			foreach ( $budgets as $budget ) {
+				if ( $budget->categories->contains( 'id', $expense['category_id'] ) && $this->isWithinTimeRange( $budget->start_date, $budget->end_date, $expenseDate ) ) {
+					// Add entry to the new table
+					BudgetExpense::create( [
+						'user_id'     => Auth::user()->id,
+						'budget_id'   => $budget->id,
+						'category_id' => $expense['category_id'],
+						'amount'      => $expense['amount'],
+					] );
 
-		foreach ( $budgets as $budget ) {
-			if ( $budget->categories->contains( 'id', $expense['category_id'] ) && $this->isWithinTimeRange( $budget->start_date, $budget->end_date, $expenseDate ) ) {
-				// Add entry to the new table
-				BudgetExpense::create( [
-					'user_id'     => Auth::user()->id,
-					'budget_id'   => $budget->id,
-					'category_id' => $expense['category_id'],
-					'amount'      => $expense['amount'],
-				] );
-
-				// Reduce budget amount if the date matches
-				if ( Carbon::parse( $expense['created_at'] )->isSameDay( Carbon::now() ) ) {
-					$budget->updated_amount -= $expense['amount'];
-					$budget->save();
+					// Reduce budget amount if the date matches
+					if ( Carbon::parse( $expense['created_at'] )->isSameDay( Carbon::now() ) ) {
+						$budget->updated_amount -= $expense['amount'];
+						$budget->save();
+					}
 				}
 			}
+
+			// Update the balance of the bank account
+			$bankAccount->balance -= $request->amount;
+			$bankAccount->save();
+
+
+			//add some data to be remembered on options' table
+			//last_expense_cat_id
+			//last_date
+			//last_expense_account_id
+
+			$option        = Option::firstOrCreate( [ 'key' => 'last_expense_cat_id' ] );
+			$option->value = $expense['category_id'];
+			$option->save();
+
+			$option        = Option::firstOrCreate( [ 'key' => 'last_expense_account_id' ] );
+			$option->value = $expense['account_id'];
+			$option->save();
+
+			$option        = Option::firstOrCreate( [ 'key' => 'last_expense_date' ] );
+			$option->value = $expenseDate;
+			$option->save();
+
+			storeActivityLog( [
+				'user_id'      => Auth::user()->id,
+				'object_id'     => $expense['id'],
+				'log_type'     => 'create',
+				'module'       => 'expense',
+				'descriptions' => "",
+				'data_records' => array_merge( json_decode( json_encode( $expense ), true ), [ 'account_balance' => $bankAccount->balance ] ),
+			] );
+
+			storeActivityLog( [
+				'user_id'      => Auth::user()->id,
+				'object_id'     => $expense['id'],
+				'log_type'     => 'create',
+				'module'       => 'expense',
+				'descriptions' => "",
+				'data_records' => array_merge( json_decode( json_encode( $expense ), true ), [ 'account_balance' => $bankAccount->balance ] ),
+			] );
+
+			DB::commit();
+
+		} catch ( Throwable $e ) {
+			DB::rollBack();
+
+			return response()->json( [
+				'message'     => 'Cannot add Expenses.',
+				'description' => $e,
+			], 400 );
 		}
-
-		// Update the balance of the bank account
-		$bankAccount->balance -= $request->amount;
-		$bankAccount->save();
-
-
-		//add some data to be remembered on options' table
-		//last_expense_cat_id
-		//last_date
-		//last_expense_account_id
-
-		$option        = Option::firstOrCreate( [ 'key' => 'last_expense_cat_id' ] );
-		$option->value = $expense['category_id'];
-		$option->save();
-
-		$option        = Option::firstOrCreate( [ 'key' => 'last_expense_account_id' ] );
-		$option->value = $expense['account_id'];
-		$option->save();
-
-		$option        = Option::firstOrCreate( [ 'key' => 'last_expense_date' ] );
-		$option->value = $expenseDate;
-		$option->save();
-
-		storeActivityLog( [
-			'user_id'      => Auth::user()->id,
-			'object_id'     => $expense['id'],
-			'log_type'     => 'create',
-			'module'       => 'expense',
-			'descriptions' => "",
-			'data_records' => array_merge( json_decode( json_encode( $expense ), true ), [ 'account_balance' => $bankAccount->balance ] ),
-		] );
 
 		// return response()->json( [
 		// 	'expense'  => $expense,
@@ -305,10 +324,8 @@ class ExpenseController extends Controller {
 		] );
 
 		// return new ExpenseResource( $expense );
-		return response()->json( [
-			'message'     => 'Success!',
-			'description' => 'Expense successfully updated!.',
-		] );
+		return new ExpenseResource( $expense );
+
 	}
 
 

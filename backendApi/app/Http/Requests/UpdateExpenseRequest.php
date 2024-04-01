@@ -31,6 +31,7 @@ class UpdateExpenseRequest extends FormRequest
             'note' => 'nullable|string',
             'reference' => 'nullable|string',
             'date' => 'nullable|date_format:Y-m-d',
+            'refundable_amount' => 'nullable',
         ];
 
         if ($this->hasFile('attachment')) {

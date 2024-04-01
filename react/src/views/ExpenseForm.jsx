@@ -23,18 +23,7 @@ const useStyles = makeStyles({
     }
 });
 
-const Toast = Swal.mixin({
-    toast: true,
-    position: "top-right",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-        toast.onmouseenter = Swal.stopTimer;
-        toast.onmouseleave = Swal.resumeTimer;
-    }
-});
-const initialExpenseData = {
+const _initialExpense = {
     id: null,
     user_id: null,
     account_id: '', // Set default value to an empty string
@@ -51,7 +40,7 @@ export default function ExpenseForm() {
     const classes = useStyles();
     let {id} = useParams();
 
-    const [expense, setExpense] = useState(initialExpenseData);
+    const [expense, setExpense] = useState(_initialExpense);
 
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
@@ -194,32 +183,10 @@ export default function ExpenseForm() {
                 'Content-Type': 'multipart/form-data',
             },
         }).then(({data}) => {
-            // setNotification(notifications);
-            // Toast.fire({
-            //     icon: "success",
-            //     title: notifications
-            // });
             notification('success',data?.message,data?.description)
-            stay === true ? setExpense(initialExpenseData) : navigate('/expenses')
+            stay === true ? setExpense(_initialExpense) : navigate('/expenses')
             setLoading(false)
         }).catch(err => {
-            // const response = err.response;
-
-            // if (response && response.status === 400) {
-            //     Toast.fire({
-            //         icon: "error",
-            //         title: response.data.message
-            //     });
-            // }
-
-            // if (response && response.status === 422) {
-            //     Toast.fire({
-            //         icon: "error",
-            //         title: response.data.message,
-            //     });
-            //     setErrors(response.data.errors);
-            // }
-
             if (err.response) { 
                 const error = err.response.data
                 notification('error',error?.message,error.description)

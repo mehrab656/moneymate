@@ -37,6 +37,7 @@ class ExpenseRequest extends FormRequest
             'note' => 'nullable',
             'reference' => 'nullable',
             'date' => 'nullable',
+            'refundable_amount' => 'nullable',
         ];
     }
 

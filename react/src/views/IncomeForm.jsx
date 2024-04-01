@@ -170,7 +170,6 @@ export default function IncomeForm() {
                 })
                 .then((data) => {
                     notification('success',data?.message,data?.description)
-                    setNotification("Income data has been updated");
                     if (stay === true) {
                         window.location.reload();
                     } else {
