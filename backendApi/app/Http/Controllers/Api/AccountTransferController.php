@@ -107,7 +107,7 @@ class AccountTransferController extends Controller {
 
 			if ( $fromAccount->balance < $amount ) {
 				throw ValidationException::withMessages( [
-					'amount' => 'Insufficient balance in the from account.',
+					'amount' => ' Insufficient balance on '. $fromAccount->bankName->bank_name,
 				] );
 			}
 

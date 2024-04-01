@@ -9,10 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AccountTransfer extends Model
 {
-    use HasFactory,SoftDeletes;
-
-	protected $dates = ['deleted_at'];
-
+    use HasFactory;
 
     protected $table = 'account_transfers';
     protected $primaryKey = 'id';
