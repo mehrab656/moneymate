@@ -30,13 +30,12 @@ class AccountTransferController extends Controller {
 		$page     = $request->query( 'page', 1 );
 		$pageSize = $request->query( 'pageSize', 10 );
 
-		$accountTransfers = AccountTransfer::whereMonth( 'transfer_date', $currentMonth )
-		                                   ->skip( ( $page - 1 ) * $pageSize )
+		$accountTransfers = AccountTransfer::skip( ( $page - 1 ) * $pageSize )
 		                                   ->take( $pageSize )
 		                                   ->orderBy( 'id', 'desc' )
 		                                   ->get();
 
-		$totalCount = AccountTransfer::whereMonth( 'transfer_date', $currentMonth )->count();
+		$totalCount = AccountTransfer::count();
 
 		return response()->json( [
 			'data'  => TransferHistoryResource::collection( $accountTransfers ),

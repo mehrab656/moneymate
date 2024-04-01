@@ -73,12 +73,6 @@ function SectorCreate() {
     const [bankAccounts, setBankAccounts] = useState([])
     const {associative_categories} = applicationSettings;
 
-    // if(associative_categories){
-    //     categories = associative_categories;
-    //
-    //     console.log(categories)
-    // }
-
     useEffect(() => {
         axiosClient.get('/all-bank-account')
             .then(({data}) => {
