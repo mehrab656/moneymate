@@ -62,9 +62,9 @@ class IncomeController extends Controller {
 	public function add( IncomeRequest $request ): JsonResponse {
 		$income = $request->validated();
 
-		$accountID = $income['account_id'];
-		$catID = $income['category_id'];
-		$bankAccount = BankAccount::find($accountID);
+		$accountID   = $income['account_id'];
+		$catID       = $income['category_id'];
+		$bankAccount = BankAccount::find( $accountID );
 		if ( ! $bankAccount ) {
 			DB::rollBack();
 
@@ -73,7 +73,7 @@ class IncomeController extends Controller {
 				'description' => "Bank account was not found!",
 			], 400 );
 		}
-		$category = Category::where('id',$catID)->where('type','=','income')->get()->first();
+		$category = Category::where( 'id', $catID )->where( 'type', '=', 'income' )->get()->first();
 		if ( ! $category ) {
 			DB::rollBack();
 
@@ -137,7 +137,7 @@ class IncomeController extends Controller {
 
 					storeActivityLog( [
 						'user_id'      => Auth::user()->id,
-						'object_id'     => $income['id'],
+						'object_id'    => $income['id'],
 						'log_type'     => 'create',
 						'module'       => 'income',
 						'descriptions' => "  added income.",
@@ -227,8 +227,7 @@ class IncomeController extends Controller {
 					'error'   => $e
 				] );
 			}
-		}
-		else {
+		} else {
 
 			try {
 				DB::beginTransaction();
@@ -278,7 +277,7 @@ class IncomeController extends Controller {
 		}
 
 		return response()->json( [
-			'income' => $income,
+			'income'      => $income,
 			'message'     => 'Success!',
 			'description' => 'Income has been added.',
 		] );
@@ -333,7 +332,7 @@ class IncomeController extends Controller {
 
 		storeActivityLog( [
 			'user_id'      => Auth::user()->id,
-			'object_id'     => $income->id,
+			'object_id'    => $income->id,
 			'log_type'     => 'edit',
 			'module'       => 'income',
 			'descriptions' => "",
@@ -433,7 +432,7 @@ class IncomeController extends Controller {
 
 		storeActivityLog( [
 			'user_id'      => Auth::user()->id,
-			'object_id'     => $income->id,
+			'object_id'    => $income->id,
 			'log_type'     => 'delete',
 			'module'       => 'income',
 			'descriptions' => "",
@@ -514,7 +513,6 @@ class IncomeController extends Controller {
 		}
 
 
-
 		if ( $file->extension() !== 'csv' ) {
 			return response()->json( [
 				'message'     => 'Wrong File Extension!',
@@ -532,26 +530,35 @@ class IncomeController extends Controller {
 
 
 		$fileContents = file( $file->getPathname() );
-		$incomes = [];
 		if ( $channel === 'airbnb' ) {
 			$incomes = ( new Income() )->mapCSVWithAirbnb( $fileContents );
 		}
 		if ( $channel === 'booking' ) {
 			$category_id = $request->category_id;
-			if (!$category_id){
+			if ( ! $category_id ) {
 				return response()->json( [
 					'message'     => 'Missing Sector',
 					'description' => "Please select Income Sector.",
 				], 400 );
 			}
 
-			$incomes = ( new Income() )->mapCSVWithBooking( $fileContents,$category_id );
+			$status = ( new Income() )->mapCSVWithBooking( $fileContents, $category_id );
 		}
+		if ( $status['status_code'] != 200 ) {
+			return response()->json( [
+				'success' => $status['status_code'],
+				'message' => $status['message'],
+			], $status['status_code'] );
+		}
+
+		$filename = date("F j, Y",strtotime($status['payment_date'])) . ' ' . $channel .'.'. 'csv';
+
+		$file->storeAs( 'files', $filename );
 
 
 		return response()->json( [
-			'success'   => true,
-			'message' => "Income has been imported from CSV",
+			'message'     => "Imported!",
+			'description' => "CSV has been Imported Successfully",
 		] );
 	}
 }

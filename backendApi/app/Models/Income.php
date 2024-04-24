@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Auth;
 use DateTime;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -149,9 +150,9 @@ class Income extends Model {
 			if ( $incomeType == 'reservation' ) {
 				$incomeCurrency = $incomeData[6];
 				$incomeAmount   = $incomeData[12];
-				$checkInDate = date('Y-m-d',strtotime(str_replace("\"",'',$incomeData[2])));
-				$checkOutDate = date('Y-m-d',strtotime(str_replace("\"",'',$incomeData[3])));
-				$paymentDate = date('Y-m-d',strtotime(str_replace("\"",'',$incomeData[13])));
+				$checkInDate    = date( 'Y-m-d', strtotime( str_replace( "\"", '', $incomeData[2] ) ) );
+				$checkOutDate   = date( 'Y-m-d', strtotime( str_replace( "\"", '', $incomeData[3] ) ) );
+				$paymentDate    = date( 'Y-m-d', strtotime( str_replace( "\"", '', $incomeData[13] ) ) );
 
 
 				//@todo FIX me with API Paid ENDPOINTS
@@ -164,35 +165,45 @@ class Income extends Model {
 
 					$amount = round( $conversion_rates->AED * $incomeAmount, 2 ); //Amount in AED
 				}
+				$income = [
+					'user_id'       => Auth::user()->id,
+					'account_id'    => $sector->payment_account_id,
+					'amount'        => $incomeAmount,
+					'category_id'   => $category_id,
+					'description'   => str_replace( "\"", '', $incomeData[4] ),
+					'note'          => sprintf( "This income was imported by CSV where reservation reference id '%s' and payout reference '%s'", $incomeData[1], $incomeData[14] ),
+					'reference'     => 'booking',
+					'date'          => $paymentDate,
+					'income_type'   => $incomeType,
+					'checkin_date'  => $checkInDate,
+					'checkout_date' => $checkOutDate,
+					'attachment'    => '',
+				];
 
+				$isAdded = $this->incomeAdd( $income );
 
-				  $this->incomeAdd([
-					 'user_id'       => Auth::user()->id,
-					 'account_id'    => $sector->payment_account_id,
-					 'amount'        => $incomeAmount,
-					 'category_id'   => $category_id,
-					 'description'   => str_replace("\"",'',$incomeData[4]),
-					 'note'          => sprintf("This income was imported by CSV where reservation reference id '%s' and payout reference '%s'",$incomeData[1],$incomeData[14]),
-					 'reference'     => 'booking',
-					 'date'          => $paymentDate,
-					 'income_type'   => $incomeType,
-					 'checkin_date'  => $checkInDate,
-					 'checkout_date' => $checkOutDate,
-					 'attachment' => '',
-				 ]);
-
+				if ( $isAdded['status_code'] != 200 ) {
+					return [
+						'status_code'  => $isAdded['status_code'],
+						'message' => $isAdded['message']
+					];
+				}
 			}
 
 		}
 
-		return $incomes;
+		return [
+			'status_code'  => 200,
+			'message' => 'CSV has been successfully imported!',
+			'payment_date'=>$paymentDate
+		];
 
 	}
 
 	/**
 	 * @throws \Throwable
 	 */
-	public function incomeAdd($income): \Illuminate\Http\JsonResponse {
+	public function incomeAdd( $income ): array {
 
 		if ( $income['income_type'] === 'reservation' ) {
 			$checkinDate  = new DateTime( $income['checkin_date'] );
@@ -208,10 +219,10 @@ class Income extends Model {
 				if ( ! $account['status'] ) {
 					DB::rollBack();
 
-					return response()->json( [
-						'message'     => 'Failed!',
-						'description' => "Failed to update Bank Account!",
-					], 400 );
+					return [
+						'message'     => 'Failed to update Bank Account!',
+						'status_code' => 400
+					];
 				}
 
 
@@ -239,7 +250,7 @@ class Income extends Model {
 
 					storeActivityLog( [
 						'user_id'      => Auth::user()->id,
-						'object_id'     => $income['id'],
+						'object_id'    => $income['id'],
 						'log_type'     => 'create',
 						'module'       => 'income',
 						'descriptions' => "  added income.",
@@ -321,17 +332,15 @@ class Income extends Model {
 				}
 				DB::commit();
 
-			} catch ( Throwable $e ) {
+			} catch ( Exception $e ) {
 				DB::rollBack();
 
-				return response()->json( [
-					'message' => 'Something provided wrong data!',
-					'error'   => $e,
-					'status'   => false
-				] );
+				return [
+					'message'     => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
+					'status_code' => 400
+				];
 			}
-		}
-		else {
+		} else {
 
 			try {
 				DB::beginTransaction();
@@ -341,10 +350,10 @@ class Income extends Model {
 				if ( ! $account['status'] ) {
 					DB::rollBack();
 
-					return response()->json( [
-						'message'     => 'Failed!',
-						'description' => "Failed to update Bank Account!",
-					], 400 );
+					return [
+						'message' => "Failed to update Bank Account!",
+						'status_code' => 400
+					];
 				}
 
 				$income = Income::create( [
@@ -356,7 +365,7 @@ class Income extends Model {
 					'note'        => $income['note'],
 					'reference'   => $income['reference'],
 					'income_type' => $income['income_type'],
-					'date'          => $income['date'],
+					'date'        => $income['date'],
 					'attachment'  => $income['attachment']
 				] );
 				storeActivityLog( [
@@ -370,19 +379,20 @@ class Income extends Model {
 
 				DB::commit();
 
-			} catch ( Throwable $e ) {
+			} catch ( Exception $e ) {
 				DB::rollBack();
 
-				return response()->json( [
-					'message'     => 'Cannot add Income.',
-					'description' => $e,
-				], 400 );
+				return [
+					'message'     => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
+					'status_code' => 400
+				];
 			}
 		}
-		return response()->json( [
-			'message' => 'Income Added',
-			'status'   => true
-		] );
+
+		return [
+			'message'     => 'Income Added',
+			'status_code' => 200
+		];
 	}
 
 
