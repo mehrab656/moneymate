@@ -1,0 +1,18 @@
+Type=Reservation ,
+"Reference number"=4050638622 ,
+Check-in= 11 Apr 2024,
+Checkout=17 Apr 2024 ,
+"Guest name"= Antoinette Bamfo,
+"Reservation status"= ok,
+Currency= AED,
+"Payment status"= by_booking,
+Amount= 1639.58,
+Commission= -234.22,
+"Payment charge"= -40.99,
+,
+Net= 1364.37,
+"Payout date"=18 Apr 2024 ,
+"Payout ID"=kneGADF3Y4zFxlHc
+
+,,"","","",,,,,,,,,"",
+Reservation,4297995859,"10 Apr 2024","11 Apr 2024","Julius Wakanyi",ok,AED,by_booking,231.51,-33.07,-5.79,,192.65,"18 Apr 2024",kneGADF3Y4zFxlHc

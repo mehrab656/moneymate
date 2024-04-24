@@ -1,0 +1,285 @@
+ID,"User Name","Bank Account Number",Category,Amount,refundable_amount,Description,Date
+2,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",3330.00,0.00,"Office Rent For 3rd Cheque",2023-09-08
+3,"Mehrab Hossain",10102121323203232121,"Back Office -Electricity Cost",379.20,0.00,"Office Dewa Bill For the month of August",2023-09-08
+4,"Mehrab Hossain",10102121323203232121,"Extra Furnitures",42.00,0.00,"Apartment Amenities",2023-09-03
+5,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- DTCM Service Charge",950.00,0.00,"DTCM UNIT PERMISSION",2023-08-01
+6,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",74.00,0.00,"RoyelFord Kitchen Rack",2023-08-03
+7,"Mehrab Hossain",10102121323203232121,"Operation- Office Internet and Mobile",199.00,0.00,"Etisalat Office internet connection",2023-08-03
+8,"Mehrab Hossain",10102121323203232121,"Extra Furnitures",31.75,0.00,"Blanket For  Apartment 121",2023-08-14
+9,"Mehrab Hossain",10102121323203232121,"Transport Cost",24.00,0.00,"Car rent From apartment to nesto, Nesto to Apartment",2023-08-14
+10,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Maintenance Cost",50.00,0.00,"Cleanig fee for deep clean AED 25/hour",2023-08-14
+11,"Mehrab Hossain",10102121323203232121,"Transport Cost",80.00,0.00,"Car rent From JVC to Deira",2023-08-14
+12,"Mehrab Hossain",10102121323203232121,"Back Office -Electricity Cost",478.00,0.00,"Office Dewa Bill",2023-08-14
+13,"Mehrab Hossain",10102121323203232121,"Operation- Office Internet and Mobile",670.00,0.00,"Total Internet Bill",2023-08-14
+14,"Mehrab Hossain",10102121323203232121,"Transport Cost",100.00,0.00,"Car Cost For viewing Arjan, Jvc",2023-08-15
+15,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Internet & TV package Cost",56.00,0.00,"Pay Netflix bill",2023-08-24
+16,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Electricity and Gas Cost",557.00,0.00,"Dewa Bill For Month of August",2023-08-28
+17,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Maintenance Cost",27.00,0.00,"Apartmemt Tools",2023-08-27
+18,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Maintenance Cost",100.00,0.00,"Apartment Maintenance",2023-09-01
+19,"Mehrab Hossain",10102121323203232121,"Transport Cost",85.00,0.00,"Texi Cost From JVC to Deira",2023-09-01
+21,"Mehrab Hossain",10102121323203232121,"Operation- Back Office Salary",1000.00,0.00,"Mehrab Salary",2023-08-06
+22,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Apartment Rent",1900.00,1900.00,"O2 Tower Apartment Deposit 5% Considering of 38,000 AED",2023-09-09
+23,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Apartment Rent",300.00,0.00,"Ejari Cost For 02 Tower",2023-09-09
+24,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Apartment Rent",3000.00,0.00,"Agency Commission For O2 tower 1205",2023-09-09
+25,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- DTCM Service Charge",370.00,0.00,"Paid Holiday Homes DTCM Tourism Dirham For 37 Nights",2023-09-09
+26,"Mehrab Hossain",10102121323203232121,"Transport Cost",160.00,0.00,"Transport Cost For Deira to Pantheon 1,
+pantheon 1-O2 Tower
+o2 Tower to Pantheon 1 to receive guest
+Pantheon 1- Deira",2023-09-09
+27,"Mehrab Hossain",10102121323203232121,"Extra Furnitures",977.00,0.00,"Electronics product from Noon",2023-04-18
+28,"Mehrab Hossain",10102121323203232121,"Transport Cost",200.00,0.00,"Car Rent For JVC Apartment View",2023-04-26
+29,"Mehrab Hossain",10102121323203232121,"Operation- License",1011.00,0.00,"License Initial Approval and trade name reservations.",2023-05-02
+30,"Mehrab Hossain",10102121323203232121,"Operation- Office Internet and Mobile",49.00,0.00,"Paid Mobile Bill",2023-05-03
+31,"Mehrab Hossain",10102121323203232121,"Operation- Office Internet and Mobile",300.00,0.00,"Office Sim",2023-05-03
+32,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",211.00,0.00,"Domain Purchase",2023-05-03
+33,"Mehrab Hossain",10102121323203232121,"Operation- Back office Printings and Stationary",23.00,0.00,"File Holder and Pen",2023-05-04
+34,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",1000.00,0.00,"Office Advance",2023-05-06
+35,"Mehrab Hossain",10102121323203232121,"Operation- Back office Printings and Stationary",85.00,0.00,"Company Stamp and Lunch bill with Agent on JVC",2023-05-06
+36,"Mehrab Hossain",10102121323203232121,"Operation- Back Office Salary",300.00,0.00,"Paid Accommodation Cost",2023-05-08
+37,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",159.00,0.00,"Domain Purchase",2023-05-09
+38,"Mehrab Hossain",10102121323203232121,"Operation- Office Internet and Mobile",50.00,0.00,"Mobile Bill",2023-05-09
+39,"Mehrab Hossain",10102121323203232121,"Operation- Back Office Salary",1000.00,0.00,Salary,2023-07-02
+40,"Mehrab Hossain",10102121323203232121,"Extra Furnitures",6.50,0.00,"Screw Driver",2023-07-02
+41,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",350.00,0.00,"1 Table and 2 Chair For JVC apartment's Balcony",2023-07-03
+42,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",300.00,0.00,"1 Dine in table for JVC apartment",2023-07-03
+43,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",250.00,0.00,"2 Carpet For JVC apartment",2023-07-03
+44,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",280.00,0.00,"2 Chair For Dine in Table in JVC apartment",2023-07-03
+45,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",105.00,0.00,"BlenDer For JVC apartment",2023-07-03
+46,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",34.00,0.00,"Kitchen Amenities for JVC apartment",2023-07-03
+47,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",44.00,0.00,"Decoration and Kitchen Amenities",2023-07-03
+48,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Apartment Rent",350.00,0.00,"Ejari For Penthon Elychee 121",2023-07-05
+49,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",296.00,0.00,"Apartment Tool box By Hanif Uncle",2023-07-05
+50,"Mehrab Hossain",10102121323203232121,"Hor Al Anaz Villa- Maintenance",279.90,0.00,"Villa Tool box by Hanif Uncle",2023-07-05
+51,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",1720.00,0.00,"DTCM Permission Payment",2023-07-08
+52,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",50.00,0.00,"Natur Paymnet For inspection Purpose",2023-07-08
+53,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",10.95,0.00,"Decoration Tool Burj tower",2023-07-08
+54,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",8.00,0.00,"Apartment amenities (Wine Glass)",2023-07-08
+55,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",660.50,0.00,"Apartment Operational Equipment's",2023-07-08
+56,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",3330.00,0.00,"Office rent",2023-07-08
+57,"Mehrab Hossain",10102121323203232121,"Back Office -Electricity Cost",240.18,0.00,"Office Dewa Bill",2023-07-09
+58,"Mehrab Hossain",10102121323203232121,"Operation- Office Internet and Mobile",648.00,0.00,"Office Internet and Mobile",2023-07-09
+59,"Mehrab Hossain",10102121323203232121,"Hor Al Anaz Villa- Maintenance",100.00,100.00,"Big size Tolet For Hoor al anaz villa",2023-07-08
+60,"Mehrab Hossain",10102121323203232121,"Hor Al Anaz Villa- Maintenance",100.00,100.00,"Small size tolet fot Hoor al anz villa (2 pc)",2023-07-09
+61,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Maintenance Cost",20.00,0.00,"Apartment key",2023-07-09
+62,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Maintenance Cost",150.00,0.00,"Apartment Sofa + Bed Cleaning",2023-07-10
+63,"Mehrab Hossain",10102121323203232121,"Transport Cost",50.00,0.00,"Nol Card Recharge For Convince",2023-07-10
+64,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",14.00,0.00,"Apartment Carpet",2023-07-11
+65,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",9.50,0.00,"Measuring Tap",2023-07-05
+66,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",70.00,0.00,"Apartment basket 2 pc and ovenproof bowl",2023-07-15
+67,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",18.00,0.00,"apartment kitchen towel",2023-07-05
+68,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",260.00,0.00,"apartment bedding items from nesto",2023-07-16
+69,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",30.00,0.00,"apartment toilet decorational tools from Brandforless",2023-07-16
+70,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",1024.50,0.00,"Apartment Tools order from Noon",2023-07-13
+71,"Mehrab Hossain",10102121323203232121,"Security Tips",50.00,0.00,Security,2023-07-13
+72,"Mehrab Hossain",10102121323203232121,"Transport Cost",50.00,0.00,"Nol Card Recharge For Convence",2023-07-12
+73,"Mehrab Hossain",10102121323203232121,"Transport Cost",25.00,0.00,"Car Rent",2023-07-12
+74,"Mehrab Hossain",10102121323203232121,"Transport Cost",36.00,0.00,"Taxi Cost for apartment to NESTO",2023-07-18
+75,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",40.00,0.00,"LED lamp + Bulb Holder",2023-07-18
+76,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",39.25,0.00,"Multiplug From Nesto",2023-07-18
+77,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",57.50,0.00,"Door mate and Air freshner",2023-07-18
+78,"Mehrab Hossain",10102121323203232121,"Transport Cost",80.00,0.00,"Car rent From Deira to JVC (REF HASAN)",2023-07-18
+79,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Electricity and Gas Cost",1025.00,500.00,"Gash Security Deposit",2023-07-18
+80,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",333.92,0.00,"Cutlary, Table lamp and Table",2023-07-15
+81,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",49.50,0.00,"Thin Blanket for JVC apartment",2023-07-20
+82,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",4.50,0.00,"Shopping Bag",2023-07-20
+83,"Mehrab Hossain",10102121323203232121,"Transport Cost",120.00,0.00,"Car rent for emergency guest support",2023-07-20
+84,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",24.00,0.00,"HDMI Cable for Apartment 121 JVC",2023-07-20
+85,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",550.00,0.00,"Washing Machine + Carring cost",2023-07-20
+86,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",85.00,0.00,"Washing Machine Fixing and Accessoris",2023-07-20
+87,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",84.00,0.00,"Second Bed sheet of the apartment from Noon",2023-07-20
+88,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Electricity and Gas Cost",2130.00,2000.00,"Apartment Dewa Deposit",2023-07-20
+89,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",136.19,0.00,"Douvet cover, 3rd bedsheet 4 pc pillow cover",2023-07-21
+90,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",7.00,0.00,"Table lamp light",2023-07-07
+91,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",27.98,0.00,"Cleaning safty equipments",2023-07-22
+92,"Mehrab Hossain",10102121323203232121,"Transport Cost",50.00,0.00,"Nol Card Recharge For Convence",2023-07-22
+93,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",30.00,0.00,"Toilet Tissue,KITCHEN tissue",2023-07-23
+94,"Mehrab Hossain",10102121323203232121,"Transport Cost",31.00,0.00,"Taxi JVC to Mall of emirats",2023-07-23
+95,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",18.35,0.00,"Curtain hanger",2023-07-23
+96,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Internet & TV package Cost",30.00,0.00,"Disny+ subscription",2023-07-23
+97,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Internet & TV package Cost",56.00,0.00,Netflix,2023-07-23
+98,"Mehrab Hossain",10102121323203232121,"Operation- Back office Printings and Stationary",411.00,0.00,"Label printer and RFCD Card Coppier.",2023-07-27
+99,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",150.00,0.00,"Apartment internet Connection Fee",2023-07-29
+100,"Mehrab Hossain",10102121323203232121,"Operation- Back office Printings and Stationary",63.00,0.00,"A4 Papers and Stationary item",2023-06-01
+101,"Mehrab Hossain",10102121323203232121,"Operation- License",16351.00,0.00,"License Cost",2023-06-01
+102,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",63.00,0.00,"Office Accesories",2023-06-03
+103,"Mehrab Hossain",10102121323203232121,"Operation- Back Office Salary",399.00,0.00,"Food Cost Taken From Company",2023-06-04
+104,"Mehrab Hossain",10102121323203232121,"Operation- License",525.00,0.00,"Labor Card Payment",2023-06-04
+105,"Mehrab Hossain",10102121323203232121,"Operation- Office Internet and Mobile",678.00,0.00,"Buy Company Mobile For Mehrab",2023-06-04
+106,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",277.78,0.00,"Domain Purchase for Company(esholiday.com)",2023-06-06
+107,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",238.00,0.00,"Visiting card, Company Stamp, Nameplate",2023-06-10
+108,"Mehrab Hossain",10102121323203232121,"Back Office -Electricity Cost",89.49,0.00,"Dewa Bill",2023-06-14
+109,"Mehrab Hossain",10102121323203232121,"Operation- Office Internet and Mobile",650.00,0.00,"Mobile & Internet",2023-06-14
+110,"Mehrab Hossain",10102121323203232121,"Satwa Villa Rent and Others",7160.00,0.00,"Cash Payment for Satwa Villa Booking",2023-06-17
+111,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",315.00,0.00,"Office Fire Extinguisher",2023-06-17
+112,"Mehrab Hossain",10102121323203232121,"Transport Cost",50.00,0.00,"Convince Nol Card Recharge",2023-06-19
+113,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",210.00,0.00,"Salary Card Payment",2023-06-20
+114,"Mehrab Hossain",10102121323203232121,"Transport Cost",30.00,0.00,"Convince Nol Card Recharge",2023-06-21
+115,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Apartment Rent",2400.00,2400.00,"Apartment Deposit For Pantheon Elysee 121",2023-06-24
+116,"Mehrab Hossain",10102121323203232121,"Transport Cost",40.00,0.00,"Convince Nol Card Recharge",2023-06-25
+117,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",217.00,0.00,"Apartment Amenities",2023-06-26
+118,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",293.00,0.00,"Apartment Amenities",2023-06-28
+119,"Mehrab Hossain",10102121323203232121,"Transport Cost",31.50,0.00,"Texi Cost For JVC",2023-06-29
+121,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Apartment Rent",19000.00,0.00,"Apartment First Check+ Agent Commission",2023-06-30
+122,"Mehrab Hossain",10102121323203232121,"Transport Cost",50.00,0.00,"Convince Nol Card Recharge",2023-06-30
+123,"Mehrab Hossain",10102121323203232121,"Hor Al Anaz Villa-Rent and Others",71063.00,71063.00,"Hor Al Anaz Villa Payment",2023-05-08
+124,"Mehrab Hossain",10102121323203232121,"Satwa Villa Rent and Others",2837.00,0.00,"Advance Money for new Villa in Satwa",2023-05-08
+125,"Mehrab Hossain",10102121323203232121,"Operation- License",772.00,0.00,"Name Approval for License",2023-05-31
+126,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",191.00,0.00,"Office Expences",2023-05-31
+127,"Mehrab Hossain",10102121323203232121,"Operation- Back office Printings and Stationary",280.00,0.00,"Office Printer",2023-05-28
+128,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",519.00,0.00,"Office Equipment's",2023-05-26
+129,"Mehrab Hossain",10102121323203232121,"Back Office -Electricity Cost",2130.00,2000.00,"Dewa Security Deposit for office 107",2023-05-25
+130,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",6150.00,1000.00,"Office First Installment and others Costings",2023-05-24
+131,"Mehrab Hossain",10102121323203232121,"Operation- Office Internet and Mobile",509.00,200.00,"Office router & cnnection",2023-05-16
+132,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",886.00,0.00,"Office Furniture and labor cost",2023-05-24
+133,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Maintenance Cost",50.00,0.00,"Cleaning Fee",2023-09-13
+134,"Mehrab Hossain",10102121323203232121,"Transport Cost",70.00,0.00,"Nol Card Recharge",2023-09-13
+135,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Maintenance Cost",100.00,0.00,"Security tips",2023-09-13
+136,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",10.00,0.00,"Coffee Mag small size 2 pc",2023-09-13
+137,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Furniture Cost",117.93,0.00,"Apartment Tools",2023-09-13
+138,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",119.00,0.00,Trolly,2023-09-13
+139,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Apartment Rent",9500.00,1.00,"First Check of O2 Tower and Security Deposit",2023-09-13
+141,"Mehrab Hossain",10102121323203232121,"Operation- Back Office Salary",1000.00,0.00,Salary,2023-09-13
+142,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Furniture Cost",112.00,0.00,"Rubik Mini Electronic Digital Security Safe Deposit Box With Electronic Keypad Lock and Physical Key For Home Office Hotel Jewelry Passport Watches Cash Storage (Black)",2023-09-14
+144,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Furniture Cost",499.00,0.00,"JVC TV for O2 -1205",2023-09-17
+145,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Furniture Cost",157.61,0.00,"Apartment Amenities",2023-09-17
+146,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Furniture Cost",117.00,0.00,"Apartment Amenities from Nesto",2023-09-17
+147,"Mehrab Hossain",10102121323203232121,"Transport Cost",90.00,0.00,"Car rent From JVC to Deira",2023-09-17
+148,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Furniture Cost",138.02,0.00,"Apartment Amenities for o2",2023-09-17
+150,"Mehrab Hossain",10102121323203232121,"Operation- Office Internet and Mobile",490.01,0.00,"Office Mobile+internet",2023-09-21
+151,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Maintenance Cost",25.00,0.00,"Air freshener",2023-09-22
+152,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Maintenance Cost",25.00,0.00,"Air freshener",2023-09-22
+153,"Mehrab Hossain",10102121323203232121,"Security Tips",10.00,0.00,"Security Tips",2023-09-22
+154,"Mehrab Hossain",10102121323203232121,"Transport Cost",50.00,0.00,"Nol Card Recharge",2023-09-22
+155,"Mehrab Hossain",10102121323203232121,"Transport Cost",70.00,0.00,"Car rent",2023-09-22
+156,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Internet and TV Cost",800.00,0.00,"Apartment IPTV BOX for O2 1205",2023-09-23
+157,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Electricity Cost",2130.00,2000.00,"Paid Dewa Security Deposit for o2",2023-09-24
+158,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Furniture Cost",214.00,0.00,"Balcony Table Chair Set From Pan Emirats",2023-09-24
+159,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Apartment Rent",150.00,0.00,"5% vat on Agency comission and admin fee for 02 tower",2023-09-24
+160,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Furniture Cost",89.00,0.00,"Locker For apartment O2 tower",2023-09-24
+161,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Furniture Cost",2889.00,0.00,"O2 Home appliances from suk al marfa",2023-09-24
+162,"Mehrab Hossain",10102121323203232121,"Transport Cost",80.00,0.00,"Car rent",2023-09-24
+163,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Furniture Cost",64.48,0.00,"Tv Wall mount and washing machine accessories From Nesto",2023-09-25
+164,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Maintenance Cost",100.00,0.00,"Apartment Deep Clean of O2",2023-09-25
+165,"Mehrab Hossain",10102121323203232121,"Transport Cost",120.00,0.00,"Car Rent from Home to pick accessories",2023-09-25
+166,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Maintenance Cost",11.50,0.00,"Washing machine tools and 3 Pin Socket",2023-09-25
+167,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Maintenance Cost",70.00,0.00,"Delivery team Tips + worker",2023-09-25
+168,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Furniture Cost",1000.00,0.00,"Furniture Advance for O2 Tower",2023-09-17
+169,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Maintenance Cost",110.00,0.00,"Fixing and Maintenance cost.
+Gas+fridge+ Stove+ Washroom Flush+drilling",2023-09-26
+170,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Furniture Cost",111.00,0.00,"Tv unit + first aid kit",2023-09-27
+171,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Furniture Cost",2021.00,0.00,"Apartment Furniture's From Dragon Mart",2023-09-27
+172,"Mehrab Hossain",10102121323203232121,"Extra Furnitures",200.00,0.00,"Some Extra tools For future Use",2023-09-27
+173,"Mehrab Hossain",10102121323203232121,"Security Tips",50.00,0.00,"Security Tips",2023-09-27
+174,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Maintenance Cost",50.00,0.00,"Carry Cost",2023-09-27
+175,"Mehrab Hossain",10102121323203232121,"Transport Cost",120.00,0.00,"Transport Cost",2023-09-27
+176,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",280.00,0.00,"Ladder For Company",2023-09-27
+177,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Maintenance Cost",25.00,0.00,"Cleaning Of apartment 121",2023-09-30
+178,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Maintenance Cost",100.00,0.00,"Dranage problem solve of 121 pantheon 1",2023-09-30
+179,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Furniture Cost",126.00,0.00,"Pillow From noon",2023-10-02
+180,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Gas Cost",1025.00,500.00,"Gas Connection For 02",2023-09-25
+181,"Mehrab Hossain",10102121323203232121,"Operation- Office Internet and Mobile",313.95,0.00,"Back office internet bill",2023-09-25
+182,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Electricity Cost",876.75,290.00,"Chiller Deposit For O2 Tower 1205",2023-10-03
+183,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Electricity and Gas Cost",627.32,0.00,"Dewa  Bill for Pantheon Elysee 1 121 for Month of September",2023-10-03
+184,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-DTCM Service Charge",1024.00,0.00,"Unit Permission For o2",2023-10-04
+185,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Furniture Cost",44.46,0.00,"Apartment Amenities From Gift Corner, Deira",2023-10-07
+186,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Furniture Cost",1650.00,0.00,"Paid Furniture's remaining amount for O2 Tower 1205",2023-10-11
+187,"Mehrab Hossain",10102121323203232121,"Transport Cost",110.00,0.00,"Emergency Transport for JVC pantheon 1",2023-10-11
+188,"Mehrab Hossain",10102121323203232121,"Operation- Back Office Salary",1000.00,0.00,Salary,2023-10-14
+189,"Mehrab Hossain",10102121323203232121,"Transport Cost",50.00,0.00,"Car rent",2023-10-14
+190,"Mehrab Hossain",10102121323203232121,"Back Office -Electricity Cost",168.19,0.00,"Office Dewa Bill payment",2023-10-14
+191,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",380.00,0.00,"Extra Beddings and Towels",2023-10-13
+192,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",75.00,0.00,"Apartment Accessories From Green House",2023-10-22
+193,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Electricity and Gas Cost",86.36,0.00,"Elysee 1 Gas Bill october",2023-10-23
+194,"Mehrab Hossain",10102121323203232121,"Operation- Office Internet and Mobile",56.00,0.00,Netflix,2023-10-22
+195,"Mehrab Hossain",10102121323203232121,"Security Tips",50.00,0.00,"Pantheon 1 Receptionist tips",2023-10-27
+196,"Mehrab Hossain",10102121323203232121,"Transport Cost",100.00,0.00,"Nol card Recharge",2023-10-27
+197,"Mehrab Hossain",10102121323203232121,"Security Tips",100.00,0.00,"O2 Security's Tips",2023-10-29
+198,"Mehrab Hossain",10102121323203232121,"Transport Cost",120.00,0.00,"Car Rent For O2 emergency",2023-10-29
+199,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- DTCM Service Charge",250.00,0.00,"Paid Holiday Homes Permission For the month of September",2023-10-03
+200,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Apartment Rent",16000.00,0.00,"2ND Cheque for the apartment of Pantheon 1 121",2023-11-06
+201,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",3330.00,0.00,"Paid the Cheque for Office",2023-11-09
+202,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",50.00,0.00,"Room Cleaning Charge",2023-11-01
+203,"Mehrab Hossain",10102121323203232121,"Operation- Back Office Salary",2500.00,0.00,Salary,2023-11-10
+204,"Mehrab Hossain",10102121323203232121,"Operation- Office Internet and Mobile",313.95,0.00,"Office Internet Bill",2023-11-11
+205,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Electricity Cost",340.00,0.00,"Paid Logic Utilities Bill for the apartment of 1205",2023-11-07
+206,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Electricity and Gas Cost",556.96,0.00,"Paid pantheon 1 dewa bill for the month of October",2023-11-14
+207,"Mehrab Hossain",10102121323203232121,"Back Office -Electricity Cost",270.62,0.00,"Paid Office Dewa Bill for the month of October",2023-11-14
+208,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-DTCM Service Charge",200.00,0.00,"Paid DTCM Tourisom Dirham For O2 1205",2023-11-15
+209,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- DTCM Service Charge",280.00,0.00,"Paid DTCM for Pantheon 1 121",2023-11-15
+210,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Internet & TV package Cost",531.00,0.00,"Internet Bill - 7th Oct - 6th Nov 2023",2023-11-18
+211,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Internet & TV package Cost",354.39,0.00,"Internet Bill - 16th Jul - 6th Aug 2023",2023-08-15
+212,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Internet & TV package Cost",531.00,0.00,"Internet Bill - 7th Aug - 6th Sep 2023",2023-09-22
+213,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Internet & TV package Cost",531.00,0.00,"Internet Bill - 7th Sep - 6th Oct 2023",2023-10-08
+214,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Internet and TV Cost",209.00,0.00,"Internet Bill - 7th October- 6h November 2023",2023-11-18
+215,"Mehrab Hossain",10102121323203232121,"Operation- Office Internet and Mobile",315.00,0.00,"Office Sim Bill 7th Oct - 6th November",2023-11-18
+216,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",405.79,0.00,"Holiday Homes Equipment From Nesto",2023-11-13
+217,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",525.00,0.00,"Bulk Tissues",2023-10-31
+218,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",49.00,0.00,"Airwick Auto Freshner",2023-11-23
+219,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Furniture Cost",49.00,0.00,"Airwick Auto freshner",2023-11-23
+220,"Mehrab Hossain",10102121323203232121,"Operation- License",350.00,0.00,"Vat registration Fees",2023-11-25
+221,"Mehrab Hossain",10102121323203232121,"Transport Cost",85.00,0.00,"Car rent",2023-11-25
+222,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Internet & TV package Cost",56.00,0.00,"Pay Netflix bill",2023-11-26
+223,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",271.00,0.00,"Cleaning Amenities for apartment",2023-11-29
+224,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",184.50,0.00,"Hand Vacuum, Roller and cloth packing bag from noon",2023-11-29
+225,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",79.00,0.00,"Eco Botanics Round Pleat Wrapped Mini Soap Bar For Hotel Amenities 100 pc",2023-11-19
+226,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",36.85,0.00,"Fine Super Towel Pro, Highly Absorbent, Sterilized, 8+4,3 Ply Pack Of 12 60 Sheets White 26.5x21cm",2023-09-04
+227,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",37.12,0.00,"Persil Detergent Payment 1st installment",2023-12-05
+228,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Apartment Rent",9500.00,0.00,"Second Check for O2 Residential Tower",2023-12-08
+229,"Mehrab Hossain",10102121323203232121,"Security Tips",50.00,0.00,"Security Payment Day shift",2023-12-10
+230,"Mehrab Hossain",10102121323203232121,"Operation- Back Office Salary",2500.00,0.00,"Mehrab Salary for November",2023-12-10
+231,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Electricity Cost",292.05,0.00,"O2 Dewa bill for October",2023-12-11
+232,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Electricity Cost",274.72,0.00,"O2 Dewa Bill for November",2023-12-11
+233,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Electricity and Gas Cost",420.55,0.00,"Pantheon 1 Dewa Bill",2023-12-11
+234,"Mehrab Hossain",10102121323203232121,"Back Office -Electricity Cost",149.18,0.00,"Office Dewa Bill For November",2023-12-11
+235,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Electricity Cost",173.00,0.00,"O2 Chiller Bill For November",2023-12-11
+236,"Mehrab Hossain",10102121323203232121,"Operation- Office Internet and Mobile",313.95,0.00,"Office Internet For November",2023-12-11
+237,"Mehrab Hossain",10102121323203232121,"Operation- Office Internet and Mobile",323.40,0.00,"Office Sim",2023-12-11
+238,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Internet and TV Cost",313.95,0.00,"O2 1205 Internet bill 7th November - 6th December",2023-12-11
+239,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Internet & TV package Cost",531.00,0.00,"Pantheon 1 121 Internet Bill 7th November - 6th December",2023-12-11
+240,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",72.96,0.00,"Persil Detergent 4.8 L",2023-12-10
+241,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",111.36,0.00,"Persil Detergent Payment 2nd, 3rd, 4th installment",2023-12-15
+242,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",275.00,0.00,"Bedside Cot Newborn Bassinet Mobile Portable Children's Sleeper Cot Folding Crib",2023-12-14
+243,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- DTCM Service Charge",220.00,0.00,"Paid Holiday Homes Permission for the month of November",2023-12-13
+244,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-DTCM Service Charge",270.00,0.00,"Paid Holiday Homes Permission for the month of November",2023-12-13
+245,"Mehrab Hossain",10102121323203232121,"Operation- Office Internet and Mobile",335.35,0.00,"Back office Sim",2023-09-25
+246,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Internet & TV package Cost",800.00,0.00,"Bought Iptv Box for Pantheon Elysee 1- 121",2024-01-01
+247,"Mehrab Hossain",10102121323203232121,"Transport Cost",20.00,0.00,"Transport Cost for apartment cleaning",2024-01-01
+248,"Mehrab Hossain",10102121323203232121,"Operation- Back Office Salary",2500.00,0.00,"Salary For month of December",2024-01-01
+249,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Electricity and Gas Cost",450.32,0.00,"Pantheon-121 electricity bill for 2023-12-27",2024-01-02
+250,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Electricity Cost",358.00,0.00,"O2 Tower-1205 electricity bill for 2023-12-27",2024-01-02
+251,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Maintenance Cost",60.00,0.00,"O2 tower 1205 Washroom shower and heater Maintenance",2024-01-01
+252,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Furniture Cost",59.00,0.00,"Replace blender on Pantheon Elysee 1",2024-01-03
+253,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",44.00,0.00,"Washroom brush for remove red and permanent strains",2024-01-03
+255,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",3330.00,0.00,"Back office check for 107",2024-01-09
+256,"Mehrab Hossain",10102121323203232121,"Security Tips",70.00,0.00,"Give tips to Sameer and O2 night security",2024-01-13
+257,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Electricity Cost",142.17,0.00,"O2 Chiller bill for December",2024-01-09
+258,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",142.17,0.00,"Apartment Accessories From NEsto",2024-01-12
+259,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Electricity and Gas Cost",185.16,0.00,"Pantheon 1 Gas Bill",2024-01-14
+260,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Gas Cost",126.07,0.00,"O2 1205 Gas Bill",2024-01-14
+261,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- DTCM Service Charge",160.00,0.00,"Patheon Elyse 1- DTCM",2024-01-14
+262,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-DTCM Service Charge",80.00,0.00,"O2 Residential Tower DTCM",2024-01-17
+263,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Furniture Cost",132.00,0.00,"Purchase of Nonstick Cooking ware set and a bowl for the apartment 1205",2024-01-17
+264,"Mehrab Hossain",10102121323203232121,"Back Office -Electricity Cost",284.02,0.00,"Back Office-107 electricity bill for 2023-12-04",2024-01-20
+265,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Internet & TV package Cost",531.00,0.00,"Pantheon-1(121) internet 7th Dec- 6th Jan 2024",2024-01-20
+266,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Internet and TV Cost",213.00,0.00,"O2(1205) internet 7th Dec- 6th Jan 2024",2024-01-20
+267,"Mehrab Hossain",10102121323203232121,"Operation- Office Internet and Mobile",313.95,0.00,"Back Office internet Bill",2024-01-02
+268,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",315.00,0.00,"Bedding for apartment from Murshid bazar",2024-01-23
+269,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",132.50,0.00,"Apartment amenaties from Careefour",2024-01-21
+270,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Maintenance Cost",210.00,0.00,"Apartment Deep Cleaning after Maria Checkout",2024-02-01
+271,"Mehrab Hossain",10102121323203232121,"Transport Cost",43.00,0.00,"Car rent",2024-02-01
+272,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Maintenance Cost",70.00,0.00,"Apartment lock change",2024-02-05
+273,"Mehrab Hossain",10102121323203232121,"Security Tips",30.00,0.00,Tips,2024-02-05
+274,"Mehrab Hossain",10102121323203232121,"Transport Cost",32.00,0.00,"Car rent",2024-02-05
+275,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Maintenance Cost",60.00,0.00,"Apartment cleaning cost",2024-02-05
+276,"Mehrab Hossain",10102121323203232121,"Operation- Back Office Salary",2500.00,0.00,"Mehrab Salary for January",2024-02-08
+277,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",67.00,0.00,"Eco Botanics Disposable Toothbrush & Toothpaste Traveling Dental Kit For Adults & Kids",2024-01-04
+278,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",32.50,0.00,"Rainbow Evaporated Milk Portions 14ml Pack of 10",2023-12-20
+279,"Mehrab Hossain",10102121323203232121,"Operation- Back Office",72.95,0.00,"Canon Pack of 2 Canon Pixma 445/446 Ink Cartridge Set Black & Tri Colour",2023-12-07
+280,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Electricity and Gas Cost",436.17,0.00,"Pantheon-121 electricity bill for 2024-01-27",2024-02-11
+281,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Electricity Cost",254.95,0.00,"O2 Tower-1205 electricity bill for 2024-01-27",2024-02-11
+282,"Mehrab Hossain",10102121323203232121,"Back Office -Electricity Cost",217.86,0.00,"Back Office-107 electricity bill for 2024-01-04",2024-02-11
+283,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-Internet and TV Cost",213.00,0.00,"O2(1205) internet 7th Jan- 6th Feb 2024",2024-02-10
+284,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- Internet & TV package Cost",513.00,0.00,"Pantheon-1(121) internet 7th Jan- 6th Feb 2024",2024-02-10
+285,"Mehrab Hossain",10102121323203232121,"Operation- Office Internet and Mobile",367.50,0.00,"Office Sim Bill",2024-02-10
+286,"Mehrab Hossain",10102121323203232121,"Pantheon ELysee-1(121)- DTCM Service Charge",310.00,0.00,"DTCM for Pantheon Elysee 1 For January",2024-02-11
+287,"Mehrab Hossain",10102121323203232121,"O2 Tower(1205)-DTCM Service Charge",300.00,0.00,"DTCM For O2 Tower 1205 For January",2024-02-11

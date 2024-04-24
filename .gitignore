@@ -8,11 +8,8 @@ assets
 ---------------------------
 backendApi/vendor
 backendApi/tests
-backendApi/storage
-backendApi/public
 backendApi/.env
 backendApi/_ide_helper.php
-backendApi/artisan
 backendApi/composer.lock
 backendApi/vite.config.js
 backendApi/package-lock.json
@@ -38,7 +35,4 @@ config.js
 LICENSE
 vite.svg
 package-lock.json
-
-
-backendApi/.env
 
