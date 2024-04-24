@@ -513,10 +513,7 @@ class IncomeController extends Controller {
 			], 400 );
 		}
 
-		echo '<pre>';
-		print_r($file);
-		echo '</pre>';
-		exit();
+
 
 		if ( $file->extension() !== 'csv' ) {
 			return response()->json( [
@@ -537,11 +534,11 @@ class IncomeController extends Controller {
 		if ( $channel === 'airbnb' ) {
 			$income = ( new Income() )->mapCSVWithAirbnb( $fileContents );
 		}
-		if ( $channel === 'booking.com' ) {
-//			$income = ( new Income() )->mapCSVWithBooking( $fileContents );
+		if ( $channel === 'booking' ) {
+			$income = ( new Income() )->mapCSVWithBooking( $fileContents );
 		}
 
-		$referenceNumber = $values[1];
+		$referenceNumber = $income[1];
 
 		$category = DB::table( 'categories' )->select( [
 			"categories.id",
