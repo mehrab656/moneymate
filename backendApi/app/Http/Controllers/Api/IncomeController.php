@@ -501,24 +501,31 @@ class IncomeController extends Controller {
 	}
 
 	/**
-	 * @throws Exception
+	 * @param Request $request
+	 *
+	 * @return JsonResponse|void
+	 * @throws Throwable
 	 */
 	public function addIncomeFromCSV( Request $request ) {
-		$file = $request->file( 'file' );
-		if ( ! $file ) {
+
+		$files = $request->file( 'csvFile' );
+		if ( ! $files ) {
 			return response()->json( [
-				'message'     => 'Upload file!',
+				'message'     => 'Missing file!',
 				'description' => "Please upload a csv file.",
 			], 400 );
 		}
+		$file = $files['file'];
+
+		//Fixme Sometimes it becomes confused and shows a csv file as a text file.
+//		if ( $file['file']->extension() !== 'csv' ) {
+//			return response()->json( [
+//				'message'     => 'Wrong File Extension!',
+//				'description' => "Please upload a valid csv file.",
+//			], 400 );
+//		}
 
 
-		if ( $file->extension() !== 'csv' ) {
-			return response()->json( [
-				'message'     => 'Wrong File Extension!',
-				'description' => "Please upload a csv file.",
-			], 400 );
-		}
 
 		$channel = $request->channel;
 		if ( ! $channel ) {
@@ -528,9 +535,12 @@ class IncomeController extends Controller {
 			], 400 );
 		}
 
-
 		$fileContents = file( $file->getPathname() );
 		if ( $channel === 'airbnb' ) {
+			return response()->json( [
+				'message'     => "Under Maintenance",
+				'description' => "This channel is under maintenance.",
+			], 400 );
 			$incomes = ( new Income() )->mapCSVWithAirbnb( $fileContents );
 		}
 		if ( $channel === 'booking' ) {

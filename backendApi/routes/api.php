@@ -199,6 +199,9 @@ Route::middleware( 'auth:sanctum' )->group( function () {
 
 	//send notifications
 
+	//activity logs
+	Route::get( '/activity-logs', [ UserController::class, 'getActivityLogs' ] );
+
 } );
 
 

@@ -7,6 +7,7 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\UserRolePermissionResource;
+use App\Models\ActivityLogModel;
 use App\Models\BankName;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -132,5 +133,21 @@ class UserController extends Controller
         return response()->json(['message' => 'User deleted']);
     }
 
+	public function getActivityLogs(Request $request): JsonResponse {
+		$page     = $request->query( 'page', 1 );
+		$pageSize = $request->query( 'pageSize', 1000 );
+
+		$logs = ActivityLogModel::skip( ( $page - 1 ) * $pageSize )
+		                 ->take( $pageSize )
+		                 ->orderBy( 'id', 'desc' )
+		                 ->get();
+
+
+
+
+		return response()->json( [
+			'data'  => $logs,
+		] );
+	}
 
 }

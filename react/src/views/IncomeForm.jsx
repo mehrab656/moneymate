@@ -15,7 +15,7 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
-import { notification } from "../components/ToastNotification.jsx";
+import {notification} from "../components/ToastNotification.jsx";
 import {reservationValidationBuilder} from "../helper/HelperFunctions.js";
 
 const useStyles = makeStyles({
@@ -60,6 +60,7 @@ export default function IncomeForm() {
     const [reservationValidation, setReservationValidation] = useState('Select check in and check out dates.');
     const [reservationValidationClass, setReservationValidationClass] = useState('primary');
     const [categoryValue, setCategoryValue] = useState(null);
+    const [csvCategoryValue, setCsvCategoryValue] = useState(null);
 
     useEffect(() => {
         axiosClient
@@ -111,7 +112,7 @@ export default function IncomeForm() {
                         date: data.date || "", // Set to empty string if the value is null or undefined
                     }));
 
-                    const validation = reservationValidationBuilder(income.checkin_date,income.checkout_date);
+                    const validation = reservationValidationBuilder(income.checkin_date, income.checkout_date);
                     setReservationValidation(validation.message);
                     setReservationValidationClass(validation.class);
                     setLoading(false);
@@ -169,7 +170,7 @@ export default function IncomeForm() {
                     },
                 })
                 .then((data) => {
-                    notification('success',data?.message,data?.description)
+                    notification('success', data?.message, data?.description)
                     if (stay === true) {
                         window.location.reload();
                     } else {
@@ -178,9 +179,9 @@ export default function IncomeForm() {
                     setLoading(false);
                 })
                 .catch((err) => {
-                    if (err.response) { 
+                    if (err.response) {
                         const error = err.response.data
-                        notification('error',error?.message,error.description)
+                        notification('error', error?.message, error.description)
                     }
                     setLoading(false);
                 });
@@ -217,7 +218,7 @@ export default function IncomeForm() {
                 })
                 .then((data) => {
                     // setNotification("Income has been added.");
-                    notification('success',data?.message,data?.description);
+                    notification('success', data?.message, data?.description);
                     setTimeout(() => {
                         if (stay === true) {
                             window.location.reload();
@@ -229,9 +230,9 @@ export default function IncomeForm() {
                     setLoading(false);
                 })
                 .catch((err) => {
-                    if (err.response) { 
+                    if (err.response) {
                         const error = err.response.data
-                        notification('error',error?.message,error.description)
+                        notification('error', error?.message, error.description)
                     }
                     setLoading(false);
                 });
@@ -262,44 +263,38 @@ export default function IncomeForm() {
     const submitCSVFile = (e) => {
         e.preventDefault();
         setLoading(true);
-        // e.target.disabled = true;
-        axiosClient.post(`/income/add-csv`, csvFile, {
+
+        axiosClient.post(`/income/add-csv`, {
+            channel: channel,
+            csvFile: csvFile,
+            category_id: channel === 'booking' ? csvCategoryValue.id : 0
+        }, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
         }).then(({data}) => {
             setLoading(false);
 
-            notification('success',data?.message,data?.description)
+            notification('success', data?.message, data?.description)
             setTimeout(() => {
-                window.location.reload();
-            }, 5000)
+                navigate("/incomes");
+            }, 2000)
         }).catch(err => {
-            setLoading(false);
-            e.target.disabled = false;
-            let errorInfo = [];
-            const error = err.response.data.error;
-            if (Object.keys(error).length > 0) {
-                errorInfo = error.errorInfo;
-            } else {
-                errorInfo = ["Syntax or Internal Code error"]
-            }
-
-            if (err.response) { 
+            if (err.response) {
                 const error = err.response.data
-                notification('error',error?.message,error.description)
+                notification('error', error?.message, error.description)
             }
+            setLoading(false);
         });
-        setLoading(true);
+        setLoading(false);
     }
 
 
     // handle channel
     const [channel, setChannel] = useState('airbnb')
     const handleChangeToggle = (event) => {
-        setChannel(event.target.value)
+        setChannel(event.target.value);
     };
-
     return (
         <>
             <MainLoader loaderVisible={loading}/>
@@ -345,7 +340,7 @@ export default function IncomeForm() {
                                         placeholder='Description'
                                     />
                                 </div>
-                                <div className=''>
+                                <div className='form-group'>
                                     <Autocomplete
                                         // value={expenseCategories[0]}
                                         classes={{option: classes.option}}
@@ -571,7 +566,7 @@ export default function IncomeForm() {
                                                 // const updatedDate = selectedDate && !income.date ? new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000) : selectedDate;
                                                 setIncome({...income, checkout_date: selectedDate});
 
-                                                const validation = reservationValidationBuilder(income.checkin_date,selectedDate);
+                                                const validation = reservationValidationBuilder(income.checkin_date, selectedDate);
                                                 setReservationValidation(validation.message);
                                                 setReservationValidationClass(validation.class);
                                             }}
@@ -643,25 +638,54 @@ export default function IncomeForm() {
                             />
                         </div>
 
-                        <FormControl>
-                            <FormLabel id="demo-controlled-radio-buttons-group">Channels</FormLabel>
-                            <RadioGroup
-                                aria-labelledby="demo-controlled-radio-buttons-group"
-                                name="controlled-radio-buttons-group"
-                                value={channel}
-                                onChange={handleChangeToggle}
-                            >
-                                <Box display={'flex'}>
-                                    <FormControlLabel value="airbnb" control={<Radio/>} label="Air BNB"/>
-                                    <FormControlLabel value="booking" control={<Radio/>} label="Booking"/>
-                                    <FormControlLabel value="vrbo" control={<Radio/>} label="VRBO"/>
-                                    <FormControlLabel value="experia" control={<Radio/>} label="Experia"/>
+                        <div className={"form-control"}>
+                            <FormControl>
+                                <FormLabel id="demo-controlled-radio-buttons-group">Channels</FormLabel>
+                                <RadioGroup
+                                    aria-labelledby="demo-controlled-radio-buttons-group"
+                                    name="controlled-radio-buttons-group"
+                                    value={channel}
+                                    onChange={handleChangeToggle}
+                                >
+                                    <Box display={'flex'}>
+                                        <FormControlLabel value="airbnb" control={<Radio/>} label="Airbnb"/>
+                                        <FormControlLabel value="booking" control={<Radio/>} label="Booking.com"/>
+                                        <FormControlLabel value="vrbo" control={<Radio/>} label="VRBO"/>
+                                        <FormControlLabel value="experia" control={<Radio/>} label="Expedia"/>
+                                    </Box>
+                                </RadioGroup>
+                            </FormControl></div>
 
-                                </Box>
+                        {
+                            channel === 'booking' &&
+                            <div className=''>
+                                <Autocomplete
+                                    // value={expenseCategories[0]}
+                                    classes={{option: classes.option}}
+                                    options={incomeCategories}
+                                    getOptionLabel={(option) => option.name}
+                                    id='parentCategory'
+                                    isOptionEqualToValue={(option, categoryValue) => option.id === categoryValue.id}
+                                    value={csvCategoryValue}
+                                    onChange={(ev, newValue) => {
+                                        if (newValue) {
+                                            setCsvCategoryValue(newValue)
+                                        }
+                                    }}
 
-                            </RadioGroup>
-                        </FormControl>
+                                    renderInput={(params) => (
+                                        <TextField
+                                            style={{backgroundColor: "#eeeeee"}}
+                                            {...params}
+                                            label='Income Category'
+                                            margin='normal'
+                                            placeholder='Income Category'
+                                        />
+                                    )}
+                                />
+                            </div>
 
+                        }
 
                     </form>
                 </Modal.Body>

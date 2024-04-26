@@ -36,7 +36,7 @@ import {
     faAnglesDown,
     faArrowDownUpAcrossLine,
     faArrowDownZA,
-    faArrowDownLong, faArrowUp
+    faArrowDownLong, faArrowUp, faFontAwesomeLogoFull
 } from '@fortawesome/free-solid-svg-icons';
 import {SettingsContext, SettingsProvider} from "../contexts/SettingsContext.jsx";
 import Footer from "./Footer.jsx";
@@ -63,7 +63,8 @@ export default function DefaultLayout() {
     const [notifications, setNotifications] = useState([]);
     const {applicationSettings, userRole, setUserRole} = useContext(SettingsContext);
     let {
-        default_currency} = applicationSettings;
+        default_currency
+    } = applicationSettings;
 
     const {data: getSectorsData} = useGetSectorsDataQuery({token})
     const {data: getFinancialReportData} = useGetFinancialReportDataQuery({token})
@@ -406,7 +407,7 @@ export default function DefaultLayout() {
                                             </Link>
                                         </li>
 
-                                        { userRole === 'admin' &&
+                                        {userRole === 'admin' &&
                                             <li className="aside-menu-item">
                                                 <Link to="/subscription-history"
                                                       className={isActive('/subscription-history') ? 'active' : ''}>
@@ -416,51 +417,62 @@ export default function DefaultLayout() {
                                             </li>
                                         }
                                         {userRole === 'admin' &&
-                                            <li className="aside-menu-item">
-                                                <a
-                                                    className='dropdown-menu'
-                                                    onClick={(e) => toggleSubmenu('settings')}>
+                                            <>
+                                                <li className="aside-menu-item">
+                                                    <Link to="/activity-logs"
+                                                          className={isActive('/activity-logs') ? 'active' : ''}>
+                                                  <span className="aside-menu-icon"><FontAwesomeIcon
+                                                      icon={faFontAwesomeLogoFull}/></span>
+                                                        <span className="aside-menu-text">Activity Logs</span>
+                                                    </Link>
+                                                </li>
+                                                <li className="aside-menu-item">
+                                                    <a
+                                                        className='dropdown-menu'
+                                                        onClick={(e) => toggleSubmenu('settings')}>
                                                 <span className="aside-menu-icon"><FontAwesomeIcon
                                                     icon={faCogs}/></span>
-                                                    <span className="aside-menu-text">Settings</span>
-                                                    <span
-                                                        className="submenu-toggle-icon">{submenuSettingsVisible ? '▲' : '▼'}</span>
+                                                        <span className="aside-menu-text">Settings</span>
+                                                        <span
+                                                            className="submenu-toggle-icon">{submenuSettingsVisible ? '▲' : '▼'}</span>
 
-                                                </a>
-                                                {submenuSettingsVisible && (
-                                                    <ul className="submenu">
-                                                        <li className="aside-menu-item">
-                                                            <Link to="/application-settings"
-                                                                  className={isActive('/application-settings') ? 'active' : ''}>
+                                                    </a>
+                                                    {submenuSettingsVisible && (
+                                                        <ul className="submenu">
+                                                            <li className="aside-menu-item">
+                                                                <Link to="/application-settings"
+                                                                      className={isActive('/application-settings') ? 'active' : ''}>
                                                                 <span className="aside-menu-icon"><FontAwesomeIcon
                                                                     icon={faCogs}/></span>
-                                                                <span
-                                                                    className="aside-menu-text"> Application Settings </span>
-                                                            </Link>
-                                                        </li>
-                                                        <li className="aside-menu-item">
-                                                            <Link
-                                                                to="/users"
-                                                                className={isActive('/users') ? 'active' : ''}>
+                                                                    <span
+                                                                        className="aside-menu-text"> Application Settings </span>
+                                                                </Link>
+                                                            </li>
+                                                            <li className="aside-menu-item">
+                                                                <Link
+                                                                    to="/users"
+                                                                    className={isActive('/users') ? 'active' : ''}>
                                                     <span className="aside-menu-icon"><FontAwesomeIcon
                                                         icon={faEdit}/></span>
-                                                                <span
-                                                                    className="aside-menu-text"> Manage Users </span>
-                                                            </Link>
-                                                        </li>
-                                                        <li className="aside-menu-item">
-                                                            <Link
-                                                                to={'/users/' + user.id}
-                                                                className={isActive('/users') ? 'active' : ''}>
+                                                                    <span
+                                                                        className="aside-menu-text"> Manage Users </span>
+                                                                </Link>
+                                                            </li>
+                                                            <li className="aside-menu-item">
+                                                                <Link
+                                                                    to={'/users/' + user.id}
+                                                                    className={isActive('/users') ? 'active' : ''}>
                                                     <span className="aside-menu-icon"><FontAwesomeIcon
                                                         icon={faEdit}/></span>
-                                                                <span
-                                                                    className="aside-menu-text"> Manage Profile </span>
-                                                            </Link>
-                                                        </li>
-                                                    </ul>
-                                                )}
-                                            </li>
+                                                                    <span
+                                                                        className="aside-menu-text"> Manage Profile </span>
+                                                                </Link>
+                                                            </li>
+                                                        </ul>
+                                                    )}
+                                                </li>
+                                            </>
+
                                         }
                                     </ul>
                                 </div>
@@ -804,7 +816,7 @@ export default function DefaultLayout() {
                                             </Link>
                                         </li>
 
-                                        { userRole === 'admin' &&
+                                        {userRole === 'admin' &&
                                             <li className="aside-menu-item">
                                                 <Link to="/subscription-history"
                                                       className={isActive('/subscription-history') ? 'active' : ''}>

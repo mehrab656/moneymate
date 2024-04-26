@@ -24,21 +24,6 @@ class Income extends Model {
 	protected $primaryKey = 'id';
 	protected $guarded = [];
 
-	protected array $incomeFormat = [
-		'user_id',
-		'account_id',
-		'amount',
-		'category_id',
-		'description',
-		'note',
-		'reference',
-		'date',
-		'income_type',
-		'checkin_date',
-		'checkout_date',
-		'attachment'
-	];
-
 
 	/**
 	 * @return BelongsTo
@@ -64,23 +49,17 @@ class Income extends Model {
 	}
 
 	public function mapCSVWithAirbnb( array $file ): array {
-		$header = explode( ',', $file[0] );
-		//now remove header
-
+		$this->builtDataFromAirbnbCSV($file);
 		unset( $file[0] );
-
-		echo '<pre>';
-		print_r( $file );
-		echo '</pre>';
-		exit();
-
-		$incomes = [];
 
 		foreach ( $file as $inc ) {
 
-			$income = explode( ',', $inc );
+			$income = explode( ',', $file[2] );
 
-
+			echo '<pre>';
+			print_r($income);
+			echo '</pre>';
+			exit();
 			if ( $income[2] == 'Reservation' ) {
 
 				if ( $income[12] === 'USD' ) {
@@ -114,11 +93,6 @@ class Income extends Model {
 
 		}
 
-		echo '<pre>';
-		print_r( $incomes );
-		echo '</pre>';
-		exit();
-
 		return $incomes;
 
 	}
@@ -127,14 +101,7 @@ class Income extends Model {
 	 * @throws Throwable
 	 */
 	public function mapCSVWithBooking( array $files, int $category_id ): array {
-
-		$header = explode( ',', $files[0] );
-		//now remove header
-
 		unset( $files[0] );
-
-
-		$incomes = [];
 
 		$sector = DB::table( 'sectors' )->select( '*' )
 		            ->join( 'categories', 'categories.sector_id', '=', 'sectors.id' )
@@ -142,10 +109,8 @@ class Income extends Model {
 		            ->first();
 
 		foreach ( $files as $file ) {
-
 			$incomeData = explode( ',', $file );
 			$incomeType = strtolower( $incomeData[0] );
-
 
 			if ( $incomeType == 'reservation' ) {
 				$incomeCurrency = $incomeData[6];
@@ -154,16 +119,13 @@ class Income extends Model {
 				$checkOutDate   = date( 'Y-m-d', strtotime( str_replace( "\"", '', $incomeData[3] ) ) );
 				$paymentDate    = date( 'Y-m-d', strtotime( str_replace( "\"", '', $incomeData[13] ) ) );
 
-
 				//@todo FIX me with API Paid ENDPOINTS
 				if ( $incomeCurrency === 'USD' ) {
-					$req_url       = 'https://v6.exchangerate-api.com/v6/34613ea34951b619f1ff2fde/latest/USD';
-					$response_json = file_get_contents( $req_url );
-
+					$req_url          = 'https://v6.exchangerate-api.com/v6/34613ea34951b619f1ff2fde/latest/USD';
+					$response_json    = file_get_contents( $req_url );
 					$response         = json_decode( $response_json );
 					$conversion_rates = $response->conversion_rates;
-
-					$amount = round( $conversion_rates->AED * $incomeAmount, 2 ); //Amount in AED
+					$amount           = round( $conversion_rates->AED * $incomeAmount, 2 ); //Amount in AED
 				}
 				$income = [
 					'user_id'       => Auth::user()->id,
@@ -184,8 +146,8 @@ class Income extends Model {
 
 				if ( $isAdded['status_code'] != 200 ) {
 					return [
-						'status_code'  => $isAdded['status_code'],
-						'message' => $isAdded['message']
+						'status_code' => $isAdded['status_code'],
+						'message'     => $isAdded['message']
 					];
 				}
 			}
@@ -194,14 +156,14 @@ class Income extends Model {
 
 		return [
 			'status_code'  => 200,
-			'message' => 'CSV has been successfully imported!',
-			'payment_date'=>$paymentDate
+			'message'      => 'CSV has been successfully imported!',
+			'payment_date' => $paymentDate
 		];
 
 	}
 
 	/**
-	 * @throws \Throwable
+	 * @throws Throwable
 	 */
 	public function incomeAdd( $income ): array {
 
@@ -225,14 +187,12 @@ class Income extends Model {
 					];
 				}
 
-
 				if ( $checkinDate->format( 'Y-m' ) === $checkoutDate->format( 'Y-m' ) ) {
 					$description = buildIncomeDescription( $income['description'],
 						$total_reservation_days,
 						$checkinDate->format( 'Y-m-d' ),
 						$checkoutDate->format( 'Y-m-d' ) );
-
-					$income = Income::create( [
+					$income      = Income::create( [
 						'user_id'       => $income['user_id'],
 						'account_id'    => $income['account_id'],
 						'amount'        => $income['amount'],
@@ -247,13 +207,12 @@ class Income extends Model {
 						'attachment'    => $income['attachment']
 					] );
 
-
 					storeActivityLog( [
 						'user_id'      => Auth::user()->id,
 						'object_id'    => $income['id'],
 						'log_type'     => 'create',
 						'module'       => 'income',
-						'descriptions' => "  added income.",
+						'descriptions' => "added new income.",
 						'data_records' => array_merge( json_decode( json_encode( [] ), true ), $account ),
 					] );
 				} else {
@@ -289,7 +248,7 @@ class Income extends Model {
 						'object_id'    => $income_first['id'],
 						'log_type'     => 'create',
 						'module'       => 'income',
-						'descriptions' => "  added income.",
+						'descriptions' => "added new income.",
 						'data_records' => array_merge( json_decode( json_encode( $income_first ), true ), $account ),
 					] );
 
@@ -351,7 +310,7 @@ class Income extends Model {
 					DB::rollBack();
 
 					return [
-						'message' => "Failed to update Bank Account!",
+						'message'     => "Failed to update Bank Account!",
 						'status_code' => 400
 					];
 				}
@@ -373,7 +332,7 @@ class Income extends Model {
 					'object_id'    => $income['id'],
 					'log_type'     => 'create',
 					'module'       => 'income',
-					'descriptions' => "added income.",
+					'descriptions' => "added new income.",
 					'data_records' => array_merge( json_decode( json_encode( $income ), true ), $account ),
 				] );
 
@@ -393,6 +352,25 @@ class Income extends Model {
 			'message'     => 'Income Added',
 			'status_code' => 200
 		];
+	}
+
+	public function builtDataFromAirbnbCSV( $file ) {
+		$headers = explode(",",$file[0]);
+		unset($file[0]);
+//		$incomeSet = [];
+		foreach ($file as $inc){
+			$income = explode(",",$inc);
+
+			foreach ($headers as $key=>$header){
+				$data[$header] = $income[$key];
+			}
+			$incomeSet[] = $data;
+		}
+
+		echo '<pre>';
+		print_r($incomeSet);
+		echo '</pre>';
+		exit();
 	}
 
 
