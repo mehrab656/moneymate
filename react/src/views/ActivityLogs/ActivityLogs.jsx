@@ -11,7 +11,7 @@ import {makeStyles} from "@mui/styles";
 import {TablePagination} from "@mui/material";
 import axiosClient from "../../axios-client.js";
 import {useEffect, useState} from "react";
-
+import {BeatLoader} from "react-spinners";
 
 
 const useStyles = makeStyles({
@@ -38,7 +38,7 @@ export default function ActivityLogs() {
         setPage(0);
     };
 
-    const getActivityData = (page,rowsPerPage) => {
+    const getActivityData = (page, rowsPerPage) => {
         setLoading(true);
         axiosClient.get('/activity-logs', {params: {page, rowsPerPage}})
             .then(({data}) => {
@@ -52,8 +52,8 @@ export default function ActivityLogs() {
 
     useEffect(() => {
         document.title = "Activity Log";
-        getActivityData(page,rowsPerPage);
-    }, [page,rowsPerPage]);
+        getActivityData(page, rowsPerPage);
+    }, [page, rowsPerPage]);
 
     return (
         <Paper className={classes.root}>
@@ -70,8 +70,16 @@ export default function ActivityLogs() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
+                        {
+                            loading &&
+                            <TableRow>
+                                <TableCell component="th" scope="row" colSpan={"6"} align={"center"}>
+                                    <span><BeatLoader loading color="#36d7b7"/></span>
+                                </TableCell>
+                            </TableRow>
+                        }
                         {logs.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                            <ActivityLogRows key={row.description+row.id} row={row}/>
+                            <ActivityLogRows key={Math.random().toString(36).substring(2)} row={row}/>
                         ))}
                     </TableBody>
                 </Table>

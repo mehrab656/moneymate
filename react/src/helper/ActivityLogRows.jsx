@@ -8,64 +8,95 @@ import Collapse from "@mui/material/Collapse";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Table from "@mui/material/Table";
-import TableHead from "@mui/material/TableHead";
 import TableBody from "@mui/material/TableBody";
-import {memo} from "react";
+import {memo, useEffect, useState} from "react";
+import axiosClient from "../axios-client.js";
+import {getType} from "@reduxjs/toolkit";
 
 
+const ActivityLogRows = (row) => {
+    const [open, setOpen] = useState(false);
+    let {id, data_records, descriptions, log_type, object, created_at, view_status, view_by, uid} = row.row;
 
-const ActivityLogRows = ({row})=> {
-    const [open, setOpen] = React.useState(false);
-    var dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const _records = Object.entries(JSON.parse(row.data_records));
+    let dateOptions = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
+    const _records = Object.entries(JSON.parse(data_records));
+
+    let viewList = [];
 
 
+    const [rowColor, setRowColor] = useState('#f5dfdf');
+    const [rowStatus, setRowStatus] = useState(0);
+    const showDetails = (uid) => {
+        setOpen(!open);
+        if (!open) {
+            axiosClient.post(`/update-log-status/${uid}`).then((data) => {
+                setRowColor("#ffffff");
+                setRowStatus(1);
+            });
+        }
+    }
 
+    useEffect(() => {
+        if (view_status) {
+            setRowColor("#ffffff");
+            setRowStatus(1);
+        }
+
+    }, [open]);
+
+    if (view_by) {
+        viewList = JSON.parse(view_by);
+    }
     return (
         <React.Fragment>
-            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+            <TableRow sx={{'& > *': {borderBottom: 'unset'}}} style={{background: rowColor}}>
                 <TableCell>
                     <IconButton
                         aria-label="expand row"
                         size="small"
-                        onClick={() => setOpen(!open)}
+                        onClick={() => showDetails(uid)}
                     >
-                        {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                        {open ? <KeyboardArrowUpIcon/> : <KeyboardArrowDownIcon/>}
                     </IconButton>
                 </TableCell>
-                <TableCell>{row.descriptions}</TableCell>
-                <TableCell>{row.log_type?.toUpperCase()}</TableCell>
-                <TableCell>{row.object?.toUpperCase()}</TableCell>
-                <TableCell>{(new Date(row.created_at)).toLocaleDateString("en-US", dateOptions)}</TableCell>
-                <TableCell>{row.view_status?'seen':'unseen'}</TableCell>
+                <TableCell>{descriptions}</TableCell>
+                <TableCell>{log_type?.toUpperCase()}</TableCell>
+                <TableCell>{object?.toUpperCase()}</TableCell>
+                <TableCell>{(new Date(created_at)).toLocaleDateString("en-US", dateOptions)}</TableCell>
+                <TableCell>{rowStatus ? 'seen by' : 'unseen'}
+                    {
+                        viewList.length > 0 &&
+                        <>
+                            (<span style={{fontSize:"10px"}}>
+                                {
+                                    viewList.map(person => {
+                                        return person.name + ','
+                                    })
+                                }
+                            </span>)
+                        </>
+                    }
+
+
+                </TableCell>
             </TableRow>
 
             <TableRow>
-                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                <TableCell style={{paddingBottom: 0, paddingTop: 0}} colSpan={6}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
-                        <Box sx={{ margin: 1 }}>
+                        <Box sx={{margin: 1}}>
                             <Typography variant="h6" gutterBottom component="div">
                                 Details
                             </Typography>
                             <Table size="small" aria-label="purchases">
-                                {/*<TableHead>*/}
-                                {/*    <TableRow>*/}
-                                {/*        <TableCell>Date</TableCell>*/}
-                                {/*        <TableCell>Customer</TableCell>*/}
-                                {/*        <TableCell align="right">Amount</TableCell>*/}
-                                {/*        <TableCell align="right">Total price ($)</TableCell>*/}
-                                {/*    </TableRow>*/}
-                                {/*</TableHead>*/}
                                 <TableBody>
-
-
-                                    {_records.map((record,val) => (
+                                    {_records.map(record => (
                                         <TableRow key={Math.random().toString(36).substring(2)}>
                                             <TableCell component="th" scope="row">
-                                                <b>{(record[0]).replace("_"," ").toUpperCase()}</b>
-                                                { ' : '}
+                                                <b>{(record[0]).replace("_", " ").toUpperCase()}</b>
+                                                {' : '}
                                             </TableCell>
-                                            <TableCell>{record[1]}</TableCell>
+                                            <TableCell><span>{record[1]}</span></TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>

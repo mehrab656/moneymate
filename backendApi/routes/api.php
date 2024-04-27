@@ -201,6 +201,7 @@ Route::middleware( 'auth:sanctum' )->group( function () {
 
 	//activity logs
 	Route::get( '/activity-logs', [ UserController::class, 'getActivityLogs' ] );
+	Route::post( '/update-log-status/{uid}', [ UserController::class, 'updateLogStatus' ] );
 
 } );
 
