@@ -15,13 +15,8 @@ class ContentSecurityPolicy
      */
     public function handle(Request $request, Closure $next): Response
     {
+
         $response = $next($request);
-
-//        $response->header(
-//            'Content-Security-Policy',
-//            "default-src 'self'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; script-src 'self' 'unsafe-inline' 'unsafe-eval';"
-//        );
-
         return $response;
     }
 }

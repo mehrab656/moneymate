@@ -4,7 +4,9 @@ import axiosClient from "../axios-client.js";
 import {useStateContext} from "../contexts/ContextProvider.jsx";
 import WizCard from "../components/WizCard";
 import {SettingsContext} from "../contexts/SettingsContext";
-
+import MainLoader from "../components/MainLoader.jsx";
+import { Autocomplete, Box, Chip, TextField } from "@mui/material";
+import { notification } from "../components/ToastNotification.jsx";
 export default function ApplicationSettingsForm() {
     const [applicationSettings, setApplicationSettings] = useState({
         company_name: "",
@@ -17,7 +19,8 @@ export default function ApplicationSettingsForm() {
         secret_key: "",
         registration_type: "",
         subscription_price: null,
-        product_api_id: ""
+        product_api_id: "",
+        associative_categories:[]
     });
     const [errors, setErrors] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -38,23 +41,36 @@ export default function ApplicationSettingsForm() {
     const {setApplicationSettings: setSettingsContext} = useContext(SettingsContext);
 
     useEffect(() => {
+       
         document.title = "Application Setting";
         getUserRole();
         axiosClient
             .get("/get-application-settings")
             .then(({data}) => {
-                const updatedSettings = {...applicationSettings};
+                var updatedSettings = {...applicationSettings};
                 Object.keys(data.application_settings).forEach((key) => {
                     updatedSettings[key] = data.application_settings[key];
                 });
-                setApplicationSettings(updatedSettings);
-                setRegistrationType(updatedSettings.registration_type);
-                setSettingsContext(updatedSettings); // Update settings in the context
+
+                const categories = data.application_settings
+                const parseCat = JSON.parse(categories?.associative_categories)
+
+                var storeStting = {...updatedSettings}
+                Object.keys(storeStting).forEach((key) => {
+                    storeStting['associative_categories'] = parseCat;
+                });
+
+                setApplicationSettings(storeStting);
+                setRegistrationType(storeStting.registration_type);
+                setSettingsContext(storeStting); // Update settings in the context
+              
             })
             .catch(() => {
                 setLoading(false);
             });
     }, []);
+
+ 
 
     const getUserRole = () => {
         axiosClient
@@ -63,7 +79,6 @@ export default function ApplicationSettingsForm() {
                 setUserRole(data.role);
             })
             .catch((error) => {
-                // console.log(error);
             });
     };
 
@@ -74,19 +89,21 @@ export default function ApplicationSettingsForm() {
     const applicationSettingsSubmit = async (e) => {
         e.preventDefault();
         setSaving(true);
-
-
+        setLoading(true)
         axiosClient
             .put("/store-application-setting", applicationSettings)
-            .then(() => {
-                setNotification("Application settings have been updated");
+            .then((data) => {
+                // setNotification("Application settings have been updated");
                 navigate("/application-settings");
                 setSettingsContext(applicationSettings); // Update settings in the context
+
+                notification('success',data?.message,data?.description)
+                setLoading(false)
             })
-            .catch((error) => {
-                const response = error.response;
-                if (response && response.status === 422) {
-                    setErrors(response.data.errors);
+            .catch(err => {
+                if (err.response) { 
+                    const error = err.response.data
+                    notification('error',error?.message,error.description)
                 }
             })
             .finally(() => {
@@ -94,8 +111,30 @@ export default function ApplicationSettingsForm() {
             });
     };
 
+    const [categories,setCategories] = useState([])
+
+    const getCategories = () => {
+        setLoading(true);
+        axiosClient
+            .get("/categories")
+            .then(({data}) => {
+                setLoading(false);
+                setCategories(data.data);
+            })
+            .catch(() => {
+                setLoading(false);
+            });
+    };
+
+    useEffect(()=>{
+        getCategories()
+    },[])
+
+
+
     return (
         <>
+        <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Application settings</h1>
             </div>
@@ -206,6 +245,51 @@ export default function ApplicationSettingsForm() {
                                         placeholder="Number of data per page"
                                     />
                                 </div>
+
+                                {/* <div className="form-group">
+                                    <label className="custom-form-label" htmlFor="address">
+                                        Associative categories
+                                    </label>
+                                    <input
+                                        className="custom-form-control"
+                                        name="associative_categories"
+                                        // value={''}
+                                        // value={applicationSettings.num_data_per_page || ""}
+                                        placeholder="Number of data per page"
+                                        data-role="tagsinput"
+                                    />
+                                </div> */}
+                                <Box sx={{mt:4}}>
+                                    <Autocomplete
+                                        name="associative_categories"
+                                        defaultValue={applicationSettings?.associative_categories}
+                                        value={applicationSettings?.associative_categories}
+                                        multiple
+                                        options={[]}
+                                        onChange={(event, newValue) => {
+                                            setApplicationSettings({
+                                                ...applicationSettings,
+                                                ['associative_categories']: newValue || ""
+                                            })
+                                            
+                                        }}
+                                        freeSolo
+                                        renderTags={(value, getTagProps) =>
+                                        value.map((option, index) => (
+                                            <Chip variant="outlined"  name="associative_categories" label={option} {...getTagProps({ index })} />
+                                        ))
+                                        }
+                                        renderInput={(params) => (
+                                        <TextField
+                                        name="associative_categories"
+                                            {...params}
+                                            variant="filled"
+                                            label="Associative Categories"
+                                            placeholder="Associative Categories"
+                                        />
+                                        )}
+                                    />
+                                </Box>
                             </div>
                             {applicationSettings.registration_type === "subscription" && (
                                 <div className="col-12">
@@ -240,6 +324,47 @@ export default function ApplicationSettingsForm() {
                                         onChange={handleChange}
                                         placeholder="Product Api ID"
                                     />
+                                    {/* <label className="custom-form-label mt-2" htmlFor="product_api_id">
+                                        Associative Categories
+                                    </label>
+                                    <input
+                                        className="custom-form-control"
+                                        name="associative_categories"
+                                        value={applicationSettings.associative_categories || ""}
+                                        onChange={handleChange}
+                                        placeholder="Associative Categories"
+                                    /> */}
+
+                                    <Box sx={{mt:4}}>
+                                    <Autocomplete
+                                        name="associative_categories"
+                                        multiple
+                                        options={[]}
+                                        onChange={(event, newValue) => {
+                                            setApplicationSettings({
+                                                ...applicationSettings,
+                                                ['associative_categories']: newValue || ""
+                                            })
+                                            
+                                        }}
+                                        freeSolo
+                                        renderTags={(value, getTagProps) =>
+                                        value.map((option, index) => (
+                                            <Chip variant="outlined"  name="associative_categories" label={option} {...getTagProps({ index })} />
+                                        ))
+                                        }
+                                        renderInput={(params) => (
+                                        <TextField
+                                        name="associative_categories"
+                                            {...params}
+                                            variant="filled"
+                                            label="Associative Categories"
+                                            placeholder="Associative Categories"
+                                        />
+                                        )}
+                                    />
+                                </Box>
+                                    
                                 </div>
                             )}
                         </div>
@@ -251,4 +376,3 @@ export default function ApplicationSettingsForm() {
         </>
     );
 }
-

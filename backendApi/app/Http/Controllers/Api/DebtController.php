@@ -12,186 +12,247 @@ use App\Models\Debt;
 use App\Models\DebtCollection;
 use App\Models\Lend;
 use App\Models\Repayment;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class DebtController extends Controller
-{
+class DebtController extends Controller {
 
 
-    /**
-     * Display a listing of the resource.
-     */
+	/**
+	 * Display a listing of the resource.
+	 */
 
-    public function index(Request $request): JsonResponse
-    {
-        $user = Auth::user();
-        $page = $request->query('page', 1);
-        $pageSize = $request->query('pageSize', 10);
+	public function index( Request $request ): JsonResponse {
+		$page     = $request->query( 'page', 1 );
+		$pageSize = $request->query( 'pageSize', 10 );
 
-        $debts = Debt::where('user_id', $user->id)
-            ->skip(($page - 1) * $pageSize)
-            ->take($pageSize)
-            ->orderBy('id', 'desc')
-            ->get();
+		$debts = Debt::skip( ( $page - 1 ) * $pageSize )
+		             ->take( $pageSize )
+		             ->orderBy( 'id', 'desc' )
+		             ->get();
 
-        $totalCount = Debt::where('user_id', $user->id)->count();
+		$totalCount = Debt::count();
 
-        return response()->json([
-            'debts' => DebtResource::collection($debts),
-            'total' => $totalCount,
-        ]);
-    }
+		return response()->json( [
+			'debts' => DebtResource::collection( $debts ),
+			'total' => $totalCount,
+		] );
+	}
 
 
-    /**
-     * @param DebtRequest $request
-     * @return JsonResponse
-     */
-    public function store(DebtRequest $request): JsonResponse
-    {
-        $selectedBankAccount = BankAccount::find($request->account_id);
+	/**
+	 * @param DebtRequest $request
+	 *
+	 * @return JsonResponse
+	 */
+	public function store( DebtRequest $request ): JsonResponse {
+		$selectedBankAccount = BankAccount::find( $request->account_id );
 
-        $debt = $request->validated();
-        if ($debt['type'] === 'borrow') {
-            $debtAmount = -$debt['amount'];
-        } else {
-            if ($debt['amount'] > $selectedBankAccount->balance)
-            {
-                return response()->json([
-                    'status' => 'insufficient_balance',
-                    'message' => 'Insufficient balance in the selected bank account. Please use another bank account to repay.',
-                    'available_balance' => $selectedBankAccount->balance
-                ]);
-            }
+		$debt = $request->validated();
+		if ( $debt['type'] === 'borrow' ) {
+			$debtAmount   = - $debt['amount'];
+			$borrowAmount = $debt['amount'];
+		} else {
+			if ( $debt['amount'] > $selectedBankAccount->balance ) {
+				// return response()->json( [
+				// 	'status'            => 'insufficient_balance',
+				// 	'message'           => 'Insufficient balance in the selected bank account. Please use another bank account to repay.',
+				// 	'available_balance' => $selectedBankAccount->balance
+				// ] );
+				return response()->json( [
+					'message'     => 'Insufficient_balance',
+					'description' => 'Insufficient balance in the selected bank account. Please use another bank account to repay.',
+				] );
+			}
 
-            $debtAmount = $debt['amount'];
-        }
+			$debtAmount = $debt['amount'];
+		}
 
-        /** @var TYPE_NAME $debtAmount */
-        $debt = Debt::firstOrCreate([
-            'user_id' => auth()->user()->id,
-            'amount' => $debtAmount,
-            'account_id' => $debt['account_id'],
-            'type' => $debt['type'],
-            'person' => $debt['person'],
-            'date' => $debt['date'],
-            'note' => $debt['note']
-        ]);
+		$person = $debt['person'];
+		/** @var TYPE_NAME $debtAmount */
+		$debt = Debt::firstOrCreate( [
+			'user_id'    => auth()->user()->id,
+			'amount'     => $debtAmount,
+			'account_id' => $debt['account_id'],
+			'type'       => $debt['type'],
+			'person'     => $person,
+			'date'       => $debt['date'],
+			'note'       => $debt['note']
+		] );
+		$bankAccount = BankAccount::find( $debt->account_id );
 
-        $bankAccount = BankAccount::find($debt->account_id);
+		// Means you are lending money to someone.
 
-        // Means you are lending money to someone.
+		if ( $debt['type'] === 'lend' ) {
+			$lendData = Lend::create( [
+				'amount'     => $debt->amount,
+				'account_id' => $debt->account_id,
+				'date'       => $debt['date'],
+				'debt_id'    => $debt->id,
+				'note'       => $debt['note']
+			] );
 
-        if ($debt['type'] === 'lend') {
-            Lend::create([
-                'amount' => $debt->amount,
-                'account_id' => $debt->account_id,
-                'date' => $debt['date'],
-                'debt_id' => $debt->id
-            ]);
+			// Update Associated bank account by decreasing account balance
+			$bankAccount->balance -= $request->amount;
+			$bankAccount->save();
 
-            // Update Associated bank account by decreasing account balance
-            $bankAccount->balance -= $request->amount;
-            $bankAccount->save();
+			storeActivityLog( [
+				'user_id'      => Auth::user()->id,
+				'object_id'     => $debt['id'],
+				'log_type'     => 'create',
+				'module'       => 'Debt',
+				'descriptions' => " lend an amount of $debtAmount to $person",
+				'data_records' => [
+					'lendData'       => $lendData,
+					'accountBalance' => $bankAccount->balance
+				],
+			] );
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Lend created successfully',
-                'debt' => $debt,
-                'bankAccountInfo' => $bankAccount
-            ]);
+			// return response()->json( [
+			// 	'status'          => 'success',
+			// 	'message'         => 'Lend created successfully',
+			// 	'debt'            => $debt,
+			// 	'bankAccountInfo' => $bankAccount
+			// ] );
 
-        }
+			return response()->json( [
+				'message'     => 'Success!',
+				'description' => 'Lend created successfully',
+			] );
 
-
-        // Means you are lending money form someone.
-
-        if ($debt['type'] === 'borrow') {
-            Borrow::create([
-                'amount' => ($debt->amount * -1),
-                'account_id' => $debt->account_id,
-                'date' => $debt->date,
-                'debt_id' => $debt->id
-            ]);
-
-            // Update Associated bank account by increasing account balance
-            $bankAccount->balance += $request->amount;
-            $bankAccount->save();
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Borrow created successfully',
-                'debt' => $debt,
-                'bankAccountInfo' => $bankAccount
-            ]);
-        }
-
+		}
 
 
-        return response()->json([
-            'status' => 'fail',
-            'message' => 'Something went wrong'
-        ]);
-    }
+		// Means you are lending money form someone.
+
+		if ( $debt['type'] === 'borrow' ) {
+			$borrowData = Borrow::create( [
+				'amount'     => ( $debt->amount * - 1 ),
+				'account_id' => $debt->account_id,
+				'date'       => $debt->date,
+				'debt_id'    => $debt->id,
+				'note'       => $debt['note']
+
+			] );
+
+			// Update Associated bank account by increasing account balance
+			$bankAccount->balance += $request->amount;
+			$bankAccount->save();
+
+			storeActivityLog( [
+				'user_id'      => Auth::user()->id,
+				'object_id'     => $borrowData['id'],
+				'log_type'     => 'create',
+				'module'       => 'Debt',
+				'descriptions' => " has borrowed an amount of $borrowAmount from $person",
+				'data_records' => [
+					'borrowData'     => $borrowData,
+					'accountBalance' => $bankAccount->balance
+				],
+			] );
+
+			// return response()->json( [
+			// 	'status'          => 'success',
+			// 	'message'         => 'Borrow created successfully',
+			// 	'debt'            => $debt,
+			// 	'bankAccountInfo' => $bankAccount
+			// ] );
+			return response()->json( [
+				'message'     => 'Success!',
+				'description' => 'Borrow created successfully',
+			] );
+			
+		}
 
 
-    /**
-     * @param Debt $debt
-     * @return DebtResource
-     */
+		// return response()->json( [
+		// 	'status'  => 'fail',
+		// 	'message' => 'Something went wrong'
+		// ] );
 
-    public function show(Debt $debt): DebtResource
-    {
-        return new DebtResource($debt);
-    }
-
-    /**
-     * @return JsonResponse
-     */
-
-    public function getDebtHistory($debt_id): JsonResponse
-    {
-        $debt = Debt::find($debt_id);
-        if ($debt->type == 'borrow')
-        {
-            $borrows = collect(Borrow::where('debt_id', $debt_id)->get());
-            $repayments = collect(Repayment::where('debt_id', $debt_id)->get());
-            $borrowRepayments = $borrows->merge($repayments)->sortByDesc('created_at');
-            return response()->json([
-                'infos' => DebtHistory::collection($borrowRepayments)
-            ]);
-        } else {
-            $lends = collect(Lend::where('debt_id', $debt_id)->get());
-            $debtCollections = collect(DebtCollection::where('debt_id', $debt_id)->get());
-            $lendsDebtCollections = $lends->merge($debtCollections)->sortByDesc('created_at');
-            return response()->json([
-                'infos' => DebtHistory::collection($lendsDebtCollections)
-            ]);
-        }
-
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+		return response()->json( [
+			'message'  => 'Error',
+			'description' => 'Something went wrong'
+		] );
+	}
 
 
-    /**
-     * @param Debt $debt
-     * @return JsonResponse
-     */
-    public function destroy($id): JsonResponse
-    {
-        Debt::where('id', $id)->delete();
+	/**
+	 * @param Debt $debt
+	 *
+	 * @return DebtResource
+	 */
 
-        return response()->json([
-            'message' => 'Debt removed'
-        ]);
-    }
+	public function show( Debt $debt ): DebtResource {
+		return new DebtResource( $debt );
+	}
+
+	/**
+	 * @param $debt_id
+	 *
+	 * @return JsonResponse
+	 * @throws ConfigurationException
+	 * @throws TwilioException
+	 */
+
+	public function getDebtHistory( $debt_id ): JsonResponse {
+		$debt = Debt::find( $debt_id );
+
+		if ( $debt->type == 'borrow' ) {
+			$borrows          = collect( Borrow::where( 'debt_id', $debt_id )->get() );
+			$repayments       = collect( Repayment::where( 'debt_id', $debt_id )->get() );
+			$borrowRepayments = $borrows->merge( $repayments )->sortByDesc( 'created_at' );
+
+			return response()->json( [
+				'infos' => DebtHistory::collection( $borrowRepayments )
+			] );
+		} else {
+			$lends                = collect( Lend::where( 'debt_id', $debt_id )->get() );
+			$debtCollections      = collect( DebtCollection::where( 'debt_id', $debt_id )->get() );
+			$lendsDebtCollections = $lends->merge( $debtCollections )->sortByDesc( 'created_at' );
+
+			return response()->json( [
+				'infos' => DebtHistory::collection( $lendsDebtCollections )
+			] );
+		}
+
+	}
+
+	/**
+	 * Update the specified resource in storage.
+	 */
+	public function update( Request $request, string $id ) {
+		//
+	}
+
+
+	/**
+	 * @param Debt $debt
+	 *
+	 * @return JsonResponse
+	 * @throws Exception
+	 */
+	public function destroy( $id ): JsonResponse {
+		Debt::where( 'id', $id )->delete();
+		storeActivityLog( [
+			'user_id'      => Auth::user()->id,
+			'object_id'     => $id,
+			'log_type'     => 'delete',
+			'module'       => 'Debt',
+			'descriptions' => "",
+			'data_records' => [
+				'id' => $id,
+			],
+		] );
+
+		// return response()->json( [
+		// 	'message' => 'Debt removed'
+		// ] );
+		return response()->json( [
+			'message'     => 'Success!',
+			'description' => 'Debt removed',
+		] );
+	}
 }

@@ -7,6 +7,8 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faEdit, faTrash, faUser} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
 import Pagination from "react-bootstrap/Pagination";
+import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function Users() {
     const [users, setUsers] = useState([]);
@@ -16,6 +18,14 @@ export default function Users() {
     const [totalCount, setTotalCount] = useState(0);
     const {applicationSettings, userRole} = useContext(SettingsContext);
     const {num_data_per_page} = applicationSettings;
+
+    const [modalUser, setModalUser] = useState(false)
+    const [showModal, setShowModal] = useState(false);
+
+    const showInvestment = (user) => {
+        setModalUser(user);
+    }
+
 
     const navigate = useNavigate();
 
@@ -86,15 +96,25 @@ export default function Users() {
         }
     }, [userRole, navigate]);
 
+    const actionParams = {
+        route: {
+            editRoute: '/users/',
+            viewRoute: '',
+            deleteRoute: ''
+        },
+    }
+
     return (
         <div>
+            <MainLoader loaderVisible={loading}/>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">List of users</h1>
-                <div>
+                {userRole === 'admin' && <div>
                     <Link className="custom-btn btn-add" to="/users/new">
                         <FontAwesomeIcon icon={faUser}/> Add New
                     </Link>
-                </div>
+                </div>}
+
             </div>
 
             <WizCard className="animated fadeInDown">
@@ -107,7 +127,7 @@ export default function Users() {
                         onChange={e => setSearchQuery(e.target.value)}
                     />
                 </div>
-                <div className="table-responsive">
+                <div className="table-responsive-sm">
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr>
@@ -115,7 +135,8 @@ export default function Users() {
                             <th>NAME</th>
                             <th className="text-center">EMAIL</th>
                             <th className="text-center">DATE CREATED</th>
-                            <th className="text-center">ACTIONS</th>
+                            {userRole === 'admin' && <th>ACTIONS</th>}
+
                         </tr>
                         </thead>
 
@@ -136,20 +157,14 @@ export default function Users() {
                                     <td>{u.name}</td>
                                     <td className="text-center">{u.email}</td>
                                     <td className="text-center">{u.created_at}</td>
-                                    <td className="text-center">
-                                        <div className="d-flex flex-wrap justify-content-center gap-2">
-                                            <span><Link className="btn-edit" to={'/users/' + u.id}><FontAwesomeIcon
-                                                icon={faEdit}/> Edit</Link></span>
-
-                                            {u.is_active_membership === 'no' && u.role_as === 'user' &&
-
-                                            <span><a onClick={e => onDelete(u)} className="btn-delete"><FontAwesomeIcon
-                                                icon={faTrash}/> Delete </a></span>
-                                            }
-
-
-                                        </div>
-                                    </td>
+                                    {userRole === 'admin' &&
+                                        <td>
+                                            <ActionButtonHelpers
+                                                module={u}
+                                                deleteFunc={onDelete}
+                                                params={actionParams}
+                                            />
+                                        </td>}
                                 </tr>
                             ))}
                             </tbody>

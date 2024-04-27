@@ -31,13 +31,13 @@ class ExpenseRequest extends FormRequest
             'user_id' => 'required',
             'account_id' => 'required',
             'amount' => 'required|numeric',
-            'refundable_amount' => 'nullable',
             'category_id' => 'required',
             'description' => 'nullable|string',
             'attachment' => 'nullable|file',
             'note' => 'nullable',
             'reference' => 'nullable',
-            'expense_date' => 'nullable',
+            'date' => 'nullable',
+            'refundable_amount' => 'nullable',
         ];
     }
 

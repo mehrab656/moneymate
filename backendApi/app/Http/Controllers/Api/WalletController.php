@@ -80,4 +80,17 @@ class WalletController extends Controller
             'message' => 'Wallet deleted'
         ]);
     }
+
+	/**
+	 * This is the Current Wallet/Hand cash balance
+	 * @return JsonResponse
+	 */
+
+	public function totalWalletBalance(): JsonResponse {
+		$totalWallet = Wallet::sum( 'balance' );
+
+		return response()->json( [
+			'balance' => $totalWallet
+		] );
+	}
 }

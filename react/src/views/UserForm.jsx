@@ -5,6 +5,7 @@ import {useStateContext} from "../contexts/ContextProvider.jsx";
 import WizCard from "../components/WizCard";
 import {SettingsContext} from "../contexts/SettingsContext";
 import Badge from "react-bootstrap/Badge";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function UserForm() {
     const navigate = useNavigate();
@@ -29,18 +30,12 @@ export default function UserForm() {
 
     if (id) {
         useEffect(() => {
-
-
             document.title = 'View User';
-
-
             setLoading(true);
             axiosClient
                 .get(`/users/${id}`)
                 .then(({data}) => {
                     setLoading(false);
-                    console.log(data.subscriptions.length);
-                    setSubscriptions(data.subscriptions);
                     setUser(data);
                 })
                 .catch(() => {
@@ -52,21 +47,23 @@ export default function UserForm() {
 
     const onSubmit = (ev) => {
         ev.preventDefault();
+        setLoading(true);
         if (user.id) {
             axiosClient
                 .put(`/users/${user.id}`, user)
                 .then(() => {
                     setNotification("User was successfully updated");
-                    if (userRole === 'admin')
-                    {
+                    if (userRole === 'admin'){
                         navigate("/users");
                     }
+                    setLoading(false);
                 })
                 .catch((err) => {
                     const response = err.response;
                     if (response && response.status === 422) {
                         setErrors(response.data.errors);
                     }
+                    setLoading(false);
                 });
         } else {
             axiosClient
@@ -74,18 +71,21 @@ export default function UserForm() {
                 .then(() => {
                     setNotification("User was successfully created");
                     navigate("/users");
+                    setLoading(false);
                 })
                 .catch((err) => {
                     const response = err.response;
                     if (response && response.status === 422) {
                         setErrors(response.data.errors);
                     }
+                    setLoading(false);
                 });
         }
     };
 
     return (
         <>
+          <MainLoader loaderVisible={loading} />
             {user.id && <h1 className="title-text">Update User: {user.name}</h1>}
             {!user.id && <h1 className="title-text">New User</h1>}
             <WizCard className="animated fadeInDown wiz-card-mh">
@@ -178,7 +178,7 @@ export default function UserForm() {
 
                 {registration_type === 'subscription' && (
 
-                    <div className="table-responsive mt-4">
+                    <div className="table-responsive-sm mt-4">
                         <div className="text-danger mb-2">
                             <div className="alert alert-info" role="alert">Subscription History
                             </div>

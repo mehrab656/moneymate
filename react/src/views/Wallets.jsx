@@ -1,13 +1,16 @@
 import {Link} from "react-router-dom";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import Swal from "sweetalert2";
 import axiosClient from "../axios-client.js";
+import { SettingsContext } from "../contexts/SettingsContext.jsx";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function Wallets() {
 
     const [loading, setLoading] = useState(false);
     const [wallets, setWallets] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
+    const {applicationSettings, userRole} = useContext(SettingsContext);
 
     const filteredWallets = wallets.filter(
         (wallet) =>
@@ -35,7 +38,6 @@ export default function Wallets() {
                         });
                     })
                     .catch((error) => {
-                        console.log(error);
                         Swal.fire({
                             title: "Error!",
                             text: "Wallet could not be deleted.",
@@ -48,10 +50,14 @@ export default function Wallets() {
 
 
     const getWallets = () => {
+        setLoading(true)
         axiosClient.get('/wallets')
             .then(({data}) => {
                 setWallets(data.data);
-            });
+                setLoading(false)
+            }).catch((e)=>{
+                setLoading(false)
+            })
     }
 
 
@@ -59,12 +65,9 @@ export default function Wallets() {
         getWallets();
     }, []);
 
-
-
-
-
     return (
         <>
+        <MainLoader loaderVisible={loading} />
             <div
                 style={{
                     display: "flex",
@@ -73,9 +76,10 @@ export default function Wallets() {
                 }}
             >
                 <h1>Wallets</h1>
-                <Link className="btn-add" to="/wallet/add">
+                {userRole ==='admin' && <Link className="btn-add" to="/wallet/add">
                     Add New
-                </Link>
+                </Link>}
+                
             </div>
             <div className="card animated fadeInDown">
                 <input
@@ -89,7 +93,8 @@ export default function Wallets() {
                     <tr className={"text-center"}>
                         <th>WALLET NAME</th>
                         <th>BALANCE</th>
-                        <th>ACTIONS</th>
+                        {userRole ==='admin' && <th>ACTIONS</th>}
+                        
                     </tr>
                     </thead>
                     {loading && (
@@ -114,6 +119,7 @@ export default function Wallets() {
                                 <tr className={"text-center"} key={wallet.id}>
                                     <td>{wallet.name}</td>
                                     <td>{wallet.balance}</td>
+                                    {userRole ==='admin' && 
                                     <td>
                                         <Link className="btn-edit" to={"/wallet/" + wallet.id}>
                                             Edit
@@ -125,6 +131,8 @@ export default function Wallets() {
                                             Delete
                                         </button>
                                     </td>
+                                    }
+                                    
                                 </tr>
                             ))
                         )}

@@ -11,6 +11,7 @@ import {AccountBalanceRounded, AddTwoTone} from "@mui/icons-material";
 import BalanceTransfer from "../components/BalanceTransfer.jsx";
 import BudgetExpensesChart from "../components/BudgetExpensesChart.jsx";
 import {SettingsContext} from "../contexts/SettingsContext";
+import MainLoader from "../components/MainLoader.jsx";
 
 export default function Dashboard() {
 
@@ -42,37 +43,24 @@ export default function Dashboard() {
                     setTotalLend(data.total_lend);
                     setTotalBankAccounts(data.number_of_bank_account);
                     setSubscriptionAmountOfThisMonth(data.total_subscription_amount_of_this_month);
+                    setBudgets(data.active_budget)
                     setLoading(false);
                 })
         } catch (error) {
-            // console.log(error);
-        }
-    }, []);
-
-    const getActiveBudgets = useCallback(async () => {
-        try {
-            setLoading(true); // Set loading to true before making the API call
-            axiosClient
-                .get('/budgets/active-budgets')
-                .then(({data}) => {
-                    setBudgets(data);
-                    setLoading(false); // Set loading to false after receiving the response
-                })
-        } catch (error) {
-            setLoading(false); // Set loading to false if there is an error
+            setLoading(false)
         }
     }, []);
 
 
     useEffect(() => {
         document.title = "Dashboard";
-        getActiveBudgets();
         getDashboardData();
-    }, [getDashboardData, getActiveBudgets]);
+    }, [getDashboardData]);
 
 
     return (
         <>
+        <MainLoader loaderVisible={loading} />
             <div className="mb-4">
                 <div className="row g-4">
                     <div className="col-md-6 col-lg-4">
@@ -162,8 +150,8 @@ export default function Dashboard() {
                                 {budgets.map(budget => (
                                     <tr key={budget.id} className={'text-center'}>
                                         <td>{budget.budget_name}</td>
-                                        <td>{default_currency + budget.original_budget_amount}</td>
-                                        <td>{default_currency + budget.amount_available}</td>
+                                        <td>{default_currency +' '+ budget.original_budget_amount}</td>
+                                        <td>{default_currency +' '+ budget.amount_available}</td>
                                     </tr>
                                 ))}
                                 </tbody>
@@ -174,15 +162,16 @@ export default function Dashboard() {
             </WizCard>
             <br/>
 
-            <WizCard className="animated fadeInDown">
-                <div className="row">
-                    <div className="col-12">
-                        <h1 className="title-text text-center">Number of account transfer in this month</h1>
-                        <BalanceTransfer/>
-                    </div>
-                </div>
-            </WizCard>
-            <br/><br/>
+            {/*Commented by Mehrab; Noo need right now*/}
+            {/*<WizCard className="animated fadeInDown">*/}
+            {/*    <div className="row">*/}
+            {/*        <div className="col-12">*/}
+            {/*            <h1 className="title-text text-center">Number of account transfer in this month</h1>*/}
+            {/*            <BalanceTransfer/>*/}
+            {/*        </div>*/}
+            {/*    </div>*/}
+            {/*</WizCard>*/}
+            {/*<br/><br/>*/}
         </>
     )
 }

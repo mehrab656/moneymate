@@ -4,6 +4,7 @@ import {useContext, useEffect, useRef, useState} from "react";
 import axiosClient from "../axios-client.js";
 import {useStateContext} from "../contexts/ContextProvider.jsx";
 import {SettingsContext} from "../contexts/SettingsContext.jsx";
+import MainLoader from '../components/MainLoader.jsx';
 
 export default function Signup() {
 
@@ -53,14 +54,14 @@ export default function Signup() {
 
                 if (error) {
                     // Handle any errors from Stripe
-                    console.log(error);
+                    console.warn(error);
                     setLoading(false); // Hide loading effect
                     return;
                 }
-
                 payLoad.paymentMethodId = paymentMethod.id;
+                setLoading(false);
             } catch (error) {
-                console.log(error);
+                console.warn(error);
                 setLoading(false); // Hide loading effect
                 return;
             }
@@ -72,6 +73,7 @@ export default function Signup() {
             setUser(data.user);
             setUserRole(data.user_role);
             setToken(data.token);
+            setLoading(false);
         } catch (error) {
             const response = error.response;
             if (response && response.status === 422) {
@@ -85,6 +87,7 @@ export default function Signup() {
 
     return (
         <div className="login-signup-form animated fadeInDown">
+         <MainLoader loaderVisible={loading} />
             {loading && (
                 <div
                     ref={loadingRef}

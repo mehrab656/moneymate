@@ -37,6 +37,7 @@ class DebtHistory extends JsonResource
         return [
             'id' => $this->id,
             'amount' => $this->amount,
+            'note' => $this->note,
             'bank_name' => $bank_name,
             'account_holder_name' => $account_holder_name,
             'account_number' => $account_number,

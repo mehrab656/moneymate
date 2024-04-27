@@ -13,7 +13,6 @@ const SettingsContext = createContext({
 
 const SettingsProvider = ({children}) => {
     const [applicationSettings, setApplicationSettings] = useState({});
-    const [loading, setLoading] = useState(false);
     const [userRole, setUserRole] = useState({});
 
     useEffect(() => {
@@ -40,7 +39,6 @@ const SettingsProvider = ({children}) => {
                 })
                 .catch((error) => {
                 }).finally(() => {
-                setLoading(false);
             });
         }
 

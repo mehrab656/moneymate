@@ -6,17 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\SignupRequest;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Models\Role;
-use Stripe\Customer;
+use Session;
 use Stripe\Exception\ApiErrorException;
-use Stripe\Stripe;
-use Stripe\Subscription;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -32,8 +28,7 @@ class AuthController extends Controller
     public function signup(SignupRequest $request): Response|Application|ResponseFactory
     {
         $data = $request->validated();
-        // return $data;
-        $registrationType = get_option('registration_type');
+
 
 
         if (User::count() > 0)
@@ -51,44 +46,6 @@ class AuthController extends Controller
                 'email' => $data['email'],
                 'role_as' => 'admin',
                 'password' => Hash::make($data['password']),
-            ]);
-        }
-
-
-
-
-        if ($registrationType === 'subscription') {
-            // Charge via Stripe only if registration_type is 'subscription'
-            Stripe::setApiKey(get_option('secret_key'));
-            $customer = Customer::create([
-                'email' => $data['email'],
-                'payment_method' => $request->paymentMethodId,
-                'invoice_settings' => [
-                    'default_payment_method' => $request->paymentMethodId,
-                ],
-            ]);
-
-            // Create a Stripe subscription
-            $subscription = Subscription::create([
-                'customer' => $customer->id,
-                'items' => [
-                    [
-                        'price' => get_option('product_api_id'),
-                    ],
-                ],
-            ]);
-
-
-            $subscriptionAmount =  $subscription->plan->amount / 100;
-
-            // Update user's subscription details in the database
-            $user->subscription()->create([
-                'stripe_id' => $subscription->id,
-                'plan' => 'monthly_subscription_plan',
-                'status' => $subscription->status,
-                'current_period_start' => Carbon::createFromTimestamp($subscription->current_period_start),
-                'current_period_end' => Carbon::createFromTimestamp($subscription->current_period_end),
-                'amount' => $subscriptionAmount,
             ]);
         }
 
@@ -145,71 +102,7 @@ class AuthController extends Controller
         return response(compact('user', 'token'));
     }
 
-    public function renewSubscription(LoginRequest $request)
-    {
-        $credentials = $request->validated();
-        if (!Auth::attempt($credentials)) {
-            return response([
-                'message' => 'Provided email or password is incorrect'
-            ], 422);
-        }
 
-        $registrationType = get_option('registration_type');
-
-        /** @var User $user */
-        $user = Auth::user();
-
-
-        if ($registrationType === 'subscription') {
-            // Charge via Stripe only if registration_type is 'subscription'
-            Stripe::setApiKey(get_option('secret_key'));
-            $customer = Customer::create([
-                'email' => $user->email,
-                'payment_method' => $request->paymentMethodId,
-                'invoice_settings' => [
-                    'default_payment_method' => $request->paymentMethodId,
-                ],
-            ]);
-
-            // Create a Stripe subscription
-            $subscription = Subscription::create([
-                'customer' => $customer->id,
-                'items' => [
-                    [
-                        'price' => get_option('product_api_id'),
-                    ],
-                ],
-            ]);
-
-            // Update user's subscription details in the database
-
-
-
-            if ($subscription->status === 'active')
-            {
-                \App\Models\Subscription::where('user_id', $user->id)->where('status', 'active')->update(['status' => 'expired']);
-                $localSubscription = new \App\Models\Subscription();
-                $localSubscription->user_id = $user->id;
-                $localSubscription->stripe_id = $subscription->id;
-                $localSubscription->plan = 'monthly_subscription_plan';
-                $localSubscription->status = $subscription->status;
-                $localSubscription->amount = $subscription->plan->amount / 100;
-                $localSubscription->current_period_start = Carbon::createFromTimestamp($subscription->current_period_start);
-                $localSubscription->current_period_end = Carbon::createFromTimestamp($subscription->current_period_end);
-                $localSubscription->save();
-
-                if ($user->role_as == 'admin') {
-                    $token = $user->createToken($user->email_ . 'AdminToken', ['admin'])->plainTextToken;
-                } else {
-                    $token = $user->createToken($user->email_ . 'UserToken', ['user'])->plainTextToken;
-                }
-                return response(compact('user', 'token'));
-            } else {
-                $payment_status = 'fail';
-                return response(compact('user', 'payment_status'));
-            }
-        }
-    }
 
 
 

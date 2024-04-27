@@ -26,6 +26,17 @@ import Transfers from "./views/Transfers.jsx";
 import Calendar from "./views/Calendar.jsx";
 import SubscriptionHistory from "./views/SubscriptionHistory.jsx";
 import WarningMessage from "./views/WarningMessage.jsx";
+import InvestmentForm from "./views/InvestmentForm.jsx";
+import Investment from "./views/Investment.jsx";
+import InvestmentReport from "./views/InvestmentReport";
+import Return from "./views/Return";
+import InvestmentPlan from "./views/InvestmentPlan.jsx";
+import InvestmentPlanForm from "./views/InvestmentPlanForm.jsx";
+import OverallReport from "./views/OverallReport";
+import Sectors from "./views/Sectors/Sectors.jsx";
+import SectorCreate from "./views/Sectors/SectorCreate.jsx";
+import MonthlyReport from "./views/MonthlyReport.jsx";
+import ActivityLogs from "./views/ActivityLogs/ActivityLogs.jsx";
 
 const router = createBrowserRouter([
 
@@ -46,8 +57,24 @@ const router = createBrowserRouter([
                 element: <Users/>
             },
             {
+                path: '/sectors',
+                element: <Sectors/>
+            },
+            {
+                path: '/sector/new',
+                element: <SectorCreate key="SectorCreate"/>
+            },
+            {
+                path: '/sector/update/:id',
+                element: <SectorCreate key="SectorCreate"/>
+            },
+            {
                 path: '/categories',
                 element: <Categories/>
+            },
+            {
+                path: '/returns',
+                element: <Return/>
             },
             {
                 path: '/incomes',
@@ -87,6 +114,30 @@ const router = createBrowserRouter([
             {
                 path: '/debts',
                 element: <Debts/>
+            },
+            {
+                path: '/investments',
+                element: <Investment/>
+            },
+            {
+                path: '/investments/new',
+                element: <InvestmentForm key="investmentCreate"/>
+            },
+            {
+                path: '/investment/:id',
+                element: <InvestmentForm key="investmentUpdate"/>
+            },
+            {
+                path: '/investment-plan',
+                element: <InvestmentPlan/>
+            },
+            {
+                path: '/investment-plan/new',
+                element: <InvestmentPlanForm key="investmentPlanCreate"/>
+            },
+            {
+                path: '/investment-plan/:id',
+                element: <InvestmentPlanForm key="investmentPlanUpdate"/>
             },
             {
                 path: '/manage-debt/:id',
@@ -132,6 +183,10 @@ const router = createBrowserRouter([
                 element: <ExpenseReport key="expenseReportListing"/>
             },
             {
+                path: '/investment-report',
+                element: <InvestmentReport/>
+            },
+            {
                 path: '/calendar',
                 element: <Calendar/>
             },
@@ -140,7 +195,18 @@ const router = createBrowserRouter([
                 path: '/subscription-history',
                 element: <SubscriptionHistory/>
             },
-
+            {
+                path: '/all-report',
+                element: <OverallReport/>
+            },
+            {
+                path: '/monthly-report',
+                element: <MonthlyReport/>
+            },
+            {
+                path: 'activity-logs',
+                element: <ActivityLogs />
+            },
             {
                 path: 'application-settings',
                 element: <ApplicationSettingsForm key="applicationSettings"/>

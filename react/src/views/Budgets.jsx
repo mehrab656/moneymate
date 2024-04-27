@@ -11,6 +11,9 @@ import Select from "react-select";
 import DatePicker from "react-datepicker";
 import {useStateContext} from "../contexts/ContextProvider";
 import {SettingsContext} from "../contexts/SettingsContext";
+import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
+import MainLoader from "../components/MainLoader.jsx";
+import { notification } from "../components/ToastNotification.jsx";
 
 export default function Budgets() {
 
@@ -21,7 +24,7 @@ export default function Budgets() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
 
-    const {applicationSettings} = useContext(SettingsContext);
+    const {applicationSettings,userRole} = useContext(SettingsContext);
     const {
         num_data_per_page,
         default_currency
@@ -64,12 +67,15 @@ export default function Budgets() {
     const {setNotification} = useStateContext();
 
     const getExpenseCategories = () => {
+        setLoading(true);
         axiosClient
             .get("/expense-categories")
             .then(({data}) => {
                 setExpenseCategories(data.categories);
+                setLoading(false);
             })
             .catch((error) => {
+                setLoading(false);
                 console.error("Error loading expense categories:", error);
             });
     };
@@ -83,7 +89,6 @@ export default function Budgets() {
                 setTotalCount(data.total);
             }).catch((error) => {
             setLoading(false);
-          //  console.log(error);
         });
     }
 
@@ -130,10 +135,17 @@ export default function Budgets() {
         setSelectedCategories(selectedOptions);
     };
 
+     // set default date(today)
+     useEffect(()=>{
+        if(startDate ===null){
+            setStartDate(new Date())
+            }
+       },[startDate])
+
 
     const budgetSubmit = (e) => {
         e.preventDefault();
-
+        setLoading(true);
         const updatedBudget = {
             ...budget,
             start_date: startDate ? new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60000).toISOString().split("T")[0] : null,
@@ -146,7 +158,7 @@ export default function Budgets() {
             axiosClient
                 .put(`/budgets/${budget.id}`, updatedBudget)
                 .then(({data}) => {
-                    setNotification(`${data.budget_name} was successfully updated`);
+                    // setNotification(`${data.budget_name} was successfully updated`);
                     getBudgets(currentPage, pageSize);
                     setShowModal(false);
                     setBudget({
@@ -157,21 +169,29 @@ export default function Budgets() {
                         end_date: "",
                         use_id: null,
                     });
+
+                    notification('success',data?.message,data?.description)
+                    setLoading(false);
                 })
-                .catch((error) => {
-                    const response = error.response;
-                    if (response && response.status === 422) {
-                        setErrors(response.data.errors);
+                .catch((err) => {
+                    // const response = error.response;
+                    // if (response && response.status === 422) {
+                    //     setErrors(response.data.errors);
+                    // }
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
                     }
+                    setLoading(false);
                 });
         } else {
             axiosClient
                 .post("/budgets", updatedBudget)
                 .then(({data}) => {
                     if (data && data.status === 422) {
-                        setNotification(data.message);
+                        // setNotification(data.message);
                     } else {
-                        setNotification(`${data.budget_name} was successfully created`);
+                        // setNotification(`${data.budget_name} was successfully created`);
                         getBudgets(currentPage, pageSize);
                         setShowModal(false);
                         setBudget({
@@ -184,16 +204,23 @@ export default function Budgets() {
                         });
                     }
 
+                    notification('success',data?.message,data?.description)
 
+                    setLoading(false);
                 })
-                .catch((error) => {
-                    const response = error.response;
-                    if (response && response.status === 422) {
-                        setErrors(response.data.errors);
-                    } else if (response && response.status === 400)
-                    {
-                        setBudgetOverlap(response.data.message);
+                .catch((err) => {
+                    // const response = error.response;
+                    // if (response && response.status === 422) {
+                    //     setErrors(response.data.errors);
+                    // } else if (response && response.status === 400)
+                    // {
+                    //     setBudgetOverlap(response.data.message);
+                    // }
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
                     }
+                    setLoading(false);
                 });
         }
     };
@@ -233,10 +260,9 @@ export default function Budgets() {
                         icon: 'success',
                     });
                 }).catch((error) => {
-                    console.log(error);
                     Swal.fire({
                         title: 'Error!',
-                        text: 'Budget could not be deleted.',
+                        text: 'Budget could not be deleted.'+error,
                         icon: 'error',
                     });
                 });
@@ -244,8 +270,17 @@ export default function Budgets() {
         });
     };
 
+    
+
+    const actionParams = {
+        route:{
+            viewRoute:'',
+            deleteRoute:''
+        },
+    }
     return (
         <>
+        <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Budgets</h1>
                 <Link className="btn-add" onClick={showCreateModal}><FontAwesomeIcon icon={faMoneyBill}/> Add New Budget</Link>
@@ -259,7 +294,7 @@ export default function Budgets() {
                            onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <div className="table-responsive">
+                <div className="table-responsive-sm">
                     <table className="table-bordered custom-table">
                         <thead>
                         <tr className={'text-center'}>
@@ -268,7 +303,8 @@ export default function Budgets() {
                             <th>UPDATED BUDGET AMOUNT</th>
                             <th>BUDGET START DATE</th>
                             <th>BUDGET END DATE</th>
-                            <th width="20%">ACTIONS</th>
+                            {userRole ==='admin' && <th width="20%">ACTIONS</th>}
+                            
                         </tr>
                         </thead>
                         {loading && (
@@ -297,15 +333,17 @@ export default function Budgets() {
                                         <td>{default_currency + budget.updated_amount}</td>
                                         <td>{budget.start_date}</td>
                                         <td>{budget.end_date}</td>
-                                        <td>
-                                            <Link className="btn-edit" to={`#`} onClick={() => edit(budget)}>
-                                                <FontAwesomeIcon icon={faEdit}/> Edit
-                                            </Link>
-                                            &nbsp;
-                                            <a onClick={(e) => onDelete(budget)} className="btn-delete">
-                                                <FontAwesomeIcon icon={faTrash}/> Delete
-                                            </a>
-                                        </td>
+                                        {userRole ==='admin' && 
+                                         <td>
+                                            <ActionButtonHelpers
+                                                module={budget}
+                                                deleteFunc={onDelete}
+                                                showEditDropdown={edit}
+                                                editDropdown={true}
+                                                params={actionParams}
+                                            />
+                                        </td>}
+                                       
                                     </tr>
                                 ))
                             )}

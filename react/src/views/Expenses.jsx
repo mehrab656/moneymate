@@ -5,10 +5,16 @@ import Swal from "sweetalert2";
 import ExpenseExportButton from "../components/ExpenseExportButton.jsx";
 import WizCard from "../components/WizCard";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faEdit, faMinus, faTrash} from "@fortawesome/free-solid-svg-icons";
+import {faEdit, faList12, faListOl, faMinus, faThList, faTrash} from "@fortawesome/free-solid-svg-icons";
 import Pagination from "react-bootstrap/Pagination";
 import DownloadAttachment from "../components/DownloadAttachment";
 import {SettingsContext} from "../contexts/SettingsContext";
+import {Button, Image, Modal} from "react-bootstrap";
+import Dropdown from "react-bootstrap/Dropdown"
+import ActionButtonHelpers from "../helper/ActionButtonHelpers";
+import MainLoader from "../components/MainLoader.jsx";
+import ExpenseModal from "../helper/ExpenseModal.jsx";
+import { notification } from "../components/ToastNotification.jsx";
 
 export default function Expenses() {
 
@@ -17,8 +23,30 @@ export default function Expenses() {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
-
-    const {applicationSettings} = useContext(SettingsContext);
+    const [showModal, setShowModal] = useState(false);
+    const baseURL= `${window.__APP_CONFIG__.VITE_APP_BASE_URL}/api`
+    const [expense, setExpense] = useState({
+        id: null,
+        user_id: null,
+        account_id: '', // Set default value to an empty string
+        amount: '', // Set default value to an empty string
+        refundable_amount: '', // Set default value to an empty string
+        refunded_amount: '',
+        category_id: null,
+        description: '',
+        reference: '',
+        date: '',
+        note: '',
+        attachment: ''
+    });
+    const showExpense = (expense) => {
+        setExpense(expense);
+        setShowModal(true);
+    }
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
+    const {applicationSettings, userRole} = useContext(SettingsContext);
     const {
         num_data_per_page,
         default_currency
@@ -36,7 +64,6 @@ export default function Expenses() {
         setLoading(true);
         axiosClient.get('/expenses', {params: {page, pageSize}})
             .then(({data}) => {
-                //console.log(data.data);
                 setLoading(false);
                 setExpenses(data.data);
                 setTotalCount(data.total);
@@ -65,7 +92,6 @@ export default function Expenses() {
 
     const filteredExpenses = expenses.filter((expense) => {
 
-
         if (expense.refundable_amount > 0) {
             if (expense.refunded_amount === expense.refundable_amount) {
                 expense.refunded_txt_clr = 'success';
@@ -88,66 +114,82 @@ export default function Expenses() {
 
 
     const onDelete = (expense) => {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: `You will not be able to recover the expense !`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'Cancel',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                axiosClient.delete(`expense/${expense.id}`).then(() => {
-                    getExpenses();
-                    Swal.fire({
-                        title: 'Deleted!',
-                        text: 'Expense has been deleted.',
-                        icon: 'success',
-                    });
-                }).catch((error) => {
-                    console.log(error);
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Expense could not be deleted.',
-                        icon: 'error',
-                    });
-                });
-            }
-        });
+        if (userRole !== 'admin') {
+            Swal.fire({
+                title: 'Permission Denied!',
+                text: 'Investors are not permitted to delete any data!',
+                icon: 'danger',
+            });
+        } else {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `You will not be able to recover the expense !`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axiosClient.delete(`expense/${expense.id}`).then((data) => {
+                        getExpenses();
+                        notification('success',data?.message,data?.description)
+                    }).catch(err => {
+                        if (err.response) { 
+                            const error = err.response.data
+                            notification('error',error?.message,error.description)
+                        }
+                    })
+                }
+            });
+        }
+
+
     };
 
-
+    const actionParams = {
+        route: {
+            editRoute: '/expense/',
+            viewRoute: '',
+            deleteRoute: ''
+        },
+    }
     return (
         <div>
-            <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
-                <h1 className="title-text mb-0">Expense Histories</h1>
-                <Link className="btn-add align-right mr-3" to="/expense/new"><FontAwesomeIcon icon={faMinus}/> Add
-                    New</Link>
-                <ExpenseExportButton/>
-            </div>
+            <MainLoader loaderVisible={loading}/>
 
             <WizCard className="animated fadeInDown">
-                <div className="mb-4">
-                    <input className="custom-form-control"
-                           type="text"
-                           placeholder="Search Expense..."
-                           value={searchTerm}
-                           onChange={(e) => setSearchTerm(e.target.value)}/>
+                <div className="row">
+                    <div className="col-3">
+                        <h1 className="title-text mb-0">Expense Histories</h1>
+                    </div>
+                    <div className="col-7">
+                    <div className="mb-4">
+                            <input className="custom-form-control"
+                                   type="text"
+                                   placeholder="Search Expense..."
+                                   value={searchTerm}
+                                   onChange={(e) => setSearchTerm(e.target.value)}/>
+                        </div>
+                    </div>
+                    <div className="col-2">
+                        <ExpenseExportButton/>
+                        {userRole === 'admin' &&
+                            <Link className="btn-add float-end" to="/expense/new"><FontAwesomeIcon icon={faMinus}/> Add New</Link>}
+                    </div>
                 </div>
-                <div className="table-responsive">
+
+                <div className="table-responsive-sm">
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr className={'text-center'}>
-                            <th>Expense By</th>
-                            <th>Payment Method</th>
-                            <th>Sector</th>
+                            <th>Date</th>
+                            <th>Details</th>
+                            {/*<th>Sector</th>*/}
                             <th>Amount</th>
                             <th>Refundable amount</th>
                             <th>Refunded amount</th>
-                            <th>Attached</th>
-                            <th>Description</th>
-                            <th>Date</th>
-                            <th width="20%">Action</th>
+                            <th>Action</th>
+
                         </tr>
                         </thead>
                         {loading && (
@@ -170,24 +212,25 @@ export default function Expenses() {
                             ) : (
                                 filteredExpenses.map((expense) => (
                                     <tr className={'text-center'} key={expense.id}>
-                                        <td>{expense.user_name}</td>
-                                        <td>{expense.account_number}</td>
-                                        <td>{expense.category_name}</td>
-                                        <td>{default_currency + expense.amount}</td>
-                                        <td>{default_currency + expense.refundable_amount}</td>
-                                        <td className={"text-" + expense.refunded_txt_clr}>{default_currency + expense.refunded_amount}</td>
-                                        <td>{expense.attachment &&
-                                            <DownloadAttachment filename={expense.attachment}/>}</td>
-
-                                        <td>{expense.description !== 'null' ? expense.description : ''}</td>
-                                        <td>{expense.expense_date}</td>
+                                        <td><small>{expense.date}</small></td>
+                                        <td className={'text-start'}>{expense.description}
+                                            <div>
+                                                <small>
+                                                    <a href={`/categories`}>{expense.category_name}</a>
+                                                </small>
+                                            </div>
+                                        </td>
+                                        {/*<td className={'text-start'}>{expense.category_name}</td>*/}
+                                        <td className={'amount'}>{default_currency + ' ' + expense.amount}</td>
+                                        <td className={'amount'}>{default_currency + ' ' + expense.refundable_amount}</td>
+                                        <td className={"amount text-" + expense.refunded_txt_clr}>{default_currency + ' ' + expense.refunded_amount}</td>
                                         <td>
-                                            <Link className="btn-edit" to={"/expense/" + expense.id}>
-                                                <FontAwesomeIcon icon={faEdit}/> Edit
-                                            </Link>
-                                            &nbsp;
-                                            <a onClick={() => onDelete(expense)} className="btn-delete"><FontAwesomeIcon
-                                                icon={faTrash}/> Delete</a>
+                                            <ActionButtonHelpers
+                                                module={expense}
+                                                showModule={showExpense}
+                                                deleteFunc={onDelete}
+                                                params={actionParams}
+                                            />
                                         </td>
                                     </tr>
                                 ))
@@ -208,10 +251,17 @@ export default function Expenses() {
                             disabled={currentPage === totalPages}
                             onClick={() => handlePageChange(currentPage + 1)}
                         />
+
                     </Pagination>
                 )}
 
             </WizCard>
+            <ExpenseModal showModal={showModal}
+                          handelCloseModal={handleCloseModal}
+                          title={'Expense Details '}
+                          data={expense}
+                          currency={default_currency}
+            />
         </div>
     )
 }

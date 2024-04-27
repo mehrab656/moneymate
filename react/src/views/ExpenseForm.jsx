@@ -1,49 +1,71 @@
 import {useNavigate, useParams} from "react-router-dom";
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import axiosClient from "../axios-client.js";
-import {useStateContext} from "../contexts/ContextProvider.jsx";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import WizCard from "../components/WizCard";
+import {SettingsContext} from "../contexts/SettingsContext.jsx";
+import {
+    TextField,
+    Autocomplete,
+} from "@mui/material";
 
+import {makeStyles} from '@mui/styles';
+import MainLoader from "../components/MainLoader.jsx";
+import Swal from "sweetalert2";
+import { notification } from "../components/ToastNotification.jsx";
+
+const useStyles = makeStyles({
+    option: {
+        "&:hover": {
+            backgroundColor: "#ff7961 !important"
+        },
+    }
+});
+
+const _initialExpense = {
+    id: null,
+    user_id: null,
+    account_id: '', // Set default value to an empty string
+    amount: '', // Set default value to an empty string
+    refundable_amount: 0, // Set default value to an empty string
+    category_id: null,
+    description: '',
+    reference: '',
+    date: '',
+    note: '',
+    attachment: ''
+};
 export default function ExpenseForm() {
-
+    const classes = useStyles();
     let {id} = useParams();
 
-    const [expense, setExpense] = useState({
-        id: null,
-        user_id: null,
-        account_id: '', // Set default value to an empty string
-        amount: '', // Set default value to an empty string
-        refundable_amount: '', // Set default value to an empty string
-        category_id: null,
-        description: '',
-        reference: '',
-        expense_date: '',
-        note: '',
-        attachment: ''
-    });
+    const [expense, setExpense] = useState(_initialExpense);
 
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [expenseCategories, setExpenseCategories] = useState([]);
     const [bankAccounts, setBankAccounts] = useState([]);
     const [selectUserID, setUsers] = useState([]);
-    const {setNotification} = useStateContext();
-    const [selectedCategoryId, setSelectedCategoryId] = useState('');
     const [selectedAccountId, setSelectedAccountId] = useState('');
     const [selectedUserId, setSelectedUserId] = useState('');
     const navigate = useNavigate();
     const [insufficientBalanceForCategory, setInsufficientBalanceForCategory] = useState(null);
+    const {applicationSettings} = useContext(SettingsContext);
+    const [categoryValue, setCategoryValue] = useState(null);
+    const [storeCategoryValue, setStoreCategoryValue] = useState(null);
+    const {
+        last_expense_cat_id,
+        last_expense_account_id,
+    } = applicationSettings;
 
     useEffect(() => {
         axiosClient.get('/all-bank-account')
             .then(({data}) => {
-                //  console.log(data);
                 setBankAccounts(data.data);
             })
             .catch(error => {
-                console.log('Error fetching bank accounts:', error)
+                console.warn('Error fetching bank accounts:', error)
             });
 
         axiosClient.get('/expense-categories')
@@ -57,6 +79,9 @@ export default function ExpenseForm() {
 
         axiosClient.get('/get-all-users')
             .then(({data}) => {
+                if (data.data.length > 0) {
+                    setSelectedUserId(data.data[0].id)
+                }
                 setUsers(data.data);
             })
             .catch(error => {
@@ -66,9 +91,15 @@ export default function ExpenseForm() {
     }, [setExpenseCategories, setBankAccounts, setUsers]);
 
 
-    const handleCategoryChange = (event) => {
-        setSelectedCategoryId(event.target.value);
-    };
+    //set default category value
+    useEffect(() => {
+        if (expenseCategories && expenseCategories.length > 0 && !id) {
+            setCategoryValue(expenseCategories[0])
+        }
+        if (storeCategoryValue !== null && id) {
+            setCategoryValue(storeCategoryValue)
+        }
+    }, [expenseCategories, storeCategoryValue])
 
 
     useEffect(() => {
@@ -76,23 +107,29 @@ export default function ExpenseForm() {
             setLoading(true);
             axiosClient.get(`/expense/${id}`)
                 .then(({data}) => {
-                    setLoading(false);
-                    setSelectedCategoryId(data.category_id);
+                    // setSelectedCategoryId(data.category_id);
                     setSelectedAccountId(data.account_id);
                     setSelectedUserId(data.user_id);
-                    console.log({data})
+                    if (expenseCategories.length > 0) {
+                        expenseCategories.forEach(element => {
+                            if (element.id === data.category_id) {
+                                setStoreCategoryValue(element)
+                            }
+                        });
+                    }
 
                     setExpense((prevExpense) => ({
                         ...prevExpense,
                         ...data,
-                        expense_date: data.expense_date || '', // Set to empty string if the value is null or undefined
+                        date: data.date || '', // Set to empty string if the value is null or undefined
                     }));
+                    setLoading(false);
                 })
                 .catch(() => {
                     setLoading(false);
                 });
         }
-    }, [id]);
+    }, [id, expenseCategories]);
 
 
     useEffect(() => {
@@ -109,79 +146,57 @@ export default function ExpenseForm() {
         }
     }, [id]);
 
-
-    const expenseSubmit = (event) => {
-        event.preventDefault();
-
-        if (expense.id) {
-
-            const {amount, refundable_amount, description, reference, expense_date, note, attachment} = expense;
-            const formData = new FormData();
-            formData.append('account_id', selectedAccountId);
-            formData.append('amount', amount);
-            formData.append('refundable_amount', refundable_amount);
-            formData.append('category_id', selectedCategoryId);
-            formData.append('user_id', selectedUserId);
-            formData.append('description', description);
-            formData.append('note', note);
-            formData.append('reference', reference);
-            formData.append('expense_date', expense_date);
-            formData.append('attachment', attachment);
-
-            axiosClient.post(`/expense/${expense.id}`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            }).then(() => {
-                setNotification('expense data has been updated')
-                navigate('/expenses');
-            })
-                .catch(err => {
-                    const response = err.response;
-                    if (response && response.status === 422) {
-                        setErrors(response.data.errors);
-                    }
-                });
-        } else {
-
-            const {amount, refundable_amount, description, reference, expense_date, note, attachment} = expense;
-            const formData = new FormData();
-            formData.append('account_id', selectedAccountId);
-            formData.append('amount', amount);
-            formData.append('refundable_amount', refundable_amount);
-            formData.append('category_id', selectedCategoryId);
-            formData.append('user_id', selectedUserId);
-            formData.append('description', description);
-            formData.append('note', note);
-            formData.append('reference', reference);
-            formData.append('expense_date', expense_date);
-            formData.append('attachment', attachment);
-
-            axiosClient.post('/expense/add', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-                .then(({data}) => {
-                    if (data.action_status === 'insufficient_balance') {
-                        setInsufficientBalanceForCategory(data.message);
-                    } else {
-                        setNotification('expense has been added.');
-                        navigate('/expenses');
-                    }
-
-
-                })
-                .catch((error) => {
-                    const response = error.response;
-                    setErrors(response.data.errors);
-                });
+    // set some default data
+    useEffect(() => {
+        // select default date
+        if (expense?.date === '') {
+            setExpense({
+                ...expense,
+                date: new Date().toISOString().split('T')[0]
+            });
         }
+
+    }, [expense?.date, last_expense_cat_id, last_expense_account_id])
+
+    const expenseSubmit = (event, stay) => {
+        event.preventDefault();
+        setLoading(true)
+        // event.currentTarget.disabled = true;
+        const {amount, refundable_amount, description, reference, date, note, attachment} = expense;
+
+        const formData = new FormData();
+        formData.append('account_id', selectedAccountId);
+        formData.append('amount', amount);
+        formData.append('refundable_amount', refundable_amount);
+        formData.append('category_id', categoryValue.id);
+        formData.append('user_id', selectedUserId);
+        formData.append('description', description);
+        formData.append('note', note);
+        formData.append('reference', reference);
+        formData.append('date', date);
+        formData.append('attachment', attachment);
+
+        const url = expense.id ? `/expense/${expense.id}` : '/expense/add';
+        const notifications = expense.id ? 'Expense has been updated' : 'New expense added';
+        axiosClient.post(url, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        }).then(({data}) => {
+            notification('success',data?.message,data?.description)
+            stay === true ? setExpense(_initialExpense) : navigate('/expenses')
+            setLoading(false)
+        }).catch(err => {
+            if (err.response) { 
+                const error = err.response.data
+                notification('error',error?.message,error.description)
+            }
+            setLoading(false)
+        });
     };
 
     const handleFileInputChange = (event) => {
         const file = event.target.files[0];
-        console.log(file);
         setExpense((prevExpense) => {
             return {...prevExpense, attachment: file};
         });
@@ -189,6 +204,7 @@ export default function ExpenseForm() {
 
     return (
         <>
+            <MainLoader loaderVisible={loading}/>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 {expense.id && <h1 className="title-text mb-0">Update expense : {expense.description}</h1>}
                 {!expense.id && <h1 className="title-text mb-0">Add New expense</h1>}
@@ -201,7 +217,7 @@ export default function ExpenseForm() {
                 )}
 
                 {!loading && (
-                    <form onSubmit={expenseSubmit}>
+                    <form>
                         {insufficientBalanceForCategory && (
                             <div className="text-danger mt-2 mb-3">{insufficientBalanceForCategory}</div>
                         )}
@@ -209,25 +225,68 @@ export default function ExpenseForm() {
                         <div className="row">
                             <div className="col-md-6">
                                 <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="expense_category">Expense Category</label>
-                                    <select
+                                    <label className="custom-form-label"
+                                           htmlFor="expense_description">Description</label>
+                                    <textarea
+                                        style={{height: 130}}
+                                        className="form-control"
+                                        id="expense_description"
+                                        rows="3"
+                                        value={expense.description !== 'null' ? expense.description : ''}
+                                        onChange={ev => setExpense({...expense, description: ev.target.value})}
+                                        placeholder="Description"/>
+                                </div>
+                                <div className="form-group">
+                                    <label className="custom-form-label" htmlFor="expense_amount">Amount</label>
+                                    <input className="custom-form-control" type="number" step="any"
+                                           value={expense.amount || ""}
+                                           onChange={ev => setExpense({...expense, amount: ev.target.value})}
+                                           placeholder="Amount"/>
+                                    {errors.amount && <p className="error-message mt-2">{errors.amount[0]}</p>}
+                                </div>
+                                <div className="form-group">
+                                    <label className="custom-form-label" htmlFor="refundable_amount">Refundable
+                                        Amount</label>
+                                    <input className="custom-form-control"
+                                           type="number"
+                                           step="any"
+                                           value={expense.refundable_amount}
+                                           onChange={ev => setExpense({...expense, refundable_amount: ev.target.value})}
+                                           placeholder="Refundable Amount"/>
+                                    {errors.refundable_amount &&
+                                        <p className="error-message mt-2">{errors.refundable_amount[0]}</p>}
+                                </div>
+                                <div className="form-group">
+                                    <label className="custom-form-label" htmlFor="note">Note</label>
+                                    <textarea
+                                        style={{height: 130}}
+                                        className="form-control"
+                                        id="expense_note"
+                                        rows="3"
+                                        value={expense.note !== 'null' ? expense.note : ''}
+                                        onChange={ev => setExpense({...expense, note: ev.target.value})}
+                                        placeholder="Additional Note"/>
+                                </div>
+                            </div>
+
+                            <div className="col-md-6">
+                                <div className="form-group">
+                                    <label className="custom-form-label" htmlFor="date">Date</label>
+                                    <DatePicker
                                         className="custom-form-control"
-                                        value={selectedCategoryId}
-                                        id="expense-category"
-                                        name="expense-category"
-                                        onChange={(event) => {
-                                            const value = event.target.value || '';
-                                            setSelectedCategoryId(value);
-                                            setExpense({...expense, category_id: parseInt(value)});
-                                        }}>
-                                        <option defaultValue>Expense category</option>
-                                        {expenseCategories.map(category => (
-                                            <option key={category.id} value={category.id}>
-                                                {category.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {errors.category_id && <p className="error-message mt-2">{errors.category_id[0]}</p>}
+                                        selected={expense.date ? new Date(expense.date) : new Date()}
+                                        onChange={(date) => {
+                                            const selectedDate = date ? new Date(date) : null;
+                                            const updatedDate = selectedDate && !expense.date ? new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000) : selectedDate;
+                                            setExpense({
+                                                ...expense,
+                                                date: updatedDate ? updatedDate.toISOString().split('T')[0] : ''
+                                            });
+                                        }}
+                                        dateFormat="dd-MM-yyyy"
+                                        placeholderText="Expense Date"
+                                    />
+                                    {errors.start_date && <p className="error-message mt-2">{errors.start_date[0]}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="expense_user">Expense By</label>
@@ -250,41 +309,30 @@ export default function ExpenseForm() {
                                     </select>
                                     {errors.user_id && <p className="error-message mt-2">{errors.user_id[0]}</p>}
                                 </div>
-                                <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="expense_amount">Amount</label>
-                                    <input className="custom-form-control" type="number" step="any" value={expense.amount || ""}
-                                           onChange={ev => setExpense({...expense, amount: ev.target.value})}
-                                           placeholder="Amount"/>
-                                    {errors.amount && <p className="error-message mt-2">{errors.amount[0]}</p>}
-                                </div>
-                                <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="expense_date">Date</label>
-                                    <DatePicker
-                                        className="custom-form-control"
-                                        selected={expense.expense_date ? new Date(expense.expense_date) : '' }
-                                        onChange={(date) => {
-                                            const selectedDate = date ? new Date(date) : null;
-                                            const updatedDate = selectedDate && !expense.expense_date ? new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000) : selectedDate;
-                                            setExpense({
-                                                ...expense,
-                                                expense_date: updatedDate ? updatedDate.toISOString().split('T')[0] : ''
-                                            });
+                                <div className="">
+                                    <Autocomplete
+                                        classes={{option: classes.option}}
+                                        options={expenseCategories}
+                                        getOptionLabel={(option) => option.name}
+                                        id="parentCategory"
+                                        isOptionEqualToValue={(option, categoryValue) => option.id === categoryValue.id}
+                                        value={categoryValue}
+                                        onChange={(event, newValue) => {
+                                            if (newValue) {
+                                                setCategoryValue(newValue);
+                                            }
                                         }}
-                                        dateFormat="yyyy-MM-dd"
-                                        placeholderText="Expense Date"
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                style={{backgroundColor: '#eeeeee'}}
+                                                label='Expense Category'
+                                                margin="normal"
+                                                placeholder="Expense Category"
+                                            />
+                                        )}
                                     />
-                                    {errors.start_date && <p className="error-message mt-2">{errors.start_date[0]}</p>}
                                 </div>
-                                <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="expense_description">Description</label>
-                                    <input className="custom-form-control"
-                                           value={expense.description !== 'null' ? expense.description : ''}
-                                           onChange={ev => setExpense({...expense, description: ev.target.value})}
-                                           placeholder="Description"/>
-                                </div>
-                            </div>
-
-                            <div className="col-md-6">
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="bank_account">Bank Account</label>
                                     <select
@@ -300,20 +348,12 @@ export default function ExpenseForm() {
                                         <option defaultValue>Bank account</option>
                                         {bankAccounts.map(account => (
                                             <option key={account.id} value={account.id}>
-                                                {account.bank_name} - {account.account_number} - Balance ({account.balance})
+                                                {account.bank_name} - {account.account_number} - Balance
+                                                ({account.balance})
                                             </option>
                                         ))}
                                     </select>
                                     {errors.account_id && <p className="error-message mt-2">{errors.account_id[0]}</p>}
-                                </div>
-                                <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="refundable_amount">Refundable Amount</label>
-                                    <input className="custom-form-control"
-                                           type="number"
-                                           step="any"
-                                           value={expense.refundable_amount}
-                                           placeholder="Refundable Amount"/>
-                                    {errors.refundable_amount && <p className="error-message mt-2">{errors.refundable_amount[0]}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="expense_reference">Reference</label>
@@ -322,27 +362,33 @@ export default function ExpenseForm() {
                                            onChange={(e) => setExpense({...expense, reference: e.target.value})}/>
                                 </div>
                                 <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="note">Note</label>
-                                    <input className="custom-form-control"
-                                           value={expense.note !== 'null' ? expense.note : ''}
-                                           onChange={ev => setExpense({...expense, note: ev.target.value})}
-                                           placeholder="Additional Note"/>
+                                    <label className="custom-form-label" htmlFor="account_name">Add Attachment</label>
+                                    <input className="custom-form-control" type="file" onChange={handleFileInputChange}
+                                           placeholder="Attachment"/>
                                 </div>
-
                             </div>
                         </div>
-                        <div className="row">
-                            <div className="form-group">
-                                <label className="custom-form-label" htmlFor="account_name">Add Attachment</label>
-                                <input className="custom-form-control" type="file" onChange={handleFileInputChange}
-                                       placeholder="Attachment"/>
-                            </div>
+                        <div className="text-end">
+                            {
+                                expense.id &&
+                                <button onClick={(e) => expenseSubmit(e, false)}
+                                        className={expense.id ? "btn btn-warning" : "custom-btn btn-add"}>
+                                    Update
+                                </button>
+                            }
+                            {!expense.id &&
+                                <>
+                                    <button onClick={(e) => expenseSubmit(e, true)}
+                                            className={"custom-btn btn-add ml-3"}>
+                                        Save
+                                    </button>
+                                    <button onClick={(e) => expenseSubmit(e, false)}
+                                            className={"custom-btn btn-add ml-3"}>
+                                        Save and Exit
+                                    </button>
+                                </>
+                            }
                         </div>
-
-                        <button className={expense.id ? "btn btn-warning" : "custom-btn btn-add"}>
-                            {expense.id ? "Update Expense Record" : "Add New Expense"}
-                        </button>
-
                     </form>
                 )}
             </WizCard>

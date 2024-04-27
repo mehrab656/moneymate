@@ -17,7 +17,7 @@ export default function BalanceTransfer() {
                 setTransferHistories(data.data);
             })
             .catch((error) => {
-                console.log("Unable to fetch transfer histories", error);
+                console.warn("Unable to fetch transfer histories", error);
             })
             .finally(() => {
                 setLoading(false);

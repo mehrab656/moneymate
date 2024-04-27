@@ -9,6 +9,9 @@ import Pagination from "react-bootstrap/Pagination";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faBank, faEdit, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
+import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
+import MainLoader from "../components/MainLoader.jsx";
+import { notification } from "../components/ToastNotification.jsx";
 
 export default function Banks() {
     const [loading, setLoading] = useState(false);
@@ -24,7 +27,7 @@ export default function Banks() {
     });
     const {setNotification} = useStateContext();
 
-    const {applicationSettings} = useContext(SettingsContext);
+    const {applicationSettings, userRole} = useContext(SettingsContext);
     const {
         num_data_per_page
     } = applicationSettings;
@@ -88,46 +91,62 @@ export default function Banks() {
 
     const bankSubmit = (e) => {
         e.preventDefault();
+        setLoading(true)
         if (bank.id) {
             axiosClient
                 .put(`/bank-names/${bank.id}`, bank)
-                .then(() => {
-                    setNotification("Bank name has been updated");
+                .then((data) => {
+                    // setNotification("Bank name has been updated");
                     setShowModal(false);
                     getBankNames(currentPage, pageSize);
                     setBank({
                         id: null,
                         bank_name: ""
                     });
-
+                    notification('success',data?.message,data?.description)
+                    setLoading(false)
                 })
-                .catch((error) => {
-                    const response = error.response;
-                    if (response && response.status === 409) {
-                        setErrors({bank_name: ["Bank name already exists"]});
-                    } else if (response && response.status === 422) {
-                        setErrors(response.data.errors);
+                .catch((err) => {
+                    // const response = error.response;
+                    // if (response && response.status === 409) {
+                    //     setErrors({bank_name: ["Bank name already exists"]});
+                    // } else if (response && response.status === 422) {
+                    //     setErrors(response.data.errors);
+                    // }
+
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
                     }
+                    setLoading(false)
                 });
         } else {
             axiosClient
                 .post("/bank-names", bank)
                 .then(({data}) => {
-                    setNotification(`${bank.bank_name} has been created`);
+                    // setNotification(`${bank.bank_name} has been created`);
                     setShowModal(false);
                     getBankNames(currentPage, pageSize);
                     setBank({
                         id: null,
                         bank_name: ""
                     });
+                    notification('success',data?.message,data?.description)
+                    setLoading(false)
                 })
-                .catch((error) => {
-                    const response = error.response;
-                    if (response && response.status === 409) {
-                        setErrors({bank_name: ["Bank name already exists"]});
-                    } else if (response && response.status === 422) {
-                        setErrors(response.data.errors);
+                .catch((err) => {
+                    // const response = error.response;
+                    // if (response && response.status === 409) {
+                    //     setErrors({bank_name: ["Bank name already exists"]});
+                    // } else if (response && response.status === 422) {
+                    //     setErrors(response.data.errors);
+                    // }
+
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
                     }
+                    setLoading(false)
                 });
         }
     };
@@ -148,28 +167,31 @@ export default function Banks() {
             cancelButtonText: 'Cancel',
         }).then((result) => {
             if (result.isConfirmed) {
-                axiosClient.delete(`/bank-names/${bank.id}`).then(() => {
+                axiosClient.delete(`/bank-names/${bank.id}`).then((data) => {
                     getBankNames(currentPage, pageSize);
-                    Swal.fire({
-                        title: 'Deleted!',
-                        text: 'Bank has been deleted.',
-                        icon: 'success',
-                    });
-                }).catch((error) => {
-                    console.log(error);
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Bank could not be deleted.',
-                        icon: 'error',
-                    });
+                    notification('success',data?.message,data?.description)
+                }).catch((err) => {
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
+                    }
                 });
             }
         });
     };
 
+    const actionParams = {
+        route:{
+            viewRoute:'',
+            deleteRoute:''
+        },
+    }
+
+
 
     return (
         <div>
+          <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">List Of Banks</h1>
                 <div>
@@ -187,18 +209,21 @@ export default function Banks() {
                            onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <div className="table-responsive">
+                <div className="table-responsive-sm">
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr>
                             <th className="text-center">BANK NAME</th>
-                            <th className={'text-center'}>ACTIONS</th>
+                            <th className="text-center">ADDED BY</th>
+                            <th className="text-center">ADDED On</th>
+                            {userRole ==='admin' && <th className={'text-center'}>ACTIONS</th>}
+                            
                         </tr>
                         </thead>
                         {loading && (
                             <tbody>
                             <tr>
-                                <td colSpan={6} className="text-center">
+                                <td colSpan={3} className="text-center">
                                     Loading...
                                 </td>
                             </tr>
@@ -208,7 +233,7 @@ export default function Banks() {
                             <tbody>
                             {filteredBank.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="text-center">
+                                    <td colSpan={3} className="text-center">
                                         No bank found
                                     </td>
                                 </tr>
@@ -216,20 +241,19 @@ export default function Banks() {
                                 filteredBank.map((bank) => (
                                     <tr className={'text-center'} key={bank.id}>
                                         <td>{bank.bank_name}</td>
-                                        <td className="text-center w-auto">
-                                            <div className="d-flex flex-wrap justify-content-center gap-2">
-                                            <span>
-                                        <Link className="btn-edit" to={`#`} onClick={() => edit(bank)}>
-                                           <FontAwesomeIcon icon={faEdit}/> Edit
-                                        </Link>
-                                            </span>
-                                                <span>
-                                                <a onClick={(e) => onDelete(bank)} className="btn-delete">
-                                                    <FontAwesomeIcon icon={faTrash}/> Delete
-                                                </a>
-                                            </span>
-                                            </div>
-                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        {userRole ==='admin' && 
+                                         <td>
+                                            <ActionButtonHelpers
+                                                module={bank}
+                                                deleteFunc={onDelete}
+                                                showEditDropdown={edit}
+                                                editDropdown={true}
+                                                params={actionParams}
+                                            />
+                                        </td>}
+                                       
                                     </tr>
                                 ))
                             )}

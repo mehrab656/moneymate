@@ -5,10 +5,15 @@ import Swal from 'sweetalert2';
 import IncomeExportButton from "../components/IncomeExportButton.jsx";
 import WizCard from "../components/WizCard";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faDollar, faEdit, faTrash} from "@fortawesome/free-solid-svg-icons";
+import {faPlus} from "@fortawesome/free-solid-svg-icons";
+import {FaAirbnb, FaMoneyBillAlt} from "react-icons/fa";
 import Pagination from "react-bootstrap/Pagination";
-import DownloadAttachment from "../components/DownloadAttachment.jsx";
 import {SettingsContext} from "../contexts/SettingsContext";
+import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
+import MainLoader from "../components/MainLoader.jsx";
+import IncomeModal from "../helper/IncomeModal.jsx";
+import {Tooltip} from "@mui/material";
+import { notification } from "../components/ToastNotification.jsx";
 
 export default function Incomes() {
 
@@ -18,7 +23,7 @@ export default function Incomes() {
     const [totalCount, setTotalCount] = useState(0);
     const [searchTerm, setSearchTerm] = useState("");
 
-    const {applicationSettings} = useContext(SettingsContext);
+    const {applicationSettings, userRole} = useContext(SettingsContext);
     const {
         num_data_per_page,
         default_currency
@@ -37,7 +42,6 @@ export default function Incomes() {
         setLoading(true);
         axiosClient.get('/incomes', {params: {page, pageSize}})
             .then(({data}) => {
-                console.log(data);
                 setLoading(false);
                 setIncomes(data.data);
                 setTotalCount(data.total);
@@ -82,56 +86,89 @@ export default function Incomes() {
             cancelButtonText: 'Cancel',
         }).then((result) => {
             if (result.isConfirmed) {
-                axiosClient.delete(`income/${income.id}`).then(() => {
+                axiosClient.delete(`income/${income.id}`).then((data) => {
                     getIncomes();
-                    Swal.fire({
-                        title: 'Deleted!',
-                        text: 'Income has been deleted.',
-                        icon: 'success',
-                    });
-                }).catch((error) => {
-                    //console.log(error);
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Income could not be deleted.',
-                        icon: 'error',
-                    });
-                });
+                    notification('success',data?.message,data?.description)
+                }).catch(err => {
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
+                    }
+                })
             }
         });
     };
+    const [showModal, setShowModal] = useState(false);
+    const [income, setIncome] = useState({
+        id: null,
+        user_id: null,
+        account_id: '', // Set default value to an empty string
+        amount: 0, // Set default value to an empty string
+        category_id: null,
+        category_name: '',
+        description: '',
+        reference: '',
+        date: '',
+        note: '',
+        attachment: ''
+    });
+    const showIncome = (income) => {
+        setIncome(income);
+        setShowModal(true);
+    }
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
+    const actionParams = {
+        route: {
+            editRoute: '/income/',
+            viewRoute: '',
+            deleteRoute: ''
+        },
+    }
 
     return (
         <div>
-            <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
-                <h1 className="title-text mb-0">Income Histories</h1>
-                <Link className="btn-add align-right mr-3" to="/income/new"><FontAwesomeIcon icon={faDollar}/> Add New
-                    Income</Link>
-                <IncomeExportButton/>
-            </div>
+            <MainLoader loaderVisible={loading}/>
+
 
             <WizCard className="animated fadeInDown">
-                <div className="mb-4">
-                    <input className="custom-form-control"
-                           type="text"
-                           placeholder="Search Income..."
-                           value={searchTerm}
-                           onChange={(e) => setSearchTerm(e.target.value)}/>
+                <div className="row">
+                    <div className="col-3">
+                        <h3>Income </h3>
+                    </div>
+                    <div className="col-7">
+                        <div className="mb-4">
+                            <input className="custom-form-control"
+                                   type="text"
+                                   placeholder="Search Income..."
+                                   value={searchTerm}
+                                   onChange={(e) => setSearchTerm(e.target.value)}/>
 
+                        </div>
+                    </div>
+                    <div className="col-2">
+                        <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
+                            {userRole === 'admin' &&
+                                <Link className="btn-add align-right mr-3" to="/income/new"><FontAwesomeIcon
+                                    icon={faPlus}/></Link>}
+                            <IncomeExportButton/>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="table-responsive">
+
+                <div className="table-responsive-sm">
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr className={'text-center'}>
-                            <th>User Name</th>
-                            <th>Account Number</th>
-                            <th>Category</th>
-                            <th>Amount</th>
-                            <th>Attachment</th>
-                            <th>Description</th>
                             <th>Date</th>
-                            <th width="20%">Action</th>
+                            <th>Description</th>
+                            <th>Source</th>
+                            <th>Amount</th>
+                            {userRole === 'admin' && <th>Action</th>}
+
                         </tr>
                         </thead>
                         {loading && (
@@ -153,23 +190,33 @@ export default function Incomes() {
                                 </tr>
                             ) : (
                                 filteredIncomes.map((income) => (
-                                    <tr className={'text-center'} key={income.id}>
-                                        <td>{income.user_name}</td>
-                                        <td>{income.account_number}</td>
+                                    <tr key={income.id}>
+                                        <td><small>{income.date}</small></td>
+                                        <Tooltip title={income.reference} arrow>
+                                            <td className={"income-description"}>{income.description !== 'null' ? income.description : ''}
+                                                {
+                                                    income?.reference ? (
+                                                        income?.reference.includes('air') ?
+                                                            <FaAirbnb className={'logo-reservations'} color="red"/> :
+                                                            (income?.reference.includes('book') ?
+                                                                <i className="logo-bookingcom logo-reservations"></i> :
+                                                                <FaMoneyBillAlt className={'logo-reservations'} fontSize={10} color="gray"/>)) : ''
+                                                }
+                                            </td>
+                                        </Tooltip>
                                         <td>{income.category_name}</td>
-                                        <td>{default_currency}{income.amount}</td>
-                                        <td>{income.attachment &&
-                                            <DownloadAttachment filename={income.attachment}/>}</td>
-                                        <td>{income.description !== 'null' ? income.description : ''}</td>
+                                        <td>{default_currency + ' ' + income.amount}</td>
+                                        {userRole === 'admin' &&
+                                            <td>
+                                                <ActionButtonHelpers
+                                                    module={income}
+                                                    showModule={showIncome}
+                                                    deleteFunc={onDelete}
+                                                    params={actionParams}
+                                                />
+                                            </td>
+                                        }
 
-                                        <td>{income.income_date}</td>
-                                        <td>
-                                            <Link className="btn-edit" to={"/income/" + income.id}> <FontAwesomeIcon
-                                                icon={faEdit}/> Edit</Link>
-                                            &nbsp;
-                                            <a onClick={() => onDelete(income)} className="btn-delete"><FontAwesomeIcon
-                                                icon={faTrash}/> Delete</a>
-                                        </td>
                                     </tr>
                                 ))
                             )}
@@ -193,6 +240,15 @@ export default function Incomes() {
                 )}
 
             </WizCard>
+            <IncomeModal
+                showModal={showModal}
+                handelCloseModal={handleCloseModal}
+                title={'Income Details'}
+                data={income}
+                currency={default_currency}
+            />
+
+
         </div>
     )
 }

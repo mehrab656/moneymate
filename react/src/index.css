@@ -4,7 +4,12 @@
 * {
     box-sizing: border-box;
 }
-
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
 html, body, #root, #defaultLayout, #guestLayout {
     min-height: 100vh;
 }
@@ -836,4 +841,62 @@ select option:focus {
 
 .react-datepicker-wrapper {
     width: 100% !important;
+}
+
+.table-responsive {
+    overflow-x: initial !important;
+}
+
+
+.css-gdh49b-MuiAutocomplete-listbox .MuiAutocomplete-option[aria-selected="true"]{
+    background-color: #607d8b !important;
+}
+.css-gdh49b-MuiAutocomplete-listbox .MuiAutocomplete-option[aria-selected="true"].Mui-focused {
+    background-color: #607d8b !important;
+}
+.summery-card{
+    z-index: -1;
+}
+.amount{
+    text-align: end;
+}
+.sl_class{
+    text-align: center;
+}
+.table_total{
+    text-align: center;
+}
+.investment-column{
+    background-color: #63ebe5;
+}
+.my-custom-scrollbar {
+    position: relative;
+    height: 400px;
+    /* overflow: auto; */
+}
+.table-wrapper-scroll-y {
+    display: block;
+}
+.logo-bookingcom{
+    display: inline-block;
+    background: url('https://dashboard.hostaway.com/src/assets/images/logo/booking_logo.png') 50% no-repeat;
+    background-size: contain;
+    width: 128px;
+    height: 36px;
+}
+.logo-reservations {
+    width: 35px!important;
+    height: 17px!important;
+    vertical-align: middle;
+}
+.income-description{
+    display: flex;
+    justify-content: space-between;
+}
+.aside-menu-item {
+    cursor: pointer;
+}
+.filter-icon{
+    display: flex;
+    flex-direction: row-reverse;
 }

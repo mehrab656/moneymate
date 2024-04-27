@@ -25,11 +25,13 @@ class UpdateExpenseRequest extends FormRequest
         $rules = [
             'account_id' => 'required',
             'amount' => 'required|numeric',
+            'return_amount' => 'nullable|numeric',
             'category_id' => 'required',
             'description' => 'nullable|string',
             'note' => 'nullable|string',
             'reference' => 'nullable|string',
-            'expense_date' => 'nullable|date_format:Y-m-d',
+            'date' => 'nullable|date_format:Y-m-d',
+            'refundable_amount' => 'nullable',
         ];
 
         if ($this->hasFile('attachment')) {
@@ -54,7 +56,7 @@ class UpdateExpenseRequest extends FormRequest
             'attachment.file' => 'Attachment must be a file.',
             'note.string' => 'Note must be a string.',
             'reference.string' => 'Income reference must be a string.',
-            'income_date.date_format' => 'Income date must be in the format "YYYY-MM-DD".',
+            'date.date_format' => 'Income date must be in the format "YYYY-MM-DD".',
         ];
     }
 }

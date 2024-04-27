@@ -9,6 +9,7 @@ use App\Models\DebtCollection;
 use App\Models\Lend;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LendController extends Controller
 {
@@ -21,6 +22,7 @@ class LendController extends Controller
     {
         $data = $request->validate([
             'amount' => 'required|numeric',
+            'note' => 'required',
             'debt_id' => 'required|exists:debts,id',
             'account_id' => 'required|exists:bank_accounts,id',
             'date' => 'required|date',
@@ -51,6 +53,14 @@ class LendController extends Controller
         $bankAccount->balance -= $request->amount;
         $bankAccount->save();
 
+	    storeActivityLog( [
+		    'user_id'      => Auth::user()->id,
+		    'object_id'     => $lend['id'],
+		    'log_type'     => 'edit',
+		    'module'       => 'lend',
+		    'descriptions' => "",
+		    'data_records' => array_merge( json_decode( json_encode( $lend ), true ), [ 'account_balance' => $bankAccount->balance ] ),
+	    ] );
         return response()->json([
             'status' => 'success',
             'message' => 'Lend added successfully',
@@ -64,6 +74,7 @@ class LendController extends Controller
     {
         $data = $request->validate([
             'amount' => 'required|numeric',
+            'note' => 'required',
             'debt_id' => 'required|exists:debts,id',
             'account_id' => 'required|exists:bank_accounts,id',
             'date' => 'required|date',
@@ -90,13 +101,19 @@ class LendController extends Controller
         $bankAccount->balance += $request->amount;
         $bankAccount->save();
 
-
+	    storeActivityLog( [
+		    'user_id'      => Auth::user()->id,
+		    'object_id'     => $debtCollection['id'],
+		    'log_type'     => 'edit',
+		    'module'       => 'Debt',
+		    'descriptions' => "",
+		    'data_records' => array_merge( json_decode( json_encode( $debtCollection ), true ), [ 'account_balance' => $bankAccount->balance ] ),
+	    ] );
         return response()->json([
             'status' => 'success',
             'message' => 'Debt collection added successfully',
             'debtCollection' => $debtCollection
         ]);
-
 
     }
 

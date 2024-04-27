@@ -6,6 +6,8 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import {useStateContext} from "../contexts/ContextProvider.jsx";
 import WizCard from "../components/WizCard";
+import MainLoader from "../components/MainLoader.jsx";
+import { notification } from "../components/ToastNotification.jsx";
 
 export default function BudgetForm() {
     const [errors, setErrors] = useState({});
@@ -58,7 +60,7 @@ export default function BudgetForm() {
                 })
                 .catch((error) => {
                     setLoading(true);
-                    console.log("Unable to load budget", error);
+                    console.warn("Unable to load budget", error);
                 });
         }, []);
     }
@@ -67,9 +69,22 @@ export default function BudgetForm() {
         setSelectedCategories(selectedOptions);
     };
 
+     // set default date(today)
+     useEffect(()=>{
+        if(budget?.start_date ===""){
+            setBudget({
+               ...budget,
+               start_date: new Date().toISOString().split('T')[0]
+              });
+            }
+       },[budget?.start_date])
+
+
+
+
     const budgetSubmit = (e) => {
         e.preventDefault();
-
+        setLoading(true);
         const updatedBudget = {
             ...budget,
             categories: selectedCategories.map((category) => category.value),
@@ -79,33 +94,47 @@ export default function BudgetForm() {
             axiosClient
                 .put(`/budgets/${budget.id}`, updatedBudget)
                 .then(({data}) => {
-                    setNotification(`${data.budget_name} was successfully updated`);
+                    notification('success',data?.message,data?.description)
                     navigate("/budgets");
+                    setLoading(false);
                 })
-                .catch((error) => {
-                    const response = error.response;
-                    if (response && response.status === 422) {
-                        setErrors(response.data.errors);
+                .catch((err) => {
+                    // const response = error.response;
+                    // if (response && response.status === 422) {
+                    //     setErrors(response.data.errors);
+                    // }
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
                     }
+                    setLoading(false);
                 });
         } else {
             axiosClient
                 .post("/budgets", updatedBudget)
                 .then(({data}) => {
-                    setNotification(`${data.budget_name} was successfully created`);
+                    // setNotification(`${data.budget_name} was successfully created`);
+                    notification('success',data?.message,data?.description)
                     navigate("/budgets");
+                    setLoading(false);
                 })
-                .catch((error) => {
-                    const response = error.response;
-                    if (response && response.status === 422) {
-                        setErrors(response.data.errors);
+                .catch((err) => {
+                    // const response = error.response;
+                    // if (response && response.status === 422) {
+                    //     setErrors(response.data.errors);
+                    // }
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
                     }
+                    setLoading(false);
                 });
         }
     };
 
     return (
         <>
+         <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 {budget.id && <h1 className="title-text mb-0">Update Budget: {budget.budget_name}</h1>}
                 {!budget.id && <h1 className="title-text mb-0">Add New Budget</h1>}
@@ -155,7 +184,7 @@ export default function BudgetForm() {
                             <label className="custom-form-label" htmlFor="start_date">Start Date</label>
                             <DatePicker
                                 className="custom-form-control"
-                                selected={budget.start_date ? new Date(budget.start_date) : null}
+                                selected={budget.start_date ? new Date(budget.start_date) : new Date()}
                                 onChange={(date) =>
                                     setBudget({...budget, start_date: date ? date.toISOString().split("T")[0] : ""})
                                 }

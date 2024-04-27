@@ -5,6 +5,7 @@ import Pagination from "react-bootstrap/Pagination";
 import Badge from "react-bootstrap/Badge";
 import {SettingsContext} from "../contexts/SettingsContext";
 import {useNavigate} from "react-router-dom";
+import MainLoader from "../components/MainLoader";
 
 export default function SubscriptionHistory() {
 
@@ -68,12 +69,13 @@ export default function SubscriptionHistory() {
 
     return (
         <>
+        <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Subscription Histories</h1>
 
             </div>
             <WizCard className="animated fadeInDown">
-                <div className="table-responsive">
+                <div className="table-responsive-sm">
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr className={'text-center'}>

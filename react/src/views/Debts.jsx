@@ -8,8 +8,12 @@ import {Button, Modal} from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import Pagination from "react-bootstrap/Pagination";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faEdit, faMoneyCheck, faTrash} from "@fortawesome/free-solid-svg-icons";
+import { faMoneyCheck} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
+import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
+import MainLoader from "../components/MainLoader.jsx";
+import { Tooltip } from "@mui/material";
+import { notification } from "../components/ToastNotification.jsx";
 
 export default function Debts() {
 
@@ -25,7 +29,7 @@ export default function Debts() {
     const [selectedAccountId, setSelectedAccountId] = useState('');
     const [bankAccounts, setBankAccounts] = useState([]);
 
-    const {applicationSettings} = useContext(SettingsContext);
+    const {applicationSettings, userRole} = useContext(SettingsContext);
     const {
         num_data_per_page,
         default_currency
@@ -41,7 +45,7 @@ export default function Debts() {
 
     const [debt, setDebt] = useState({
         id: null,
-        amount: null,
+        amount: 0,
         account_id: null,
         type: '',
         person: '',
@@ -70,6 +74,11 @@ export default function Debts() {
         setShowModal(true);
     };
 
+    const showDebt = (debt) => {
+        setDebt(debt);
+        setShowModal(true);
+    }
+
     const handleCloseModal = () => {
         setShowModal(false);
     };
@@ -80,42 +89,50 @@ export default function Debts() {
                 setBankAccounts(data.data);
             })
             .catch(error => {
-                console.log('Error fetching bank accounts:', error)
+                setLoading(false)
+                console.warn('Error fetching bank accounts:', error)
             });
     }
 
     const getDebts = (page, pageSize) => {
         setLoading(true);
         axiosClient.get('/debts', {params: {page, pageSize}}).then(({data}) => {
-            setLoading(false);
             setDebts(data.debts);
             setTotalCount(data.total);
+            getBankAccounts();
+            setLoading(false);
         }).catch(error => {
-            console.log('Unable to fetch debt data', error);
+            setLoading(false);
+            console.warn('Unable to fetch debt data', error);
         })
     }
 
     useEffect(() => {
         document.title = "Debts / Loan";
         getDebts(currentPage, pageSize);
-        getBankAccounts();
     }, [currentPage, pageSize]);
 
     const edit = (selectedDebt) => {
-        console.log(selectedDebt);
         setSelectedAccountId(selectedDebt.account_id);
         setDebt(selectedDebt);
         setErrors(null);
         setShowModal(true);
     }
 
+
+    // set default date(today)
+    useEffect(() => {
+        if (date === null) {
+            setDate(new Date())
+        }
+    }, [date])
+
     const debtSubmit = (e) => {
         e.preventDefault();
-
-
-
+        setLoading(true);
         if (debt.id) {
             alert("Updating existing debt data");
+            setLoading(false);
         } else {
             const debtData = {
                 ...debt,
@@ -127,38 +144,58 @@ export default function Debts() {
             };
 
             axiosClient.post('/debts/store', debtData)
-                .then(response => {
-                    if (response.data.status === 'insufficient_balance') {
-                        setNotification(response.data.message);
-                    }
+                .then((data) => {
+                    // if (response.data.status === 'insufficient_balance') {
+                    //     setNotification(response.data.message);
+                    // }
 
-                    if (response.data.status === 'success') {
-                        setNotification(response.data.message);
-                        getDebts(currentPage, pageSize);
-                        setShowModal(false);
+                    // if (response.data.status === 'success') {
+                    //     setNotification(response.data.message);
+                    //     getDebts(currentPage, pageSize);
+                    //     setShowModal(false);
 
-                        setDebt({
-                            id: null,
-                            amount: null,
-                            account_id: null,
-                            type: '',
-                            person: '',
-                            date: null,
-                            note: ''
-                        });
-                        setDate(null);
-                        setErrors(null);
-                    }
+                    //     setDebt({
+                    //         id: null,
+                    //         amount: null,
+                    //         account_id: null,
+                    //         type: '',
+                    //         person: '',
+                    //         date: null,
+                    //         note: ''
+                    //     });
+                    //     setDate(null);
+                    //     setErrors(null);
+                    // }
+                    // if (response.data.status === 'fail') {
+                    //     setNotification(response.data.message);
+                    // }
 
-                    if (response.data.status === 'fail') {
-                        setNotification(response.data.message);
-                    }
+                    getDebts(currentPage, pageSize);
+                    setShowModal(false);
 
+                    setDebt({
+                        id: null,
+                        amount: null,
+                        account_id: null,
+                        type: '',
+                        person: '',
+                        date: null,
+                        note: ''
+                    });
+                    setDate(null);
+                    setErrors(null);
+
+                    notification('success',data?.message,data?.description)
+                    setLoading(false);
                 })
-                .catch(error => {
-                    // Handle error
-                    console.log('Error creating debt:', error);
-                    setErrors(error.response.data.errors); // Set the error messages received from the server
+                .catch(err => {
+                    if (err.response) { 
+                        const error = err.response.data
+                        notification('error',error?.message,error.description)
+                    }
+                    setLoading(false);
+                    // console.warn('Error creating debt:', error);
+                    // setErrors(error.response.data.errors); // Set the error messages received from the server
                 })
                 .finally(() => {
                     setLoading(false);
@@ -178,22 +215,16 @@ export default function Debts() {
             if (result.isConfirmed) {
                 axiosClient
                     .delete(`/debts/delete/${debt.id}`)
-                    .then(() => {
+                    .then((data) => {
                         getDebts(currentPage, pageSize);
-                        Swal.fire({
-                            title: "Deleted!",
-                            text: "debt has been deleted.",
-                            icon: "success",
-                        });
+                        notification('success',data?.message,data?.description)
                     })
-                    .catch((error) => {
-                        console.log(error);
-                        Swal.fire({
-                            title: "Error!",
-                            text: "debt could not be deleted.",
-                            icon: "error",
-                        });
-                    });
+                    .catch(err => {
+                        if (err.response) { 
+                            const error = err.response.data
+                            notification('error',error?.message,error.description)
+                        }
+                    })
             }
         });
     };
@@ -214,13 +245,28 @@ export default function Debts() {
         );
     }
 
+
+
+    const actionParams = {
+        route:{
+            editRoute:'/manage-debt/',
+            viewRoute:'',
+            deleteRoute:''
+        },
+    }
+
     return (
         <div>
+            <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Debts/Loans</h1>
-                <div>
-                    <Link className="custom-btn btn-add" onClick={showCreateModal}><FontAwesomeIcon icon={faMoneyCheck}/> Add New</Link>
-                </div>
+                {userRole === 'admin' &&
+                    <div>
+                        <Link className="custom-btn btn-add" onClick={showCreateModal}><FontAwesomeIcon
+                            icon={faMoneyCheck}/> Add New</Link>
+                    </div>
+                }
+
             </div>
 
 
@@ -233,17 +279,17 @@ export default function Debts() {
                            onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <div className="table-responsive">
+                <div className="table-responsive-sm">
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr>
-                            <th>AMOUNT</th>
-                            <th className="text-center">TYPE</th>
-                            <th className="text-center">ACCOUNT</th>
-                            <th className="text-center">PERSON</th>
                             <th className="text-center">DATE</th>
+                            <th className="text-center">TYPE</th>
+                            <th className="text-center">PERSON</th>
+                            <th className="text-center">ACCOUNT</th>
+                            <th className={'text-center'}>AMOUNT</th>
                             <th className="text-center">NOTE</th>
-                            <th className="text-center">ACTIONS</th>
+                            {userRole === 'admin' && <th className="text-center">ACTIONS</th>}
                         </tr>
                         </thead>
                         {loading && (
@@ -266,32 +312,29 @@ export default function Debts() {
                             ) : (
                                 filterDebts.map((debt) => (
                                     <tr key={debt.id}>
-                                        <td>{default_currency}{debt.amount}</td>
-                                        <td className="text-center">{debt.type.toUpperCase()}</td>
-                                        <td className="text-center">{debt.account}</td>
-                                        <td className="text-center">{debt.type === 'borrow' ? "Borrowed from " : "Lend to "} {debt.person}</td>
                                         <td className="text-center">{debt.date}</td>
-                                        <td className="text-center">{debt.note}</td>
+                                        <td className="text-center">{debt.type.toUpperCase()}</td>
+                                        <td className="text-center">{debt.type === 'borrow' ? "Borrowed from " : "Lend to "} {debt.person}</td>
+                                        <td className="text-center">{debt.account}</td>
+                                        <td>{default_currency+' '}{debt.amount}</td>
+                                       
                                         <td className="text-center">
-                                            <div className="d-flex flex-wrap justify-content-center gap-2">
-                                            <span>
-                                                <Link className="btn-edit"
-                                                      to={"/manage-debt/" + debt.id}><FontAwesomeIcon icon={faEdit}/> Manage</Link>
-                                            </span>
-                                                <span>
-                                               {/* <Link className="btn-info"*/}
-                                                    {/*       to={`#`} onClick={ () => edit(debt) } >*/}
-                                                    {/*    Edit*/}
-                                                    {/*</Link>*/}
-                                            </span>
-                                                <span>
-                                               <a onClick={(e) => onDelete(debt)}
-                                                  className="btn-delete">
-                                                  <FontAwesomeIcon icon={faTrash}/> Delete
-                                               </a>
-                                            </span>
-                                            </div>
+                                        <Tooltip title={debt?.note} arrow>
+                                            {debt.note?debt.note.split(' ').slice(0,3).join(' ')+` ....` :''}
+                                        </Tooltip>
                                         </td>
+                                      
+                                        {userRole ==='admin' && 
+                                        <td>
+                                            <ActionButtonHelpers 
+                                              module={debt}
+                                              showModule={showDebt}
+                                              deleteFunc={onDelete}
+                                              params={actionParams}
+                                            />
+                                        </td>
+                                        }
+
                                     </tr>
                                 ))
                             )}
@@ -329,7 +372,7 @@ export default function Debts() {
                     <div className="form-group">
                         <label htmlFor="amount" className="custom-form-label">Amount :</label>
                         <input className="custom-form-control"
-                               value={debt.amount}
+                               value={debt.amount== null ?'':debt.amount}
                                onChange={e => setDebt(prevDebt => ({...prevDebt, amount: e.target.value}))}
                                placeholder="Amount"
                         />
@@ -371,8 +414,8 @@ export default function Debts() {
                                 required // Add required attribute
                         >
                             <option value="">Select Type</option>
-                            <option value="lend">Lend</option>
-                            <option value="borrow">Borrow</option>
+                            <option value="lend">Lend(Give Loan to Others)</option>
+                            <option value="borrow">Borrow(Taken Loan From Others)</option>
                         </select>
 
                         {errors && errors.type && (
@@ -398,7 +441,7 @@ export default function Debts() {
 
 
                     <div className="form-group">
-                        <label htmlFor="income_date" className="custom-form-label">Date :</label>
+                        <label htmlFor="date" className="custom-form-label">Date :</label>
                         <DatePicker className="custom-form-control"
                                     selected={date}
                                     onChange={handleDateChange}
@@ -427,14 +470,10 @@ export default function Debts() {
                         )}
 
                     </div>
-
-
                 </Modal.Body>
                 <Modal.Footer>
-
                     <Button className="btn-sm" variant="primary" onClick={debtSubmit}>
                         Add new debt
-
                     </Button>
                     <Button className="btn-sm" variant="secondary" onClick={handleCloseModal}>
                         Close

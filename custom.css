@@ -220,6 +220,7 @@ h1, h2, h3, h4, h5, h6 {
     padding: 1rem;
 }
 
+
 .wrapper > .wrapping-body {
     width: calc(100% - 245px);
     min-height: 100vh;
@@ -322,6 +323,7 @@ footer {
     flex-grow: 1;
 }
 
+
 @media screen and (min-width: 992px) {
     .wrapper.collapsed .aside-menu-text {
         display: none;
@@ -391,5 +393,7 @@ footer {
     max-height: 0;
     opacity: 0;
 }
-
-
+.header-dropdown-item{
+    color: black;
+    text-decoration: none;
+}

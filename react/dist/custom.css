@@ -23,7 +23,7 @@ body {
     /*border: 1px solid #dddddd;*/
     padding: 1.5rem;
     background-color: #FFFFFF;
-    box-shadow: var(--common-shadow);
+    /*box-shadow: var(--common-shadow);*/
     -webkit-border-radius: .5rem;
     border-radius: .5rem;
 }
@@ -393,3 +393,7 @@ footer {
 }
 
 
+.header-dropdown-item{
+    color: black;
+    text-decoration: none;
+}

@@ -29,13 +29,12 @@ class BudgetController extends Controller
         $page = $request->query('page', 1);
         $pageSize = $request->query('pageSize', 10);
 
-        $budgets = Budget::where('user_id', $user->id)
-            ->skip(($page - 1) * $pageSize)
+        $budgets = Budget::skip(($page - 1) * $pageSize)
             ->take($pageSize)
             ->orderBy('id', 'desc')
             ->get();
 
-        $totalCount = Budget::where('user_id', $user->id)->count();
+        $totalCount = Budget::count();
 
         return response()->json([
             'data' => BudgetResource::collection($budgets),
@@ -85,7 +84,11 @@ class BudgetController extends Controller
         // Attach categories to the budget
         $budget->categories()->attach($validatedData['categories']);
 
-        return response()->json($budget, 201);
+        // return response()->json($budget, 201);
+        return response()->json( [
+			'message'     => 'Success!',
+			'description' => 'Budget successfully Created!',
+		] );
     }
 
 
@@ -120,7 +123,13 @@ class BudgetController extends Controller
 
         // Sync categories for the budget
         $budget->categories()->sync($validatedData['categories']);
-        return response()->json($budget);
+        
+        // return response()->json($budget);
+
+        return response()->json( [
+			'message'     => 'Success!',
+			'description' => 'Budget successfully updated',
+		] );
     }
 
 
@@ -145,39 +154,6 @@ class BudgetController extends Controller
         return response()->json(['categories' => $categories]);
     }
 
-
-    /**
-     * @return JsonResponse
-     */
-    public function getActiveBudgets(): JsonResponse
-    {
-        $currentDate = Carbon::now()->toDateString();
-        $userId = auth()->user()->id;
-        $activeBudgets = Budget::where('start_date', '<=', $currentDate)
-            ->where('end_date', '>=', $currentDate)
-            ->where('user_id', $userId)
-            ->get();
-
-        $activeBudgetCount = $activeBudgets->count();
-
-        $data = [];
-        foreach ($activeBudgets as $budget) {
-            $amountAvailable = $budget->updated_amount;
-            // You can perform additional calculations or logic here if needed
-            $data[] = [
-                'id' => $budget->id,
-                'user_id' => $userId,
-                'active_budget_count' => $activeBudgetCount,
-                'original_budget_amount' => $budget->amount,
-                'budget_name' => $budget->budget_name,
-                'amount_available' => $amountAvailable,
-            ];
-        }
-
-        return response()->json($data);
-    }
-
-
     /**
      * @return JsonResponse
      */
@@ -185,12 +161,10 @@ class BudgetController extends Controller
     {
         $currentMonth = date('m');
         $currentYear = date('Y');
-        $userId = auth()->id();
 
         $currentBudget = DB::table('budgets')
             ->whereMonth('start_date', $currentMonth)
             ->whereYear('start_date', $currentYear)
-            ->where('user_id', $userId)
             ->value('id');
 
         if (!$currentBudget) {
