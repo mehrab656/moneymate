@@ -134,7 +134,6 @@ class IncomeController extends Controller
             $newBankAccount->save();
 
         } else {
-
             $bankAccount = BankAccount::find($income->account_id);
             if ($income->amount > $originalAmount)
             {
@@ -144,8 +143,6 @@ class IncomeController extends Controller
             }
             $bankAccount->save();
         }
-
-
 
         return new IncomeResource($income);
     }
