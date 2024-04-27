@@ -253,7 +253,9 @@ class IncomeController extends Controller {
 					'reference'   => $income['reference'],
 					'income_type' => $income['income_type'],
 					'date'        => $incomeDate,
-					'attachment'  => $income['attachment']
+					'attachment'  => $income['attachment'],
+
+
 				] );
 				storeActivityLog( [
 					'user_id'      => Auth::user()->id,
@@ -503,10 +505,10 @@ class IncomeController extends Controller {
 	/**
 	 * @param Request $request
 	 *
-	 * @return JsonResponse|void
+	 * @return JsonResponse
 	 * @throws Throwable
 	 */
-	public function addIncomeFromCSV( Request $request ) {
+	public function addIncomeFromCSV( Request $request ): JsonResponse {
 
 		$files = $request->file( 'csvFile' );
 		if ( ! $files ) {
@@ -541,8 +543,9 @@ class IncomeController extends Controller {
 				'message'     => "Under Maintenance",
 				'description' => "This channel is under maintenance.",
 			], 400 );
-			$incomes = ( new Income() )->mapCSVWithAirbnb( $fileContents );
+//			$incomes = ( new Income() )->mapCSVWithAirbnb( $fileContents );
 		}
+		$status = [];
 		if ( $channel === 'booking' ) {
 			$category_id = $request->category_id;
 			if ( ! $category_id ) {

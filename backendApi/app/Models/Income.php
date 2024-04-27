@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use DateTime;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
