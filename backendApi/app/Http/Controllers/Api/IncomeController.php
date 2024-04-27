@@ -140,7 +140,7 @@ class IncomeController extends Controller {
 						'object_id'    => $income['id'],
 						'log_type'     => 'create',
 						'module'       => 'income',
-						'descriptions' => "  added income.",
+						'descriptions' => "added income.",
 						'data_records' => array_merge( json_decode( json_encode( [] ), true ), $account ),
 					] );
 				} else {

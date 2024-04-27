@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
+import TableCell,{tableCellClasses } from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
@@ -13,6 +13,7 @@ import axiosClient from "../../axios-client.js";
 import {useEffect, useState} from "react";
 import {BeatLoader} from "react-spinners";
 
+import { styled } from '@mui/material/styles';
 
 const useStyles = makeStyles({
     root: {
@@ -54,19 +55,27 @@ export default function ActivityLogs() {
         document.title = "Activity Log";
         getActivityData(page, rowsPerPage);
     }, [page, rowsPerPage]);
-
+    const StyledTableCell = styled(TableCell)(({ theme }) => ({
+        [`&.${tableCellClasses.head}`]: {
+            backgroundColor: "#1E1E2D",
+            color: theme.palette.common.white,
+        },
+        [`&.${tableCellClasses.body}`]: {
+            fontSize: 14,
+        },
+    }));
     return (
-        <Paper className={classes.root}>
-            <TableContainer component={Paper}>
-                <Table aria-label="collapsible table">
+        <Paper sx={{ width: '100%', overflow: 'hidden' }} classes={"root"}>
+            <TableContainer sx={{ maxHeight: 840 }} component={Paper}>
+                <Table size={"small"} stickyHeader aria-label="sticky table">
                     <TableHead>
                         <TableRow>
-                            <TableCell/>
-                            <TableCell><b>Descriptions</b></TableCell>
-                            <TableCell><b>Activity Type</b></TableCell>
-                            <TableCell><b>Object</b></TableCell>
-                            <TableCell><b>Date</b></TableCell>
-                            <TableCell><b>View Status</b></TableCell>
+                            <StyledTableCell/>
+                            <StyledTableCell><b>Descriptions</b></StyledTableCell>
+                            <StyledTableCell><b>Activity Type</b></StyledTableCell>
+                            <StyledTableCell><b>Object</b></StyledTableCell>
+                            <StyledTableCell><b>Date</b></StyledTableCell>
+                            <StyledTableCell><b>View Status</b></StyledTableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -82,6 +91,7 @@ export default function ActivityLogs() {
                             <ActivityLogRows key={Math.random().toString(36).substring(2)} row={row}/>
                         ))}
                     </TableBody>
+
                 </Table>
             </TableContainer>
             <TablePagination
