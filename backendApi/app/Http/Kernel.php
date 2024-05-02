@@ -4,6 +4,7 @@ namespace App\Http;
 
 use App\Http\Middleware\ContentSecurityPolicy;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use Illuminate\Session\Middleware\StartSession;
 
 class Kernel extends HttpKernel
 {
@@ -45,6 +46,8 @@ class Kernel extends HttpKernel
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\Cors::class,//cors added here
+	        \Illuminate\Session\Middleware\StartSession::class,
+
         ],
     ];
 

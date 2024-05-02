@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\BankNameController;
 use App\Http\Controllers\Api\BorrowController;
 use App\Http\Controllers\Api\BudgetController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DebtController;
 use App\Http\Controllers\Api\ExpenseController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\Api\InvestmentController;
 use App\Http\Controllers\Api\LendController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SectorModelController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\UserController;
@@ -203,6 +205,23 @@ Route::middleware( 'auth:sanctum' )->group( function () {
 	Route::get( '/activity-logs', [ UserController::class, 'getActivityLogs' ] );
 	Route::post( '/update-log-status/{uid}', [ UserController::class, 'updateLogStatus' ] );
 
+	//company
+	Route::get('companies',[ CompanyController::class,'getCompanyList']);
+	Route::get('getCurrentCompany/{id}',[ CompanyController::class,'getCurrentCompany']);
+	Route::get('company/{uid}',[ CompanyController::class,'getCompany']);
+	Route::post('/addCompany',[CompanyController::class,'addNewCompany']);
+	Route::post('/company/update/{uid}',[CompanyController::class,'updateCompany']);
+	Route::delete( 'company/{uid}', [ CompanyController::class, 'destroy' ] );
+	Route::get( 'company-by-user/{uid}', [ CompanyController::class, 'getCompanyByUser' ] );
+
+	//Roles
+	Route::get('roles',[ RoleController::class,'getRoleList']);
+	Route::get('roles-by-company',[ RoleController::class,'companyRoleList']);
+	Route::get('role/{id}',[ RoleController::class,'getRole']);
+	Route::post('/role/add',[RoleController::class,'addRole']);
+	Route::post('/role/update/{id}',[RoleController::class,'updateRole']);
+	Route::delete( 'role/{id}', [ RoleController::class, 'destroy' ] );
+
 } );
 
 
@@ -224,13 +243,6 @@ Route::get('migrate', function(){
 	dd('New Files has been Migrated');
 });
 Route::get('upcoming-payments',[ NotificationController::class,'sendUpcomingPaymentsNotification']);
-
-
-
-
-
-
-
 
 
 
