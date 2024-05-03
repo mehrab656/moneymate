@@ -36,7 +36,13 @@ import {
     faAnglesDown,
     faArrowDownUpAcrossLine,
     faArrowDownZA,
-    faArrowDownLong, faArrowUp, faFontAwesomeLogoFull
+    faArrowDownLong,
+    faArrowUp,
+    faFontAwesomeLogoFull,
+    faBuildingNgo,
+    faBuildingUn,
+    faBuildingCircleArrowRight,
+    faBuildingLock, faBuildingFlag, faHomeUser, faTasksAlt
 } from '@fortawesome/free-solid-svg-icons';
 import {SettingsContext, SettingsProvider} from "../contexts/SettingsContext.jsx";
 import Footer from "./Footer.jsx";
@@ -49,6 +55,7 @@ import DropDownProperties from "./DropdownProperties";
 import {useGetUserDataQuery} from "../api/slices/userSlice.js";
 import {useGetSectorsDataQuery} from "../api/slices/sectorSlice.js";
 import {useGetFinancialReportDataQuery} from "../api/slices/accountSlice.js";
+import Dropdown from "react-bootstrap/Dropdown";
 
 export default function DefaultLayout() {
 
@@ -68,16 +75,39 @@ export default function DefaultLayout() {
 
     const {data: getSectorsData} = useGetSectorsDataQuery({token})
     const {data: getFinancialReportData} = useGetFinancialReportDataQuery({token})
-
+    const [companies, setCompanies] = useState([]);
+    const [currentCompany, setCurrentCompany] = useState()
     useEffect(() => {
         if (!token) {
             navigate('/login');
         }
+
         //get total account balance
     }, [token]);
 
+    const getCompanies = () => {
+        axiosClient.get('companies').then(({data}) => {
+            if (data.data.length > 0) {
+                setCompanies(data.data);
+            }
+        })
+    };
+
+    const getCurrentCompany = () => {
+        const currentCompanyID = localStorage.getItem("CURRENT_COMPANY");
+
+        axiosClient.get(`/getCurrentCompany/${currentCompanyID}`).then(({data}) => {
+            if (data.status === "success") {
+                console.log(data)
+                setCurrentCompany(data.data);
+            }
+        });
+    }
+
 
     useEffect(() => {
+        getCompanies();
+        getCurrentCompany();
         if (getFinancialReportData) {
             setFinanceStatus(getFinancialReportData)
         }
@@ -123,7 +153,6 @@ export default function DefaultLayout() {
         };
     }, []);
 
-
     const onLogout = (ev) => {
         ev.preventDefault();
 
@@ -133,9 +162,12 @@ export default function DefaultLayout() {
                 setUser({});
                 setUserRole({});
                 setToken(null);
+                setCurrentCompany({});
+                setCompanies([]);
                 localStorage.removeItem('ACCESS_TOKEN');
                 localStorage.removeItem('ACCESS_USER');
                 localStorage.removeItem('ACCESS_ROLE');
+                localStorage.removeItem('CURRENT_COMPANY');
             })
             .catch(error => {
                 console.warn('Error occurred', error);
@@ -175,7 +207,7 @@ export default function DefaultLayout() {
             setSubmenuSettingsVisible(!submenuSettingsVisible);
         }
     };
-
+    console.log(currentCompany);
 
     return (
         <>
@@ -197,6 +229,21 @@ export default function DefaultLayout() {
                         <div className={`${className}`} id="wrappingContent">
                             <aside className="wrapping-aside overflow-auto h-100 d-none d-md-block d-lg-block">
                                 <div className="aside-content">
+                                    <Dropdown>
+                                        <Dropdown.Toggle variant="success" id="dropdown-basic">
+                                            {currentCompany ? currentCompany.name : 'company'}
+                                        </Dropdown.Toggle>
+
+                                        <Dropdown.Menu>
+                                            {
+                                                companies.length > 0 &&
+                                                companies.map((company) => (
+                                                    <Dropdown.Item href="#/action-1">{company.name}</Dropdown.Item>
+                                                ))
+                                            }
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                    <hr/>
                                     <ul className="aside-menu">
                                         <li className="aside-menu-item">
                                             <Link
@@ -207,7 +254,15 @@ export default function DefaultLayout() {
                                                 <span className="aside-menu-text"> Dashboard </span>
                                             </Link>
                                         </li>
-
+                                        <li className="aside-menu-item">
+                                            <Link
+                                                to="/companies"
+                                                className={isActive('/companies') ? 'active' : ''}>
+                                                <span className="aside-menu-icon">
+                                                    <FontAwesomeIcon icon={faBuildingFlag}/></span>
+                                                <span className="aside-menu-text"> Company </span>
+                                            </Link>
+                                        </li>
 
                                         <li className="aside-menu-item">
                                             <Link
@@ -466,6 +521,15 @@ export default function DefaultLayout() {
                                                         icon={faEdit}/></span>
                                                                     <span
                                                                         className="aside-menu-text"> Manage Profile </span>
+                                                                </Link>
+                                                            </li>
+                                                            <li className="aside-menu-item">
+                                                                <Link
+                                                                    to="/roles"
+                                                                    className={isActive('/roles') ? 'active' : ''}>
+                                                <span className="aside-menu-icon">
+                                                    <FontAwesomeIcon icon={faTasksAlt}/></span>
+                                                                    <span className="aside-menu-text"> Roles </span>
                                                                 </Link>
                                                             </li>
                                                         </ul>

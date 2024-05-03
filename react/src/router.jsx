@@ -37,6 +37,11 @@ import Sectors from "./views/Sectors/Sectors.jsx";
 import SectorCreate from "./views/Sectors/SectorCreate.jsx";
 import MonthlyReport from "./views/MonthlyReport.jsx";
 import ActivityLogs from "./views/ActivityLogs/ActivityLogs.jsx";
+import Roles from "./views/Role/Roles.jsx";
+import RoleForms from "./views/Role/RoleForms.jsx";
+import Companies from "./views/Company/Companies.jsx";
+import CompanyCreate from "./views/Company/CompanyCreate.jsx";
+import CompanySignUp from "./views/Company/CompanySignUp.jsx";
 
 const router = createBrowserRouter([
 
@@ -210,7 +215,31 @@ const router = createBrowserRouter([
             {
                 path: 'application-settings',
                 element: <ApplicationSettingsForm key="applicationSettings"/>
-            }
+            },
+            {
+                path: '/roles',
+                element: <Roles />
+            },
+            {
+                path: '/roles/new',
+                element: <RoleForms key={"rolesCreate"} />
+            },
+            {
+                path: '/roles/:id',
+                element: <RoleForms key={"rolesUpdate"} />
+            },
+            {
+                path: '/companies',
+                element: <Companies />
+            },
+            {
+                path: '/company/add',
+                element: <CompanyCreate key={"companyCreate"}/>
+            },
+            {
+                path: '/company/:id',
+                element: <CompanyCreate key={"companyUpdate"}/>
+            },
         ]
     },
     {
@@ -230,6 +259,10 @@ const router = createBrowserRouter([
             {
                 path: '/signup',
                 element: <Signup/>
+            },
+            {
+                path: '/signup/company',
+                element: <CompanySignUp/>
             }
         ]
     },
