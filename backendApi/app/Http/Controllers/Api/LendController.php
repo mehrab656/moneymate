@@ -38,6 +38,7 @@ class LendController extends Controller
             ]);
         }
 
+		$data['company_id']=Auth::user()->primary_company;
 
         $lend = Lend::create($data);
 
@@ -46,6 +47,7 @@ class LendController extends Controller
 
         $debt = Debt::find($request->debt_id);
         $debt->amount += $request->amount;
+        $debt->company_id += Auth::user()->primary_company;
         $debt->save();
 
         // Update amount in Bank account table
@@ -54,7 +56,6 @@ class LendController extends Controller
         $bankAccount->save();
 
 	    storeActivityLog( [
-		    'user_id'      => Auth::user()->id,
 		    'object_id'     => $lend['id'],
 		    'log_type'     => 'edit',
 		    'module'       => 'lend',
@@ -91,7 +92,7 @@ class LendController extends Controller
                 'message' => 'Insufficient balance in the selected bank account. Please use another bank account to repay.'
             ]);
         }
-
+	    $data['company_id']=Auth::user()->primary_company;
         $debtCollection = DebtCollection::create($data);
 
 
@@ -102,7 +103,6 @@ class LendController extends Controller
         $bankAccount->save();
 
 	    storeActivityLog( [
-		    'user_id'      => Auth::user()->id,
 		    'object_id'     => $debtCollection['id'],
 		    'log_type'     => 'edit',
 		    'module'       => 'Debt',

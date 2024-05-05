@@ -35,7 +35,8 @@ class SectorModelController extends Controller {
 		$pageSize = $request->query( 'pageSize', 10 );
 
 
-		$sectors = SectorModel::skip( ( $page - 1 ) * $pageSize )
+		$sectors = SectorModel::where('company_id',Auth::user()->primary_company)
+		                      ->skip( ( $page - 1 ) * $pageSize )
 		                      ->take( $pageSize )
 		                      ->orderBy( 'id', 'DESC' )
 		                      ->get();

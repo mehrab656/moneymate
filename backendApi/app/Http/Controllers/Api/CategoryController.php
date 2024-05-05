@@ -8,6 +8,8 @@ use App\Http\Requests\CategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
+use DB;
+use Exception;
 use Hamcrest\Description;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,12 +25,14 @@ class CategoryController extends Controller {
 	}
 
 	public function index( Request $request ): JsonResponse {
-		$page     = $request->query( 'page', 1 );
-		$pageSize = $request->query( 'pageSize', 10 );
-
-		$categories = Category::skip( ( $page - 1 ) * $pageSize )
-		                      ->take( $pageSize )
-		                      ->get();
+		$page       = $request->query( 'page', 1 );
+		$pageSize   = $request->query( 'pageSize', 10 );
+		$categories = DB::table( 'categories' )->select( 'categories.*' )
+		                ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
+		                ->where( 'sectors.company_id', '=', Auth::user()->primary_company )
+		                ->skip( ( $page - 1 ) * $pageSize )
+		                ->take( $pageSize )
+		                ->get();
 
 		$totalCount = Category::count();
 
@@ -38,14 +42,17 @@ class CategoryController extends Controller {
 		] );
 	}
 
+	/**
+	 * @throws Exception
+	 */
 	public function create( CategoryRequest $request ): JsonResponse {
-		$categoryData            = $request->validated();
-		$categoryData['user_id'] = auth()->user()->id;
+		$categoryData               = $request->validated();
+		$categoryData['user_id']    = auth()->user()->id;
+		$categoryData['company_id'] = auth()->user()->primary_company;
 
 		$category = $this->categoryRepository->create( $categoryData );
 		storeActivityLog( [
-			'user_id'      => Auth::user()->id,
-			'object_id'     => $category->id,
+			'object_id'    => $category->id,
 			'log_type'     => 'create',
 			'module'       => 'Category',
 			'descriptions' => "",
@@ -64,14 +71,16 @@ class CategoryController extends Controller {
 		return new CategoryResource( $category );
 	}
 
-	public function update( UpdateCategoryRequest $request, Category $category ): CategoryResource {
+	/**
+	 * @throws Exception
+	 */
+	public function update( UpdateCategoryRequest $request, Category $category ): JsonResponse {
 		$data     = $request->validated();
 		$oldData  = $category;
 		$category = $this->categoryRepository->update( $category, $data );
 
 		storeActivityLog( [
-			'user_id'      => Auth::user()->id,
-			'object_id'     => $category->id,
+			'object_id'    => $category->id,
 			'log_type'     => 'edit',
 			'module'       => 'Category',
 			'descriptions' => "",
@@ -95,12 +104,12 @@ class CategoryController extends Controller {
 	 * @param Category $category
 	 *
 	 * @return JsonResponse
+	 * @throws Exception
 	 */
 	public function destroy( Category $category ): JsonResponse {
 		$this->categoryRepository->delete( $category );
 		storeActivityLog( [
-			'user_id'      => Auth::user()->id,
-			'object_id'     => $category->id,
+			'object_id'    => $category->id,
 			'log_type'     => 'delete',
 			'module'       => 'Category',
 			'descriptions' => "",

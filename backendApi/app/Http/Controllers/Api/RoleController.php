@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Role;
 use Auth;
 use DB;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -17,7 +18,7 @@ class RoleController extends Controller {
 		//
 	}
 
-	public function companyRoleList( Request $request ) {
+	public function companyRoleList( Request $request ): JsonResponse {
 		$companyID = abs( Session::get( 'company_id' ) );
 		if ( ! $companyID ) {
 			return response()->json( [

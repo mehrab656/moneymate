@@ -45,10 +45,6 @@ if ( ! function_exists( 'get_option' ) ) {
  * @throws Exception
  */
 function storeActivityLog( array $data ): void {
-
-	$userID = $data['user_id'];
-	$user   = User::find( $userID );
-
 	$logType = [
 		'create' => 'Create a new Record',
 		'edit'   => 'Update an existence Record',
@@ -62,16 +58,14 @@ function storeActivityLog( array $data ): void {
 	}
 
 
-	$description = $data['descriptions'] ? $user['name'] . ' ' . $data['descriptions'] : build_activity_log_descriptions( $user['name'], $logType[ strtolower( $data['log_type'] ) ], $data['module'] );
-
-	$uid = random_string( 'alnum', 32 );
-
+	$description = $data['descriptions'] ? Auth::user()->name . ' ' . $data['descriptions'] : build_activity_log_descriptions( Auth::user()->name, $logType[ strtolower( $data['log_type'] ) ], $data['module'] );
 
 	( new ActivityLogModel() )->create( [
-		'user_id'      => $userID,
+		'user_id'      => Auth::user()->id,
+		'company_id'   => Auth::user()->primary_company,
 		'object_id'    => $data['object_id'],
 		'log_type'     => strtolower( $data['log_type'] ),
-		'uid'          => $uid,
+		'uid'          => random_string( 'alnum', 32 ),
 		'data_records' => $data_records,
 		'ip_address'   => getUserIPAddress(),
 		'descriptions' => $description,

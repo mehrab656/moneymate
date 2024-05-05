@@ -36,17 +36,19 @@ class ExpenseController extends Controller {
 		$page     = $request->query( 'page', 1 );
 		$pageSize = $request->query( 'pageSize', 10 );
 
-		$expenses = Expense::whereHas( 'category', function ( $query ) {
-			$query->where( 'type', 'expense' );
-		} )->skip( ( $page - 1 ) * $pageSize )
+		$expenses = Expense::where( 'company_id', Auth::user()->primary_company )
+		                   ->whereHas( 'category', function ( $query ) {
+			                   $query->where( 'type', 'expense' );
+		                   } )->skip( ( $page - 1 ) * $pageSize )
 		                   ->take( $pageSize )
 		                   ->orderBy( 'date', 'desc' )
 		                   ->orderBy( 'id', 'desc' )
 		                   ->get();
 
-		$totalCount = Expense::whereHas( 'category', function ( $query ) {
-			$query->where( 'type', 'expense' );
-		} )->count();
+		$totalCount = Expense::where( 'company_id', Auth::user()->primary_company )
+		                     ->whereHas( 'category', function ( $query ) {
+			                     $query->where( 'type', 'expense' );
+		                     } )->count();
 
 		return response()->json( [
 			'data'  => ExpenseResource::collection( $expenses ),
@@ -62,7 +64,7 @@ class ExpenseController extends Controller {
 	 */
 	public function add( ExpenseRequest $request ): JsonResponse {
 
-		$expense  = $request->validated();
+		$expense = $request->validated();
 
 		$category = Category::findOrFail( $request->category_id );
 
@@ -73,7 +75,7 @@ class ExpenseController extends Controller {
 			return response()->json( [
 				'message'     => 'Error!',
 				'description' => 'Insufficient amount to make this expense.',
-			],400 );
+			], 400 );
 		}
 
 
@@ -83,9 +85,6 @@ class ExpenseController extends Controller {
 		if ( $budgetCategory ) {
 			$budget = Budget::find( $budgetCategory->budget_id );
 			if ( $budget && $expense['amount'] > $budget->amount ) {
-				// return response()->json( [
-				// 	'message' => 'There is no sufficient budget for this category',
-				// ], 400 );
 				return response()->json( [
 					'message'     => 'Error!',
 					'description' => 'There is no sufficient budget for this category',
@@ -106,19 +105,21 @@ class ExpenseController extends Controller {
 			$expenseDate = Carbon::parse( $expense['date'] )->format( 'Y-m-d' );
 			$expense     = Expense::create( [
 				'user_id'           => $expense['user_id'],
+				'company_id'        => Auth::user()->primary_company,
 				'account_id'        => $expense['account_id'],
 				'amount'            => $expense['amount'],
-				'refundable_amount' => $expense['refundable_amount']??0,
+				'refundable_amount' => $expense['refundable_amount'] ?? 0,
 				'category_id'       => $expense['category_id'],
 				'description'       => $expense['description'],
 				'note'              => $expense['note'],
-				'reference'         => array_key_exists('reference',$expense)?$expense['reference']:null,
+				'reference'         => array_key_exists( 'reference', $expense ) ? $expense['reference'] : null,
 				'date'              => $expenseDate,
-				'attachment'        => array_key_exists('attachment',$expense)?$expense['attachment']:null
+				'attachment'        => array_key_exists( 'attachment', $expense ) ? $expense['attachment'] : null
 			] );
 
 			// Check if expense category falls within any budget's categories
 			$budgets = Budget::where( 'start_date', '<=', Carbon::now() )
+			                 ->where( 'company_id', Auth::user()->primary_company )
 			                 ->with( 'categories' )
 			                 ->get();
 
@@ -144,36 +145,8 @@ class ExpenseController extends Controller {
 			$bankAccount->balance -= $request->amount;
 			$bankAccount->save();
 
-
-			//add some data to be remembered on options' table
-			//last_expense_cat_id
-			//last_date
-			//last_expense_account_id
-
-			$option        = Option::firstOrCreate( [ 'key' => 'last_expense_cat_id' ] );
-			$option->value = $expense['category_id'];
-			$option->save();
-
-			$option        = Option::firstOrCreate( [ 'key' => 'last_expense_account_id' ] );
-			$option->value = $expense['account_id'];
-			$option->save();
-
-			$option        = Option::firstOrCreate( [ 'key' => 'last_expense_date' ] );
-			$option->value = $expenseDate;
-			$option->save();
-
 			storeActivityLog( [
-				'user_id'      => Auth::user()->id,
-				'object_id'     => $expense['id'],
-				'log_type'     => 'create',
-				'module'       => 'expense',
-				'descriptions' => "",
-				'data_records' => array_merge( json_decode( json_encode( $expense ), true ), [ 'account_balance' => $bankAccount->balance ] ),
-			] );
-
-			storeActivityLog( [
-				'user_id'      => Auth::user()->id,
-				'object_id'     => $expense['id'],
+				'object_id'    => $expense['id'],
 				'log_type'     => 'create',
 				'module'       => 'expense',
 				'descriptions' => "",
@@ -191,15 +164,11 @@ class ExpenseController extends Controller {
 			], 400 );
 		}
 
-		// return response()->json( [
-		// 	'expense'  => $expense,
-		// 	'category' => $category,
-		// ] );
 		return response()->json( [
 			'message'     => 'Success!',
 			'description' => 'Expense added successfully!.',
-			'expense'  => $expense,
-			'category' => $category
+			'expense'     => $expense,
+			'category'    => $category
 		] );
 	}
 
@@ -211,15 +180,16 @@ class ExpenseController extends Controller {
 	 */
 	public function categories( Request $request ): JsonResponse {
 
-		$sectorID = $request->sector_id;
+		$sectorID = abs( $request->sector_id );
 
-		$categories = DB::table( 'categories' )
-		                ->where( 'type', '=', 'expense' );
+		$categories = DB::table( 'categories' )->select( 'categories.*' )
+		                ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
+		                ->where( 'sectors.company_id', '=', Auth::user()->primary_company );
 
 		if ( $sectorID ) {
-			$sectorID   = abs( $sectorID );
-			$categories = $categories->where( 'sector_id', '=', $sectorID );
+			$categories = $categories->where( 'sectors.id', '=', $sectorID );
 		}
+
 
 		return response()->json( [ 'categories' => $categories->get() ] );
 	}
@@ -245,8 +215,7 @@ class ExpenseController extends Controller {
 
 
 		storeActivityLog( [
-			'user_id'      => Auth::user()->id,
-			'object_id'     => $expense->id,
+			'object_id'    => $expense->id,
 			'log_type'     => 'delete',
 			'module'       => 'expense',
 			'descriptions' => "",
@@ -315,8 +284,7 @@ class ExpenseController extends Controller {
 			$accountBalance = $bankAccount->balance;
 		}
 		storeActivityLog( [
-			'user_id'      => Auth::user()->id,
-			'object_id'     => $expense->id,
+			'object_id'    => $expense->id,
 			'log_type'     => 'edit',
 			'module'       => 'expense',
 			'descriptions' => "",
@@ -370,7 +338,7 @@ class ExpenseController extends Controller {
 		] );
 
 
-		$expenses = Expense::all();
+		$expenses = Expense::where( 'company_id', Auth::user()->primary_company )->get();
 
 		foreach ( $expenses as $expense ) {
 
@@ -420,6 +388,7 @@ class ExpenseController extends Controller {
 		              ->join( 'categories', 'expenses.category_id', '=', 'categories.id' )
 		              ->join( 'users', 'expenses.user_id', '=', 'users.id' )
 		              ->select( 'categories.name', DB::raw( 'SUM(expenses.amount) as total' ) )
+		              ->where( 'expenses.company_id', Auth::user()->primary_company )
 		              ->whereMonth( 'expenses.date', $currentMonth )
 		              ->groupBy( 'categories.name' )
 		              ->get();
@@ -455,11 +424,14 @@ class ExpenseController extends Controller {
 		$pageSize = $request->query( 'pageSize', 10 );
 
 		$expenses = Expense::where( 'refundable_amount', '>', 0 )->skip( ( $page - 1 ) * $pageSize )
+		                   ->where( 'company_id', Auth::user()->primary_company )
 		                   ->take( $pageSize )
 		                   ->orderBy( 'id', 'desc' )
 		                   ->get();
 
-		$totalCount = Expense::where( 'refundable_amount', '>', 0 )->count();
+		$totalCount = Expense::where( 'refundable_amount', '>', 0 )
+		                     ->where( 'expenses.company_id', Auth::user()->primary_company )
+		                     ->count();
 
 		return response()->json( [
 			'data'  => ExpenseResource::collection( $expenses ),
@@ -495,8 +467,7 @@ class ExpenseController extends Controller {
 			$return->update( [ 'refunded_amount' => $refundedAmount + $refundAmount ] );
 
 			storeActivityLog( [
-				'user_id'      => Auth::user()->id,
-				'object_id'     => $return->id,
+				'object_id'    => $return->id,
 				'log_type'     => 'edit',
 				'module'       => 'return',
 				'descriptions' => "added returns. Amount: $refundAmount",
@@ -520,7 +491,7 @@ class ExpenseController extends Controller {
 	}
 
 	public function totalExpense(): JsonResponse {
-		$totalAccount = Expense::sum( 'amount' );
+		$totalAccount = Expense::where( 'expenses.company_id', Auth::user()->primary_company )->sum( 'amount' );
 
 		return response()->json( [
 			'amount' => $totalAccount

@@ -16,4 +16,12 @@ class Category extends Model
     protected $table = 'categories';
     protected $primaryKey = 'id';
     protected $guarded = [];
+
+	public function sector(){
+		return $this->belongsTo(SectorModel::class,'sector_id','id');
+	}
+
+	public function companies() {
+		return $this->hasMany(Company::class);
+	}
 }

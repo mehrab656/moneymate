@@ -7,6 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @property mixed $id
+ * @property mixed $company_id
  * @property mixed $name
  * @property mixed $rent
  * @property mixed $contract_start_date
@@ -30,6 +31,7 @@ class SectorResource extends JsonResource {
 	public function toArray( Request $request ): array {
 		return [
 			'id'                    => $this->id,
+			'company_id'            => $this->company_id,
 			'name'                  => $this->name,
 			'rent'                  => $this->rent,
 			'payment_account_id'    => $this->payment_account_id,

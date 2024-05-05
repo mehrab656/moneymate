@@ -23,11 +23,11 @@ class BankNameController extends Controller {
 
 		$page       = $request->query( 'page', 1 );
 		$pageSize   = $request->query( 'pageSize', 10 );
-		$bankNames  = BankName::skip( ( $page - 1 ) * $pageSize )
+		$bankNames  = BankName::where('company_id',Auth::user()->primary_company)->skip( ( $page - 1 ) * $pageSize )
 		                      ->take( $pageSize )
 		                      ->orderBy( 'id', 'desc' )
 		                      ->get();
-		$totalCount = BankName::count();
+		$totalCount = BankName::where('company_id',Auth::user()->primary_company)->count();
 
 		return response()->json( [
 			'data'  => BankNameResource::collection( $bankNames ),
@@ -37,7 +37,7 @@ class BankNameController extends Controller {
 	}
 
 	public function allBank(): JsonResponse {
-		$bankNames = BankName::get();
+		$bankNames = BankName::where('company_id',Auth::user()->primary_company)->get();
 
 		return response()->json( [
 			'data' => BankNameResource::collection( $bankNames )
@@ -50,7 +50,7 @@ class BankNameController extends Controller {
 	public function store( BankNameRequest $request ): JsonResponse {
 		$bankName = $request->validated();
 
-		$existingBankName = BankName::where( 'bank_name', $bankName['bank_name'] )
+		$existingBankName = BankName::where('company_id',Auth::user()->primary_company)->where( 'bank_name', $bankName['bank_name'] )
 		                            ->where( 'user_id', auth()->user()->id )
 		                            ->first();
 
@@ -61,13 +61,13 @@ class BankNameController extends Controller {
 
 		$bank = [
 			'user_id'   => auth()->user()->id,
+			'company_id'   => auth()->user()->primary_company,
 			'bank_name' => $bankName['bank_name']
 		];
 		try {
 			$bankName = BankName::create( $bank );
 
 			storeActivityLog( [
-				'user_id'      => Auth::user()->id,
 				'object_id'     => $bankName->id,
 				'log_type'     => 'create',
 				'module'       => 'sectors',
@@ -103,14 +103,13 @@ class BankNameController extends Controller {
 	 * Update the specified resource in storage.
 	 * @throws Exception
 	 */
-	public function update( BankNameUpdateRequest $request, BankName $bankName ): BankNameResource {
+	public function update( BankNameUpdateRequest $request, BankName $bankName ): JsonResponse {
 		$data = $request->validated();
 
 		$prevData = $bankName;
 
 		$bankName->update( $data );
 		storeActivityLog( [
-			'user_id'      => Auth::user()->id,
 			'object_id'     => $bankName->id,
 			'log_type'     => 'edit',
 			'module'       => 'bank',
@@ -135,7 +134,6 @@ class BankNameController extends Controller {
 	public function destroy( BankName $bankName ): JsonResponse {
 		$bankName->delete();
 		storeActivityLog( [
-			'user_id'      => Auth::user()->id,
 			'object_id'     => $bankName->id,
 			'log_type'     => 'delete',
 			'module'       => 'bank',

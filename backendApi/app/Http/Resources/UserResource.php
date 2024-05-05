@@ -34,12 +34,12 @@ class UserResource extends JsonResource
 
         return [
             'id' => $this->id,
+            'primary_company' => $this->primary_company,
             'name' => $this->name,
             'email' => $this->email,
-            'subscriptions' => $this->subscriptions,
             'role_as' => $this->role_as,
             'is_active_membership' => $is_active_membership,
-            'created_at' => $this->created_at->format('Y-m-d H:i:s')
+            'created_at' => $this->created_at, //->format('Y-m-d H:i:s')
         ];
     }
 }

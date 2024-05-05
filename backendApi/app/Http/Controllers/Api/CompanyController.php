@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
+use App\Models\User;
 use Auth;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -32,14 +33,13 @@ class CompanyController extends Controller {
 		] );
 	}
 
-	public function getCurrentCompany( $id ): JsonResponse {
+	public function getCurrentCompany( $id, Request $request ): JsonResponse {
 
-		$companyID = abs( Session::get( 'company_id' ) );
-		$relation = DB::table('company_user')
-		              ->where(['user_id'=>Auth::user()->id,'company_id'=>$id])
+		$relation = DB::table( 'company_user' )
+		              ->where( [ 'user_id' => Auth::user()->id, 'company_id' => $id ] )
 		              ->get()
 		              ->first();
-		if ( ! $relation ){
+		if ( ! $relation ) {
 			return response()->json( [
 				'status'  => 'success',
 				'message' => "This user dont have access for this company!",
@@ -51,7 +51,7 @@ class CompanyController extends Controller {
 		return response()->json( [
 			'status'  => 'success',
 			'message' => "Found company",
-			'data'    => $company
+			'data'    => $company,
 		] );
 	}
 
@@ -106,6 +106,33 @@ class CompanyController extends Controller {
 			'message'     => 'success',
 			'description' => "Added new Company"
 		] );
+	}
+
+	public function switchCompany( $id ) {
+		$newCompanyID = abs( $id );
+
+
+		$relation = DB::table( 'company_user' )
+		              ->where( [ 'user_id' => Auth::user()->id, 'company_id' => $newCompanyID ] )
+		              ->get()
+		              ->first();
+		if ( ! $relation ) {
+			return response()->json( [
+				'status'  => 'error',
+				'message' => "This user dont have access for this company!",
+			] );
+		}
+		Auth::user()->update( [ 'primary_company' => $newCompanyID ] );
+		$company = Company::find( $newCompanyID );
+
+		return response()->json( [
+			'status'  => 'success',
+			'message' => "Company switched!",
+			'data'    => $company
+
+		] );
+
+
 	}
 
 	/**

@@ -110,8 +110,11 @@ class UserController extends Controller {
 	}
 
 	public function getUsers(): JsonResponse {
-		$user     = auth()->user();
-		$userList = User::all();
+
+		$userList = DB::table('users')->select("users.*")
+			->join('company_user','users.id', '=','company_user.user_id')
+			->where('company_id',Auth::user()->primary_company)
+			->get();
 
 		return response()->json( [
 			'data' => UserResource::collection( $userList )

@@ -194,6 +194,7 @@ class Income extends Model {
 						$checkoutDate->format( 'Y-m-d' ) );
 					$income      = Income::create( [
 						'user_id'       => $income['user_id'],
+						'company_id'       => Auth::user()->primary_company,
 						'account_id'    => $income['account_id'],
 						'amount'        => $income['amount'],
 						'category_id'   => $income['category_id'],
@@ -208,7 +209,6 @@ class Income extends Model {
 					] );
 
 					storeActivityLog( [
-						'user_id'      => Auth::user()->id,
 						'object_id'    => $income['id'],
 						'log_type'     => 'create',
 						'module'       => 'income',
@@ -231,6 +231,7 @@ class Income extends Model {
 
 					$income_first = Income::create( [
 						'user_id'       => Auth::user()->id,
+						'company_id'       => Auth::user()->primary_company,
 						'account_id'    => $income['account_id'],
 						'amount'        => $first_month_amount,
 						'category_id'   => $income['category_id'],
@@ -244,7 +245,6 @@ class Income extends Model {
 						'attachment'    => $income['attachment']
 					] );
 					storeActivityLog( [
-						'user_id'      => Auth::user()->id,
 						'object_id'    => $income_first['id'],
 						'log_type'     => 'create',
 						'module'       => 'income',
@@ -267,6 +267,7 @@ class Income extends Model {
 
 						$income_sec = Income::create( [
 							'user_id'       => Auth::user()->id,
+							'company_id'       => Auth::user()->primary_company,
 							'account_id'    => $income['account_id'],
 							'amount'        => $second_month_amount,
 							'category_id'   => $income['category_id'],
@@ -280,7 +281,6 @@ class Income extends Model {
 							'attachment'    => $income['attachment']
 						] );
 						storeActivityLog( [
-							'user_id'      => Auth::user()->id,
 							'object_id'    => $income_sec['id'],
 							'log_type'     => 'create',
 							'module'       => 'income',
@@ -317,6 +317,7 @@ class Income extends Model {
 
 				$income = Income::create( [
 					'user_id'     => Auth::user()->id,
+					'company_id'       => Auth::user()->primary_company,
 					'account_id'  => $income['account_id'],
 					'amount'      => $income['amount'],
 					'category_id' => $income['category_id'],
@@ -328,7 +329,6 @@ class Income extends Model {
 					'attachment'  => $income['attachment']
 				] );
 				storeActivityLog( [
-					'user_id'      => Auth::user()->id,
 					'object_id'    => $income['id'],
 					'log_type'     => 'create',
 					'module'       => 'income',

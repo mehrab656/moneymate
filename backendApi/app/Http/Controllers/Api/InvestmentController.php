@@ -9,7 +9,9 @@ use App\Http\Resources\IncomeResource;
 use App\Http\Resources\InvestmentResource;
 use App\Models\BankAccount;
 use App\Models\Investment;
+use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Expense;
@@ -20,6 +22,7 @@ use Illuminate\Support\Facades\Storage;
 use Nette\Schema\ValidationException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Throwable;
 
 class InvestmentController extends Controller {
 	/**
@@ -30,7 +33,8 @@ class InvestmentController extends Controller {
 		$pageSize = $request->query( 'pageSize', 10 );
 
 
-		$invests = Investment::skip( ( $page - 1 ) * $pageSize )
+		$invests = Investment::where( 'company_id', Auth::user()->primary_company )
+		                     ->skip( ( $page - 1 ) * $pageSize )
 		                     ->take( $pageSize )
 		                     ->orderBy( 'id', 'desc' )
 		                     ->get();
@@ -45,6 +49,7 @@ class InvestmentController extends Controller {
 
 	/**
 	 * Show the form for creating a new resource.
+	 * @throws Exception
 	 */
 	public function add( InvestmentRequest $request ): JsonResponse {
 		$invest = $request->validated();
@@ -53,6 +58,7 @@ class InvestmentController extends Controller {
 		$investDate = Carbon::parse( $invest['investment_date'] )->format( 'Y-m-d' );
 		$invest     = Investment::create( [
 			'investor_id'     => $invest['investor_id'],
+			'company_id'      => $user->primary_company,
 			'added_by'        => $user->id, //current user
 			'amount'          => $invest['amount'],
 			'note'            => $invest['note'],
@@ -66,19 +72,15 @@ class InvestmentController extends Controller {
 		$bankAccount->save();
 
 		storeActivityLog( [
-			'user_id'      => Auth::user()->id,
-			'object_id'     => $invest['id'],
+			'object_id'    => $invest['id'],
 			'log_type'     => 'create',
 			'module'       => 'investment',
 			'descriptions' => "",
 			'data_records' => array_merge( json_decode( json_encode( $invest ), true ), [ 'account_balance' => $bankAccount->balance ] ),
 		] );
 
-		// return response()->json( [
-		// 	'invest' => $invest,
-		// ] );
 		return response()->json( [
-			'invest' => $invest,
+			'invest'      => $invest,
 			'message'     => 'Success!',
 			'description' => 'Investment created!.',
 		] );
@@ -100,8 +102,9 @@ class InvestmentController extends Controller {
 
 	/**
 	 * Update the specified resource in storage.
+	 * @throws Exception|Throwable
 	 */
-	public function update( UpdateInvestmentRequest $request, Investment $investment ) {
+	public function update( UpdateInvestmentRequest $request, Investment $investment ): JsonResponse|RedirectResponse {
 		$data = $request->validated();
 		$user = Auth::user();
 
@@ -115,6 +118,7 @@ class InvestmentController extends Controller {
 			// now update other data
 			$investDate              = Carbon::parse( $data['investment_date'] )->format( 'Y-m-d' );
 			$data['added_by']        = $user->id;
+			$data['company_id']        = $user->primary_company;
 			$data['investment_date'] = $investDate;
 
 			$investment->update( $data );
@@ -126,8 +130,7 @@ class InvestmentController extends Controller {
 			$bankAccount->save();
 
 			storeActivityLog( [
-				'user_id'      => Auth::user()->id,
-				'object_id'     => $investment->id,
+				'object_id'    => $investment->id,
 				'log_type'     => 'edit',
 				'module'       => 'investment',
 				'descriptions' => "",
@@ -150,8 +153,9 @@ class InvestmentController extends Controller {
 
 	/**
 	 * Remove the specified resource from storage.
+	 * @throws Exception
 	 */
-	public function destroy( Investment $investment ): Response {
+	public function destroy( Investment $investment ): JsonResponse {
 		$investment->delete();
 
 		/**
@@ -165,7 +169,7 @@ class InvestmentController extends Controller {
 		}
 		storeActivityLog( [
 			'user_id'      => Auth::user()->id,
-			'object_id'     => $investment->id,
+			'object_id'    => $investment->id,
 			'log_type'     => 'delete',
 			'module'       => 'investment',
 			'descriptions' => "",

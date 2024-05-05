@@ -30,12 +30,13 @@ class AccountTransferController extends Controller {
 		$page     = $request->query( 'page', 1 );
 		$pageSize = $request->query( 'pageSize', 10 );
 
-		$accountTransfers = AccountTransfer::skip( ( $page - 1 ) * $pageSize )
+		$accountTransfers = AccountTransfer::where( 'company_id', Auth::user()->primary_company )
+		                                   ->skip( ( $page - 1 ) * $pageSize )
 		                                   ->take( $pageSize )
 		                                   ->orderBy( 'id', 'desc' )
 		                                   ->get();
 
-		$totalCount = AccountTransfer::count();
+		$totalCount = AccountTransfer::where( 'company_id', Auth::user()->primary_company )->count();
 
 		return response()->json( [
 			'data'  => TransferHistoryResource::collection( $accountTransfers ),
@@ -49,7 +50,7 @@ class AccountTransferController extends Controller {
 	public function accountTransferCurrentMonth(): JsonResponse {
 		$currentMonth = Carbon::now()->format( 'm' );
 
-		$accountTransfers = AccountTransfer::whereMonth( 'transfer_date', $currentMonth )
+		$accountTransfers = AccountTransfer::where( 'company_id', Auth::user()->primary_company )->whereMonth( 'transfer_date', $currentMonth )
 		                                   ->get();
 
 		return response()->json( [
@@ -106,7 +107,7 @@ class AccountTransferController extends Controller {
 
 			if ( $fromAccount->balance < $amount ) {
 				throw ValidationException::withMessages( [
-					'amount' => ' Insufficient balance on '. $fromAccount->bankName->bank_name,
+					'amount' => ' Insufficient balance on ' . $fromAccount->bankName->bank_name,
 				] );
 			}
 
@@ -118,6 +119,7 @@ class AccountTransferController extends Controller {
 
 			$transfer                  = new AccountTransfer();
 			$transfer->user_id         = auth()->user()->id;
+			$transfer->company_id      = auth()->user()->primary_company;
 			$transfer->from_account_id = $fromAccountId;
 			$transfer->to_account_id   = $toAccountId;
 			$transfer->amount          = $amount;
@@ -126,11 +128,10 @@ class AccountTransferController extends Controller {
 			$transfer->save();
 
 			storeActivityLog( [
-				'user_id'      => Auth::user()->id,
-				'object_id'     => $transfer->id,
+				'object_id'    => $transfer->id,
 				'log_type'     => 'edit',
 				'module'       => 'transfer',
-				'descriptions' => 'has transfer an amount from '.$fromAccount->bankName->bank_name.'('.$fromAccount->account_name.')'.' to '.$toAccount->bankName->bank_name.'('.$toAccount->account_name.')'.' an amount of '.$amount,
+				'descriptions' => 'has transfer an amount from ' . $fromAccount->bankName->bank_name . '(' . $fromAccount->account_name . ')' . ' to ' . $toAccount->bankName->bank_name . '(' . $toAccount->account_name . ')' . ' an amount of ' . $amount,
 				'data_records' => $transfer,
 			] );
 

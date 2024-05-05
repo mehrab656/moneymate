@@ -33,17 +33,19 @@ class IncomeController extends Controller {
 		$page     = $request->query( 'page', 1 );
 		$pageSize = $request->query( 'pageSize', 1000 );
 
-		$incomes = Income::whereHas( 'category', function ( $query ) {
-			$query->where( 'type', 'income' );
-		} )->skip( ( $page - 1 ) * $pageSize )
+		$incomes = Income::where( 'company_id', Auth::user()->primary_company )
+		                 ->whereHas( 'category', function ( $query ) {
+			                 $query->where( 'type', 'income' );
+		                 } )->skip( ( $page - 1 ) * $pageSize )
 		                 ->take( $pageSize )
 		                 ->orderBy( 'date', 'desc' )
 		                 ->get();
 
 
-		$totalCount = Income::whereHas( 'category', function ( $query ) {
-			$query->where( 'type', 'income' );
-		} )->count();
+		$totalCount = Income::where( 'company_id', Auth::user()->primary_company )
+		                    ->whereHas( 'category', function ( $query ) {
+			                    $query->where( 'type', 'income' );
+		                    } )->count();
 
 		return response()->json( [
 			'data'  => IncomeResource::collection( $incomes ),
@@ -122,6 +124,7 @@ class IncomeController extends Controller {
 
 					$income = Income::create( [
 						'user_id'       => Auth::user()->id,
+						'company_id'    => Auth::user()->primary_company,
 						'account_id'    => $accountID,
 						'amount'        => $income['amount'],
 						'category_id'   => $catID,
@@ -136,7 +139,6 @@ class IncomeController extends Controller {
 					] );
 
 					storeActivityLog( [
-						'user_id'      => Auth::user()->id,
 						'object_id'    => $income['id'],
 						'log_type'     => 'create',
 						'module'       => 'income',
@@ -159,6 +161,7 @@ class IncomeController extends Controller {
 
 					$income_first = Income::create( [
 						'user_id'       => Auth::user()->id,
+						'company_id'    => Auth::user()->primary_company,
 						'account_id'    => $accountID,
 						'amount'        => $first_month_amount,
 						'category_id'   => $catID,
@@ -172,7 +175,6 @@ class IncomeController extends Controller {
 						'attachment'    => $income['attachment']
 					] );
 					storeActivityLog( [
-						'user_id'      => Auth::user()->id,
 						'object_id'    => $income_first['id'],
 						'log_type'     => 'create',
 						'module'       => 'income',
@@ -195,6 +197,7 @@ class IncomeController extends Controller {
 
 						$income_sec = Income::create( [
 							'user_id'       => Auth::user()->id,
+							'company_id'    => Auth::user()->primary_company,
 							'account_id'    => $accountID,
 							'amount'        => $second_month_amount,
 							'category_id'   => $catID,
@@ -208,7 +211,6 @@ class IncomeController extends Controller {
 							'attachment'    => $income['attachment']
 						] );
 						storeActivityLog( [
-							'user_id'      => Auth::user()->id,
 							'object_id'    => $income_sec['id'],
 							'log_type'     => 'create',
 							'module'       => 'income',
@@ -245,6 +247,7 @@ class IncomeController extends Controller {
 
 				$income = Income::create( [
 					'user_id'     => Auth::user()->id,
+					'company_id'  => Auth::user()->primary_company,
 					'account_id'  => $income['account_id'],
 					'amount'      => $income['amount'],
 					'category_id' => $income['category_id'],
@@ -258,7 +261,6 @@ class IncomeController extends Controller {
 
 				] );
 				storeActivityLog( [
-					'user_id'      => Auth::user()->id,
 					'object_id'    => $income['id'],
 					'log_type'     => 'create',
 					'module'       => 'income',
@@ -333,7 +335,6 @@ class IncomeController extends Controller {
 		}
 
 		storeActivityLog( [
-			'user_id'      => Auth::user()->id,
 			'object_id'    => $income->id,
 			'log_type'     => 'edit',
 			'module'       => 'income',
@@ -406,8 +407,11 @@ class IncomeController extends Controller {
 	 * @return JsonResponse
 	 */
 	public function categories(): JsonResponse {
-//		$user       = Auth::user();
-		$categories = Category::where( 'type', 'income' )->get();
+
+		$categories = DB::table( 'categories' )->select( 'categories.*' )
+		                ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
+		                ->where( 'sectors.company_id', '=', Auth::user()->primary_company )
+		                ->where( 'type', 'income' )->get();
 
 		return response()->json( [ 'categories' => $categories ] );
 	}
@@ -433,7 +437,6 @@ class IncomeController extends Controller {
 		}
 
 		storeActivityLog( [
-			'user_id'      => Auth::user()->id,
 			'object_id'    => $income->id,
 			'log_type'     => 'delete',
 			'module'       => 'income',
@@ -473,7 +476,7 @@ class IncomeController extends Controller {
 			'Date'
 		] );
 
-		$incomes = Income::all();
+		$incomes = Income::where('company_id',Auth::user()->primary_company)->get();
 
 		foreach ( $incomes as $income ) {
 
@@ -495,7 +498,7 @@ class IncomeController extends Controller {
 
 
 	public function totalIncome(): JsonResponse {
-		$totalAccount = Income::sum( 'amount' );
+		$totalAccount = Income::where('company_id',Auth::user()->primary_company)->sum( 'amount' );
 
 		return response()->json( [
 			'amount' => $totalAccount
@@ -526,7 +529,6 @@ class IncomeController extends Controller {
 //				'description' => "Please upload a valid csv file.",
 //			], 400 );
 //		}
-
 
 
 		$channel = $request->channel;
@@ -564,7 +566,7 @@ class IncomeController extends Controller {
 			], $status['status_code'] );
 		}
 
-		$filename = date("F j, Y",strtotime($status['payment_date'])) . ' ' . $channel .'.'. 'csv';
+		$filename = date( "F j, Y", strtotime( $status['payment_date'] ) ) . ' ' . $channel . '.' . 'csv';
 
 		$file->storeAs( 'files', $filename );
 

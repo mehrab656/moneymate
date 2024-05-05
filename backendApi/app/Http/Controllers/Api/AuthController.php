@@ -87,12 +87,6 @@ class AuthController extends Controller {
 			}
 		}
 
-		Session::put('user_id',$user->id);
-		Session::put('user_name',$user->name);
-		Session::put('user_email',$user->email);
-		Session::put('company_id',$user->primary_company);
-		Session::save();
-
 		if ( $user->role_as == 'admin' ) {
 			$token = $user->createToken( $user->email_ . 'AdminToken', [ 'admin' ] )->plainTextToken;
 		} else {

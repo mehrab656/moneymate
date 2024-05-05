@@ -210,6 +210,7 @@ Route::middleware( 'auth:sanctum' )->group( function () {
 	Route::get('getCurrentCompany/{id}',[ CompanyController::class,'getCurrentCompany']);
 	Route::get('company/{uid}',[ CompanyController::class,'getCompany']);
 	Route::post('/addCompany',[CompanyController::class,'addNewCompany']);
+	Route::post('/switch-company/{id}',[CompanyController::class,'switchCompany']);
 	Route::post('/company/update/{uid}',[CompanyController::class,'updateCompany']);
 	Route::delete( 'company/{uid}', [ CompanyController::class, 'destroy' ] );
 	Route::get( 'company-by-user/{uid}', [ CompanyController::class, 'getCompanyByUser' ] );

@@ -45,7 +45,7 @@ class ExpenseResource extends JsonResource {
 			'attachment'        => $this->attachment,
 			'description'       => $this->description,
 			'bank_name'         => $this->bankAccount && $this->bankAccount->bankName ? $this->bankAccount->bankName->bank_name : '',
-			'date'      => $this->date,
+			'date'              => $this->date,
 			'note'              => $this->note,
 			'reference'         => $this->reference
 		];

@@ -23,12 +23,12 @@ class BankAccountController extends Controller {
 		$user         = Auth::user();
 		$page         = $request->query( 'page', 1 );
 		$pageSize     = $request->query( 'pageSize', 10 );
-		$bankAccounts = BankAccount::skip( ( $page - 1 ) * $pageSize )
+		$bankAccounts = BankAccount::where('company_id',Auth::user()->primary_company)->skip( ( $page - 1 ) * $pageSize )
 		                           ->take( $pageSize )
 		                           ->orderBy( 'id', 'desc' )
 		                           ->get();
 
-		$totalCount = BankAccount::count();
+		$totalCount = BankAccount::where('company_id',Auth::user()->primary_company)->count();
 
 		return response()->json( [
 			'data'  => BankAccountResource::collection( $bankAccounts ),
@@ -38,8 +38,7 @@ class BankAccountController extends Controller {
 	}
 
 	public function allBankAccount(): JsonResponse {
-		$user         = Auth::user();
-		$bankAccounts = BankAccount::get();
+		$bankAccounts = BankAccount::where('company_id',Auth::user()->primary_company)->get();
 
 		return response()->json( [
 			'data' => BankAccountResource::collection( $bankAccounts )
@@ -57,6 +56,7 @@ class BankAccountController extends Controller {
 		$bankAccount = $request->validated();
 		$details     = [
 			'user_id'        => Auth::user()->id,
+			'company_id'        => Auth::user()->primary_company,
 			'account_name'   => $bankAccount['account_name'],
 			'account_number' => $bankAccount['account_number'],
 			'bank_name_id'   => $bankAccount['bank_name_id'],
@@ -68,7 +68,6 @@ class BankAccountController extends Controller {
 			$bankAccount = BankAccount::create( $details );
 
 			storeActivityLog( [
-				'user_id'      => Auth::user()->id,
 				'object_id'     => $bankAccount->id,
 				'log_type'     => 'create',
 				'module'       => 'Account',
@@ -116,7 +115,6 @@ class BankAccountController extends Controller {
 			DB::beginTransaction();
 			$bankAccount->delete();
 			storeActivityLog( [
-				'user_id'      => Auth::user()->id,
 				'object_id'     => $bankAccount->id,
 				'log_type'     => 'delete',
 				'module'       => 'Bank Account',
@@ -175,8 +173,8 @@ class BankAccountController extends Controller {
 	 */
 
 	public function totalBalance(): JsonResponse {
-		$totalAccount = BankAccount::sum( 'balance' );
-		$totalWallet  = Wallet::sum( 'balance' );
+		$totalAccount = BankAccount::where('company_id',Auth::user()->primary_company)->sum( 'balance' );
+		$totalWallet  = Wallet::where('company_id',Auth::user()->primary_company)->sum( 'balance' );
 
 		return response()->json( [
 			'balance' =>fix_number_format( $totalAccount + $totalWallet)

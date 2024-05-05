@@ -35,6 +35,7 @@ class InvestmentResource extends JsonResource {
 			'amount'          => $this->amount,
 			'investment_date' => $this->investment_date,
 			'note'            => $this->note,
+			"company"         => $this->companies
 		];
 	}
 }

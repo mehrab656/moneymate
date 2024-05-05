@@ -38,4 +38,8 @@ class Investment extends Model
 	{
 		return $this->belongsTo(BankAccount::class, 'account_id', 'id');
 	}
+	public function companies(): BelongsTo
+	{
+		return $this->belongsTo(Company::class, 'company_id', 'id');
+	}
 }

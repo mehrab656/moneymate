@@ -21,25 +21,26 @@ class DashboardController extends Controller {
 	 */
 
 	public function dashboardData(): JsonResponse {
-		$incomeOfThisMonth = Income::whereMonth( 'date', date( 'm' ) )
+		$incomeOfThisMonth = Income::where( 'company_id', Auth::user()->primary_company )->whereMonth( 'date', date( 'm' ) )
 		                           ->whereYear( 'date', date( 'Y' ) )
 		                           ->sum( 'amount' );
 
-		$expenseOfThisMonth = Expense::whereMonth( 'date', date( 'm' ) )
+		$expenseOfThisMonth = Expense::where( 'company_id', Auth::user()->primary_company )
+		                             ->whereMonth( 'date', date( 'm' ) )
 		                             ->whereYear( 'date', date( 'Y' ) )
 		                             ->sum( 'amount' );
 
-		$totalBalance = BankAccount::sum( 'balance' );
+		$totalBalance = BankAccount::where('company_id',Auth::user()->primary_company)->sum( 'balance' );
 
-		$totalLend = Lend::sum( 'amount' );
+		$totalLend = Lend::where('company_id',Auth::user()->primary_company)->sum( 'amount' );
 
 //        $userId = auth()->user()->id;
 
-		$totalBorrow = Borrow::sum( 'amount' );
+		$totalBorrow = Borrow::where('company_id',Auth::user()->primary_company)->sum( 'amount' );
 
 		$active_budget = $this->getActiveBudgets();
 
-		$numberOfBankAccount = BankAccount::count();
+		$numberOfBankAccount = BankAccount::where('company_id',Auth::user()->primary_company)->count();
 
 		$totalSubscriptionAmountOfThisMonth = Subscription::whereBetween( 'created_at',
 			[
@@ -66,7 +67,8 @@ class DashboardController extends Controller {
 	 */
 	public function getActiveBudgets(): array {
 		$currentDate   = Carbon::now()->toDateString();
-		$activeBudgets = Budget::where( 'start_date', '<=', $currentDate )
+		$activeBudgets = Budget::where('company_id',Auth::user()->primary_company)
+		                       ->where( 'start_date', '<=', $currentDate )
 		                       ->where( 'end_date', '>=', $currentDate )
 		                       ->get();
 

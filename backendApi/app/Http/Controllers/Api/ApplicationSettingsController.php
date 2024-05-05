@@ -26,7 +26,6 @@ class ApplicationSettingsController extends Controller {
 			$option->save();
 
 			storeActivityLog( [
-				'user_id'      => Auth::user()->id,
 				'object_id'     => $option->id,
 				'log_type'     => 'edit',
 				'module'       => 'settings',
@@ -73,17 +72,17 @@ class ApplicationSettingsController extends Controller {
 		$applicationSettings = Option::whereIn( 'key', $keys )->pluck( 'value', 'key' );
 
 		// Retrieve the specific Stripe product price by API ID
-		$targetPriceApiId = get_option( 'product_api_id' );
-
-		if ( $targetPriceApiId ) {
-			$stripe = new StripeClient( get_option( 'secret_key' ) );
-			$price  = $stripe->prices->retrieve( $targetPriceApiId );
-
-			$applicationSettings['product_price'] = $price->unit_amount / 100;
-		}
+//		$targetPriceApiId = get_option( 'product_api_id' );
+//
+//		if ( $targetPriceApiId ) {
+//			$stripe = new StripeClient( get_option( 'secret_key' ) );
+//			$price  = $stripe->prices->retrieve( $targetPriceApiId );
+//
+//			$applicationSettings['product_price'] = $price->unit_amount / 100;
+//		}
 
 		return response()->json( [
-			'application_settings' => $applicationSettings
+			'application_settings' => $applicationSettings,
 		] );
 	}
 

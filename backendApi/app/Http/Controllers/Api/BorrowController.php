@@ -20,13 +20,14 @@ class BorrowController extends Controller {
 	 * @return JsonResponse
 	 */
 	public function addBorrow( Request $request ): JsonResponse {
-		$data = $request->validate( [
+		$data               = $request->validate( [
 			'amount'     => 'required|numeric',
 			'note'       => 'required',
 			'debt_id'    => 'required|exists:debts,id',
 			'account_id' => 'required|exists:bank_accounts,id',
 			'date'       => 'required|date',
 		] );
+		$data['company_id'] = Auth::user()->primary_company;
 
 		//lets start transaction
 		try {
@@ -47,8 +48,7 @@ class BorrowController extends Controller {
 			$bankAccount->save();
 
 			storeActivityLog( [
-				'user_id'      => Auth::user()->id,
-				'object_id'     => $borrow->id,
+				'object_id'    => $borrow->id,
 				'log_type'     => 'edit',
 				'module'       => 'Borrow',
 				'descriptions' => "has borrow some more amount of $request->amount From $debt->person",
@@ -142,6 +142,7 @@ class BorrowController extends Controller {
 			] );
 		}
 
+		$data['company_id'] = Auth::user()->primary_company;
 		try {
 			DB::beginTransaction();
 
@@ -156,8 +157,7 @@ class BorrowController extends Controller {
 			$bankAccount->save();
 
 			storeActivityLog( [
-				'user_id'      => Auth::user()->id,
-				'object_id'     => $repayment->id,
+				'object_id'    => $repayment->id,
 				'log_type'     => 'edit',
 				'module'       => 'Borrow',
 				'descriptions' => "has paid an amount of $request->amount to $debt->person",
@@ -170,9 +170,10 @@ class BorrowController extends Controller {
 
 			DB::commit();
 		} catch ( \Throwable $e ) {
-		DB::rollBack();
+			DB::rollBack();
+
 			return response()->json( [
-				'message'       => 'Repayment can not be created.'
+				'message' => 'Repayment can not be created.'
 			] );
 		}
 

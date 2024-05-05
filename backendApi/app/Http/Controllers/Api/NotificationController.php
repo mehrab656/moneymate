@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+
 //use Onesignal;
 
 class NotificationController extends Controller {
@@ -15,9 +17,10 @@ class NotificationController extends Controller {
 
 		$payments = DB::table( 'payments' )
 		              ->where( 'status', '=', 'unpaid' )
-		              ->whereBetween( 'date', [ $minRange, $maxRange ] )
-		              ->whereNull( 'deleted_at' )
-		              ->get();
+		              ->where( 'company_id', Auth::user()->primary_company )
+			->whereBetween( 'date', [ $minRange, $maxRange ] )
+			->whereNull( 'deleted_at' )
+			->get();
 
 		if ( $payments ) {
 			$list = $this->makeList( $payments );
