@@ -56,10 +56,11 @@ import {useGetUserDataQuery} from "../api/slices/userSlice.js";
 import {useGetSectorsDataQuery} from "../api/slices/sectorSlice.js";
 import {useGetFinancialReportDataQuery} from "../api/slices/accountSlice.js";
 import Dropdown from "react-bootstrap/Dropdown";
+import {notification} from "./ToastNotification.jsx";
 
 export default function DefaultLayout() {
 
-    const {user, token, setUser, setToken, notification} = useStateContext();
+    const {user, token, setUser, setToken} = useStateContext();
     const navigate = useNavigate();
     const [financeStatus, setFinanceStatus] = useState({
         totalAccountBalance: 0,
@@ -98,7 +99,6 @@ export default function DefaultLayout() {
 
         axiosClient.get(`/getCurrentCompany/${currentCompanyID}`).then(({data}) => {
             if (data.status === "success") {
-                console.log(data)
                 setCurrentCompany(data.data);
             }
         });
@@ -207,7 +207,24 @@ export default function DefaultLayout() {
             setSubmenuSettingsVisible(!submenuSettingsVisible);
         }
     };
-    console.log(currentCompany);
+
+    const switchCompany = (id) => {
+
+        axiosClient
+            .post(`/switch-company/${id}`)
+            .then(({data}) => {
+                if (data.status==="success"){
+                    setCurrentCompany(data.data);
+                    localStorage.setItem('CURRENT_COMPANY', id);
+                }
+                notification(data.status, data?.message, data?.description)
+                window.location.reload();
+
+            })
+            .catch(error => {
+                console.warn('Error occurred', error);
+            });
+    }
 
     return (
         <>
@@ -230,7 +247,8 @@ export default function DefaultLayout() {
                             <aside className="wrapping-aside overflow-auto h-100 d-none d-md-block d-lg-block">
                                 <div className="aside-content">
                                     <Dropdown>
-                                        <Dropdown.Toggle variant="success" id="dropdown-basic">
+                                        <Dropdown.Toggle variant="dark" id="dropdown-basic"
+                                                         className={"current-company-name"}>
                                             {currentCompany ? currentCompany.name : 'company'}
                                         </Dropdown.Toggle>
 
@@ -238,7 +256,9 @@ export default function DefaultLayout() {
                                             {
                                                 companies.length > 0 &&
                                                 companies.map((company) => (
-                                                    <Dropdown.Item href="#/action-1">{company.name}</Dropdown.Item>
+                                                    <Dropdown.Item key={company.uid}
+                                                        onClick={(ev) =>switchCompany(company.id)}
+                                                        className={"company-list-dropdown"}>{company.name}</Dropdown.Item>
                                                 ))
                                             }
                                         </Dropdown.Menu>

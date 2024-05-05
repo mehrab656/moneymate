@@ -900,3 +900,21 @@ select option:focus {
     display: flex;
     flex-direction: row-reverse;
 }
+.current-company-name{
+    display: inline-block;
+    width: 180px;
+    height: 50px;
+    word-break: break-all;
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+}
+.company-list-dropdown{
+    display: inline-block;
+    width: 180px !important;
+    height: 50px;
+    word-break: break-all;
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+}

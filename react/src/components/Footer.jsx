@@ -16,7 +16,7 @@ const Footer = () => {
                     height: "100%",
                 }}>
                 <p>{company_name} | <a target="_blank" href={`${web_site}`}>{web_site}</a> |
-                    {phone} | {address} </p>
+                    {phone} | {address} | Version: 1.10.11 </p>
             </div>
         </footer>
     );

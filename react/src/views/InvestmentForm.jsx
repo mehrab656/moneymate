@@ -6,10 +6,11 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import WizCard from "../components/WizCard.jsx";
 import MainLoader from "../components/MainLoader.jsx";
+import {notification} from "../components/ToastNotification.jsx";
 
 export default function InvestmentForm() {
 
-    const {user, token, setUser, setToken, notification} = useStateContext();
+    const {user, token, setUser, setToken} = useStateContext();
 
     let {id} = useParams();
 
@@ -22,12 +23,9 @@ export default function InvestmentForm() {
         note: '',
     });
 
-
-    const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [bankAccounts, setBankAccounts] = useState([]);
     const [users, setUsers] = useState([]);
-    const {setNotification} = useStateContext();
     const [selectedAccountId, setSelectedAccountId] = useState('');
     const [selectedInvestorId, setSelectedInvestorId] = useState('');
 
@@ -36,37 +34,37 @@ export default function InvestmentForm() {
 
     useEffect(() => {
 
-        if(user){
+        if (user) {
             setLoading(true)
             axiosClient.get('/get-all-users')
-            .then(({data}) => {
-                setUsers(data.data);
-                setLoading(false)
-                var updatedUser = [];
-                if(data?.data.length>0){
-                    data.data.forEach(element => {
-                        if(element.id !== user.id){
-                            updatedUser.push(element)
-                        }else{
-                            if(id===undefined){
-                                setSelectedInvestorId(element.id);
+                .then(({data}) => {
+                    setUsers(data.data);
+                    setLoading(false)
+                    var updatedUser = [];
+                    if (data?.data.length > 0) {
+                        data.data.forEach(element => {
+                            if (element.id !== user.id) {
+                                updatedUser.push(element)
+                            } else {
+                                if (id === undefined) {
+                                    setSelectedInvestorId(element.id);
+                                }
                             }
-                        }
-                    });
-                }
-                setUsers(updatedUser)
-            })
-            .catch(error => {
-                setLoading(false)
-                console.error('Error loading investment user:', error);
-                // handle error, e.g., show an error message to the user
-            });
+                        });
+                    }
+                    setUsers(updatedUser)
+                })
+                .catch(error => {
+                    setLoading(false)
+                    console.error('Error loading investment user:', error);
+                    // handle error, e.g., show an error message to the user
+                });
         }
 
         axiosClient.get('/all-bank-account')
             .then(({data}) => {
                 setBankAccounts(data.data);
-                if(data.data.length>0 && id ===undefined){
+                if (data.data.length > 0 && id === undefined) {
                     setSelectedAccountId(data.data[0].id)
                 }
             })
@@ -76,23 +74,23 @@ export default function InvestmentForm() {
 
 
     // set default user-> current user
-    useEffect(()=>{
-        if(user && id ===undefined){
+    useEffect(() => {
+        if (user && id === undefined) {
             setSelectedInvestorId(selectedInvestorId);
         }
-       
-    },[user])
+
+    }, [user])
 
 
     // set default date(today)
-    useEffect(()=>{
-        if(investment?.investment_date ==='' && id ===undefined){
+    useEffect(() => {
+        if (investment?.investment_date === '' && id === undefined) {
             setInvestment({
                 ...investment,
                 investment_date: new Date().toISOString().split('T')[0]
             });
         }
-    },[investment?.investment_date])
+    }, [investment?.investment_date])
 
 
     useEffect(() => {
@@ -110,19 +108,18 @@ export default function InvestmentForm() {
         }
     }, [id]);
 
-    useEffect(()=>{
-        if(investment.account_id !=='' && id !==undefined){
+    useEffect(() => {
+        if (investment.account_id !== '' && id !== undefined) {
             setSelectedAccountId(investment.account_id)
         }
-        if(investment.investor_id !=='' && id !==undefined){
-            setSelectedInvestorId(investment.investor_id )
+        if (investment.investor_id !== '' && id !== undefined) {
+            setSelectedInvestorId(investment.investor_id)
         }
-    },[investment])
-
-
+    }, [investment])
 
     const investmentSubmit = (event) => {
         event.preventDefault();
+
         setLoading(true)
         if (investment.id) {
             const {amount, investment_date, note} = investment;
@@ -137,9 +134,9 @@ export default function InvestmentForm() {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
-            }).then((data) => {
+            }).then(({data}) => {
                 // setNotification('Investments data has been updated')
-                notification('success',data?.message,data?.description)
+                notification('success', data?.message, data?.description)
                 navigate('/investments');
                 setLoading(false)
             })
@@ -148,9 +145,9 @@ export default function InvestmentForm() {
                     // if (response && response.status === 422) {
                     //     setErrors(response.data.errors);
                     // }
-                    if (err.response) { 
+                    if (err.response) {
                         const error = err.response.data
-                        notification('error',error?.message,error.description)
+                        notification('error', error?.message, error.description)
                     }
                     setLoading(false)
                 });
@@ -170,21 +167,17 @@ export default function InvestmentForm() {
                 },
             })
                 .then(({data}) => {
-                    // if (data.action_status === 'insufficient_balance') {
-                    //     setInsufficientBalanceForCategory(data.message);
-                    // } else {
-                    //     setNotification('Investments has been added.');
-                    // }
-                    notification('success',data?.message,data?.description)
-                    navigate('/investments');
 
+                    console.log(data);
+                    notification('success', data?.message, data?.description)
+                    navigate('/investments');
                     setLoading(false)
                 })
-                .catch((error) => {
+                .catch((err) => {
                     setLoading(false)
-                    if (err.response) { 
+                    if (err.response) {
                         const error = err.response.data
-                        notification('error',error?.message,error.description)
+                        notification('error', error?.message, error.description)
                     }
                     // const response = error.response;
                     // setErrors(response.data.errors);
@@ -195,7 +188,7 @@ export default function InvestmentForm() {
 
     return (
         <>
-         <MainLoader loaderVisible={loading} />
+            <MainLoader loaderVisible={loading}/>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 {investment.id && <h1 className="title-text mb-0">Update Investment </h1>}
                 {!investment.id && <h1 className="title-text mb-0">Add New Investment</h1>}
@@ -226,7 +219,7 @@ export default function InvestmentForm() {
                                             const value = event.target.value || '';
                                             setSelectedInvestorId(value);
                                         }}>
-                                         <option defaultValue value={user.id}>{user.name}</option>
+                                        <option defaultValue value={user.id}>{user.name}</option>
                                         {users.map(singleUser => (
                                             <option key={singleUser.id} value={singleUser.id}>
                                                 {singleUser.name}
@@ -235,7 +228,7 @@ export default function InvestmentForm() {
                                     </select>
                                     {/* {selectedInvestorId ===''  && <p className="error-message mt-2">user Required</p>} */}
                                 </div>
-                              
+
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="investment_amount">Amount(*)</label>
                                     <input className="custom-form-control" type="number" value={investment.amount || ""}
@@ -247,7 +240,7 @@ export default function InvestmentForm() {
                                     <label className="custom-form-label" htmlFor="investment_date">Date</label>
                                     <DatePicker
                                         className="custom-form-control"
-                                        selected={investment.investment_date ? new Date(investment.investment_date) : new Date() }
+                                        selected={investment.investment_date ? new Date(investment.investment_date) : new Date()}
                                         onChange={(date) => {
                                             const selectedDate = date ? new Date(date) : null;
                                             const updatedDate = selectedDate && !investment.investment_date ? new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000) : selectedDate;
@@ -262,8 +255,7 @@ export default function InvestmentForm() {
                                     {/* {errors.start_date && <p className="error-message mt-2">{errors.start_date[0]}</p>} */}
                                 </div>
                             </div>
-                            
-        
+
 
                             <div className="col-md-6">
                                 <div className="form-group">
@@ -279,7 +271,8 @@ export default function InvestmentForm() {
                                         }}>
                                         {bankAccounts.map(account => (
                                             <option key={account.id} value={account.id}>
-                                                {account.bank_name} - {account.account_number} - Balance ({account.balance})
+                                                {account.bank_name} - {account.account_number} - Balance
+                                                ({account.balance})
                                             </option>
                                         ))}
                                     </select>
@@ -287,31 +280,21 @@ export default function InvestmentForm() {
                                 </div>
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="note">Note</label>
-                                    <textarea 
-                                    style={{height:130}}
-                                            className="form-control" 
-                                            id="exampleFormControlTextarea1"  
-                                            rows="3"
-                                            value={investment.note !== 'null' ? investment.note : ''}
-                                            onChange={ev => setInvestment({...investment, note: ev.target.value})}
-                                            placeholder="Additional Note"/>
+                                    <textarea
+                                        style={{height: 130}}
+                                        className="form-control"
+                                        id="exampleFormControlTextarea1"
+                                        rows="3"
+                                        value={investment.note !== 'null' ? investment.note : ''}
+                                        onChange={ev => setInvestment({...investment, note: ev.target.value})}
+                                        placeholder="Additional Note"/>
                                 </div>
 
                             </div>
                         </div>
-                        {(selectedInvestorId !==''
-                        && investment?.amount !==''
-                        && selectedAccountId !=='')
-                        ? <button className={investment.id ? "btn btn-warning" : "custom-btn btn-add"}>
+                        <button className={investment.id ? "btn btn-warning" : "custom-btn btn-add"}>
                             {investment.id ? "Update Investment Record" : "Add New Investment"}
                         </button>
-                        :
-                        <button className={investment.id ? "btn btn-secondary" : "btn btn-secondary"} disabled>
-                            {investment.id ? "Update Investment Record" : "Add New Investment"}
-                        </button>
-                         }
-                       
-
                     </form>
                 )}
             </WizCard>
