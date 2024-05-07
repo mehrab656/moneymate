@@ -12,24 +12,20 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Throwable;
 
 class CompanyController extends Controller {
 	/**
 	 * Display a listing of the resource.
 	 */
 	public function getCompanyList() {
-		$user_id = Auth::user()->id;
 
-		$userID    = abs( $user_id );
-		$companies = DB::table( 'companies' )
-		               ->join( 'company_user', 'companies.id', '=', 'company_user.company_id' )
-		               ->where( 'company_user.user_id', '=', $userID )
-		               ->get();
+		$companies = User::with( [ 'companies' ] )->find( Auth::user()->id )->companies()->get();
 
 		return response()->json( [
-			'status'  => 'success',
-			'message' => '',
-			'data'    => $companies
+			'status' => 'success',
+			'total'  => count( $companies ),
+			'data'   => $companies
 		] );
 	}
 
@@ -57,58 +53,34 @@ class CompanyController extends Controller {
 
 	/**
 	 * Store a newly created resource in storage.
-	 * @throws \Throwable
+	 * @throws Exception
+	 * @throws Throwable
 	 */
 	public function addNewCompany( CompanyRequest $request ): JsonResponse {
 		$companyData = $request->validated();
 
-		try {
-			DB::beginTransaction();
-			$store = ( new Company() )->addNewCompany( $companyData );
-			if ( ! $store['success'] ) {
-				return response()->json( [
-					'message'     => 'Company add failed',
-					'description' => "Error while adding company data.",
-				], 400 );
-			}
-			$company = $store['data'];
-
-
-			if ( $request->hasFile( 'logo' ) ) {
-				$attachment = $request->file( 'logo' );
-				$filename   = $company['uid'] . '.' . $attachment->getClientOriginalExtension();
-				$attachment->storeAs( 'files/company', $filename );
-			}
-
-			//now make relation between this company and user. as the user has created this company, he will be the admin by default.
-			DB::table( 'company_user' )->insert( [
-				'company_id' => $company['id'],
-				'user_id'    => Auth::user()->id,
-				'role_id'    => 1,//admin role.
-				'status'     => true,
-				'created_by' => Auth::user()->id,
-				'updated_by' => Auth::user()->id,
-				'created_at' => date( 'y-m-d' ),
-				'updated_at' => date( 'y-m-d' ),
-			] );
-			DB::commit();
-		} catch ( Exception  $e ) {
-
-			DB::rollBack();
-
-			return response()->json( [
-				'message'     => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
-				'status_code' => 400
-			], 400 );
+		$companyData['uid'] = random_string( 'alnum', 32 );
+		$companyData['filename'] = 'demo_company_logo.jpg';
+		if ( $request->hasFile( 'logo' ) ) {
+			$attachment = $request->file( 'logo' );
+			$filename   = $companyData['uid'] . '.' . $attachment->getClientOriginalExtension();
+			$attachment->storeAs( 'files/company', $filename );
+			$companyData['filename'] = $filename;
 		}
 
+
+		$store = ( new Company() )->addNewCompany( $companyData );
+
+
 		return response()->json( [
-			'message'     => 'success',
-			'description' => "Added new Company"
-		] );
+			'success'     => $store['success'],
+			'message'     => $store['message'],
+			'description' => $store['description'],
+		], $store['status_code'] );
+
 	}
 
-	public function switchCompany( $id ) {
+	public function switchCompany( $id ): JsonResponse {
 		$newCompanyID = abs( $id );
 
 

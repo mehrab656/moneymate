@@ -23,7 +23,9 @@ return new class extends Migration {
 		'repayments',
 		'sectors',
 		'wallets',
-		'debts'
+		'debts',
+		'account_transfers',
+		'debt_collections',
 	];
 
 	public function up(): void {

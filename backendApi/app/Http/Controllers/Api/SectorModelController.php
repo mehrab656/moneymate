@@ -35,7 +35,7 @@ class SectorModelController extends Controller {
 		$pageSize = $request->query( 'pageSize', 10 );
 
 
-		$sectors = SectorModel::where('company_id',Auth::user()->primary_company)
+		$sectors = SectorModel::where( 'company_id', Auth::user()->primary_company )
 		                      ->skip( ( $page - 1 ) * $pageSize )
 		                      ->take( $pageSize )
 		                      ->orderBy( 'id', 'DESC' )
@@ -61,8 +61,7 @@ class SectorModelController extends Controller {
 		$payment['date']    = $sector['payment_date'];
 
 
-
-		$channel            = [
+		$channel = [
 			'channel_name' => $sector['channel_name'],
 			'reference_id' => $sector['reference_id'],
 			'listing_date' => $sector['listing_date'],
@@ -73,6 +72,7 @@ class SectorModelController extends Controller {
 		}
 
 		$sectorData = [
+			'company_id'            => Auth::user()->primary_company,
 			'name'                  => $sector['name'],
 			'payment_account_id'    => $sector['payment_account_id'],
 			'contract_start_date'   => Carbon::parse( $sector['contract_start_date'] )->format( 'Y-m-d' ),

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Composer\Autoload\ClassLoader;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -120,5 +121,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Subscription::class)->orderBy('id', 'DESC');
     }
-
+	public function companies() {
+		return $this->belongsToMany(Company::class);
+	}
 }

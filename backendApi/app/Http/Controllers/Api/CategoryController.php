@@ -48,7 +48,6 @@ class CategoryController extends Controller {
 	public function create( CategoryRequest $request ): JsonResponse {
 		$categoryData               = $request->validated();
 		$categoryData['user_id']    = auth()->user()->id;
-		$categoryData['company_id'] = auth()->user()->primary_company;
 
 		$category = $this->categoryRepository->create( $categoryData );
 		storeActivityLog( [

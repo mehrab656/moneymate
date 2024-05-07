@@ -4,12 +4,16 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-
+/**
+ * @property mixed $name
+ * @property mixed $phone
+ */
 class CompanyRequest extends FormRequest {
 	/**
 	 * Determine if the user is authorized to make this request.
 	 */
-	public function authorize(): bool {
+	public function authorize(): bool
+	{
 		return true;
 	}
 
@@ -19,7 +23,7 @@ class CompanyRequest extends FormRequest {
 	 * @return array<string, ValidationRule|array|string>
 	 */
 	public function rules(): array {
-		return [
+		$rules = [
 			'name'                => 'required',
 			'phone'               => 'required',
 			'email'               => 'required',
@@ -32,6 +36,11 @@ class CompanyRequest extends FormRequest {
 			'extra'               => 'nullable',
 			'logo'                => 'nullable',
 		];
+		if ($this->hasFile('logo')) {
+			$rules['logo'] = 'file';
+		}
+		return $rules;
+
 	}
 
 	public function messages(): array {

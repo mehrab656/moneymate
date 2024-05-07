@@ -61,10 +61,8 @@ Route::middleware( 'auth:sanctum' )->group( function () {
 
 	//Bank name Api
 
-
 	Route::get( 'all-bank', [ BankNameController::class, 'allBank' ] );
 	Route::apiResource( 'bank-names', BankNameController::class );
-
 
 	// Bank Account Api
 	Route::get( '/bank-account/{bankAccount}', [ BankAccountController::class, 'show' ] );
@@ -76,11 +74,9 @@ Route::middleware( 'auth:sanctum' )->group( function () {
 	Route::get( 'total-bankAccount-balance', [ BankAccountController::class, 'totalBankAccountBalance' ] );
 	Route::get( 'total-balance', [ BankAccountController::class, 'totalBalance' ] );
 
-
 	// Wallet Api
 	Route::apiResource( 'wallets', WalletController::class );
 	Route::get( 'total-wallet-balance', [ WalletController::class, 'totalWalletBalance' ] );
-
 
 	// Income Api
 	Route::get( '/incomes', [ IncomeController::class, 'index' ] );
@@ -208,7 +204,7 @@ Route::middleware( 'auth:sanctum' )->group( function () {
 	//company
 	Route::get('companies',[ CompanyController::class,'getCompanyList']);
 	Route::get('getCurrentCompany/{id}',[ CompanyController::class,'getCurrentCompany']);
-	Route::get('company/{uid}',[ CompanyController::class,'getCompany']);
+	Route::get('/company/{uid}',[ CompanyController::class,'getCompany']);
 	Route::post('/addCompany',[CompanyController::class,'addNewCompany']);
 	Route::post('/switch-company/{id}',[CompanyController::class,'switchCompany']);
 	Route::post('/company/update/{uid}',[CompanyController::class,'updateCompany']);

@@ -9,8 +9,10 @@ use App\Http\Resources\UserResource;
 use App\Http\Resources\UserRolePermissionResource;
 use App\Models\ActivityLogModel;
 use App\Models\BankName;
+use App\Models\Company;
 use App\Models\User;
 use DB;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -26,10 +28,10 @@ class UserController extends Controller {
 		$page     = $request->query( 'page', 1 );
 		$pageSize = $request->query( 'pageSize', 10 );
 
-		$users = User::skip( ( $page - 1 ) * $pageSize )
-		             ->take( $pageSize )
-		             ->orderBy( 'id', 'desc' )
-		             ->get();
+		$users = Company::with( [ 'users' ] )->find( Auth::user()->primary_company )->users()->skip( ( $page - 1 ) * $pageSize )
+		                ->take( $pageSize )
+		                ->orderBy( 'id', 'desc' )
+		                ->get();;
 
 		$totalCount = User::count();
 
@@ -45,21 +47,41 @@ class UserController extends Controller {
 	 * @param StoreUserRequest $request
 	 *
 	 * @return Response
+	 * @throws Exception
 	 */
 	public function store( StoreUserRequest $request ): Response {
-		$data             = $request->validated();
-		$data['password'] = bcrypt( $data['password'] );
-		$user             = User::create( $data );
-		storeActivityLog( [
-			'user_id'      => Auth::user()->id,
-			'object_id'    => $user['id'],
-			'log_type'     => 'create',
-			'module'       => 'user',
-			'descriptions' => "",
-			'data_records' => $user,
-		] );
+		$data                    = $request->validated();
+		$data['password']        = bcrypt( $data['password'] );
+		$data['primary_company'] = Auth::user()->primary_comany;
+		try {
+			DB::beginTransaction();
+			$user = User::create( $data );
+			DB::table( 'company_user' )->insert( [
+				'company_id' => Auth::user()->primary_comany,
+				'user_id'    => $user->id,
+				'role_id'    => $data['role_id'],//admin role.
+				'status'     => true,
+				'created_by' => Auth::user()->id,
+				'updated_by' => Auth::user()->id,
+				'created_at' => date( 'y-m-d' ),
+				'updated_at' => date( 'y-m-d' ),
+			] );
 
-		return response( new UserResource( $user ), 201 );
+			storeActivityLog( [
+				'object_id'    => $user['id'],
+				'log_type'     => 'create',
+				'module'       => 'user',
+				'descriptions' => "",
+				'data_records' => $user,
+			] );
+			DB::commit();
+		} catch ( Exception $e ) {
+			DB::rollBack();
+
+		}
+
+
+		return response( new UserResource( $user ), 200 );
 	}
 
 	/**
@@ -111,10 +133,10 @@ class UserController extends Controller {
 
 	public function getUsers(): JsonResponse {
 
-		$userList = DB::table('users')->select("users.*")
-			->join('company_user','users.id', '=','company_user.user_id')
-			->where('company_id',Auth::user()->primary_company)
-			->get();
+		$userList = DB::table( 'users' )->select( "users.*" )
+		              ->join( 'company_user', 'users.id', '=', 'company_user.user_id' )
+		              ->where( 'company_id', Auth::user()->primary_company )
+		              ->get();
 
 		return response()->json( [
 			'data' => UserResource::collection( $userList )
@@ -192,5 +214,6 @@ class UserController extends Controller {
 			'description' => $status ? "Data Updated!" : "Error while updating the data!",
 		] );
 	}
+
 
 }
