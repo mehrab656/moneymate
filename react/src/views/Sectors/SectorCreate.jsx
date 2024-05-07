@@ -56,7 +56,7 @@ const initialChannelData = [
     }
 ]
 
-let categories= ['Rent','Electricity','Internet'];
+let categories= ['Rent','Electricity','Internet','DTCM','Furniture','Maintenance','Cleaning','Gas','Chiller','Management','Others'];
 
 function SectorCreate() {
     const {applicationSettings} = useContext(SettingsContext);

@@ -33,7 +33,7 @@ export default function Users() {
     const totalPages = Math.ceil(totalCount / pageSize);
 
     useEffect(() => {
-        document.title = "Manage Users";
+        document.title = "Manage Companies";
         getUsers(currentPage, pageSize);
     }, [currentPage, pageSize]);
 
@@ -108,7 +108,7 @@ export default function Users() {
         <div>
             <MainLoader loaderVisible={loading}/>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
-                <h1 className="title-text mb-0">List of users</h1>
+                <h1 className="title-text mb-0">List of Users</h1>
                 {userRole === 'admin' && <div>
                     <Link className="custom-btn btn-add" to="/users/new">
                         <FontAwesomeIcon icon={faUser}/> Add New
@@ -164,7 +164,8 @@ export default function Users() {
                                                 deleteFunc={onDelete}
                                                 params={actionParams}
                                             />
-                                        </td>}
+                                        </td>
+                                    }
                                 </tr>
                             ))}
                             </tbody>

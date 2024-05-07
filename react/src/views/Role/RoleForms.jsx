@@ -10,6 +10,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import {Box, FormControl, FormGroup} from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
 import FormLabel from "@mui/material/FormLabel";
+import RoleLists from "./RoleLists.jsx";
 
 export default function RoleForms() {
     const navigate = useNavigate();
@@ -25,6 +26,32 @@ export default function RoleForms() {
     const [loading, setLoading] = useState(false);
     const [subscriptions, setSubscriptions] = useState([]);
     const {setNotification} = useStateContext();
+    const [isAllCompanyChecked, setAllCompanyChecked] = useState(false);
+    const [isAllSectorChecked, setAllSectorChecked] = useState(false);
+    const [isAllCategoryChecked, setAllCategoryChecked] = useState(false);
+    const [isAllInvestmentCompanyChecked, setAllInvestmentCompanyChecked] = useState(false);
+    const [isAllExpenseChecked, setAllExpenseChecked] = useState(false);
+    const [isAllIncomeChecked, setAllIncomeChecked] = useState(false);
+    const [isAllReturnChecked, setAllReturnChecked] = useState(false);
+    const [isAllIncomeReportChecked, setAllIncomeReportChecked] = useState(false);
+    const [isAllExpenseReportChecked, setAllExpenseReportChecked] = useState(false);
+    const [isAllInvestmentReportChecked, setAllInvestmentReportChecked] = useState(false);
+    const [isAllMonthlyReportCompanyChecked, setAllMonthlyReportCompanyChecked] = useState(false);
+    const [isAllOverAllReportChecked, setAllOverAllReportChecked] = useState(false);
+    const [isAllBankChecked, setAllBankChecked] = useState(false);
+    const [isAllAccountChecked, setAllAccountChecked] = useState(false);
+    const [isAllBalanceTransferChecked, setAllBalanceTransferChecked] = useState(false);
+    const [isAllDebtLoansChecked, setAllDebtLoansChecked] = useState(false);
+    const [isAllBudgetsChecked, setAllBudgetsChecked] = useState(false);
+    const [isAllInvestmentPlanChecked, setAllInvestmentPlanChecked] = useState(false);
+    const [isAllCalendarChecked, setAllCalendarChecked] = useState(false);
+    const [isAllActivityLogsChecked, setAllActivityLogsChecked] = useState(false);
+    const [isAllApplicationChecked, setAllApplicationChecked] = useState(false);
+    const [isAllUsersChecked, setAllUsersChecked] = useState(false);
+    const [isAllProfileChecked, setAllProfileChecked] = useState(false);
+    const [isAllRolesChecked, setAllRolesChecked] = useState(false);
+    const [isAllDashboardViewChecked, setAllDashboardViewChecked] = useState(false);
+
 
     const {applicationSettings, userRole} = useContext(SettingsContext);
     const {
@@ -86,16 +113,23 @@ export default function RoleForms() {
                 });
         }
     };
-    const [permission, setPermission] = useState([]);
-    const handelCheck = (e) => {
+    const permissions = [];
 
-        if (e.target.checked){
-            permission.push(e.target.value)
-        }else{
-            permission.pop(e.target.value)
+
+    const handelCheck = (e, permission) => {
+        const {checked} = e.target;
+
+        if (e.target.checked) {
+            permissions.push(e.target.value)
+
+        } else {
+            permissions.pop(e.target.value)
         }
-        console.log(permission)
+
+        console.log(permissions)
     };
+
+
     return (
         <>
             <MainLoader loaderVisible={loading}/>
@@ -121,55 +155,7 @@ export default function RoleForms() {
                                 <div className="text-danger">{errors.name[0]}</div>
                             )}
                         </div>
-                        <div className="form-group">
-                            <FormControl component="fieldset">
-                                <FormLabel component="legend">
-                                    <Checkbox color="primary"
-                                              value={"company_all"}
-                                              onChange={handelCheck}
-                                    />
-                                    Company
-                                </FormLabel>
-                                <FormGroup aria-label="position" row>
-                                    <FormControlLabel
-                                        value="company_create"
-                                        control={<Checkbox color="primary"/>}
-                                        label="Create"
-                                        labelPlacement="end"
-                                        onChange={handelCheck}
-                                    />
-                                    <FormControlLabel
-                                        value="company_update"
-                                        control={<Checkbox color="primary"/>}
-                                        label="Update"
-                                        labelPlacement="end"
-                                        onChange={handelCheck}
-
-
-                                    />
-                                    <FormControlLabel
-                                        value="company_view"
-                                        control={<Checkbox color="primary"/>}
-                                        label="View"
-                                        labelPlacement="end"
-                                        onChange={handelCheck}
-
-                                    />
-                                    <FormControlLabel
-                                        value="company_delete"
-                                        control={<Checkbox color="primary"/>}
-                                        label="Delete"
-                                        labelPlacement="end"
-                                        onChange={handelCheck}
-
-                                    />
-
-                                </FormGroup>
-                            </FormControl>
-                            {errors && errors.name && (
-                                <div className="text-danger">{errors.name[0]}</div>
-                            )}
-                        </div>
+                        <RoleLists key={Math.random().toString(36).substring(2)} handelCheck={handelCheck}/>
 
 
                         <div className="text-end mt-4">
