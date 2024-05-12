@@ -10,15 +10,15 @@ return new class extends Migration {
 	 */
 
 	protected array $tables = [
-		'activity_logs',
-		'bank_accounts',
-		'bank_names',
-		'borrows',
-		'budgets',
-		'expenses',
-		'incomes',
-		'investments',
-		'investment_plans',
+		// 'activity_logs',
+		// 'bank_accounts',
+		// 'bank_names',
+		// 'borrows',
+		// 'budgets',
+		// 'expenses',
+		// 'incomes',
+		// 'investments',
+		// 'investment_plans',
 		'lends',
 		'repayments',
 		'sectors',
@@ -33,7 +33,7 @@ return new class extends Migration {
 		foreach ( $this->tables as $tableName ) {
 			Schema::table( $tableName, function ( Blueprint $table ) {
 				$table->unsignedBigInteger( 'company_id' )->after( 'id' )->default( 1 );
-				$table->foreign( 'company_id' )->references( 'id' )->on( 'companies' );
+				// $table->foreign( 'company_id' )->references( 'id' )->on( 'companies' );
 			} );
 		}
 	}

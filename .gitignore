@@ -13,7 +13,7 @@ backendApi/_ide_helper.php
 backendApi/composer.lock
 backendApi/vite.config.js
 backendApi/package-lock.json
-
+backendApi/storage
 
 
 #-------------------------
