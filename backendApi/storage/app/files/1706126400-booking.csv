@@ -1,5 +1,0 @@
-Type,"Reference number",Check-in,Checkout,"Guest name","Reservation status",Currency,"Payment status",Amount,Commission,"Payment charge",,Net,"Payout date","Payout ID"
-Reservation,4086270392,"23 Jan 2024","24 Jan 2024","Eftakar kobir  Shakib",ok,AED,by_booking,227.89,-34.73,-5.70,,187.46,"25 Jan 2024",CJ5nYeat6o5SatW3
-Reservation,4199799818,"22 Jan 2024","23 Jan 2024","Charlotte Fourest",ok,AED,by_booking,240.56,-36.66,-6.01,,197.89,"25 Jan 2024",CJ5nYeat6o5SatW3
-Reservation,4227195049,"21 Jan 2024","22 Jan 2024","Adharsh Payyapantha",ok,AED,by_booking,227.89,-34.73,-5.70,,187.46,"25 Jan 2024",CJ5nYeat6o5SatW3
-Reservation,4244882215,"27 Dec 2023","21 Jan 2024","Shadiat Adigun",ok,AED,by_booking,9109.18,-1388.07,-227.73,,7493.38,"25 Jan 2024",CJ5nYeat6o5SatW3
