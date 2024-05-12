@@ -44,4 +44,3 @@ export function reservationValidationBuilder(check_in, check_out) {
         class: _class
     }
 }
-

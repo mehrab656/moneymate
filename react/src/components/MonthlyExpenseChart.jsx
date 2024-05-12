@@ -18,7 +18,7 @@ export default function MonthlyExpenseChart({title}) {
                 setExpenseData(coloredData);
                 setLoading(false);
             })
-            .catch((error) => {
+            .catch(() => {
                 setLoading(false);
             });
     };

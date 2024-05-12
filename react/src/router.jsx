@@ -36,6 +36,7 @@ import OverallReport from "./views/OverallReport";
 import Sectors from "./views/Sectors/Sectors.jsx";
 import SectorCreate from "./views/Sectors/SectorCreate.jsx";
 import MonthlyReport from "./views/MonthlyReport.jsx";
+import ActivityLogs from "./views/ActivityLogs/ActivityLogs.jsx";
 
 const router = createBrowserRouter([
 
@@ -202,7 +203,10 @@ const router = createBrowserRouter([
                 path: '/monthly-report',
                 element: <MonthlyReport/>
             },
-
+            {
+                path: 'activity-logs',
+                element: <ActivityLogs />
+            },
             {
                 path: 'application-settings',
                 element: <ApplicationSettingsForm key="applicationSettings"/>
