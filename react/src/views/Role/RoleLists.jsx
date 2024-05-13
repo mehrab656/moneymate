@@ -1,82 +1,108 @@
-import FormLabel from "@mui/material/FormLabel";
-import {FormControl, FormGroup} from "@mui/material";
+import React, { useState } from "react";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import React, {memo} from "react";
+import { Box, capitalize } from "@mui/material";
 
+function RoleLists({permissions,setPermissions}) {
 
-const RoleLists = ({handelCheck}) => {
-    const companyPermissions = ['create', 'view', 'edit', 'delete'];
+  const moduleArray = Object.entries(permissions);
 
-    const modules = {
-        company: ['create', 'view', 'edit', 'delete'],
-        sector: ['create', 'view', 'edit', 'delete'],
-        category: ['create', 'view', 'edit', 'delete'],
-        investment: ['create', 'view', 'edit', 'delete'],
-        expense: ['create', 'view', 'edit', 'delete'],
-        income: ['create', 'view', 'edit', 'delete'],
-        return: ['create', 'view', 'edit', 'delete'],
-        income_report: ['create', 'view', 'edit', 'delete'],
-        expense_report: ['create', 'view', 'edit', 'delete'],
-        investment_report: ['create', 'view', 'edit', 'delete'],
-        monthly_report: ['create', 'view', 'edit', 'delete'],
-        overall_report: ['create', 'view', 'edit', 'delete'],
-        bank: ['create', 'view', 'edit', 'delete'],
-        account: ['create', 'view', 'edit', 'delete','transfer'],
-        balance: ['create', 'view', 'edit', 'delete'],
-        debt: ['create', 'view', 'edit', 'delete'],
-        loans: ['create', 'view', 'edit', 'delete'],
-        budget: ['create', 'view', 'edit', 'delete'],
-        investment_plan: ['create', 'view', 'edit', 'delete'],
-        calender: ['create', 'view', 'edit', 'delete'],
-        activity_log: ['create', 'view', 'edit', 'delete'],
-        settings: ['create', 'view', 'edit', 'delete'],
-        user: ['create', 'view', 'edit', 'delete'],
-        profile: ['create', 'view', 'edit', 'delete'],
-        role: ['create', 'view', 'edit', 'delete'],
-        dashboard: ['monthly_income', 'monthly_expense', 'account_balance', 'lend_amount','borrow_amount','total_bank','expense_chart','exp_budget','active_budget']
-    };
-    const moduleArray =Object.entries(modules);
+  // Function to handle checkbox change
+  const handleChange = (event, section) => {
+    const { name, checked } = event.target;
+    if (name === "selectAll") {
+      setPermissions((prevState) => ({
+        ...prevState,
+        [section]: Object.keys(prevState[section]).reduce((acc, key) => {
+          acc[key] = checked;
+          return acc;
+        }, {}),
+      }));
+    } else {
+      setPermissions((prevState) => ({
+        ...prevState,
+        [section]: {
+          ...prevState[section],
+          [name]: checked,
+        },
+      }));
+    }
+  };
 
+  // Function to handle select all checkbox change
+  const handleSelectAll = (event, section) => {
+    const { checked } = event.target;
+    setPermissions((prevState) => ({
+      ...prevState,
+      [section]: Object.keys(prevState[section]).reduce((acc, key) => {
+        acc[key] = checked;
+        return acc;
+      }, {}),
+    }));
+  };
 
-    return (
-        <div className="form-group">
-            {
-                moduleArray.map((module,name)=>{
-                    const moduleName = module[0];
-                    const moduleArray = module[1];
-                    return (
-                        <>
-                            <FormControl component="fieldset">
-                                <FormLabel>
-                                    {moduleName.replace('_',' ').toUpperCase()}
-                                </FormLabel>
-                                <FormGroup aria-label="position" row>
-                                    {
-                                        moduleArray.map(permission => {
-                                            return (
-                                                <FormControlLabel key={moduleName+"_" + permission}
-                                                                  value={moduleName+"_" + permission}
-                                                                  control={<Checkbox color="primary"/>}
-                                                                  label={permission.replace('_',' ').toUpperCase()}
-                                                                  labelPlacement="end"
-                                                                  onChange={(e) => handelCheck(e, permission)}
-                                                />
-                                            )
-                                        })
-                                    }
-                                </FormGroup>
-                            </FormControl>
-                            <br/>
-                        </>
+//   console.log('permission', permissions)
+
+  return (
+    <div className='role_selection'>
+      {moduleArray &&
+        moduleArray.map((menu, i) => {
+          const options = Object.entries(menu[1]);
+            function toTitleCase(str) {
+                // Convert the string to lowercase and split it by underscore
+                let words = str.toLowerCase().split('_');
+                
+                // Capitalize the first letter of each word
+                for (let i = 0; i < words.length; i++) {
+                    words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+                }
+                
+                // Join the words with space
+                return words.join(' ');
+                }
+                const name = toTitleCase(menu[0]);
+          return (
+            <>
+              <Box display={"flex"} key={menu[0]}>
+                <h3>{name}</h3>
+                <FormControlLabel
+                  sx={{ ml: 2 }}
+                  control={
+                    <Checkbox
+                        checked={Object.values(menu[1]).every(Boolean)} // Use menu[1] instead of menu[0]
+                        onChange={(e) => handleSelectAll(e, menu[0])}
+                        name='selectAll'
+                        />
+                  }
+                  label='Select All'
+                />
+              </Box>
+              <Box sx={{m:2}}>
+                {options.map((option, key)=>{
+                    const label = option[0].split("_").pop()
+                    return(
+                        <FormControlLabel
+                            key={option[0]}
+                            control={
+                            <Checkbox
+                                checked={option[1]}
+                                onChange={(e) => handleChange(e, menu[0])}
+                                name={option[0]}
+                            />
+                            }
+                            label={label}
+                            sx={{textTransform:'capitalize'}}
+                        />
                     )
-                })
-            }
-
-
-
-        </div>
-    )
+                })}
+              </Box>
+             <hr/>
+            </>
+          );
+        })}
+      
+    </div>
+  );
 }
 
-export default memo(RoleLists);
+export default RoleLists;
