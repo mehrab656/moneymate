@@ -47,7 +47,7 @@ export default function Roles() {
 
     const getActivityData = (page, rowsPerPage) => {
         setLoading(true);
-        axiosClient.get('/activity-logs', {params: {page, rowsPerPage}})
+        axiosClient.get('/roles', {params: {page, rowsPerPage}})
             .then(({data}) => {
                 setLoading(false);
                 setLogs(data.data);
@@ -58,7 +58,7 @@ export default function Roles() {
     }
 
     useEffect(() => {
-        document.title = "Activity Log";
+        document.title = "Role list";
         getActivityData(page, rowsPerPage);
     }, [page, rowsPerPage]);
     const StyledTableCell = styled(TableCell)(({theme}) => ({

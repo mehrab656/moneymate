@@ -198,13 +198,13 @@ export default function RoleForms() {
 
     if (id) {
         useEffect(() => {
-            document.title = 'New Role';
+            document.title = 'Update Role';
             setLoading(true);
             axiosClient
                 .get(`/roles/${id}`)
                 .then(({data}) => {
                     setLoading(false);
-                    setRole(data);
+                    setRole(data.data);
                 })
                 .catch(() => {
                     setLoading(false);

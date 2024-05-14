@@ -14,12 +14,48 @@ use PHPUnit\Exception;
 
 class RoleController extends Controller
 {
+
+    public function getRoleList(Request $request){
+
+        $page     = $request->query( 'page', 1 );
+        $pageSize = $request->query( 'pageSize', 1000 );
+
+        $roles = Role::where('company_id',Auth::user()->primary_company)->skip( ( $page - 1 ) * $pageSize )
+            ->take( $pageSize )
+            ->orderBy( 'id', 'desc' )
+            ->get();
+
+
+        return response()->json( [
+            'data' => $roles,
+        ] );
+
+
+    }
     /**
      * Display a listing of the resource.
      */
-    public function getRole()
+    public function getRole($id)
     {
-        //
+        $id = abs($id);
+
+
+        $role = Role::where(['company_id'=>Auth::user()->primary_company,'id'=>$id])->get()->first();
+
+
+        if (!$role){
+            return response()->json([
+                'status'=>'error',
+                'message'=>'Role not found!',
+                'data'=>[]
+            ],404);
+        }
+        $role->permissions = json_decode($role->permissions,true);
+        return response()->json([
+            'status'=>'success',
+            'message'=>'Role found!',
+            'data'=>$role
+        ]);
     }
 
     public function companyRoleList(Request $request): JsonResponse
@@ -107,14 +143,6 @@ class RoleController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      */
     public function show(Role $role)
@@ -127,7 +155,7 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
-        //
+        dd($role);
     }
 
     /**
