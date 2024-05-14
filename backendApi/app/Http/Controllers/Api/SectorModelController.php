@@ -465,7 +465,7 @@ class SectorModelController extends Controller {
 	}
 
 	public function sectorList(): JsonResponse {
-		$sectors = SectorModel::get();
+		$sectors = SectorModel::where('company_id',Auth::user()->primary_company)->get();
 
 		return response()->json( [ 'sectors' => $sectors ] );
 	}

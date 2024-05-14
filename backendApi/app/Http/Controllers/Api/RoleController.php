@@ -60,8 +60,8 @@ class RoleController extends Controller
 
         $data = $request->all();
 
-        $roleName = $data['role'];
-        $roleStatus = $data['status'];
+        $roleName = strtolower($data['role']);
+        $roleStatus = abs($data['status']);
         unset($data['role']);
         unset($data['status']);
 
