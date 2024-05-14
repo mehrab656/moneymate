@@ -912,7 +912,7 @@ select option:focus {
 .company-list-dropdown{
     display: inline-block;
     width: 180px !important;
-    height: 50px;
+    height: 40px;
     word-break: break-all;
     white-space: nowrap;
     overflow: hidden !important;

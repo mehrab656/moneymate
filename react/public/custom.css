@@ -406,3 +406,7 @@ footer {
 .section_roll_name{
     text-transform: capitalize !important;
 }
+
+.dropdown-menu {
+    padding: inherit;
+}

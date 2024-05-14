@@ -15,13 +15,8 @@ import RoleLists from "./RoleLists.jsx";
 export default function RoleForms() {
     const navigate = useNavigate();
     let {id} = useParams();
-    const [role, setRole] = useState({
-        id: null,
-        name: "",
-        email: "",
-        password: "",
-        password_confirmation: ""
-    });
+    const [role, setRole] = useState('');
+    const [status, setStatus] = useState(1)
     const [errors, setErrors] = useState(null);
     const [loading, setLoading] = useState(false);
     const [subscriptions, setSubscriptions] = useState([]);
@@ -35,9 +30,9 @@ export default function RoleForms() {
       // State to hold the checked status
   const [permissions, setPermissions] = useState({
     company: {
-      company_create: true,
+      company_create: false,
       company_view: false,
-      company_edit: true,
+      company_edit: false,
       company_delete: false,
     },
     sector: {
@@ -218,7 +213,10 @@ export default function RoleForms() {
     const onSubmit = (ev) => {
         ev.preventDefault();
         setLoading(true);
+
         const mergedPermissions = {
+            role,
+            status,
             ...permissions.company,
             ...permissions.sector,
             ...permissions.category,
@@ -244,9 +242,9 @@ export default function RoleForms() {
             ...permissions.user,
             ...permissions.profile,
             ...permissions.role,
-            ...permissions.dashboard,
+            ...permissions.dashboard
           };
-          console.log('Permission Result', mergedPermissions)
+        
         if (role.id) {
             axiosClient
                 .put(`/role/update/${role.id}`, role)
@@ -299,9 +297,9 @@ export default function RoleForms() {
                             </label>
                             <input
                                 className="custom-form-control"
-                                value={role.name}
+                                value={role}
                                 onChange={(ev) =>
-                                    setRole({...role, name: ev.target.value})
+                                    setRole(ev.target.value)
                                 }
                                 placeholder="Name"
                             />

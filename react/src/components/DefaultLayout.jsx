@@ -256,7 +256,7 @@ export default function DefaultLayout() {
                                             {
                                                 companies.length > 0 &&
                                                 companies.map((company) => (
-                                                    <Dropdown.Item key={company.uid}
+                                                    <Dropdown.Item key={company.uid} active={ currentCompany?.name ===company.name?true:false}
                                                         onClick={(ev) =>switchCompany(company.id)}
                                                         className={"company-list-dropdown"}>{company.name}</Dropdown.Item>
                                                 ))
