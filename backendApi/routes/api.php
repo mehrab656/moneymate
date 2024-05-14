@@ -215,7 +215,7 @@ Route::middleware( 'auth:sanctum' )->group( function () {
 	Route::get('roles',[ RoleController::class,'getRoleList']);
 	Route::get('roles-by-company',[ RoleController::class,'companyRoleList']);
 	Route::get('role/{id}',[ RoleController::class,'getRole']);
-	Route::post('/role/add',[RoleController::class,'addRole']);
+	Route::post('/role/add/',[RoleController::class,'addRole']);
 	Route::post('/role/update/{id}',[RoleController::class,'updateRole']);
 	Route::delete( 'role/{id}', [ RoleController::class, 'destroy' ] );
 

@@ -47,7 +47,7 @@ class SectorRequest extends FormRequest {
 	 */
 	public function messages(): array {
 		return [
-			'sector_name.required'                => 'Sector name is required.',
+			'name.required'                => 'Sector name is required.',
 			'payment_account_id.required'         => 'Payment account is required.',
 			'contract_start_date.required'        => 'Contract start date is required.',
 			'contract_end_date.contract_end_date' => 'Contract end date is required.',
