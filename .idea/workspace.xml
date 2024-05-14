@@ -5,17 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7aab6cd-85c3-45f8-9232-3c188a37b109" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/codeception.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/deployment.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/moneymate.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/moneymate.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/phpspec.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/RoleController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/RoleController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Requests/RoleRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Requests/RoleRequest.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Requests/SectorRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Requests/SectorRequest.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/routes/api.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Role/RoleLists.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Role/RoleLists.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -207,7 +202,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1715699168749</updated>
-      <workItem from="1715699169865" duration="3043000" />
+      <workItem from="1715699169865" duration="7182000" />
     </task>
     <servers />
   </component>
