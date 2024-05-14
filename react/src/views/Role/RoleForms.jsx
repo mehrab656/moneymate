@@ -11,16 +11,14 @@ import {Box, FormControl, FormGroup} from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
 import FormLabel from "@mui/material/FormLabel";
 import RoleLists from "./RoleLists.jsx";
+import {notification} from "../../components/ToastNotification.jsx";
 
 export default function RoleForms() {
     const navigate = useNavigate();
     let {id} = useParams();
     const [role, setRole] = useState({
-        id: null,
-        name: "",
-        email: "",
-        password: "",
-        password_confirmation: ""
+        role: '',
+        status: 1
     });
     const [errors, setErrors] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -32,171 +30,171 @@ export default function RoleForms() {
         registration_type,
     } = applicationSettings;
 
-      // State to hold the checked status
-  const [permissions, setPermissions] = useState({
-    company: {
-      company_create: true,
-      company_view: false,
-      company_edit: true,
-      company_delete: false,
-    },
-    sector: {
-      sector_create: false,
-      sector_view: false,
-      sector_edit: false,
-      sector_delete: false,
-    },
-    category: {
-      category_create: false,
-      category_view: false,
-      category_edit: false,
-      category_delete: false,
-    },
-    investment: {
-      investment_create: false,
-      investment_view: false,
-      investment_edit: false,
-      investment_delete: false,
-    },
-    expense: {
-      expense_create: false,
-      expense_view: false,
-      expense_edit: false,
-      expense_delete: false,
-    },
-    income: {
-      income_create: false,
-      income_view: false,
-      income_edit: false,
-      income_delete: false,
-    },
-    return: {
-      return_create: false,
-      return_view: false,
-      return_edit: false,
-      return_delete: false,
-    },
-    income_report: {
-      income_report_create: false,
-      income_report_view: false,
-      income_report_edit: false,
-      income_report_delete: false,
-    },
-    expense_report: {
-      expense_report_create: false,
-      expense_report_view: false,
-      expense_report_edit: false,
-      expense_report_delete: false,
-    },
-    investment_report: {
-      investment_report_create: false,
-      investment_report_view: false,
-      investment_report_edit: false,
-      investment_report_delete: false,
-    },
-    monthly_report: {
-      monthly_report_create: false,
-      monthly_report_view: false,
-      monthly_report_edit: false,
-      monthly_report_delete: false,
-    },
-    overall_report: {
-      overall_report_create: false,
-      overall_report_view: false,
-      overall_report_edit: false,
-      overall_report_delete: false,
-    },
-    bank: {
-      bank_create: false,
-      bank_view: false,
-      bank_edit: false,
-      bank_delete: false,
-    },
-    account: {
-      account_create: false,
-      account_view: false,
-      account_edit: false,
-      account_delete: false,
-    },
-    balance: {
-      balance_create: false,
-      balance_view: false,
-      balance_edit: false,
-      balance_delete: false,
-    },
-    debt: {
-      debt_create: false,
-      debt_view: false,
-      debt_edit: false,
-      debt_delete: false,
-    },
-    loans: {
-      loans_create: false,
-      loans_view: false,
-      loans_edit: false,
-      loans_delete: false,
-    },
-    budget: {
-      budget_create: false,
-      budget_view: false,
-      budget_edit: false,
-      budget_delete: false,
-    },
-    investment_plan: {
-      investment_plan_create: false,
-      investment_plan_view: false,
-      investment_plan_edit: false,
-      investment_plan_delete: false,
-    },
-    calender: {
-      calender_create: false,
-      calender_view: false,
-      calender_edit: false,
-      calender_delete: false,
-    },
-    activity_log: {
-      activity_log_create: false,
-      activity_log_view: false,
-      activity_log_edit: false,
-      activity_log_delete: false,
-    },
-    settings: {
-      settings_create: false,
-      settings_view: false,
-      settings_edit: false,
-      settings_delete: false,
-    },
-    user: {
-      user_create: false,
-      user_view: false,
-      user_edit: false,
-      user_delete: false,
-    },
-    profile: {
-      profile_create: false,
-      profile_view: false,
-      profile_edit: false,
-      profile_delete: false,
-    },
-    role: {
-      role_create: false,
-      role_view: false,
-      role_edit: false,
-      role_delete: false,
-    },
-    dashboard: {
-      dashboard_monthly_income: false,
-      dashboard_monthly_expense: false,
-      dashboard_account_balance: false,
-      dashboard_lend_amount: false,
-      dashboard_borrow_amount: false,
-      dashboard_total_bank: false,
-      dashboard_expense_chart: false,
-      dashboard_exp_budget: false,
-      dashboard_active_budget: false,
-    },
-    // Add other sections similarly
-  });
+    // State to hold the checked status
+    const [permissions, setPermissions] = useState({
+        company: {
+            company_create: false,
+            company_view: false,
+            company_edit: false,
+            company_delete: false,
+        },
+        sector: {
+            sector_create: false,
+            sector_view: false,
+            sector_edit: false,
+            sector_delete: false,
+        },
+        category: {
+            category_create: false,
+            category_view: false,
+            category_edit: false,
+            category_delete: false,
+        },
+        investment: {
+            investment_create: false,
+            investment_view: false,
+            investment_edit: false,
+            investment_delete: false,
+        },
+        expense: {
+            expense_create: false,
+            expense_view: false,
+            expense_edit: false,
+            expense_delete: false,
+        },
+        income: {
+            income_create: false,
+            income_view: false,
+            income_edit: false,
+            income_delete: false,
+        },
+        return: {
+            return_create: false,
+            return_view: false,
+            return_edit: false,
+            return_delete: false,
+        },
+        income_report: {
+            income_report_create: false,
+            income_report_view: false,
+            income_report_edit: false,
+            income_report_delete: false,
+        },
+        expense_report: {
+            expense_report_create: false,
+            expense_report_view: false,
+            expense_report_edit: false,
+            expense_report_delete: false,
+        },
+        investment_report: {
+            investment_report_create: false,
+            investment_report_view: false,
+            investment_report_edit: false,
+            investment_report_delete: false,
+        },
+        monthly_report: {
+            monthly_report_create: false,
+            monthly_report_view: false,
+            monthly_report_edit: false,
+            monthly_report_delete: false,
+        },
+        overall_report: {
+            overall_report_create: false,
+            overall_report_view: false,
+            overall_report_edit: false,
+            overall_report_delete: false,
+        },
+        bank: {
+            bank_create: false,
+            bank_view: false,
+            bank_edit: false,
+            bank_delete: false,
+        },
+        account: {
+            account_create: false,
+            account_view: false,
+            account_edit: false,
+            account_delete: false,
+        },
+        balance: {
+            balance_create: false,
+            balance_view: false,
+            balance_edit: false,
+            balance_delete: false,
+        },
+        debt: {
+            debt_create: false,
+            debt_view: false,
+            debt_edit: false,
+            debt_delete: false,
+        },
+        loans: {
+            loans_create: false,
+            loans_view: false,
+            loans_edit: false,
+            loans_delete: false,
+        },
+        budget: {
+            budget_create: false,
+            budget_view: false,
+            budget_edit: false,
+            budget_delete: false,
+        },
+        investment_plan: {
+            investment_plan_create: false,
+            investment_plan_view: false,
+            investment_plan_edit: false,
+            investment_plan_delete: false,
+        },
+        calender: {
+            calender_create: false,
+            calender_view: false,
+            calender_edit: false,
+            calender_delete: false,
+        },
+        activity_log: {
+            activity_log_create: false,
+            activity_log_view: false,
+            activity_log_edit: false,
+            activity_log_delete: false,
+        },
+        settings: {
+            settings_create: false,
+            settings_view: false,
+            settings_edit: false,
+            settings_delete: false,
+        },
+        user: {
+            user_create: false,
+            user_view: false,
+            user_edit: false,
+            user_delete: false,
+        },
+        profile: {
+            profile_create: false,
+            profile_view: false,
+            profile_edit: false,
+            profile_delete: false,
+        },
+        role: {
+            role_create: false,
+            role_view: false,
+            role_edit: false,
+            role_delete: false,
+        },
+        dashboard: {
+            dashboard_monthly_income: false,
+            dashboard_monthly_expense: false,
+            dashboard_account_balance: false,
+            dashboard_lend_amount: false,
+            dashboard_borrow_amount: false,
+            dashboard_total_bank: false,
+            dashboard_expense_chart: false,
+            dashboard_exp_budget: false,
+            dashboard_active_budget: false,
+        },
+        // Add other sections similarly
+    });
 
     if (id) {
         useEffect(() => {
@@ -218,7 +216,9 @@ export default function RoleForms() {
     const onSubmit = (ev) => {
         ev.preventDefault();
         setLoading(true);
-        const mergedPermissions = {
+
+        const mergedRoleData = {
+            ...role,
             ...permissions.company,
             ...permissions.sector,
             ...permissions.category,
@@ -244,12 +244,12 @@ export default function RoleForms() {
             ...permissions.user,
             ...permissions.profile,
             ...permissions.role,
-            ...permissions.dashboard,
-          };
-          console.log('Permission Result', mergedPermissions)
+            ...permissions.dashboard
+        };
+
         if (role.id) {
             axiosClient
-                .put(`/role/update/${role.id}`, role)
+                .put(`/role/update/${role.id}`, mergedRoleData)
                 .then(() => {
                     setNotification("Role was successfully updated");
                     if (userRole === 'admin') {
@@ -266,9 +266,9 @@ export default function RoleForms() {
                 });
         } else {
             axiosClient
-                .post("/role/add", role)
-                .then(() => {
-                    setNotification("Role was successfully created");
+                .post("/role/add", mergedRoleData)
+                .then(({data}) => {
+                    notification(data?.status, data?.message, data?.description)
                     navigate("/roles");
                     setLoading(false);
                 })
@@ -281,7 +281,6 @@ export default function RoleForms() {
                 });
         }
     };
-   
 
 
     return (
@@ -299,17 +298,16 @@ export default function RoleForms() {
                             </label>
                             <input
                                 className="custom-form-control"
-                                value={role.name}
+                                value={role.role}
                                 onChange={(ev) =>
-                                    setRole({...role, name: ev.target.value})
+                                    setRole({...role, role: ev.target.value})
                                 }
                                 placeholder="Name"
                             />
-                            {errors && errors.name && (
-                                <div className="text-danger">{errors.name[0]}</div>
-                            )}
+
                         </div>
-                        <RoleLists key={Math.random().toString(36).substring(2)} permissions={permissions} setPermissions={setPermissions} />
+                        <RoleLists key={Math.random().toString(36).substring(2)} permissions={permissions}
+                                   setPermissions={setPermissions}/>
 
 
                         <div className="text-end mt-4">

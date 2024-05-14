@@ -55,7 +55,7 @@ class RoleController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function addRole(RoleRequest $request)
+    public function addRole(Request $request)
     {
 
         $data = $request->all();
@@ -69,7 +69,9 @@ class RoleController extends Controller
             'company_id' => Auth::user()->primary_company,
             'role' => $roleName,
             'status' => $roleStatus,
-            'permissions' => json_encode($data)
+            'permissions' => json_encode($data),
+            'created_by' => Auth::user()->id,
+            'updated_by' => Auth::user()->id,
         ];
 
         try {

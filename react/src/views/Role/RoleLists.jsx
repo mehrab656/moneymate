@@ -109,6 +109,13 @@ function RoleLists({permissions, setPermissions}) {
                                                             checked={Object.values(menu[1]).every(Boolean)} // Use menu[1] instead of menu[0]
                                                             onChange={(e) => handleSelectAll(e, menu[0])}
                                                             name='selectAll'
+                                                            sx={{
+                                                              // color: '#778',
+                                                              // '&.Mui-checked': {
+                                                              //   color: '#758978',
+                                                              // },
+                                                              '& .MuiSvgIcon-root': { fontSize: 14 }
+                                                              }}
                                                         />
                                                     }
                                                     label = {name}
@@ -126,6 +133,13 @@ function RoleLists({permissions, setPermissions}) {
                                                                     checked={option[1]}
                                                                     onChange={(e) => handleChange(e, menu[0])}
                                                                     name={option[0]}
+                                                                    sx={{
+                                                                    // color: '#778',
+                                                                    // '&.Mui-checked': {
+                                                                    //   color: '#758978',
+                                                                    // },
+                                                                    '& .MuiSvgIcon-root': { fontSize: 18 }
+                                                                    }}
                                                                 />
                                                             }
                                                             label={label}
