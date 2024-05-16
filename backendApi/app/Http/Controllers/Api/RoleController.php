@@ -4,34 +4,40 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RoleRequest;
+use App\Http\Resources\RoleResource;
 use App\Models\Role;
 use Auth;
 use DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Js;
 use PHPUnit\Exception;
 
 class RoleController extends Controller
 {
 
-    public function getRoleList(Request $request){
+    public function getRoleList(Request $request)
+    {
 
-        $page     = $request->query( 'page', 1 );
-        $pageSize = $request->query( 'pageSize', 1000 );
+        $page = $request->query('page', 1);
+        $pageSize = $request->query('pageSize', 1000);
 
-        $roles = Role::where('company_id',Auth::user()->primary_company)->skip( ( $page - 1 ) * $pageSize )
-            ->take( $pageSize )
-            ->orderBy( 'id', 'desc' )
+        $roles = Role::with(['createdBy'])->where('company_id', Auth::user()->primary_company)->skip(($page - 1) * $pageSize)
+            ->take($pageSize)
+            ->orderBy('id', 'desc')
             ->get();
 
+        $totalCount = Role::where('company_id', Auth::user()->primary_company)->count();
 
-        return response()->json( [
-            'data' => $roles,
-        ] );
+        return response()->json([
+            'data' => RoleResource::collection($roles),
+            'total' => $totalCount,
+        ]);
 
 
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -40,21 +46,21 @@ class RoleController extends Controller
         $id = abs($id);
 
 
-        $role = Role::where(['company_id'=>Auth::user()->primary_company,'id'=>$id])->get()->first();
+        $role = Role::where(['company_id' => Auth::user()->primary_company, 'id' => $id])->get()->first();
 
 
-        if (!$role){
+        if (!$role) {
             return response()->json([
-                'status'=>'error',
-                'message'=>'Role not found!',
-                'data'=>[]
-            ],404);
+                'status' => 'error',
+                'message' => 'Role not found!',
+                'data' => []
+            ], 404);
         }
-        $role->permissions = json_decode($role->permissions,true);
+        $role->permissions = json_decode($role->permissions, true);
         return response()->json([
-            'status'=>'success',
-            'message'=>'Role found!',
-            'data'=>$role
+            'status' => 'success',
+            'message' => 'Role found!',
+            'data' => $role
         ]);
     }
 
@@ -172,5 +178,11 @@ class RoleController extends Controller
     public function destroy(Role $role)
     {
         //
+    }
+
+    public function getPermission(Request $request): JsonResponse
+    {
+        return response()->json([
+            'permission' => true]);
     }
 }

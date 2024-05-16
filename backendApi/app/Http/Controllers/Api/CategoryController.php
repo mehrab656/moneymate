@@ -8,7 +8,7 @@ use App\Http\Requests\CategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Exception;
 use Hamcrest\Description;
 use Illuminate\Http\JsonResponse;

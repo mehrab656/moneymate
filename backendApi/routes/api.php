@@ -219,6 +219,9 @@ Route::middleware( 'auth:sanctum' )->group( function () {
 	Route::post('/role/update/{id}',[RoleController::class,'updateRole']);
 	Route::delete( 'role/{id}', [ RoleController::class, 'destroy' ] );
 
+
+    Route::get('permission',[ RoleController::class,'getPermission']);
+
 } );
 
 

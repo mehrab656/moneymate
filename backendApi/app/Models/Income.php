@@ -207,13 +207,17 @@ class Income extends Model {
 						'checkout_date' => $checkoutDate->format( 'Y-m-d' ),
 						'attachment'    => $income['attachment']
 					] );
+                    unset($income['user_id']);
+                    unset($income['company_id']);
+                    unset($income['account_id']);
+                    unset($income['category_id']);
 
 					storeActivityLog( [
 						'object_id'    => $income['id'],
 						'log_type'     => 'create',
 						'module'       => 'income',
 						'descriptions' => "added new income.",
-						'data_records' => array_merge( json_decode( json_encode( [] ), true ), $account ),
+						'data_records' => array_merge( json_decode( json_encode( $income ), true ), $account ),
 					] );
 				} else {
 
@@ -244,6 +248,10 @@ class Income extends Model {
 						'checkout_date' => $second_month_startingDate,
 						'attachment'    => $income['attachment']
 					] );
+                    unset($income_first['user_id']);
+                    unset($income_first['company_id']);
+                    unset($income_first['account_id']);
+                    unset($income_first['category_id']);
 					storeActivityLog( [
 						'object_id'    => $income_first['id'],
 						'log_type'     => 'create',
@@ -280,6 +288,10 @@ class Income extends Model {
 							'checkout_date' => $checkoutDate->format( 'Y-m-d' ),
 							'attachment'    => $income['attachment']
 						] );
+                        unset($income_sec['user_id']);
+                        unset($income_sec['company_id']);
+                        unset($income_sec['account_id']);
+                        unset($income_sec['category_id']);
 						storeActivityLog( [
 							'object_id'    => $income_sec['id'],
 							'log_type'     => 'create',

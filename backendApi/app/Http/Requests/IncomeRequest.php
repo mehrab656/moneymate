@@ -25,13 +25,13 @@ class IncomeRequest extends FormRequest {
 	public function rules(): array {
 		return [
 //            'user_id' => 'required',
-			'account_id'    => 'required',
-			'amount'        => 'required|numeric',
-			'category_id'   => 'required',
-			'description'   => 'nullable|string',
+            'description'   => 'required|string',
+            'account_id'    => 'required',
+            'amount'        => 'required|numeric',
+            'category_id'   => 'required',
 			'attachment'    => 'nullable|file',
 			'note'          => 'nullable',
-			'reference'     => 'nullable',
+			'reference'     => 'required',
 			'date'          => 'nullable',
 			'checkin_date'  => 'nullable',
 			'checkout_date' => 'nullable',
@@ -47,6 +47,9 @@ class IncomeRequest extends FormRequest {
 			'account_id.required'  => 'Please select a bank account',
 			'amount.required'      => 'Please add your income amount',
 			'category_id.required' => 'Please select an income category',
+			'description.required' => 'Income description is missing!',
+			'description.string' => 'A valid description is required!',
+			'reference.required' => 'Need to select the reference!',
 		];
 	}
 
