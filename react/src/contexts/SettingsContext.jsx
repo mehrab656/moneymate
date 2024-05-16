@@ -5,15 +5,19 @@ import axiosClient from '../axios-client.js'; // Import your axios client instan
 const SettingsContext = createContext({
     applicationSettings: {},
     userRole: {},
+    userPermission:{},
     setApplicationSettings: () => {
     },
     setUserRole: () => {
+    },
+    setUserPermission: () => {
     },
 });
 
 const SettingsProvider = ({children}) => {
     const [applicationSettings, setApplicationSettings] = useState({});
     const [userRole, setUserRole] = useState({});
+    const [userPermission, setUserPermission] = useState({});
 
     useEffect(() => {
         axiosClient

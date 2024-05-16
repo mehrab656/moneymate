@@ -6,11 +6,17 @@
   <component name="ChangeListManager">
     <list default="true" id="c7aab6cd-85c3-45f8-9232-3c188a37b109" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/RoleController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/RoleController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Models/Role.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Models/Role.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Role/RoleForms.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Role/RoleForms.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/react/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/react/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/components/DefaultLayout.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/components/DefaultLayout.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/contexts/SettingsContext.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/contexts/SettingsContext.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/helper/HelperFunctions.js" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/helper/HelperFunctions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Banks.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Banks.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/IncomeForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/IncomeForm.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Login.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Login.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/views/Role/Roles.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Role/Roles.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/react/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,6 +26,13 @@
   <component name="ComposerSettings" synchronizationState="SYNCHRONIZE">
     <pharConfigPath>$PROJECT_DIR$/backendApi/composer.json</pharConfigPath>
     <execution />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JSX File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -157,30 +170,33 @@
       <path value="$PROJECT_DIR$/backendApi/vendor/phpunit/php-code-coverage" />
     </include_path>
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 5
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
   <component name="ProjectId" id="2gSm5L1HwfxkDyHrgLJExNAxFIU" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "saas",
-    "last_opened_file_path": "D:/xampp/htdocs/moneymate",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\PhpStorm 2023.3\\plugins\\javascript-impl\\jsLanguageServicesImpl\\external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;saas&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/xampp/htdocs/moneymate&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\PhpStorm 2023.3\\plugins\\javascript-impl\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="Main" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
       <TestRunner configuration_file="$PROJECT_DIR$/backendApi/phpunit.xml" scope="XML" use_alternative_configuration_file="true" />
@@ -202,7 +218,9 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1715699168749</updated>
-      <workItem from="1715699169865" duration="10340000" />
+      <workItem from="1715699169865" duration="16652000" />
+      <workItem from="1715775570978" duration="9762000" />
+      <workItem from="1715875570624" duration="4884000" />
     </task>
     <servers />
   </component>

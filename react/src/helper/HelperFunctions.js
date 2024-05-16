@@ -1,4 +1,5 @@
 import Swal from "sweetalert2";
+import axiosClient from "../axios-client.js";
 
 export function compareDates(date) {
     const currentDate = new Date().getTime();
@@ -44,3 +45,23 @@ export function reservationValidationBuilder(check_in, check_out) {
         class: _class
     }
 }
+
+export const checkPermission = (_permission, _checkLimit = false)=>{
+
+        const userRole = localStorage.getItem('ACCESS_ROLE');
+        if (userRole === 'admin') {
+            return true;
+        } else {
+            const data = {
+                permission: _permission,
+                checkLimit: _checkLimit
+            }
+            const hasPermission = axiosClient.get("/permission", data).then(({data}) => {
+
+            })
+
+            return hasPermission;
+
+        }
+}
+

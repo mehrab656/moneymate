@@ -9,7 +9,7 @@ import {TextField, Autocomplete, Box, FormControl, InputLabel, Select, MenuItem}
 import {makeStyles} from "@mui/styles";
 import MainLoader from "../components/MainLoader.jsx";
 import {Button, Modal, Row} from "react-bootstrap";
-import {CAlert} from '@coreui/react';
+import { CAlert } from '@coreui/react';
 
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
@@ -53,7 +53,6 @@ export default function IncomeForm() {
     const [loading, setLoading] = useState(false);
     const [incomeCategories, setIncomeCategories] = useState([]);
     const [bankAccounts, setBankAccounts] = useState([]);
-    const {setNotification} = useStateContext();
     const [selectedAccountId, setSelectedAccountId] = useState("");
     const [selectedIncomeType, setIncomeType] = useState("reservation");
     const navigate = useNavigate();
@@ -135,108 +134,51 @@ export default function IncomeForm() {
 
     const incomeSubmit = (event, stay) => {
         event.preventDefault();
-        event.currentTarget.disabled = true;
+         event.currentTarget.disabled = true;
         setLoading(true);
-        if (income.id) {
-            const {
-                description,
-                amount,
-                reference,
-                date,
-                checkin_date,
-                checkout_date,
-                note,
-                attachment,
-                income_type
-            } = income;
-            const formData = new FormData();
-            formData.append("account_id", selectedAccountId);
-            // formData.append("income_type", selectedIncomeType);
-            formData.append("amount", amount);
-            formData.append("category_id", categoryValue.id);
-            formData.append("description", description);
-            formData.append("note", note);
-            formData.append("reference", reference);
-            formData.append("date", date);
-            formData.append("checkin_date", checkin_date);
-            formData.append("checkout_date", checkout_date);
-            formData.append("attachment", attachment);
-            formData.append("income_type", income_type);
 
-            axiosClient
-                .post(`/income/${income.id}`, formData, {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
-                })
-                .then((data) => {
-                    notification('success', data?.message, data?.description)
-                    if (stay === true) {
-                        window.location.reload();
-                    } else {
-                        navigate("/incomes");
-                    }
-                    setLoading(false);
-                })
-                .catch((err) => {
-                    if (err.response) {
-                        const error = err.response.data
-                        notification('error', error?.message, error.description)
-                    }
-                    setLoading(false);
-                });
-        } else {
-            const {
-                income_type,
-                amount,
-                description,
-                reference,
-                date,
-                checkin_date,
-                checkout_date,
-                note,
-                attachment
-            } = income;
-            const formData = new FormData();
-            formData.append("account_id", selectedAccountId);
-            formData.append("income_type", income_type);
-            formData.append("amount", amount);
-            formData.append("category_id", categoryValue.id);
-            formData.append("description", description);
-            formData.append("note", note);
-            formData.append("reference", reference);
-            formData.append("date", date);
-            formData.append("checkin_date", checkin_date);
-            formData.append("checkout_date", checkout_date);
-            formData.append("attachment", attachment);
-
-            axiosClient
-                .post("/income/add", formData, {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
-                })
-                .then((data) => {
-                    // setNotification("Income has been added.");
-                    notification('success', data?.message, data?.description);
-                    setTimeout(() => {
-                        if (stay === true) {
-                            window.location.reload();
-                        } else {
-                            navigate("/incomes");
-                        }
-                    }, 5000)
-
-                    setLoading(false);
-                })
-                .catch((err) => {
-                    if (err.response) {
-                        const error = err.response.data
-                        notification('error', error?.message, error.description)
-                    }
-                    setLoading(false);
-                });
+        let _url = '/income/add';
+        if(income.id){
+            _url = `/income/${income.id}`;
         }
+
+        const formData = new FormData();
+        formData.append("account_id", selectedAccountId);
+        formData.append("income_type", income.income_type);
+        formData.append("amount", income.amount);
+        formData.append("category_id", categoryValue.id);
+        formData.append("description", income.description);
+        formData.append("note", income.note);
+        formData.append("reference", income.reference);
+        formData.append("date", income.date);
+        formData.append("checkin_date", income.checkin_date);
+        formData.append("checkout_date", income.checkout_date);
+        formData.append("attachment", income.attachment);
+
+        axiosClient
+            .post(_url, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            })
+            .then((data) => {
+                notification('success', data?.message, data?.description)
+                if (stay === true) {
+                    setIncome(_initialIncome);
+                } else {
+                    navigate("/incomes");
+                }
+                setLoading(false);
+                event.currentTarget.disabled = false;
+
+            })
+            .catch((err) => {
+                if (err.response) {
+                    const error = err.response.data
+                    notification('error', error?.message, error.description)
+                }
+                setLoading(false);
+            });
     };
 
     const handleFileInputChange = (event) => {
@@ -262,8 +204,8 @@ export default function IncomeForm() {
 
     const submitCSVFile = (e) => {
         e.preventDefault();
+        e.currentTarget.disabled = true;
         setLoading(true);
-
         axiosClient.post(`/income/add-csv`, {
             channel: channel,
             csvFile: csvFile,
@@ -276,9 +218,7 @@ export default function IncomeForm() {
             setLoading(false);
 
             notification('success', data?.message, data?.description)
-            setTimeout(() => {
-                navigate("/incomes");
-            }, 2000)
+            navigate("/incomes");
         }).catch(err => {
             if (err.response) {
                 const error = err.response.data
@@ -420,7 +360,6 @@ export default function IncomeForm() {
                                             setIncome({...income, income_type: value});
                                         }}
                                     >
-                                        <option defaultValue>Select income type</option>
                                         <option key={"income_type_reservation"} value={'reservation'}>Reservation
                                         </option>
                                         <option key={"income_type_electricity_bill"}

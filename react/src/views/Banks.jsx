@@ -25,13 +25,11 @@ export default function Banks() {
         id: null,
         bank_name: ""
     });
-    const {setNotification} = useStateContext();
 
     const {applicationSettings, userRole} = useContext(SettingsContext);
     const {
         num_data_per_page
     } = applicationSettings;
-
 
     const pageSize = num_data_per_page;
     const totalPages = Math.ceil(totalCount / pageSize);

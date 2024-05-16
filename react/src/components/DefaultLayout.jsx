@@ -57,6 +57,7 @@ import {useGetSectorsDataQuery} from "../api/slices/sectorSlice.js";
 import {useGetFinancialReportDataQuery} from "../api/slices/accountSlice.js";
 import Dropdown from "react-bootstrap/Dropdown";
 import {notification} from "./ToastNotification.jsx";
+import {Tooltip} from "react-tooltip";
 
 export default function DefaultLayout() {
 
@@ -248,9 +249,13 @@ export default function DefaultLayout() {
                                 <div className="aside-content">
                                     <Dropdown>
                                         <Dropdown.Toggle variant="dark" id="dropdown-basic"
-                                                         className={"current-company-name"}>
+                                                         className={"current-company-name"}
+                                                         data-tooltip-id='switch-company'
+                                                         data-tooltip-content={"Switch to another company "}>
                                             {currentCompany ? currentCompany.name : 'company'}
                                         </Dropdown.Toggle>
+                                        <Tooltip id='switch-company'/>
+
 
                                         <Dropdown.Menu>
                                             {
@@ -634,11 +639,11 @@ export default function DefaultLayout() {
                                     <main className="flex-grow-1 py-4">
                                         <Outlet/>
 
-                                        {notification &&
-                                            <div className="notification">
-                                                {notification}
-                                            </div>
-                                        }
+                                        {/*{notification &&*/}
+                                        {/*    <div className="notification">*/}
+                                        {/*        {notification}*/}
+                                        {/*    </div>*/}
+                                        {/*}*/}
                                     </main>
                                     <SettingsProvider>
                                         <Footer/>
