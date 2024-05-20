@@ -1,4 +1,4 @@
-import {Link, useNavigate, useParams} from "react-router-dom";
+import {Link, useLocation, useNavigate, useParams} from "react-router-dom";
 import React, {useContext, useEffect, useState} from "react";
 import axiosClient from "../../axios-client.js";
 import {useStateContext} from "../../contexts/ContextProvider.jsx";
@@ -20,6 +20,7 @@ export default function RoleForms() {
         role: '',
         status: 1
     });
+    const [storePermission, setStorePermission] = useState({}) 
     const [errors, setErrors] = useState(null);
     const [loading, setLoading] = useState(false);
     const [subscriptions, setSubscriptions] = useState([]);
@@ -30,10 +31,13 @@ export default function RoleForms() {
         registration_type,
     } = applicationSettings;
 
+
+
+
     // State to hold the checked status
     const [permissions, setPermissions] = useState({
         company: {
-            company_create: false,
+            company_create: storePermission?.company_create ===true?true:false,
             company_view: false,
             company_edit: false,
             company_delete: false,
@@ -196,22 +200,46 @@ export default function RoleForms() {
         // Add other sections similarly
     });
 
-    if (id) {
-        useEffect(() => {
-            document.title = 'Update Role';
-            setLoading(true);
-            axiosClient
-                .get(`/roles/${id}`)
-                .then(({data}) => {
-                    setLoading(false);
-                    setRole(data.data);
-                })
-                .catch(() => {
-                    setLoading(false);
-                });
-        }, []);
-    }
+     // access rolse data by id
+     useEffect(() => {
+        document.title = 'Update Role';
+        setLoading(true);
+        axiosClient
+            .get(`/role/${id}`)
+            .then(({data}) => {
+                console.log('res data', data)
+                setLoading(false);
 
+                // update role
+                setRole({...role, role: data?.data?.role})
+                
+                // store permissions 
+                const apiPermissionsdata = data?.data?.permissions
+                const updatedPermissions = { ...permissions };
+
+                Object.keys(apiPermissionsdata).forEach((key) => {
+                  var sectionName
+                  const getSectionName = key.split('_')
+                    if(getSectionName.length>2){
+                        sectionName =getSectionName[0]+'_'+getSectionName[1]
+                    }else{
+                        sectionName =getSectionName[0]
+                    }
+
+                  if (updatedPermissions[sectionName]) {
+                    updatedPermissions[sectionName][key] = apiPermissionsdata[key];
+                  }
+                });
+            
+                setPermissions(updatedPermissions);
+                
+            })
+            .catch(() => {
+                setLoading(false);
+            });
+    }, [id]);
+
+    
 
     const onSubmit = (ev) => {
         ev.preventDefault();
@@ -247,9 +275,9 @@ export default function RoleForms() {
             ...permissions.dashboard
         };
 
-        if (role.id) {
+        if (id) {
             axiosClient
-                .put(`/role/update/${role.id}`, mergedRoleData)
+                .post(`/role/update/${id}`, mergedRoleData)
                 .then(() => {
                     setNotification("Role was successfully updated");
                     if (userRole === 'admin') {
@@ -286,8 +314,8 @@ export default function RoleForms() {
     return (
         <>
             <MainLoader loaderVisible={loading}/>
-            {role.id && <h1 className="title-text">Update role: {role.name}</h1>}
-            {!role.id && <h1 className="title-text">New role</h1>}
+            {id && <h1 className="title-text">Update role: {role.name}</h1>}
+            {!id && <h1 className="title-text">New role</h1>}
             <WizCard className="animated fadeInDown wiz-card-mh">
                 {loading && <div className="text-center">Loading...</div>}
                 {!loading && (
@@ -312,7 +340,7 @@ export default function RoleForms() {
 
                         <div className="text-end mt-4">
                             <button className="custom-btn btn-brand-primary btn-edit px-5">
-                                Save
+                                {id?'Update':'Create'}
                             </button>
                         </div>
                     </form>

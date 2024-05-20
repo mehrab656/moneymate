@@ -15,7 +15,7 @@ const ActionButtonHelpers = ({module, showModule, deleteFunc, params, editDropdo
                 Actions
             </Dropdown.Toggle>
 
-            <Dropdown.Menu>
+            <Dropdown.Menu className="actionDropDownMenu">
                 {userRole === 'admin' && editDropdown !== true &&
                     <Dropdown.Item className="text-warning" onClick={(e)=> navigate(`${params.route.editRoute}${module.id}`)}>
                         <FontAwesomeIcon icon={faEdit}/> Edit
@@ -27,10 +27,12 @@ const ActionButtonHelpers = ({module, showModule, deleteFunc, params, editDropdo
                         <FontAwesomeIcon icon={faThList}/> Edit
                     </Dropdown.Item>
                     :
-                    <Dropdown.Item className="text-info"
-                                   onClick={() => showModule(module)}>
-                        <FontAwesomeIcon icon={faThList}/> View
-                    </Dropdown.Item>
+                 
+                        <Dropdown.Item className="text-info"
+                                    onClick={() => showModule(module)}>
+                            <FontAwesomeIcon icon={faThList}/> View
+                        </Dropdown.Item>
+                       
                 }
 
 
