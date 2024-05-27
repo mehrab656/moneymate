@@ -225,7 +225,7 @@ const router = createBrowserRouter([
                 element: <RoleForms key={"rolesCreate"} />
             },
             {
-                path: '/roles/:id',
+                path: '/role/:id',
                 element: <RoleForms key={"rolesUpdate"} />
             },
             {

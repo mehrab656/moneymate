@@ -81,7 +81,7 @@ export default function Roles() {
         // setShowModal(true);
     };
 
-    const onDelete = (sector) => {
+    const onDelete = (role) => {
         Swal.fire({
             title: "Are you sure?",
             text: `You will not be able to recover the role !`,
@@ -106,9 +106,12 @@ export default function Roles() {
             }
         });
     };
+
+
+
     const actionParams = {
         route: {
-            editRoute: "/role/update/",
+            editRoute: "/role/",
             viewRoute: "",
             deleteRoute: "",
         },
@@ -146,7 +149,7 @@ export default function Roles() {
 
 
             <TableContainer component={Paper}>
-                <Table size="small" aria-label="Roles Table">
+                <Table  aria-label="Roles Table">
                     <TableHead>
                         <TableRow>
                             <StyledTableCell><b>Role</b></StyledTableCell>
@@ -163,14 +166,14 @@ export default function Roles() {
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell>{role.role}</TableCell>
-                                <TableCell align="right">{role.status}</TableCell>
-                                <TableCell align="center">{role.added_by}</TableCell>
-                                <TableCell align="center">{(new Date(role.added_date)).toLocaleDateString("en-US", dateOptions)}</TableCell>
-                                <TableCell align="right">
+                                <TableCell >{role.status}</TableCell>
+                                <TableCell >{role.added_by}</TableCell>
+                                <TableCell >{(new Date(role.added_date)).toLocaleDateString("en-US", dateOptions)}</TableCell>
+                                <TableCell >
                                     <ActionButtonHelpers
                                         module={role}
                                         showModule={showRole}
-                                        deleteFunc={onDelete}
+                                        deleteFunc={(e)=>{onDelete(role)}}
                                         params={actionParams}
                                     />
                                 </TableCell>

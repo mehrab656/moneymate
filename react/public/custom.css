@@ -410,3 +410,8 @@ footer {
 .dropdown-menu {
     padding: inherit;
 }
+
+.actionDropDownMenu{
+    position: fixed !important;
+    z-index: 1 !important;
+}
