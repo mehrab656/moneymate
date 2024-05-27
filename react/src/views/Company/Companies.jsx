@@ -118,6 +118,10 @@ export default function companies() {
                 <Table size="small" aria-label="company table">
                     <TableHead>
                         <TableRow>
+                            {
+                                userRole === 'admin'&&
+                                <TableCell>id</TableCell>
+                            }
                             <TableCell>Company Name</TableCell>
                             <TableCell align="right">Manager</TableCell>
                             <TableCell align="right">Active Sector</TableCell>
@@ -140,6 +144,7 @@ export default function companies() {
                                 </> : (
                                     companies?.map((company) => (
                                         <TableRow key={company.uid}>
+                                            <TableCell component="th" scope="row">{company.id}</TableCell>
                                             <TableCell component="th" scope="row">{company.name}</TableCell>
                                             <TableCell align="right">{company.phone}</TableCell>
                                             <TableCell align="right">{company.issue_date}</TableCell>

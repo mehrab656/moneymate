@@ -145,31 +145,6 @@ export default function Debts() {
 
             axiosClient.post('/debts/store', debtData)
                 .then((data) => {
-                    // if (response.data.status === 'insufficient_balance') {
-                    //     setNotification(response.data.message);
-                    // }
-
-                    // if (response.data.status === 'success') {
-                    //     setNotification(response.data.message);
-                    //     getDebts(currentPage, pageSize);
-                    //     setShowModal(false);
-
-                    //     setDebt({
-                    //         id: null,
-                    //         amount: null,
-                    //         account_id: null,
-                    //         type: '',
-                    //         person: '',
-                    //         date: null,
-                    //         note: ''
-                    //     });
-                    //     setDate(null);
-                    //     setErrors(null);
-                    // }
-                    // if (response.data.status === 'fail') {
-                    //     setNotification(response.data.message);
-                    // }
-
                     getDebts(currentPage, pageSize);
                     setShowModal(false);
 
@@ -283,6 +258,10 @@ export default function Debts() {
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr>
+                            {
+                                userRole === 'admin'&&
+                                <th>id</th>
+                            }
                             <th className="text-center">DATE</th>
                             <th className="text-center">TYPE</th>
                             <th className="text-center">PERSON</th>
@@ -312,6 +291,10 @@ export default function Debts() {
                             ) : (
                                 filterDebts.map((debt) => (
                                     <tr key={debt.id}>
+                                        {
+                                            userRole === 'admin'&&
+                                            <td>{debt.id}</td>
+                                        }
                                         <td className="text-center">{debt.date}</td>
                                         <td className="text-center">{debt.type.toUpperCase()}</td>
                                         <td className="text-center">{debt.type === 'borrow' ? "Borrowed from " : "Lend to "} {debt.person}</td>

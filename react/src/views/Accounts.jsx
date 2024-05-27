@@ -317,6 +317,10 @@ export default function Accounts() {
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr>
+                            {
+                                userRole === 'admin'&&
+                                <th>id</th>
+                            }
                             <th>USER NAME</th>
                             <th className="text-center">ACCOUNT HOLDER NAME</th>
                             <th className="text-center">BANK NAME</th>
@@ -347,6 +351,10 @@ export default function Accounts() {
                             ) : (
                                 filteredAccounts.map((account) => (
                                     <tr key={account.id}>
+                                        {
+                                            userRole === 'admin'&&
+                                            <td>{account.id}</td>
+                                        }
                                         <td>{account.customer_name}</td>
                                         <td className="text-center">{account.account_name}</td>
                                         <td className="text-center">{account.bank_name}</td>

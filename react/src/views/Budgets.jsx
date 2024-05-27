@@ -209,13 +209,6 @@ export default function Budgets() {
                     setLoading(false);
                 })
                 .catch((err) => {
-                    // const response = error.response;
-                    // if (response && response.status === 422) {
-                    //     setErrors(response.data.errors);
-                    // } else if (response && response.status === 400)
-                    // {
-                    //     setBudgetOverlap(response.data.message);
-                    // }
                     if (err.response) { 
                         const error = err.response.data
                         notification('error',error?.message,error.description)
@@ -298,6 +291,10 @@ export default function Budgets() {
                     <table className="table-bordered custom-table">
                         <thead>
                         <tr className={'text-center'}>
+                            {
+                                userRole === 'admin'&&
+                                <th>id</th>
+                            }
                             <th>BUDGET NAME</th>
                             <th>PROPOSED AMOUNT</th>
                             <th>UPDATED BUDGET AMOUNT</th>
@@ -328,6 +325,10 @@ export default function Budgets() {
                             ) : (
                                 filteredBudgets.map((budget) => (
                                     <tr className={'text-center'} key={budget.id}>
+                                        {
+                                            userRole === 'admin'&&
+                                            <td>{budget.id}</td>
+                                        }
                                         <td>{budget.budget_name}</td>
                                         <td>{default_currency + budget.amount}</td>
                                         <td>{default_currency + budget.updated_amount}</td>

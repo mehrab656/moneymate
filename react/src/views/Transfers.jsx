@@ -21,7 +21,7 @@ export default function Transfers() {
         note: '',
     });
 
-    const {applicationSettings} = useContext(SettingsContext);
+    const {applicationSettings,userRole} = useContext(SettingsContext);
     const {
         num_data_per_page,
         default_currency
@@ -201,6 +201,10 @@ export default function Transfers() {
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr className={"text-center"}>
+                            {
+                                userRole === 'admin'&&
+                                <th>id</th>
+                            }
                             <th>From Account</th>
                             <th>To Account</th>
                             <th>Transferred Amount</th>
@@ -222,6 +226,10 @@ export default function Transfers() {
                             <tbody>
                             {filteredTransferHistories.map((transfer) => (
                                 <tr key={transfer.id} className={"text-center"}>
+                                    {
+                                        userRole === 'admin'&&
+                                        <td>{transfer.id}</td>
+                                    }
                                     <td>{transfer.from_account}</td>
                                     <td>{transfer.to_account}</td>
                                     <td>{default_currency}{transfer.amount}</td>

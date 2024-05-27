@@ -163,6 +163,10 @@ export default function Incomes() {
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr className={'text-center'}>
+                            {
+                                userRole === 'admin'&&
+                                <th>id</th>
+                            }
                             <th>Date</th>
                             <th>Description</th>
                             <th>Source</th>
@@ -191,6 +195,10 @@ export default function Incomes() {
                             ) : (
                                 filteredIncomes.map((income) => (
                                     <tr key={income.id}>
+                                        {
+                                            userRole === 'admin'&&
+                                            <td>{income.id}</td>
+                                        }
                                         <td><small>{income.date}</small></td>
                                         <Tooltip title={income.reference} arrow>
                                             <td className={"income-description"}>{income.description !== 'null' ? income.description : ''}

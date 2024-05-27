@@ -211,6 +211,10 @@ export default function Banks() {
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr>
+                            {
+                                userRole === 'admin'&&
+                                <th>id</th>
+                            }
                             <th className="text-center">BANK NAME</th>
                             <th className="text-center">ADDED BY</th>
                             <th className="text-center">ADDED On</th>
@@ -238,6 +242,10 @@ export default function Banks() {
                             ) : (
                                 filteredBank.map((bank) => (
                                     <tr className={'text-center'} key={bank.id}>
+                                        {
+                                            userRole === 'admin'&&
+                                            <td>{bank.id}</td>
+                                        }
                                         <td>{bank.bank_name}</td>
                                         <td></td>
                                         <td></td>

@@ -182,6 +182,10 @@ export default function Expenses() {
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr className={'text-center'}>
+                            {
+                                userRole === 'admin'&&
+                                <th>id</th>
+                            }
                             <th>Date</th>
                             <th>Details</th>
                             {/*<th>Sector</th>*/}
@@ -212,6 +216,10 @@ export default function Expenses() {
                             ) : (
                                 filteredExpenses.map((expense) => (
                                     <tr className={'text-center'} key={expense.id}>
+                                        {
+                                            userRole === 'admin'&&
+                                            <td>{expense.id}</td>
+                                        }
                                         <td><small>{expense.date}</small></td>
                                         <td className={'text-start'}>{expense.description}
                                             <div>

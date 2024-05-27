@@ -6,16 +6,18 @@
   <component name="ChangeListManager">
     <list default="true" id="c7aab6cd-85c3-45f8-9232-3c188a37b109" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/CategoryController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/CategoryController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ReportController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ReportController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/helper/HelperFunctions.js" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/helper/HelperFunctions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Accounts.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Accounts.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Banks.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Banks.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Budgets.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Budgets.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/views/Categories.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Categories.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/ExpenseForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/ExpenseForm.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/IncomeReport.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/IncomeReport.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Company/Companies.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Company/Companies.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Debts.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Debts.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Expenses.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Expenses.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Incomes.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Incomes.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/views/Investment.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Investment.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/views/Return.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Return.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Transfers.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Transfers.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -221,7 +223,7 @@
       <workItem from="1715775570978" duration="9762000" />
       <workItem from="1715875570624" duration="8503000" />
       <workItem from="1716143881141" duration="14251000" />
-      <workItem from="1716805133873" duration="2053000" />
+      <workItem from="1716805133873" duration="4316000" />
     </task>
     <servers />
   </component>

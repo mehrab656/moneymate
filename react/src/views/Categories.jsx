@@ -264,6 +264,10 @@ export default function Categories() {
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr>
+                            {
+                                userRole === 'admin'&&
+                                <th>id</th>
+                            }
                             <th>CATEGORY NAME</th>
                             <th className="text-center">CATEGORY TYPE</th>
                             {userRole === 'admin' && <th>ACTIONS</th>}
@@ -290,6 +294,10 @@ export default function Categories() {
                             ) : (
                                 filteredCategories.map((category) => (
                                     <tr key={category.id}>
+                                        {
+                                            userRole === 'admin'&&
+                                            <td>{category.id}</td>
+                                        }
                                         <td>{category.name}</td>
                                         <td className="text-center">{category.type}</td>
 

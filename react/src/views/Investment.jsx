@@ -139,6 +139,10 @@ export default function Investment() {
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr className={'text-center'}>
+                            {
+                                userRole === 'admin'&&
+                                <th>id</th>
+                            }
                             <th>Investor ID</th>
                             <th>Investor Name</th>
                             <th>Amount</th>
@@ -167,6 +171,10 @@ export default function Investment() {
                             ) : (
                                 investments.map((investment) => (
                                     <tr className={'text-center'} key={investment.id}>
+                                        {
+                                            userRole === 'admin'&&
+                                            <td>{investment.id}</td>
+                                        }
                                         <td>{initialName(investment.investor_name) + '-' + investment.id}</td>
 
                                         <td>

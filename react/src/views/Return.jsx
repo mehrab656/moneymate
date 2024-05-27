@@ -167,6 +167,10 @@ export default function Return() {
                         <table className="table table-bordered table-responsive" >
                             <thead>
                             <tr>
+                                {
+                                    userRole === 'admin'&&
+                                    <th>id</th>
+                                }
                                 <th className="text-center">Date</th>
                                 <th className="text-center">Description</th>
                                 <th className="text-center">Refundable Amount</th>
@@ -204,6 +208,10 @@ export default function Return() {
 
                                         return (
                                             <tr key={marketReturn.id}>
+                                                {
+                                                    userRole === 'admin'&&
+                                                    <td>{marketReturn.id}</td>
+                                                }
                                                 <td>{marketReturn.date}</td>
                                                 <td>{marketReturn.description}</td>
                                                 <td className="text-right">{default_currency + ' ' + + marketReturn.refundable_amount}</td>

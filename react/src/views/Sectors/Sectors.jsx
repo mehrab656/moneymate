@@ -260,6 +260,10 @@ const showTableColumns = (column) =>{
                     <table className='table table-bordered custom-table'>
                         <thead>
                         <tr className={"text-center"}>
+                            {
+                                userRole === 'admin'&&
+                                <th>id</th>
+                            }
                             <th>Sector</th>
                             <th>Electricity next payment</th>
                             <th>Internet next payment</th>
@@ -282,7 +286,6 @@ const showTableColumns = (column) =>{
                                         />{'id'}</CDropdownItem>
                                         <CDropdownItem href="#">Another action</CDropdownItem>
                                         <CDropdownItem href="#">Something else here</CDropdownItem>
-                                        <CDropdownDivider/>
                                         <CDropdownItem href="#">Separated link</CDropdownItem>
                                     </CDropdownMenu>
                                 </CDropdown>
@@ -325,6 +328,10 @@ const showTableColumns = (column) =>{
 
                                             return (
                                                 <tr  key={sector.id}>
+                                                    {
+                                                        userRole === 'admin'&&
+                                                        <td>{sector.id}</td>
+                                                    }
                                                     <td>{sector.name}</td>
                                                     <td>
                                                         {checkPayments(sector.payments, 'electricity')}
