@@ -95,7 +95,7 @@ export default function IncomeReport() {
             <WizCard className="animated fadeInDown wiz-card-mh">
                 <div className="row">
                     <form onSubmit={handleIncomeFilterSubmit}>
-                        <div className="col-4">
+                        <div className="col-3">
                             <div className="form-group">
                                 <label className="custom-form-label" htmlFor="income_category">Income Category</label>
                                 <select
@@ -140,11 +140,11 @@ export default function IncomeReport() {
                                 />
                             </div>
                         </div>
-                        <div className="col-2 mt-4">
+                        <div className="col-3 mt-4">
                             <button className={'btn-add right mt-2'} type="submit">Filter</button>
-                            <button className="btn btn-warning ml-2" onClick={resetFilterParameter}>Reset</button>
+                            <button className={"btn btn-warning ml-2"} onClick={resetFilterParameter}>Reset</button>
                             <ReactToPrint
-                                trigger={() => <Button sx={{ml:1}} variant="outlined">Print</Button>}
+                                trigger={() => <button className="btn btn-success ml-2">Print</button>}
                                 content={()=> componentRef.current}
                              />
                         </div>

@@ -10,7 +10,8 @@ import {faCoins} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 import MainLoader from "../components/MainLoader.jsx";
-import { notification } from "../components/ToastNotification.jsx";
+import {notification} from "../components/ToastNotification.jsx";
+import ReactToPrint from "react-to-print";
 
 export default function Categories() {
     const [loading, setLoading] = useState(false);
@@ -22,11 +23,13 @@ export default function Categories() {
     const [errors, setErrors] = useState(null);
     const [category, setCategory] = useState({
         id: null,
-        sector_id:null,
+        sector_id: null,
         name: '',
         type: 'income'
     });
     const [sectors, setSector] = useState([])
+    const [selectedSectorId, setSelectedSectorId] = useState('');
+    const [categoryType, setCategoryType] = useState('');
 
     const {applicationSettings, userRole} = useContext(SettingsContext);
     const {
@@ -66,21 +69,15 @@ export default function Categories() {
                         id: null,
                         name: '',
                         type: 'income',
-                        sector_id:null
+                        sector_id: null
                     });
 
-                    notification('success',data?.message,data?.description)
+                    notification('success', data?.message, data?.description)
                     setLoading(false)
                 }).catch(err => {
-                // const response = error.response;
-                // if (response && response.status === 409) {
-                //     setErrors({name: ['Category name already exists']});
-                // } else if (response && response.status === 422) {
-                //     setErrors(response.data.errors);
-                // }
-                if (err.response) { 
+                if (err.response) {
                     const error = err.response.data
-                    notification('error',error?.message,error.description)
+                    notification('error', error?.message, error.description)
                 }
                 setLoading(false)
             });
@@ -96,18 +93,12 @@ export default function Categories() {
                     sector_id: null
                 });
 
-                notification('success',data?.message,data?.description)
+                notification('success', data?.message, data?.description)
                 setLoading(false)
             }).catch(err => {
-                // const response = error.response;
-                // if (response && response.status === 409) {
-                //     setErrors({name: ['Category name already exists']});
-                // } else if (response && response.status === 422) {
-                //     setErrors(response.data.errors);
-                // }
-                if (err.response) { 
+                if (err.response) {
                     const error = err.response.data
-                    notification('error',error?.message,error.description)
+                    notification('error', error?.message, error.description)
                 }
                 setLoading(false)
             });
@@ -134,21 +125,13 @@ export default function Categories() {
                     .delete(`category/${category.id}`)
                     .then((data) => {
                         getCategories(currentPage, pageSize);
-                        // Swal.fire({
-                        //     title: "Deleted!",
-                        //     text: "Category has been deleted.",
-                        //     icon: "success",
-                        // });
-
-                        notification('success',data?.message,data?.description)
-
-                        
+                        notification('success', data?.message, data?.description)
                     }).catch(err => {
-                        if (err.response) { 
-                            const error = err.response.data
-                            notification('error',error?.message,error.description)
-                        }
-                    })
+                    if (err.response) {
+                        const error = err.response.data
+                        notification('error', error?.message, error.description)
+                    }
+                })
             }
         });
     };
@@ -166,11 +149,14 @@ export default function Categories() {
 
         getCategories(currentPage, pageSize);
     }, [currentPage, pageSize, setSector]); // Fetch categories when currentPage or pageSize changes
-
+    const handelCategoryFilterSubmit = (e) => {
+        e.preventDefault();
+        getCategories();
+    };
     const getCategories = (page, pageSize) => {
         setLoading(true);
         axiosClient
-            .get("/categories", {params: {page, pageSize}})
+            .get("/categories", {params: {page, pageSize, selectedSectorId,categoryType}})
             .then(({data}) => {
                 setLoading(false);
                 setCategories(data.data);
@@ -205,29 +191,74 @@ export default function Categories() {
         },
     }
 
+    const resetFilterParameter = () => {
+        setSelectedSectorId('')
+        setCategoryType('')
+        getCategories();
+    };
+
     return (
         <div>
             <MainLoader loaderVisible={loading}/>
-            <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
-                <h1 className="title-text mb-0">Income & Expense Categories</h1>
-                {userRole === 'admin' &&
-                    <div>
-                        <a className="custom-btn btn-add" onClick={showCreateModal}>
-                            <FontAwesomeIcon icon={faCoins}/> Add New
-                        </a>
-                    </div>
-                }
-
-            </div>
             <WizCard className="animated fadeInDown">
-                <div className="mb-4">
-                    <input
-                        className="custom-form-control"
-                        type="text"
-                        placeholder="Search category..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+                <div className="row mb-4">
+                    <form onSubmit={handelCategoryFilterSubmit}>
+                        <div className={"col-md-3 col-sm-3 col-3"}>
+                            <div className="form-group">
+                                <select
+                                    className="custom-form-control"
+                                    value={selectedSectorId}
+                                    id="income-category"
+                                    name="income-category"
+                                    onChange={(event) => {
+                                        const value = event.target.value || '';
+                                        setSelectedSectorId(value);
+                                    }}>
+                                    <option defaultValue>Filter by Sectors</option>
+                                    {sectors.map(sector => (
+                                        <option key={sector.id} value={sector.id}>
+                                            {sector.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                        </div>
+                        <div className={"col-md-3 col-sm-3 col-3"}>
+                            <div className="form-group">
+                                <select
+                                    className="custom-form-control"
+                                    value={categoryType}
+                                    id="category-type"
+                                    name="category-type"
+                                    onChange={(event) => {
+                                        const value = event.target.value || '';
+                                        setCategoryType(value);
+                                    }}>
+                                    <option defaultValue>Filter by Type</option>
+                                    <option key={'expense'} value={"expense"}>{"Expense"}</option>
+                                    <option key={'income'} value={"income"}>{"Income"}</option>
+                                </select>
+                            </div>
+
+                        </div>
+                        <div className="col-md-3 col-sm-3 col-3">
+                            <input
+                                className="custom-form-control"
+                                type="text"
+                                placeholder="Search category..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                        <div className="col-3">
+                            <button className={'btn-add right'} type="submit">Filter</button>
+                            <button className={"btn btn-warning ml-2"} onClick={resetFilterParameter}>Reset</button>
+                            {userRole === 'admin' &&
+                                <button className="btn-add ml-2" onClick={showCreateModal}>Add New</button>
+                            }
+                        </div>
+                    </form>
                 </div>
                 <div className="table-responsive-sm">
                     <table className="table table-bordered custom-table">

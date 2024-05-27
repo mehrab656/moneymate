@@ -153,7 +153,7 @@ class ReportController extends Controller {
 		                 ->whereNull( 'investments.deleted_at' )
 		                 ->groupBy( [ 'investor_id', 'name' ] );
 
-		$totalInvestment = DB::table( 'investments' );
+		$totalInvestment = DB::table( 'investments' )->where('company_id',Auth::user()->primary_company);
 		//filter investments
 		if ( $startDate || $endDate ) {
 			$investments     = $investments->whereBetween( 'investment_date', [ $startDate, $endDate ] );
@@ -376,7 +376,8 @@ class ReportController extends Controller {
 		];
 	}
 
-	public function calenderReport() {
+	public function calenderReport(): JsonResponse
+    {
 		$incomeQuery  = Income::where( 'company_id', Auth::user()->primary_company )->whereNull( 'deleted_at' )->orderBy( 'date', 'desc' )->get();
 		$expenseQuery = Expense::where( 'company_id', Auth::user()->primary_company )->whereNull( 'deleted_at' )->orderBy( 'date', 'desc' )->get();
 		$payments     = DB::table( 'payments' )->select( 'payments.*' )
@@ -384,7 +385,7 @@ class ReportController extends Controller {
 		                  ->where( 'sectors.company_id', Auth::user()->primary_company )
 		                  ->where( [
 			                  'status' => 'unpaid',
-		                  ] )->whereNull( 'deleted_at' )->get();
+		                  ] )->whereNull( 'payments.deleted_at' )->get();
 
 
 		$incomes      = IncomeResource::collection( $incomeQuery );

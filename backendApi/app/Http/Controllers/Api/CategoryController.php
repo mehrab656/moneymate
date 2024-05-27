@@ -27,18 +27,24 @@ class CategoryController extends Controller {
 	public function index( Request $request ): JsonResponse {
 		$page       = $request->query( 'page', 1 );
 		$pageSize   = $request->query( 'pageSize', 10 );
+		$sectorID   = $request->query( 'selectedSectorId', null );
+		$type   = $request->query( 'categoryType', null );
 		$categories = DB::table( 'categories' )->select( 'categories.*' )
 		                ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
 		                ->where( 'sectors.company_id', '=', Auth::user()->primary_company )
 		                ->skip( ( $page - 1 ) * $pageSize )
-		                ->take( $pageSize )
-		                ->get();
-
-		$totalCount = Category::count();
+		                ->take( $pageSize );
+        if ($sectorID){
+            $categories = $categories->where('sectors.id',$sectorID);
+        }
+        if ($type){
+            $categories = $categories->where('type',$type);
+        }
+        $categories = $categories->get();
 
 		return response()->json( [
 			'data'  => CategoryResource::collection( $categories ),
-			'total' => $totalCount,
+			'total' => Category::count(),
 		] );
 	}
 

@@ -54,10 +54,6 @@ export default function ExpenseForm() {
     const {applicationSettings} = useContext(SettingsContext);
     const [categoryValue, setCategoryValue] = useState(null);
     const [storeCategoryValue, setStoreCategoryValue] = useState(null);
-    const {
-        last_expense_cat_id,
-        last_expense_account_id,
-    } = applicationSettings;
 
     useEffect(() => {
         axiosClient.get('/all-bank-account')
@@ -156,7 +152,7 @@ export default function ExpenseForm() {
             });
         }
 
-    }, [expense?.date, last_expense_cat_id, last_expense_account_id])
+    }, [expense?.date])
 
     const expenseSubmit = (event, stay) => {
         event.preventDefault();

@@ -14,6 +14,8 @@ import MainLoader from "../../components/MainLoader.jsx";
 import {checkPermission, compareDates} from "../../helper/HelperFunctions.js";
 import SummeryCard from "../../helper/SummeryCard.jsx";
 import {notification} from "../../components/ToastNotification.jsx";
+import {CDropdown, CDropdownDivider, CDropdownItem, CDropdownMenu, CDropdownToggle} from "@coreui/react";
+import Checkbox from "@mui/material/Checkbox";
 
 export default function Sectors() {
     const {applicationSettings, userRole} = useContext(SettingsContext);
@@ -228,7 +230,9 @@ export default function Sectors() {
         setShowHelperModelType(type)
         setShowHelperModel(true);
     }
-
+const showTableColumns = (column) =>{
+        console.log({column})
+}
     return (
         <div>
             <MainLoader loaderVisible={loading}/>
@@ -260,7 +264,29 @@ export default function Sectors() {
                             <th>Electricity next payment</th>
                             <th>Internet next payment</th>
                             <th>Cheque next payment</th>
-                            <th>Action</th>
+                            <th>Action
+                                <CDropdown variant="btn-group" direction="center">
+                                    <CDropdownToggle color={''}></CDropdownToggle>
+                                    <CDropdownMenu>
+                                        <CDropdownItem href="#"><Checkbox
+                                            checked={true} // Use menu[1] instead of menu[0]
+                                            onChange={(e) => showTableColumns(e, true)}
+                                            name='id'
+                                            sx={{
+                                                // color: '#778',
+                                                // '&.Mui-checked': {
+                                                //   color: '#758978',
+                                                // },
+                                                '& .MuiSvgIcon-root': { fontSize: 14 }
+                                            }}
+                                        />{'id'}</CDropdownItem>
+                                        <CDropdownItem href="#">Another action</CDropdownItem>
+                                        <CDropdownItem href="#">Something else here</CDropdownItem>
+                                        <CDropdownDivider/>
+                                        <CDropdownItem href="#">Separated link</CDropdownItem>
+                                    </CDropdownMenu>
+                                </CDropdown>
+                            </th>
                         </tr>
                         </thead>
                         {loading && (
@@ -298,7 +324,7 @@ export default function Sectors() {
                                             });
 
                                             return (
-                                                <tr className={"text-center"} key={sector.id}>
+                                                <tr  key={sector.id}>
                                                     <td>{sector.name}</td>
                                                     <td>
                                                         {checkPayments(sector.payments, 'electricity')}

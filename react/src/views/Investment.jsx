@@ -12,7 +12,7 @@ import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 import {Modal} from "react-bootstrap";
 import {Tooltip} from "react-tooltip";
 import MainLoader from "../components/MainLoader.jsx";
-import { notification } from "../components/ToastNotification.jsx";
+import {notification} from "../components/ToastNotification.jsx";
 
 
 export default function Investment() {
@@ -75,7 +75,6 @@ export default function Investment() {
             </Pagination.Item>
         );
     }
-
     const onDelete = (investment) => {
         Swal.fire({
             title: 'Are you sure?',
@@ -88,11 +87,11 @@ export default function Investment() {
             if (result.isConfirmed) {
                 axiosClient.delete(`investment/${investment.id}`).then((data) => {
                     getInvestments();
-                    notification('success',data?.message,data?.description)
+                    notification('success', data?.message, data?.description)
                 }).catch(err => {
-                    if (err.response) { 
+                    if (err.response) {
                         const error = err.response.data
-                        notification('error',error?.message,error.description)
+                        notification('error', error?.message, error.description)
                     }
                 })
             }
@@ -115,7 +114,6 @@ export default function Investment() {
             .replace(/\.$/, '')
             .toUpperCase();
     }
-
 
     return (
         <div>

@@ -163,8 +163,8 @@ export default function Return() {
                             </div>
                         </div>
                     </div>
-                    <div className="table-responsive-sm my-custom-scrollbar table-wrapper-scroll-y">
-                        <table className="table table-bordered custom-table">
+                    <div className="table-responsive-sm">
+                        <table className="table table-bordered table-responsive" >
                             <thead>
                             <tr>
                                 <th className="text-center">Date</th>

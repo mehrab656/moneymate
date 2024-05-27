@@ -1,18 +1,18 @@
 import Swal from "sweetalert2";
 import axiosClient from "../axios-client.js";
 
-export function compareDates(date) {
-    const currentDate = new Date().getTime();
-    const billingDate = new Date(date).getTime();
+export function compareDates(billDate) {
+    const currentDate = new Date().getTime();  //19 May
+    const billingDate = new Date(billDate).getTime(); // 18 May
 
     //if current date is greater than billing date, it means it has been overdue bill. send warning.
     if (currentDate > billingDate) {
-        return "warning";
+        return "danger";
     }
     //else calculate the days
-    const diff_in_time = new Date(date) - new Date();
+    const diff_in_time = new Date(billDate) - new Date();
     const diff_in_days = Math.round(diff_in_time / (1000 * 3600 * 24));
-    return diff_in_days >= 5 ? "success" : "danger";
+    return diff_in_days >= 5 ? "success" : "warning";
 }
 
 export function reservationValidationBuilder(check_in, check_out) {
