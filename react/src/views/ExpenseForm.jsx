@@ -39,9 +39,7 @@ const _initialExpense = {
 export default function ExpenseForm() {
     const classes = useStyles();
     let {id} = useParams();
-
     const [expense, setExpense] = useState(_initialExpense);
-
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [expenseCategories, setExpenseCategories] = useState([]);
@@ -50,8 +48,6 @@ export default function ExpenseForm() {
     const [selectedAccountId, setSelectedAccountId] = useState('');
     const [selectedUserId, setSelectedUserId] = useState('');
     const navigate = useNavigate();
-    const [insufficientBalanceForCategory, setInsufficientBalanceForCategory] = useState(null);
-    const {applicationSettings} = useContext(SettingsContext);
     const [categoryValue, setCategoryValue] = useState(null);
     const [storeCategoryValue, setStoreCategoryValue] = useState(null);
 
@@ -173,7 +169,6 @@ export default function ExpenseForm() {
         formData.append('attachment', attachment);
 
         const url = expense.id ? `/expense/${expense.id}` : '/expense/add';
-        const notifications = expense.id ? 'Expense has been updated' : 'New expense added';
         axiosClient.post(url, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -214,10 +209,6 @@ export default function ExpenseForm() {
 
                 {!loading && (
                     <form>
-                        {insufficientBalanceForCategory && (
-                            <div className="text-danger mt-2 mb-3">{insufficientBalanceForCategory}</div>
-                        )}
-
                         <div className="row">
                             <div className="col-md-6">
                                 <div className="form-group">

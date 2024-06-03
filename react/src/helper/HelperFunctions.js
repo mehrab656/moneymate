@@ -52,16 +52,7 @@ export const checkPermission = (_permission, _checkLimit = false)=>{
         if (userRole === 'admin') {
             return true;
         } else {
-            const data = {
-                permission: _permission,
-                checkLimit: _checkLimit
-            }
-            const hasPermission = axiosClient.get("/permission", data).then(({data}) => {
-
-            })
-
-            return hasPermission;
-
+            return _permission;
         }
 }
 

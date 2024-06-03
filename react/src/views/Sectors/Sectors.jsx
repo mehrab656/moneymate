@@ -18,7 +18,7 @@ import {CDropdown, CDropdownDivider, CDropdownItem, CDropdownMenu, CDropdownTogg
 import Checkbox from "@mui/material/Checkbox";
 
 export default function Sectors() {
-    const {applicationSettings, userRole} = useContext(SettingsContext);
+    const {applicationSettings, userRole, userPermission} = useContext(SettingsContext);
     const {num_data_per_page, default_currency} = applicationSettings;
     const [loading, setLoading] = useState(false);
     const [sectors, setSectors] = useState([]);
@@ -178,19 +178,16 @@ export default function Sectors() {
         }).then((result) => {
             if (result.isConfirmed) {
                 axiosClient.post(`/change-payment-status/${payment.id}`).then(({data}) => {
-
                     notification('success', data?.message, data?.description)
-
                     setTimeout(() => {
                         window.location.reload();
-                    }, 5000)
+                    }, 1000)
                 }).catch(err => {
                     if (err.response) {
                         const error = err.response.data
-                        notification('error',error?.message,error.description)
+                        notification('error', error?.message, error.description)
                     }
                 })
-
             }
         })
     }
@@ -206,7 +203,6 @@ export default function Sectors() {
         setActiveElectricityModal('');
         setShowModal(false);
         setShowHelperModel(false);
-
     };
     const checkPayments = (payments, type) => {
         let message = '';
@@ -217,10 +213,8 @@ export default function Sectors() {
                 break;
             }
         }
-
         return (
-            <span
-                className={message === '' ? 'text-success' : 'text-warning'}>{message === '' ? 'All Clear' : message}</span>
+            <span className={message === '' ? 'text-success' : 'text-warning'}>{message === '' ? 'All Clear' : message}</span>
         )
     }
 
@@ -230,9 +224,9 @@ export default function Sectors() {
         setShowHelperModelType(type)
         setShowHelperModel(true);
     }
-const showTableColumns = (column) =>{
+    const showTableColumns = (column) => {
         console.log({column})
-}
+    }
     return (
         <div>
             <MainLoader loaderVisible={loading}/>
@@ -247,13 +241,13 @@ const showTableColumns = (column) =>{
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
-                    {userRole === "admin" && (
+                    {checkPermission(userPermission.sector_create) &&
                         <div className="col-md-2">
                             <Link className='btn-add align-right mr-3' to='/sector/new'>
                                 <FontAwesomeIcon icon={faPlus}/> Add New
                             </Link>
                         </div>
-                    )}
+                    }
 
                 </div>
                 <div className='table-responsive-sm'>
@@ -261,7 +255,7 @@ const showTableColumns = (column) =>{
                         <thead>
                         <tr className={"text-center"}>
                             {
-                                userRole === 'admin'&&
+                                userRole === 'admin' &&
                                 <th>id</th>
                             }
                             <th>Sector</th>
@@ -277,11 +271,7 @@ const showTableColumns = (column) =>{
                                             onChange={(e) => showTableColumns(e, true)}
                                             name='id'
                                             sx={{
-                                                // color: '#778',
-                                                // '&.Mui-checked': {
-                                                //   color: '#758978',
-                                                // },
-                                                '& .MuiSvgIcon-root': { fontSize: 14 }
+                                                '& .MuiSvgIcon-root': {fontSize: 14}
                                             }}
                                         />{'id'}</CDropdownItem>
                                         <CDropdownItem href="#">Another action</CDropdownItem>
@@ -327,9 +317,9 @@ const showTableColumns = (column) =>{
                                             });
 
                                             return (
-                                                <tr  key={sector.id}>
+                                                <tr key={sector.id}>
                                                     {
-                                                        userRole === 'admin'&&
+                                                        userRole === 'admin' &&
                                                         <td>{sector.id}</td>
                                                     }
                                                     <td>{sector.name}</td>
@@ -390,6 +380,9 @@ const showTableColumns = (column) =>{
                                                             showModule={showSector}
                                                             deleteFunc={onDelete}
                                                             params={actionParams}
+                                                            editDropdown={userPermission.sector_edit}
+                                                            showPermission={userPermission.sector_view}
+                                                            deletePermission={userPermission.sector_delete}
                                                         />
                                                     </td>
                                                 </tr>
@@ -477,7 +470,7 @@ const showTableColumns = (column) =>{
                         {modalSector?.channels && modalSector?.channels.length > 0 &&
                             <>
                                 <tr>
-                                    <td rowSpan={modalSector.channels.length+1}>{'Channels'}</td>
+                                    <td rowSpan={modalSector.channels.length + 1}>{'Channels'}</td>
                                 </tr>
                                 {
                                     modalSector?.channels.map((data, i) => {

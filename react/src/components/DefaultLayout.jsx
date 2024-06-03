@@ -50,7 +50,7 @@ import {Container, Row, Col, Button, Offcanvas, Nav} from 'react-bootstrap';
 import {FloatingWhatsApp} from 'react-floating-whatsapp'
 // import avatar from '../../../954445_n.jpg'
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import {compareDates} from "../helper/HelperFunctions.js";
+import {checkPermission, compareDates} from "../helper/HelperFunctions.js";
 import DropDownProperties from "./DropdownProperties";
 import {useGetUserDataQuery} from "../api/slices/userSlice.js";
 import {useGetSectorsDataQuery} from "../api/slices/sectorSlice.js";
@@ -70,7 +70,7 @@ export default function DefaultLayout() {
     })
     const [className, setClassName] = useState('');
     const [notifications, setNotifications] = useState([]);
-    const {applicationSettings, userRole, setUserRole} = useContext(SettingsContext);
+    const {applicationSettings, userRole, setUserRole,userPermission} = useContext(SettingsContext);
     let {
         default_currency
     } = applicationSettings;
@@ -279,15 +279,18 @@ export default function DefaultLayout() {
                                                 <span className="aside-menu-text"> Dashboard </span>
                                             </Link>
                                         </li>
-                                        <li className="aside-menu-item">
-                                            <Link
-                                                to="/companies"
-                                                className={isActive('/companies') ? 'active' : ''}>
+                                        {
+                                            checkPermission(userPermission.company_view) &&
+                                            <li className="aside-menu-item">
+                                                <Link to="/companies"
+                                                    className={isActive('/companies') ? 'active' : ''}>
                                                 <span className="aside-menu-icon">
                                                     <FontAwesomeIcon icon={faBuildingFlag}/></span>
-                                                <span className="aside-menu-text"> Company </span>
-                                            </Link>
-                                        </li>
+                                                    <span className="aside-menu-text"> Company </span>
+                                                </Link>
+                                            </li>
+                                        }
+
 
                                         <li className="aside-menu-item">
                                             <Link

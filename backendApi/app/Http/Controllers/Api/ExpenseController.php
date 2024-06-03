@@ -6,30 +6,32 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ExpenseRequest;
 use App\Http\Requests\UpdateExpenseRequest;
 use App\Http\Resources\ExpenseResource;
-use App\Http\Resources\IncomeResource;
 use App\Models\BankAccount;
 use App\Models\Budget;
 use App\Models\BudgetCategory;
 use App\Models\BudgetExpense;
 use App\Models\Category;
 use App\Models\Expense;
- use Carbon\Carbon;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Nette\Schema\ValidationException;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Throwable;
 
 class ExpenseController extends Controller {
-	/**
-	 * @param ExpenseResource $request
-	 *
-	 * @return JsonResponse
-	 */
+    /**
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
 	public function index( Request $request ): JsonResponse {
 
 		$page     = $request->query( 'page', 1 );
@@ -56,11 +58,12 @@ class ExpenseController extends Controller {
 	}
 
 
-	/**
-	 * @param ExpenseRequest $request
-	 *
-	 * @return JsonResponse
-	 */
+    /**
+     * @param ExpenseRequest $request
+     *
+     * @return JsonResponse
+     * @throws Throwable
+     */
 	public function add( ExpenseRequest $request ): JsonResponse {
 
 		$expense = $request->validated();
@@ -100,6 +103,7 @@ class ExpenseController extends Controller {
 		}
 
 		try {
+            $oldAccountBalance = $bankAccount->balance;
 			DB::beginTransaction();
 			$expenseDate = Carbon::parse( $expense['date'] )->format( 'Y-m-d' );
 			$expense     = Expense::create( [
@@ -149,7 +153,7 @@ class ExpenseController extends Controller {
 				'log_type'     => 'create',
 				'module'       => 'expense',
 				'descriptions' => "",
-				'data_records' => array_merge( json_decode( json_encode( $expense ), true ), [ 'account_balance' => $bankAccount->balance ] ),
+                'data_records' => array_merge( json_decode( json_encode( $expense ), true ), [ 'old_account_balance' => $oldAccountBalance,'new_account_balance' => $bankAccount->balance ] ),
 			] );
 
 			DB::commit();
@@ -172,11 +176,12 @@ class ExpenseController extends Controller {
 	}
 
 
-	/**
-	 * Load all expense categories.
-	 *
-	 * @return JsonResponse
-	 */
+    /**
+     * Load all expense categories.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
 	public function categories( Request $request ): JsonResponse {
 
 		$sectorID = abs( $request->sector_id );
@@ -194,11 +199,12 @@ class ExpenseController extends Controller {
 	}
 
 
-	/**
-	 * @param Expense $expense
-	 *
-	 * @return Response
-	 */
+    /**
+     * @param Expense $expense
+     *
+     * @return Response
+     * @throws Exception
+     */
 	public function destroy( Expense $expense ): Response {
 		$expense->delete();
 
@@ -225,12 +231,13 @@ class ExpenseController extends Controller {
 	}
 
 
-	/**
-	 * @param UpdateExpenseRequest $request
-	 * @param Expense $expense
-	 *
-	 * @return IncomeResource
-	 */
+    /**
+     * @param UpdateExpenseRequest $request
+     * @param Expense $expense
+     *
+     * @return ExpenseResource
+     * @throws Exception
+     */
 
 	public function update( UpdateExpenseRequest $request, Expense $expense ): ExpenseResource {
 		$data = $request->validated();
@@ -241,10 +248,7 @@ class ExpenseController extends Controller {
 			if ( $attachmentFile instanceof UploadedFile ) {
 				// Delete the old attachment file, if it exists
 				$this->deleteAttachmentFile( $expense );
-
 				$filename       = time() . '.' . $attachmentFile->getClientOriginalExtension(); // Specify the new filename
-				$attachmentPath = $attachmentFile->storeAs( 'files', $filename ); // Upload the file with the new filename
-
 				$data['attachment'] = $filename;
 			} else {
 				// Handle the case where the attachment field is not a file
@@ -307,17 +311,18 @@ class ExpenseController extends Controller {
 	}
 
 
-	public function exportExpenseCsv() {
+	public function exportExpenseCsv(): BinaryFileResponse
+    {
 
 		$timestamp = now()->format( 'YmdHis' );
-		$filename  = "expense_{$timestamp}.csv";
+		$filename  = "expense_$timestamp.csv";
 
 		$headers = [
 			'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
 			,
 			'Content-type'        => 'text/csv'
 			,
-			'Content-Disposition' => "attachment; filename=\"{$filename}\""
+			'Content-Disposition' => "attachment; filename=\"$filename\""
 			,
 			'Expires'             => '0'
 			,
@@ -439,9 +444,10 @@ class ExpenseController extends Controller {
 	}
 
 	/**
-	 * @throws \Throwable
+	 * @throws Throwable
 	 */
-	public function updateReturn( UpdateExpenseRequest $request, Expense $return ) {
+	public function updateReturn( UpdateExpenseRequest $request, Expense $return ): JsonResponse|RedirectResponse
+    {
 		$data = $request->validated();
 
 		$refundableAmount = $return->refundable_amount; // Actual Return amount

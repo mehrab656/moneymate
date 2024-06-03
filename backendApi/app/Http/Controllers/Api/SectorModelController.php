@@ -303,6 +303,7 @@ class SectorModelController extends Controller {
 			], 404 );
 		}
 
+
 		if ( $paymentDetails->amount > $bankAccount->balance ) {
 			return response()->json( [
 				'message'     => 'Insufficient Balance!',
@@ -340,7 +341,9 @@ class SectorModelController extends Controller {
 
 		DB::beginTransaction();
 		try {
-			Expense::create( $expense );
+            $oldAccountBalance = $bankAccount->balance;
+
+            Expense::create( $expense );
 			$isUpdated            = DB::table( 'payments' )
 			                          ->where( 'id', $id )
 			                          ->update( [ 'status' => 'paid' ] );
@@ -360,7 +363,7 @@ class SectorModelController extends Controller {
 			'log_type'     => 'edit',
 			'module'       => 'sectors',
 			'descriptions' => $isUpdated ? 'updated payment status.' : 'User tried to update payment details.',
-			'data_records' => $expense,
+			'data_records' => array_merge( json_decode( json_encode( $expense ), true ), [ 'old_account_balance' => $oldAccountBalance,'new_account_balance' => $bankAccount->balance ] ),
 		] );
 
 		DB::commit();

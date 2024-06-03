@@ -16,6 +16,7 @@ import MainLoader from "../../components/MainLoader.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faBuildingFlag} from "@fortawesome/free-solid-svg-icons";
 import CompanyViewModal from "../Company/CompanyViewModal.jsx";
+import {checkPermission} from "../../helper/HelperFunctions.js";
 
 
 export default function companies() {
@@ -38,7 +39,7 @@ export default function companies() {
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
-    const {applicationSettings, userRole} = useContext(SettingsContext);
+    const {applicationSettings, userRole, userPermission} = useContext(SettingsContext);
     const {num_data_per_page} = applicationSettings;
     const navigate = useNavigate();
 
@@ -107,11 +108,13 @@ export default function companies() {
             <MainLoader loaderVisible={loading}/>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">List of Companes</h1>
-                {userRole === 'admin' && <div>
-                    <Link className="custom-btn btn-add" to="/company/add">
-                        <FontAwesomeIcon icon={faBuildingFlag}/> Add New
-                    </Link>
-                </div>}
+                {checkPermission(userPermission.company_create) &&
+                    <div>
+                        <Link className="custom-btn btn-add" to="/company/add">
+                            <FontAwesomeIcon icon={faBuildingFlag}/> Add New
+                        </Link>
+                    </div>
+                }
 
             </div>
             <TableContainer component={Paper}>
@@ -119,7 +122,7 @@ export default function companies() {
                     <TableHead>
                         <TableRow>
                             {
-                                userRole === 'admin'&&
+                                userRole === 'admin' &&
                                 <TableCell>id</TableCell>
                             }
                             <TableCell>Company Name</TableCell>
@@ -127,9 +130,7 @@ export default function companies() {
                             <TableCell align="right">Active Sector</TableCell>
                             <TableCell align="right">Account Balance</TableCell>
                             <TableCell align="right">Status</TableCell>
-                            {userRole === 'admin' &&
-                                <TableCell align="right">Action</TableCell>
-                            }
+                            <TableCell align="right">Action</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -144,22 +145,25 @@ export default function companies() {
                                 </> : (
                                     companies?.map((company) => (
                                         <TableRow key={company.uid}>
-                                            <TableCell component="th" scope="row">{company.id}</TableCell>
+                                            {
+                                                userRole === 'admin' &&
+                                                <TableCell component="th" scope="row">{company.id}</TableCell>
+                                            }
                                             <TableCell component="th" scope="row">{company.name}</TableCell>
                                             <TableCell align="right">{company.phone}</TableCell>
                                             <TableCell align="right">{company.issue_date}</TableCell>
                                             <TableCell align="right">{company.license_no}</TableCell>
                                             <TableCell align="right">{company?.status}</TableCell>
-                                            {userRole === 'admin' &&
-
-                                                <TableCell align="right">
-                                                    <ActionButtonHelpers
-                                                        module={company}
-                                                        showModule={showCompany}
-                                                        deleteFunc={onDelete}
-                                                        params={actionParams}/>
-                                                </TableCell>
-                                            }
+                                            <TableCell align="right">
+                                                <ActionButtonHelpers
+                                                    module={company}
+                                                    showModule={showCompany}
+                                                    deleteFunc={onDelete}
+                                                    params={actionParams}
+                                                    editDropdown={userPermission.company_edit}
+                                                    showPermission={userPermission.company_view}
+                                                    deletePermission={userPermission.company_delete}/>
+                                            </TableCell>
 
                                         </TableRow>
                                     )))

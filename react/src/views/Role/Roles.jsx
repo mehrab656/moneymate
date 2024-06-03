@@ -9,7 +9,7 @@ import Paper from '@mui/material/Paper';
 import {makeStyles} from "@mui/styles";
 import {TablePagination} from "@mui/material";
 import axiosClient from "../../axios-client.js";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 
 import {styled} from '@mui/material/styles';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -19,6 +19,8 @@ import ActionButtonHelpers from "../../helper/ActionButtonHelpers.jsx";
 import Swal from "sweetalert2";
 import {notification} from "../../components/ToastNotification.jsx";
 import {Tooltip} from "react-tooltip";
+import {SettingsContext} from "../../contexts/SettingsContext.jsx";
+import {checkPermission} from "../../helper/HelperFunctions.js";
 const useStyles = makeStyles({
     root: {
         width: '100%',
@@ -35,6 +37,7 @@ export default function Roles() {
     const classes = useStyles();
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(20);
+    const {userPermission} = useContext(SettingsContext);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -136,20 +139,21 @@ export default function Roles() {
                     </div>
                 </div>
                 <div className="col-2">
-                    <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
+                    { checkPermission(userPermission.role_create) &&
+                        <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                             <Link className="btn-add align-right mr-3"
                                   to="/roles/new"
                                   data-tooltip-id='add-role'
                                   data-tooltip-content={"Add New Role"}><FontAwesomeIcon
                                 icon={faPlus}/></Link>
-                        <Tooltip id='add-role'/>
-                    </div>
+                            <Tooltip id='add-role'/>
+                        </div>
+                    }
                 </div>
             </div>
 
-
             <TableContainer component={Paper}>
-                <Table  aria-label="Roles Table">
+                <Table aria-label="Roles Table">
                     <TableHead>
                         <TableRow>
                             <StyledTableCell><b>Role</b></StyledTableCell>
@@ -163,8 +167,7 @@ export default function Roles() {
                         {roles.map((role) => (
                             <TableRow
                                 key={role.id}
-                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                            >
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                 <TableCell>{role.role}</TableCell>
                                 <TableCell >{role.status}</TableCell>
                                 <TableCell >{role.added_by}</TableCell>
@@ -175,6 +178,9 @@ export default function Roles() {
                                         showModule={showRole}
                                         deleteFunc={(e)=>{onDelete(role)}}
                                         params={actionParams}
+                                        editDropdown={userPermission.role_edit}
+                                        showPermission={userPermission.role_view}
+                                        deletePermission={userPermission.role_delete}/>
                                     />
                                 </TableCell>
                             </TableRow>

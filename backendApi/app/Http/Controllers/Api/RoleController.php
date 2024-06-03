@@ -148,6 +148,65 @@ class RoleController extends Controller
         ]);
     }
 
+
+    public function updateRole($id, Request $request)
+    {
+
+        $data = $request->all();
+
+        $role = Role::where(['id' => $id, 'company_id' => auth()->user()->primary_company])->get()->first();
+
+        if (!$role) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Role not found !',
+            ], 404);
+        }
+
+
+        $roleName = strtolower($data['role']);
+        $roleStatus = abs($data['status']);
+//        unset($data['role']);
+//        unset($data['status']);
+        $roleData = [
+            'role' => $roleName,
+            'status' => $roleStatus,
+            'permissions' => json_encode($data),
+            'updated_by' => Auth::user()->id,
+        ];
+
+        try {
+            DB::beginTransaction();
+            $updatedRole = $role->update($roleData);
+            DB::commit();
+
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Role update failed!',
+                'description' => $e
+            ], 404);
+        }
+
+        if ($updatedRole) {
+            storeActivityLog([
+                'object_id' => $id,
+                'log_type' => 'update',
+                'module' => 'roles',
+                'descriptions' => 'Role Updated',
+                'data_records' => json_encode($updatedRole),
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Role updated successfully',
+            'data' => json_decode($role)
+        ]);
+    }
+
     /**
      * Display the specified resource.
      */

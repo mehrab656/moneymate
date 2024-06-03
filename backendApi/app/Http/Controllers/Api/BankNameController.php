@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class BankNameController extends Controller {
 
@@ -33,7 +34,6 @@ class BankNameController extends Controller {
 			'data'  => BankNameResource::collection( $bankNames ),
 			'total' => $totalCount,
 		] );
-
 	}
 
 	public function allBank(): JsonResponse {
@@ -44,9 +44,10 @@ class BankNameController extends Controller {
 		] );
 	}
 
-	/**
-	 * Store a newly created resource in storage.
-	 */
+    /**
+     * Store a newly created resource in storage.
+     * @throws Throwable
+     */
 	public function store( BankNameRequest $request ): JsonResponse {
 		$bankName = $request->validated();
 
@@ -58,7 +59,6 @@ class BankNameController extends Controller {
 			// A bank name with the same name already exists for the user, return a response
 			return response()->json( [ 'message' => 'Bank name already exists' ], 409 );
 		}
-
 		$bank = [
 			'user_id'   => auth()->user()->id,
 			'company_id'   => auth()->user()->primary_company,
@@ -66,8 +66,7 @@ class BankNameController extends Controller {
 		];
 		try {
 			$bankName = BankName::create( $bank );
-
-			storeActivityLog( [
+            storeActivityLog( [
 				'object_id'     => $bankName->id,
 				'log_type'     => 'create',
 				'module'       => 'sectors',
@@ -76,7 +75,7 @@ class BankNameController extends Controller {
 			] );
 			DB::commit();
 
-		} catch ( \Throwable $e ) {
+		} catch ( Throwable $e ) {
 			DB::rollBack();
 
 			return response()->json( [
@@ -91,7 +90,6 @@ class BankNameController extends Controller {
 		] );
 	}
 
-
 	/**
 	 * Display the specified resource.
 	 */
@@ -105,9 +103,7 @@ class BankNameController extends Controller {
 	 */
 	public function update( BankNameUpdateRequest $request, BankName $bankName ): JsonResponse {
 		$data = $request->validated();
-
 		$prevData = $bankName;
-
 		$bankName->update( $data );
 		storeActivityLog( [
 			'object_id'     => $bankName->id,
@@ -121,16 +117,16 @@ class BankNameController extends Controller {
 		] );
 
 		// return new BankNameResource( $bankName );
-
 		return response()->json( [
 			'message'     => 'Success!',
 			'description' => 'New Bank name updated!',
 		] );
 	}
 
-	/**
-	 * Remove the specified resource from storage.
-	 */
+    /**
+     * Remove the specified resource from storage.
+     * @throws Exception
+     */
 	public function destroy( BankName $bankName ): JsonResponse {
 		$bankName->delete();
 		storeActivityLog( [

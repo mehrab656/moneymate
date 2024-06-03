@@ -5,7 +5,7 @@ import axiosClient from '../axios-client.js'; // Import your axios client instan
 const SettingsContext = createContext({
     applicationSettings: {},
     userRole: {},
-    userPermission:{},
+    userPermission: {},
     setApplicationSettings: () => {
     },
     setUserRole: () => {
@@ -40,6 +40,7 @@ const SettingsProvider = ({children}) => {
                 .get('/get-user-role')
                 .then(({data}) => {
                     setUserRole(data.role);
+                    setUserPermission(data.access);
                 })
                 .catch((error) => {
                 }).finally(() => {
@@ -50,7 +51,7 @@ const SettingsProvider = ({children}) => {
     }, []);
 
     return (
-        <SettingsContext.Provider value={{applicationSettings, setApplicationSettings, userRole, setUserRole}}>
+        <SettingsContext.Provider value={{applicationSettings, setApplicationSettings, userRole, setUserRole,userPermission, setUserPermission}}>
             {children}
         </SettingsContext.Provider>
     );

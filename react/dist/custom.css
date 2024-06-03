@@ -397,3 +397,21 @@ footer {
     color: black;
     text-decoration: none;
 }
+
+.role_selection {
+    padding: 16px;
+    background-color: floralwhite;
+    border-radius: 10px;
+}
+.section_roll_name{
+    text-transform: capitalize !important;
+}
+
+.dropdown-menu {
+    padding: inherit;
+}
+
+.actionDropDownMenu{
+    position: fixed !important;
+    z-index: 1 !important;
+}

@@ -132,18 +132,20 @@ class UserController extends Controller
             ->get()->first();
 
         $permission_array = [];
+        if ($permissions){
+            $permission_array = json_decode($permissions->permissions,true);
+        }
 
 
         if ($user->tokenCan('admin')) {
             $role = 'admin';
         } else {
             $role = $user->role_as;
-
         }
 
         return response()->json([
             'role' => $role,
-            'permission' => $permissions
+            'access' => $permission_array
         ]);
     }
 

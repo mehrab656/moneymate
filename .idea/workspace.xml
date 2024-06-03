@@ -5,19 +5,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7aab6cd-85c3-45f8-9232-3c188a37b109" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/test.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Accounts.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Accounts.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Banks.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Banks.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Budgets.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Budgets.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/BankNameController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/BankNameController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/RoleController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/RoleController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/UserController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/UserController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/dist/custom.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/dist/custom.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/dist/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/react/dist/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/components/DefaultLayout.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/components/DefaultLayout.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/contexts/SettingsContext.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/contexts/SettingsContext.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/helper/ActionButtonHelpers.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/helper/ActionButtonHelpers.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/helper/HelperFunctions.js" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/helper/HelperFunctions.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/views/Categories.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Categories.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/views/Company/Companies.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Company/Companies.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Debts.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Debts.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Expenses.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Expenses.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Incomes.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Incomes.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Investment.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Investment.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Return.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Return.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Dashboard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Dashboard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/ExpenseForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/ExpenseForm.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Role/Roles.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Role/Roles.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Transfers.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Transfers.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -187,7 +195,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;saas&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/xampp/htdocs/moneymate&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/xampp/htdocs/moneymate/assets&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -198,6 +206,11 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\xampp\htdocs\moneymate\assets" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="Main" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
       <TestRunner configuration_file="$PROJECT_DIR$/backendApi/phpunit.xml" scope="XML" use_alternative_configuration_file="true" />
@@ -223,7 +236,9 @@
       <workItem from="1715775570978" duration="9762000" />
       <workItem from="1715875570624" duration="8503000" />
       <workItem from="1716143881141" duration="14251000" />
-      <workItem from="1716805133873" duration="4316000" />
+      <workItem from="1716805133873" duration="31664000" />
+      <workItem from="1717360425904" duration="2308000" />
+      <workItem from="1717449499417" duration="5316000" />
     </task>
     <servers />
   </component>

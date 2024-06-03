@@ -12,6 +12,7 @@ import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 import MainLoader from "../components/MainLoader.jsx";
 import {notification} from "../components/ToastNotification.jsx";
 import ReactToPrint from "react-to-print";
+import {checkPermission} from "../helper/HelperFunctions.js";
 
 export default function Categories() {
     const [loading, setLoading] = useState(false);
@@ -31,7 +32,7 @@ export default function Categories() {
     const [selectedSectorId, setSelectedSectorId] = useState('');
     const [categoryType, setCategoryType] = useState('');
 
-    const {applicationSettings, userRole} = useContext(SettingsContext);
+    const {applicationSettings, userRole,userPermission} = useContext(SettingsContext);
     const {
         num_data_per_page
     } = applicationSettings;
@@ -254,7 +255,7 @@ export default function Categories() {
                         <div className="col-3">
                             <button className={'btn-add right'} type="submit">Filter</button>
                             <button className={"btn btn-warning ml-2"} onClick={resetFilterParameter}>Reset</button>
-                            {userRole === 'admin' &&
+                            {checkPermission(userPermission.category_create) &&
                                 <button className="btn-add ml-2" onClick={showCreateModal}>Add New</button>
                             }
                         </div>
@@ -307,8 +308,11 @@ export default function Categories() {
                                                     module={category}
                                                     deleteFunc={onDelete}
                                                     showEditDropdown={edit}
-                                                    editDropdown={true}
                                                     params={actionParams}
+                                                    editDropdown={userPermission.category_edit}
+                                                    showPermission={userPermission.category_view}
+                                                    deletePermission={userPermission.category_delete}
+
                                                 />
                                             </td>}
 

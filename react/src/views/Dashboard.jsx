@@ -30,7 +30,6 @@ export default function Dashboard() {
         default_currency,
         registration_type
     } = applicationSettings;
-
     const getDashboardData = useCallback(async () => {
         try {
             setLoading(true);
