@@ -183,6 +183,7 @@ class UserController extends Controller
         $pageSize = $request->query('pageSize', 1000);
 
         $logs = ActivityLogModel::skip(($page - 1) * $pageSize)
+            ->where('company_id',auth()->user()->primary_company)
             ->take($pageSize)
             ->orderBy('id', 'desc')
             ->get();

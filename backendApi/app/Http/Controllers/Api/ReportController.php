@@ -330,7 +330,7 @@ class ReportController extends Controller {
 		$expense = DB::table( 'expenses' )->selectRaw( 'COALESCE(sum(amount), 0) as amount, categories.name' )
 		             ->join( 'categories', 'expenses.category_id', '=', 'categories.id' )
 		             ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
-		             ->where( 'company_id', Auth::user()->primary_company )
+		             ->where( 'expenses.company_id', Auth::user()->primary_company )
 		             ->whereBetween( 'date', [ $fromDate, $toDate ] )
 		             ->whereNot( 'categories.name', 'LIKE', '%rent%' )
 		             ->where( 'sector_id', '=', $category->sector_id )

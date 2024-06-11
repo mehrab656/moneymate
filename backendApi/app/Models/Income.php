@@ -100,12 +100,12 @@ class Income extends Model {
 	/**
 	 * @throws Throwable
 	 */
-	public function mapCSVWithBooking( array $files, int $category_id ): array {
+	public function mapCSVWithBooking( array $files, $category ): array {
 		unset( $files[0] );
 
 		$sector = DB::table( 'sectors' )->select( '*' )
 		            ->join( 'categories', 'categories.sector_id', '=', 'sectors.id' )
-		            ->where( 'categories.id', '=', $category_id )
+		            ->where( 'categories.id', '=', $category->id )
 		            ->first();
 
 		foreach ( $files as $file ) {
@@ -131,7 +131,7 @@ class Income extends Model {
 					'user_id'       => Auth::user()->id,
 					'account_id'    => $sector->payment_account_id,
 					'amount'        => $incomeAmount,
-					'category_id'   => $category_id,
+					'category_id'   => $category->id,
 					'description'   => str_replace( "\"", '', $incomeData[4] ),
 					'note'          => sprintf( "This income was imported by CSV where reservation reference id '%s' and payout reference '%s'", $incomeData[1], $incomeData[14] ),
 					'reference'     => 'booking',
@@ -142,7 +142,7 @@ class Income extends Model {
 					'attachment'    => '',
 				];
 
-				$isAdded = $this->incomeAdd( $income );
+				$isAdded = $this->incomeAdd( $income,$category );
 
 				if ( $isAdded['status_code'] != 200 ) {
 					return [
@@ -165,7 +165,7 @@ class Income extends Model {
 	/**
 	 * @throws Throwable
 	 */
-	public function incomeAdd( $income ): array {
+	public function incomeAdd( $income,$category ): array {
 
 		if ( $income['income_type'] === 'reservation' ) {
 			$checkinDate  = new DateTime( $income['checkin_date'] );
@@ -216,8 +216,8 @@ class Income extends Model {
 						'object_id'    => $income['id'],
 						'log_type'     => 'create',
 						'module'       => 'income',
-						'descriptions' => "added new income.",
-						'data_records' => array_merge( json_decode( json_encode( $income ), true ), $account ),
+                        'descriptions' => "added new income on ".Auth::user()->current_company->name.".",
+                        'data_records' => array_merge( json_decode( json_encode( $income ), true ),['Sector Name'=>$category->sector->name], $account ),
 					] );
 				} else {
 
@@ -256,8 +256,8 @@ class Income extends Model {
 						'object_id'    => $income_first['id'],
 						'log_type'     => 'create',
 						'module'       => 'income',
-						'descriptions' => "added new income.",
-						'data_records' => array_merge( json_decode( json_encode( $income_first ), true ), $account ),
+						'descriptions' => "added new income on ".Auth::user()->current_company->name.".",
+						'data_records' => array_merge( json_decode( json_encode( $income_first ), true ),['Sector Name'=>$category->sector->name], $account ),
 					] );
 
 					$second_month_startingDate = $checkoutDate->format( 'Y-m-01' ); //next month starting date;
@@ -296,8 +296,8 @@ class Income extends Model {
 							'object_id'    => $income_sec['id'],
 							'log_type'     => 'create',
 							'module'       => 'income',
-							'descriptions' => "added new income.",
-							'data_records' => array_merge( json_decode( json_encode( $income_sec ), true ), $account ),
+                            'descriptions' => "added new income on ".Auth::user()->current_company->name.".",
+                            'data_records' => array_merge( json_decode( json_encode( $income_sec ), true ),['Sector Name'=>$category->sector->name], $account ),
 						] );
 					}
 				}

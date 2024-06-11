@@ -143,7 +143,7 @@ class IncomeController extends Controller {
 						'log_type'     => 'create',
 						'module'       => 'income',
 						'descriptions' => "added income.",
-						'data_records' => array_merge( json_decode( json_encode( [] ), true ), $account ),
+                        'data_records' => array_merge( json_decode( json_encode( $income ), true ),['Sector Name'=>$category->sector->name], $account ),
 					] );
 				} else {
 
@@ -557,7 +557,17 @@ class IncomeController extends Controller {
 				], 400 );
 			}
 
-			$status = ( new Income() )->mapCSVWithBooking( $fileContents, $category_id );
+            $category = Category::where( 'id', $category_id )->where( 'type', '=', 'income' )->get()->first();
+            if ( ! $category ) {
+                DB::rollBack();
+
+                return response()->json( [
+                    'message'     => 'Not Found!',
+                    'description' => "Category was not Found!",
+                ], 400 );
+            }
+
+			$status = ( new Income() )->mapCSVWithBooking( $fileContents, $category );
 		}
 		if ( $status['status_code'] != 200 ) {
 			return response()->json( [
