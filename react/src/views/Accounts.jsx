@@ -59,10 +59,6 @@ export default function Accounts() {
 
     const [selectedBankNameId, setSelectedBankNameId] = useState(null);
 
-    const {setNotification} = useStateContext();
-
-
-
     const showCreateModal = () => {
         setBankAccount({
             id: null,

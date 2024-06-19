@@ -119,9 +119,9 @@ class ReportController extends Controller {
 		if ( $cat_id ) {
 			$query = $query->where( 'category_id', $cat_id );
 		}
-		if ( ! $sec_id && ! $cat_id ) {
-			$query = $query->limit( 50 );
-		}
+//		if ( ! $sec_id && ! $cat_id ) {
+//			$query = $query->limit( 50 );
+//		}
 
 
 		$expensesRes = ExpenseReportResource::collection( $query->orderBy( 'date', 'DESC' )->get() );

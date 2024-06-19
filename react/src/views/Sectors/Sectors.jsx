@@ -214,7 +214,8 @@ export default function Sectors() {
             }
         }
         return (
-            <span className={message === '' ? 'text-success' : 'text-warning'}>{message === '' ? 'All Clear' : message}</span>
+            <span
+                className={message === '' ? 'text-success' : 'text-warning'}>{message === '' ? 'All Clear' : message}</span>
         )
     }
 
@@ -226,6 +227,35 @@ export default function Sectors() {
     }
     const showTableColumns = (column) => {
         console.log({column})
+    }
+    const remainingContract = ( end) => {
+
+        let startDate = new Date();
+
+        let endDate = new Date(end);
+
+        const startYear = startDate.getFullYear();
+        const february = (startYear % 4 === 0 && startYear % 100 !== 0) || startYear % 400 === 0 ? 29 : 28;
+        const daysInMonth = [31, february, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+        let yearDiff = endDate.getFullYear() - startYear;
+        let monthDiff = endDate.getMonth() - startDate.getMonth();
+        if (monthDiff < 0) {
+            yearDiff--;
+            monthDiff += 12;
+        }
+        let dayDiff = endDate.getDate() - startDate.getDate();
+        if (dayDiff < 0) {
+            if (monthDiff > 0) {
+                monthDiff--;
+            } else {
+                yearDiff--;
+                monthDiff = 11;
+            }
+            dayDiff += daysInMonth[startDate.getMonth()];
+        }
+
+        return yearDiff + ' Year ' + monthDiff + ' Months ' + dayDiff + ' Days.';
     }
     return (
         <div>
@@ -432,9 +462,16 @@ export default function Sectors() {
                         <tbody>
                         <tr>
                             <td>Rent:<strong>{modalSector?.rent}</strong></td>
-                            <td>Contact Start:<strong> {modalSector?.contract_start_date}</strong></td>
-                            <td>Contact:<strong> {modalSector?.contract_end_date}</strong></td>
+                            <td>Contract Start:<strong> {modalSector?.contract_start_date}</strong></td>
+                            <td>Contract End:<strong> {modalSector?.contract_end_date}</strong></td>
                         </tr>
+                        <tr>
+                            <td colSpan={2}>Contract Remaining</td>
+                            <td>
+                                <strong> {remainingContract(modalSector.contract_end_date)}</strong>
+                            </td>
+                        </tr>
+
                         <tr>
                             <td rowSpan={3}>DEWA account</td>
                             <td>AC/No:<strong> {modalSector?.el_acc_no}</strong></td>

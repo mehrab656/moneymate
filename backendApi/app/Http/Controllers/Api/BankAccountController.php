@@ -160,7 +160,7 @@ class BankAccountController extends Controller {
 	 */
 
 	public function totalBankAccountBalance(): JsonResponse {
-		$totalAccount = BankAccount::sum( 'balance' );
+		$totalAccount = BankAccount::where('company_id',auth()->user()->primary_company)->sum( 'balance' );
 
 		return response()->json( [
 			'balance' => fix_number_format($totalAccount)
@@ -180,6 +180,4 @@ class BankAccountController extends Controller {
 			'balance' =>fix_number_format( $totalAccount + $totalWallet)
 		] );
 	}
-
-
 }
