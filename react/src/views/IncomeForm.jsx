@@ -5,7 +5,10 @@ import {Toast, useStateContext} from "../contexts/ContextProvider.jsx";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import WizCard from "../components/WizCard";
-import {TextField, Autocomplete, Box, FormControl, InputLabel, Select, MenuItem} from "@mui/material";
+import { Box, FormControl, InputLabel, Select, MenuItem} from "@mui/material";
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
+
 import {makeStyles} from "@mui/styles";
 import MainLoader from "../components/MainLoader.jsx";
 import {Button, Modal, Row} from "react-bootstrap";
@@ -29,7 +32,7 @@ const useStyles = makeStyles({
 const _initialIncome = {
     id: null,
     user_id: null,
-    income_type: "reservation",
+    income_type: "",
     account_id: "", // Set default value to an empty string
     amount: "", // Set default value to an empty string
     category_id: null,
@@ -54,7 +57,7 @@ export default function IncomeForm() {
     const [incomeCategories, setIncomeCategories] = useState([]);
     const [bankAccounts, setBankAccounts] = useState([]);
     const [selectedAccountId, setSelectedAccountId] = useState("");
-    const [selectedIncomeType, setIncomeType] = useState("reservation");
+    const [selectedIncomeType, setIncomeType] = useState("");
     const navigate = useNavigate();
     const [reservationValidation, setReservationValidation] = useState('Select check in and check out dates.');
     const [reservationValidationClass, setReservationValidationClass] = useState('primary');
@@ -75,6 +78,9 @@ export default function IncomeForm() {
             .get("/income-categories")
             .then(({data}) => {
                 setIncomeCategories(data.categories);
+                if (data.categories.length>0){
+                    setCategoryValue(data.categories[0]);
+                }
             })
             .catch((error) => {
                 console.error("Error loading income categories:", error);
@@ -142,6 +148,7 @@ export default function IncomeForm() {
             _url = `/income/${income.id}`;
         }
 
+
         const formData = new FormData();
         formData.append("account_id", selectedAccountId);
         formData.append("income_type", income.income_type);
@@ -174,8 +181,9 @@ export default function IncomeForm() {
             })
             .catch((err) => {
                 if (err.response) {
-                    const error = err.response.data
-                    notification('error', error?.message, error.description)
+                    const error = err.response.data;
+                    notification('error', error?.message, error.description);
+                    setErrors(error.errors);
                 }
                 setLoading(false);
             });
@@ -279,14 +287,17 @@ export default function IncomeForm() {
                                         }
                                         placeholder='Description'
                                     />
+                                    {errors.description && (
+                                        <p className='error-message mt-2'>{errors.description[0]}</p>
+                                    )}
                                 </div>
                                 <div className='form-group'>
                                     <Autocomplete
-                                        // value={expenseCategories[0]}
-                                        classes={{option: classes.option}}
+                                        id='parentCategory'
+                                        disableClearable
                                         options={incomeCategories}
                                         getOptionLabel={(option) => option.name}
-                                        id='parentCategory'
+                                        classes={{option: classes.option}}
                                         isOptionEqualToValue={(option, categoryValue) => option.id === categoryValue.id}
                                         value={categoryValue}
                                         onChange={(event, newValue) => {
@@ -296,14 +307,16 @@ export default function IncomeForm() {
                                         }}
                                         renderInput={(params) => (
                                             <TextField
-                                                style={{backgroundColor: "#eeeeee"}}
+                                                // style={{backgroundColor: "#eeeeee"}}
                                                 {...params}
                                                 label='Income Category'
-                                                margin='normal'
-                                                placeholder='Income Category'
+                                                // margin='normal'
+                                                // placeholder='Income Category'
+
                                             />
                                         )}
                                     />
+
                                 </div>
                                 <div className='form-group'>
                                     <label className='custom-form-label' htmlFor='income_amount'>
@@ -343,36 +356,34 @@ export default function IncomeForm() {
                                             </Select>
                                         </FormControl>
                                     </Box>
+                                    {errors.reference && (
+                                        <p className='error-message mt-2'>{errors.reference[0]}</p>
+                                    )}
                                 </div>
                                 <div className='form-group'>
-                                    <label className='custom-form-label' htmlFor='income_type'>
-                                        Select Income Type
-                                    </label>
-                                    <select
-                                        className='custom-form-control'
-                                        value={selectedIncomeType}
-                                        disabled={!!id}
-                                        id='income_type'
-                                        name='income_type'
-                                        onChange={(event) => {
-                                            const value = event.target.value || "";
-                                            setIncomeType(value);
-                                            setIncome({...income, income_type: value});
-                                        }}
-                                    >
-                                        <option key={"income_type_reservation"} value={'reservation'}>Reservation
-                                        </option>
-                                        <option key={"income_type_electricity_bill"}
-                                                value={'electricity_bill'}>Electricity Bill
-                                        </option>
-                                        <option key={"income_type_internet_bill"} value={'internet_bill'}>Internet
-                                            Bill
-                                        </option>
-                                        <option key={"income_type_rent"} value={'rent'}>Rent
-                                        </option>
-                                    </select>
-                                    {errors.account_id && (
-                                        <p className='error-message mt-2'>{errors.account_id[0]}</p>
+                                    <Box sx={{minWidth: 120}}>
+                                        <FormControl fullWidth>
+                                            <InputLabel id='income-type-select-lebel'>Income Type</InputLabel>
+                                            <Select
+                                                labelId='income-type-select-lebel'
+                                                id='income-type-select'
+                                                value={selectedIncomeType}
+                                                label='Income Type'
+                                                onChange={(event) => {
+                                                    const value = event.target.value || "";
+                                                    setIncomeType(value);
+                                                    setIncome({...income, income_type: value});
+                                                }}>
+                                                <MenuItem value={'reservation'}>Reservation</MenuItem>
+                                                <MenuItem value={'electricity_bill'}>Electricity Bill</MenuItem>
+                                                <MenuItem value={'internet_bill'}>Internet Bill</MenuItem>
+                                                <MenuItem value={'rent'}>Rent</MenuItem>
+                                                <MenuItem value={'others'}>Others</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Box>
+                                    {errors.income_type && (
+                                        <p className='error-message mt-2'>{errors.income_type[0]}</p>
                                     )}
                                 </div>
                                 {
@@ -439,28 +450,27 @@ export default function IncomeForm() {
                                     )}
                                 </div>
                                 <div className='form-group'>
-                                    <label className='custom-form-label' htmlFor='bank_account'>
-                                        Select Bank Account
-                                    </label>
-                                    <select
-                                        className='custom-form-control'
-                                        value={selectedAccountId}
-                                        id='bank-account'
-                                        name='bank-account'
-                                        onChange={(event) => {
-                                            const value = event.target.value || "";
-                                            setSelectedAccountId(value);
-                                            setIncome({...income, account_id: parseInt(value)});
-                                        }}
-                                    >
-                                        <option defaultValue>Select a bank account</option>
-                                        {bankAccounts.map((account) => (
-                                            <option key={account.id} value={account.id}>
-                                                {account.bank_name} - {account.account_number} - Balance
-                                                ({account.balance})
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <Box sx={{minWidth: 120}}>
+                                        <FormControl fullWidth>
+                                            <InputLabel id='bank_account-label'>Account</InputLabel>
+                                            <Select
+                                                labelId='bank_account-label'
+                                                id='bank_account'
+                                                value={selectedAccountId}
+                                                label='Income Type'
+                                                name='bank-account'
+                                                onChange={(event) => {
+                                                    const value = event.target.value || "";
+                                                    setSelectedAccountId(value);
+                                                    setIncome({...income, account_id: parseInt(value)});
+                                                }}>
+
+                                                {bankAccounts.map((account) => (
+                                                    <MenuItem key={account.id} value={account.id}>{account.bank_name} ({account.balance})</MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Box>
                                     {errors.account_id && (
                                         <p className='error-message mt-2'>{errors.account_id[0]}</p>
                                     )}

@@ -5,18 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7aab6cd-85c3-45f8-9232-3c188a37b109" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backendApi/lang/en/messages.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/lang/en/sectors.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/BankAccountController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/BankAccountController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ReportController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ReportController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/helpers.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/helpers.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/dist/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/react/dist/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Accounts.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Accounts.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Requests/IncomeRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Requests/IncomeRequest.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/IncomeForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/IncomeForm.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -233,7 +224,7 @@
       <workItem from="1717791851155" duration="695000" />
       <workItem from="1718128056620" duration="26728000" />
       <workItem from="1718747576980" duration="3311000" />
-      <workItem from="1718833022104" duration="4257000" />
+      <workItem from="1718833022104" duration="7956000" />
     </task>
     <servers />
   </component>
@@ -251,6 +242,12 @@
             <option name="methodName" value="addIncomeFromCSV" />
           </properties>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/react/src/views/IncomeForm.jsx</url>
+          <line>451</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
