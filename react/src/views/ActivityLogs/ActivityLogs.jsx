@@ -27,7 +27,6 @@ export default function ActivityLogs() {
     const [loading, setLoading] = useState(false);
     const [logs, setLogs] = useState([]);
 
-    const classes = useStyles();
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(20);
     const handleChangePage = (event, newPage) => {
@@ -65,7 +64,7 @@ export default function ActivityLogs() {
         },
     }));
     return (
-        <Paper sx={{ width: '100%', overflow: 'hidden' }} classes={"root"}>
+        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
             <TableContainer sx={{ maxHeight: 840 }} component={Paper}>
                 <Table size={"small"} stickyHeader aria-label="sticky table">
                     <TableHead>

@@ -212,29 +212,6 @@ class SectorModelController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     * @throws \Exception
-     */
-    public function update(SectorUpdateRequest $request, SectorModel $sector)
-    {
-        $data = $request->validated();
-
-        $sector->fill($data);
-        $sector->save();
-        storeActivityLog([
-            'user_id' => Auth::user()->id,
-            'object_id' => $sector->id,
-            'log_type' => 'edit',
-            'module' => 'Sector',
-            'descriptions' => "",
-            'data_records' => json_decode(json_encode($sector), true),
-
-        ]);
-
-        return new SectorResource($sector);
-    }
-
-    /**
      * Remove the specified resource from storage.
      */
     public function destroy(SectorModel $sectorModel)
@@ -431,6 +408,29 @@ class SectorModelController extends Controller
         ]);
     }
 
+    /**
+     * Update the specified resource in storage.
+     * @throws \Exception
+     */
+    public function update(SectorUpdateRequest $request, SectorModel $sector)
+    {
+        $data = $request->validated();
+
+        $sector->fill($data);
+        $sector->save();
+        storeActivityLog([
+            'user_id' => Auth::user()->id,
+            'object_id' => $sector->id,
+            'log_type' => 'edit',
+            'module' => 'Sector',
+            'descriptions' => "",
+            'data_records' => json_decode(json_encode($sector), true),
+
+        ]);
+
+        return new SectorResource($sector);
+    }
+
     public function payBills($paymentID, Request $request)
     {
         $id = abs($paymentID);
@@ -491,6 +491,7 @@ class SectorModelController extends Controller
         try {
             $expense = Expense::create([
                 'user_id' => Auth::user()->id,
+                'company_id' => Auth::user()->primary_company,
                 'account_id' => $sector->payment_account_id,
                 'amount' => $request->amount,
                 'refundable_amount' => 0,
@@ -546,7 +547,6 @@ class SectorModelController extends Controller
     public function sectorList(): JsonResponse
     {
         $sectors = SectorModel::where('company_id', Auth::user()->primary_company)->get();
-
         return response()->json(['sectors' => $sectors]);
     }
 }

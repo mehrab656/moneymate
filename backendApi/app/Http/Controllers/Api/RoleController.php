@@ -38,6 +38,7 @@ class RoleController extends Controller
 
     }
 
+
     /**
      * Display a listing of the resource.
      */
@@ -243,5 +244,20 @@ class RoleController extends Controller
     {
         return response()->json([
             'permission' => true]);
+    }
+
+    public function getCompanyRoleList()
+    {
+
+
+        $roles = Role::where('company_id', Auth::user()->primary_company)
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $totalCount = Role::where('company_id', Auth::user()->primary_company)->count();
+        return response()->json([
+            'data' => $roles,
+            'total' => $totalCount,
+        ]);
     }
 }

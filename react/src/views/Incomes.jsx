@@ -131,8 +131,6 @@ export default function Incomes() {
     return (
         <div>
             <MainLoader loaderVisible={loading}/>
-
-
             <WizCard className="animated fadeInDown">
                 <div className="row">
                     <div className="col-3">

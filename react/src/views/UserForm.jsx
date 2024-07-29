@@ -6,6 +6,8 @@ import WizCard from "../components/WizCard";
 import {SettingsContext} from "../contexts/SettingsContext";
 import Badge from "react-bootstrap/Badge";
 import MainLoader from "../components/MainLoader.jsx";
+import {Box, FormControl, InputLabel, MenuItem, Select} from "@mui/material";
+import {notification} from "../components/ToastNotification.jsx";
 
 export default function UserForm() {
     const navigate = useNavigate();
@@ -14,6 +16,7 @@ export default function UserForm() {
         id: null,
         name: "",
         email: "",
+        role_id: "",
         password: "",
         password_confirmation: ""
     });
@@ -21,7 +24,8 @@ export default function UserForm() {
     const [loading, setLoading] = useState(false);
     const [subscriptions, setSubscriptions] = useState([]);
     const {setNotification} = useStateContext();
-
+    const [roles, setRoles] = useState([]);
+    const [selectedRole,setSelectedRole] = useState("")
     const {applicationSettings, userRole} = useContext(SettingsContext);
     const {
         default_currency,
@@ -43,7 +47,17 @@ export default function UserForm() {
                 });
         }, []);
     }
-
+    useEffect(() => {
+        axiosClient
+            .get("/company-role-list")
+            .then(({data}) => {
+                setRoles(data.data);
+                console.log(roles)
+            })
+            .catch((error) => {
+                console.warn("Error fetching Role Lists:", error);
+            });
+    }, []);
 
     const onSubmit = (ev) => {
         ev.preventDefault();
@@ -52,10 +66,8 @@ export default function UserForm() {
             axiosClient
                 .put(`/users/${user.id}`, user)
                 .then(() => {
-                    setNotification("User was successfully updated");
-                    if (userRole === 'admin'){
-                        navigate("/users");
-                    }
+                    notification('success', data?.message, data?.description)
+                    navigate("/users");
                     setLoading(false);
                 })
                 .catch((err) => {
@@ -68,8 +80,8 @@ export default function UserForm() {
         } else {
             axiosClient
                 .post("/users", user)
-                .then(() => {
-                    setNotification("User was successfully created");
+                .then(({data}) => {
+                    notification('success', data?.message, data?.description)
                     navigate("/users");
                     setLoading(false);
                 })
@@ -126,11 +138,44 @@ export default function UserForm() {
                             )}
                         </div>
 
-                        <div className="text-danger mb-2">
-                            <div className="alert alert-warning" role="alert">Leave both password field blank, if you do
-                                not want to change your account password
-                            </div>
+                        <div className='form-group'>
+                            <Box sx={{minWidth: 120}}>
+                                <FormControl fullWidth>
+                                    <InputLabel id='role-label'>Role</InputLabel>
+                                    <Select
+                                        labelId='role-label'
+                                        id='role_id'
+                                        value={selectedRole}
+                                        label='Role'
+                                        name='role_id'
+                                        onChange={(event) => {
+                                            const value = event.target.value || "";
+                                            setSelectedRole(value);
+                                            setUser({...user, role_id: parseInt(value)});
+                                        }}
+                                    >
+
+                                        {roles.map((role) => (
+                                            <MenuItem key={role.id}
+                                                      value={role.id}>{role.role}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Box>
+                            {/*{errors.role_id && (*/}
+                            {/*    <p className='error-message mt-2'>{errors.role_id[0]}</p>*/}
+                            {/*)}*/}
                         </div>
+                        {
+                            id &&
+                            <div className="text-danger mb-2">
+                                <div className="alert alert-warning" role="alert">Leave both password field blank, if
+                                    you do
+                                    not want to change your account password
+                                </div>
+                            </div>
+
+                        }
 
 
                         <div className="form-group">
@@ -215,7 +260,6 @@ export default function UserForm() {
                                             <td>{subscription.current_period_start}</td>
                                             <td>{subscription.current_period_end}</td>
                                             <td>
-
                                                 <Badge
                                                     className={subscription.status === "active" ? "badge-active" : "badge-inactive"}>
                                                     {subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1) }

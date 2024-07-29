@@ -7,7 +7,7 @@ import DatePicker from "react-datepicker";
 import MonthlyReportTable from "../components/MonthlyReportTable.jsx";
 import Swal from "sweetalert2";
 import ReactToPrint from 'react-to-print'
-import { Button } from "@mui/material";
+import {Button} from "@mui/material";
 
 const initialState = {
     incomes: [],
@@ -20,7 +20,7 @@ const initialState = {
     summery: []
 }
 export default function MonthlyReport() {
-    const componentRef  = useRef()
+    const componentRef = useRef()
 
     const [monthlyReport, setMonthlyReport] = useState(initialState);
     const [loading, setLoading] = useState(false);
@@ -28,17 +28,7 @@ export default function MonthlyReport() {
     const [incomeCategories, setIncomeCategories] = useState([]);
     const [selectedCategoryId, setSelectedCategoryId] = useState('');
     const [alertMessage, setAlertMessage] = useState(null);
-    const Toast = Swal.mixin({
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-        }
-    });
+
     const [tableRow, setTableRow] = useState([]);
     var rows = [];
     const overallReportRow = () => {
@@ -60,7 +50,7 @@ export default function MonthlyReport() {
         }).then(({data}) => {
             setAlertMessage(null)
             setMonthlyReport(data);
-            overallReportRow();
+
             setLoading(false);
         }).catch(err => {
             setAlertMessage(err.response.data.message);
@@ -72,12 +62,9 @@ export default function MonthlyReport() {
         setLoading(false);
     };
 
-    useEffect(() => {
-        document.title = "Monthly Reports";
-        // getMonthlyReports();
-    }, []);
 
     useEffect(() => {
+        document.title = "Monthly Reports";
         axiosClient.get('/income-categories')
             .then(({data}) => {
                 setIncomeCategories(data.categories);
@@ -88,6 +75,9 @@ export default function MonthlyReport() {
             });
     }, []);
 
+    useEffect(() => {
+        overallReportRow();
+    }, [monthlyReport])
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -148,16 +138,16 @@ export default function MonthlyReport() {
                                     <button className={'btn-add right'} type="submit">Filter</button>
                                 </form>
                             </td>
-                            <td  width={'5%'}>
+                            <td width={'5%'}>
                                 <button className="btn btn-warning" onClick={resetFilterParameter}>Reset</button>
                             </td>
-                            <td >
+                            <td>
                                 <ReactToPrint
                                     trigger={() => <Button variant="outlined">Print</Button>}
-                                    content={()=> componentRef.current}
+                                    content={() => componentRef.current}
                                 />
                             </td>
-                           
+
                         </tr>
                         </tbody>
                     </table>

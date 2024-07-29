@@ -5,14 +5,14 @@ import {Toast, useStateContext} from "../contexts/ContextProvider.jsx";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import WizCard from "../components/WizCard";
-import { Box, FormControl, InputLabel, Select, MenuItem} from "@mui/material";
+import {Box, FormControl, InputLabel, Select, MenuItem} from "@mui/material";
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 
 import {makeStyles} from "@mui/styles";
 import MainLoader from "../components/MainLoader.jsx";
 import {Button, Modal, Row} from "react-bootstrap";
-import { CAlert } from '@coreui/react';
+import {CAlert} from '@coreui/react';
 
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
@@ -78,7 +78,7 @@ export default function IncomeForm() {
             .get("/income-categories")
             .then(({data}) => {
                 setIncomeCategories(data.categories);
-                if (data.categories.length>0){
+                if (data.categories.length > 0) {
                     setCategoryValue(data.categories[0]);
                 }
             })
@@ -140,11 +140,11 @@ export default function IncomeForm() {
 
     const incomeSubmit = (event, stay) => {
         event.preventDefault();
-         event.currentTarget.disabled = true;
+        event.currentTarget.disabled = true;
         setLoading(true);
 
         let _url = '/income/add';
-        if(income.id){
+        if (income.id) {
             _url = `/income/${income.id}`;
         }
 
@@ -347,12 +347,17 @@ export default function IncomeForm() {
                                                 label='Reference'
                                                 onChange={(e) => setIncome({...income, reference: e.target.value})}
                                             >
-                                                <MenuItem value={'air-bnb'}>Air Bnb</MenuItem>
+                                                <MenuItem value={'air-bnb'}>Airbnb</MenuItem>
                                                 <MenuItem value={'booking'}>Booking.com</MenuItem>
                                                 <MenuItem value={'vrbo'}>VRBO</MenuItem>
                                                 <MenuItem value={'expedia'}>Expedia</MenuItem>
                                                 <MenuItem value={'cash'}>Cash</MenuItem>
                                                 <MenuItem value={'cheque'}>Cheque</MenuItem>
+                                                <MenuItem value={'bank'}>Bank Transfer</MenuItem>
+                                                <MenuItem value={'agoda'}>Agoda</MenuItem>
+                                                <MenuItem value={'trivago'}>Trivago</MenuItem>
+                                                <MenuItem value={'host-away'}>Host away</MenuItem>
+                                                <MenuItem value={'google'}>Google</MenuItem>
                                             </Select>
                                         </FormControl>
                                     </Box>
@@ -466,7 +471,8 @@ export default function IncomeForm() {
                                                 }}>
 
                                                 {bankAccounts.map((account) => (
-                                                    <MenuItem key={account.id} value={account.id}>{account.bank_name} ({account.balance})</MenuItem>
+                                                    <MenuItem key={account.id}
+                                                              value={account.id}>{account.bank_name} ({account.balance})</MenuItem>
                                                 ))}
                                             </Select>
                                         </FormControl>

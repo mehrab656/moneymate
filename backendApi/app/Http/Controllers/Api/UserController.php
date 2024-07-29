@@ -17,6 +17,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Nette\Schema\ValidationException;
 
 class UserController extends Controller
 {
@@ -47,21 +48,27 @@ class UserController extends Controller
      *
      * @param StoreUserRequest $request
      *
-     * @return Response
+     * @return JsonResponse
      * @throws Exception
      */
-    public function store(StoreUserRequest $request): Response
+    public function store(StoreUserRequest $request)
     {
-        $data = $request->validated();
-        $data['password'] = bcrypt($data['password']);
-        $data['primary_company'] = Auth::user()->primary_comany;
+        $user = $request->validated();
+        $user['password'] = bcrypt($user['password']);
+        $roleID =  $request->role_id;
         try {
             DB::beginTransaction();
-            $user = User::create($data);
+            $user = User::create([
+                'name'=>$user['name'],
+                'email'=>$user['email'],
+                'password'=>$user['password'],
+                'role_as'=>'sub-user',
+                'primary_company'=>Auth::user()->primary_company
+            ]);
             DB::table('company_user')->insert([
-                'company_id' => Auth::user()->primary_comany,
+                'company_id' => Auth::user()->primary_company,
                 'user_id' => $user->id,
-                'role_id' => $data['role_id'],//admin role.
+                'role_id' => $roleID,
                 'status' => true,
                 'created_by' => Auth::user()->id,
                 'updated_by' => Auth::user()->id,
@@ -77,13 +84,18 @@ class UserController extends Controller
                 'data_records' => $user,
             ]);
             DB::commit();
-        } catch (Exception $e) {
+
+        } catch (ValidationException $e) {
             DB::rollBack();
-
+            return response()->json([
+                'data' => $e
+            ]);
         }
+        return response()->json([
+            'data' => $user,
+            'message' => 'User was successfully updated',
+        ]);
 
-
-        return response(new UserResource($user), 200);
     }
 
     /**
