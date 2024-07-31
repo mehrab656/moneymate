@@ -7,6 +7,7 @@ use App\Models\BankAccount;
 use App\Models\Borrow;
 use App\Models\Debt;
 use App\Models\Repayment;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -49,6 +50,7 @@ class BorrowController extends Controller {
 
 			storeActivityLog( [
 				'object_id'    => $borrow->id,
+                'object'=>'borrow',
 				'log_type'     => 'edit',
 				'module'       => 'Borrow',
 				'descriptions' => "has borrow some more amount of $request->amount From $debt->person",
@@ -59,9 +61,9 @@ class BorrowController extends Controller {
 			] );
 
 			DB::commit();
-		} catch ( \Throwable $e ) {
+		} catch ( Exception $e ) {
 			DB::rollBack();
-
+            updateErrorlLogs($e, 'Borrow Controller');
 			return response()->json( [
 				'message' => 'Cannot add Borrow.',
 			] );
@@ -158,6 +160,7 @@ class BorrowController extends Controller {
 
 			storeActivityLog( [
 				'object_id'    => $repayment->id,
+                'object'=>'borrow',
 				'log_type'     => 'edit',
 				'module'       => 'Borrow',
 				'descriptions' => "has paid an amount of $request->amount to $debt->person",
@@ -169,9 +172,9 @@ class BorrowController extends Controller {
 
 
 			DB::commit();
-		} catch ( \Throwable $e ) {
+		} catch ( Exception $e ) {
 			DB::rollBack();
-
+            updateErrorlLogs($e, 'Borrow Controller');
 			return response()->json( [
 				'message' => 'Repayment can not be created.'
 			] );

@@ -24,6 +24,8 @@ class RoleResource extends JsonResource
             'options' => $this->options,
             'added_by' => $this->createdBy->name,
             'added_date' => $this->created_at,
+            'modified_date' => $this->updated_at,
+            'modified_by' => $this->updatedBy->name,
         ];
     }
 }

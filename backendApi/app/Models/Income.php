@@ -214,7 +214,8 @@ class Income extends Model {
 
 					storeActivityLog( [
 						'object_id'    => $income['id'],
-						'log_type'     => 'create',
+                        'object'=>'income',
+                        'log_type'     => 'create',
 						'module'       => 'income',
                         'descriptions' => "added new income on ".Auth::user()->current_company->name.".",
                         'data_records' => array_merge( json_decode( json_encode( $income ), true ),['Sector Name'=>$category->sector->name], $account ),
@@ -254,7 +255,8 @@ class Income extends Model {
                     unset($income_first['category_id']);
 					storeActivityLog( [
 						'object_id'    => $income_first['id'],
-						'log_type'     => 'create',
+                        'object'=>'income',
+                        'log_type'     => 'create',
 						'module'       => 'income',
 						'descriptions' => "added new income on ".Auth::user()->current_company->name.".",
 						'data_records' => array_merge( json_decode( json_encode( $income_first ), true ),['Sector Name'=>$category->sector->name], $account ),
@@ -294,7 +296,8 @@ class Income extends Model {
                         unset($income_sec['category_id']);
 						storeActivityLog( [
 							'object_id'    => $income_sec['id'],
-							'log_type'     => 'create',
+                            'object'=>'income',
+                            'log_type'     => 'create',
 							'module'       => 'income',
                             'descriptions' => "added new income on ".Auth::user()->current_company->name.".",
                             'data_records' => array_merge( json_decode( json_encode( $income_sec ), true ),['Sector Name'=>$category->sector->name], $account ),
@@ -305,6 +308,7 @@ class Income extends Model {
 
 			} catch ( Exception $e ) {
 				DB::rollBack();
+                updateErrorlLogs($e, 'Income Model');
 
 				return [
 					'message'     => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
@@ -342,7 +346,8 @@ class Income extends Model {
 				] );
 				storeActivityLog( [
 					'object_id'    => $income['id'],
-					'log_type'     => 'create',
+                    'object'=>'income',
+                    'log_type'     => 'create',
 					'module'       => 'income',
 					'descriptions' => "added new income.",
 					'data_records' => array_merge( json_decode( json_encode( $income ), true ), $account ),
@@ -352,7 +357,7 @@ class Income extends Model {
 
 			} catch ( Exception $e ) {
 				DB::rollBack();
-
+                updateErrorlLogs($e, 'Income Model');
 				return [
 					'message'     => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
 					'status_code' => 400

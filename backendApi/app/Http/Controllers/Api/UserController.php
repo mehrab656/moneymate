@@ -30,15 +30,24 @@ class UserController extends Controller
         $page = $request->query('page', 1);
         $pageSize = $request->query('pageSize', 10);
 
-        $users = Company::with(['users'])->find(Auth::user()->primary_company)->users()->skip(($page - 1) * $pageSize)
-            ->take($pageSize)
-            ->orderBy('id', 'desc')
-            ->get();;
+//        $users = Company::with(['users'])->find(Auth::user()->primary_company)->users()->skip(($page - 1) * $pageSize)
+//            ->take($pageSize)
+//            ->orderBy('id', 'desc')
+//            ->get();
 
-        $totalCount = User::count();
+        $users = DB::table('companies')->select(['users.id','users.name','users.email','roles.role','users.profile_picture'])
+            ->join( 'company_user', 'companies.id', '=', 'company_user.company_id' )
+            ->join( 'users', 'company_user.user_id', '=', 'users.id' )
+            ->join( 'roles', 'company_user.role_id', '=', 'roles.id' )
+            ->where( 'companies.id', '=', Auth::user()->primary_company )
+            ->skip(($page-1)*$pageSize)
+            ->take($pageSize)
+            ->orderBy('id', 'desc');
+
+        $totalCount = $users->count();
 
         return response()->json([
-            'data' => UserResource::collection($users),
+            'data' => $users->get(),
             'total' => $totalCount,
         ]);
     }
@@ -78,6 +87,7 @@ class UserController extends Controller
 
             storeActivityLog([
                 'object_id' => $user['id'],
+                'object' => 'user',
                 'log_type' => 'create',
                 'module' => 'user',
                 'descriptions' => "",
@@ -87,6 +97,8 @@ class UserController extends Controller
 
         } catch (ValidationException $e) {
             DB::rollBack();
+            updateErrorlLogs($e, 'User Controller');
+
             return response()->json([
                 'data' => $e
             ]);

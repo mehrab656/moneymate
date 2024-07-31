@@ -12,32 +12,29 @@ import Checkbox from "@mui/material/Checkbox";
 import FormLabel from "@mui/material/FormLabel";
 import RoleLists from "./RoleLists.jsx";
 import {notification} from "../../components/ToastNotification.jsx";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
 
 export default function RoleForms() {
     const navigate = useNavigate();
     let {id} = useParams();
     const [role, setRole] = useState({
         role: '',
-        status: 1
+        status: 0
     });
-    const [storePermission, setStorePermission] = useState({}) 
+    const [storePermission, setStorePermission] = useState({})
     const [errors, setErrors] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [subscriptions, setSubscriptions] = useState([]);
     const {setNotification} = useStateContext();
     const {applicationSettings, userRole} = useContext(SettingsContext);
-    const {
-        default_currency,
-        registration_type,
-    } = applicationSettings;
-
-
+    const {} = applicationSettings;
 
 
     // State to hold the checked status
     const [permissions, setPermissions] = useState({
         company: {
-            company_create: storePermission?.company_create ===true?true:false,
+            company_create: storePermission?.company_create === true ? true : false,
             company_view: false,
             company_edit: false,
             company_delete: false,
@@ -200,46 +197,47 @@ export default function RoleForms() {
         // Add other sections similarly
     });
 
-     // access rolse data by id
-     useEffect(() => {
-        document.title = 'Update Role';
-        setLoading(true);
-        axiosClient
-            .get(`/role/${id}`)
-            .then(({data}) => {
-                console.log('res data', data)
-                setLoading(false);
+    // access rolse data by id
+    useEffect(() => {
+        if (id) {
+            document.title = 'Update Role';
+            setLoading(true);
+            axiosClient
+                .get(`/role/${id}`)
+                .then(({data}) => {
+                    console.log('res data', data)
+                    setLoading(false);
 
-                // update role
-                setRole({...role, role: data?.data?.role})
-                
-                // store permissions 
-                const apiPermissionsdata = data?.data?.permissions
-                const updatedPermissions = { ...permissions };
+                    // update role
+                    setRole({...role, role: data?.data?.role})
 
-                Object.keys(apiPermissionsdata).forEach((key) => {
-                  var sectionName
-                  const getSectionName = key.split('_')
-                    if(getSectionName.length>2){
-                        sectionName =getSectionName[0]+'_'+getSectionName[1]
-                    }else{
-                        sectionName =getSectionName[0]
-                    }
+                    // store permissions
+                    const apiPermissionsdata = data?.data?.permissions
+                    const updatedPermissions = {...permissions};
 
-                  if (updatedPermissions[sectionName]) {
-                    updatedPermissions[sectionName][key] = apiPermissionsdata[key];
-                  }
+                    Object.keys(apiPermissionsdata).forEach((key) => {
+                        var sectionName;
+                        const getSectionName = key.split('_')
+                        if (getSectionName.length > 2) {
+                            sectionName = getSectionName[0] + '_' + getSectionName[1]
+                        } else {
+                            sectionName = getSectionName[0]
+                        }
+
+                        if (updatedPermissions[sectionName]) {
+                            updatedPermissions[sectionName][key] = apiPermissionsdata[key];
+                        }
+                    });
+
+                    setPermissions(updatedPermissions);
+
+                })
+                .catch(() => {
+                    setLoading(false);
                 });
-            
-                setPermissions(updatedPermissions);
-                
-            })
-            .catch(() => {
-                setLoading(false);
-            });
+        }
     }, [id]);
 
-    
 
     const onSubmit = (ev) => {
         ev.preventDefault();
@@ -320,19 +318,44 @@ export default function RoleForms() {
                 {loading && <div className="text-center">Loading...</div>}
                 {!loading && (
                     <form onSubmit={onSubmit} className="custom-form">
-                        <div className="form-group">
-                            <label htmlFor="role_nmae" className="custom-form-label">
-                                Role Name
-                            </label>
-                            <input
-                                className="custom-form-control"
-                                value={role.role}
-                                onChange={(ev) =>
-                                    setRole({...role, role: ev.target.value})
-                                }
-                                placeholder="Name"
-                            />
+                        <div className="row">
+                            <div className="col-6">
+                                <div className="form-group">
+                                    <label htmlFor="role_nmae" className="custom-form-label">
+                                        Role Name
+                                    </label>
+                                    <input
+                                        className="custom-form-control"
+                                        value={role.role}
+                                        onChange={(ev) =>
+                                            setRole({...role, role: ev.target.value})
+                                        }
+                                        placeholder="Name"
+                                    />
 
+                                    {errors?.role &&
+                                        <p className="error-message mt-2">{errors?.role[0]}</p>}
+                                </div>
+                            </div>
+                            <div className="col-6">
+                                <div className="form-group">
+                                    <label className="custom-form-label" htmlFor="expense_user">Role Status</label>
+                                    <select
+                                        className="custom-form-control"
+                                        value={role.status}
+                                        id="expense-by"
+                                        name="expense-by"
+                                        onChange={(event) => {
+                                            const value = event.target.value || '';
+                                            setRole({...role, status: parseInt(value)});
+                                        }}>
+                                        <option key={1} value={1}>{"Active"}</option>
+                                        <option key={0} value={0}>{"Inactive"}</option>
+                                    </select>
+                                    {/*{errors.status && <p className="error-message mt-2">{errors.status[0]}</p>}*/}
+                                </div>
+
+                            </div>
                         </div>
                         <RoleLists key={Math.random().toString(36).substring(2)} permissions={permissions}
                                    setPermissions={setPermissions}/>
@@ -340,69 +363,11 @@ export default function RoleForms() {
 
                         <div className="text-end mt-4">
                             <button className="custom-btn btn-brand-primary btn-edit px-5">
-                                {id?'Update':'Create'}
+                                {id ? 'Update' : 'Create'}
                             </button>
                         </div>
                     </form>
                 )}
-
-
-                {registration_type === 'subscription' && (
-
-                    <div className="table-responsive-sm mt-4">
-                        <div className="text-danger mb-2">
-                            <div className="alert alert-info" role="alert">Subscription History
-                            </div>
-                        </div>
-                        <table className="table table-bordered custom-table">
-                            <thead>
-                            <tr className={'text-center'}>
-                                <th>Start Date</th>
-                                <th>End Date</th>
-                                <th>Status</th>
-                                <th>Amount</th>
-                            </tr>
-                            </thead>
-                            {loading && (
-                                <tbody>
-                                <tr>
-                                    <td colSpan={4} className="text-center">
-                                        Loading...
-                                    </td>
-                                </tr>
-                                </tbody>
-                            )}
-                            {!loading && (
-                                <tbody>
-                                {subscriptions.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={4} className="text-center">
-                                            No Subscription found
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    subscriptions.map((subscription) => (
-                                        <tr className={'text-center'} key={subscription.id}>
-                                            <td>{subscription.current_period_start}</td>
-                                            <td>{subscription.current_period_end}</td>
-                                            <td>
-
-                                                <Badge
-                                                    className={subscription.status === "active" ? "badge-active" : "badge-inactive"}>
-                                                    {subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)}
-                                                </Badge>
-                                            </td>
-                                            <td> {default_currency + subscription.amount}</td>
-                                        </tr>
-                                    ))
-                                )}
-                                </tbody>
-                            )}
-                        </table>
-                    </div>
-                )}
-
-
             </WizCard>
         </>
     );

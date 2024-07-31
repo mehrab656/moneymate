@@ -16,6 +16,7 @@ use App\Models\Investment;
 use App\Models\PaymentModel;
 use App\Models\SectorModel;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -177,18 +178,18 @@ class SectorModelController extends Controller
             storeActivityLog([
                 'user_id' => Auth::user()->id,
                 'object_id' => $sector['id'],
+                'object'=>'sector',
                 'log_type' => 'create',
                 'module' => 'sectors',
                 'descriptions' => '',
                 'data_records' => $sectorData,
             ]);
-        } catch (ValidationException $e) {
+            DB::commit();
+        } catch (Exception $e) {
             DB::rollBack();
-
+            updateErrorlLogs($e, 'Sector Model Controller');
             return redirect()->back()->withErrors($e->getMessages())->withInput();
-
         }
-        DB::commit();
 
         return response()->json([
             'data' => $sector
@@ -374,8 +375,10 @@ class SectorModelController extends Controller
             $bankAccount->balance -= $paymentDetails->amount;
             $bankAccount->save();
 
-        } catch (ValidationException $e) {
+        } catch (Exception $e) {
             DB::rollBack();
+            updateErrorlLogs($e, 'Sector Model Controller');
+
             $message = $e->getMessages();
             //Add activity Log
             storeActivityLog([
@@ -394,6 +397,7 @@ class SectorModelController extends Controller
         storeActivityLog([
             'user_id' => Auth::user()->id,
             'object_id' => $id,
+            'object'=>'sector',
             'log_type' => 'success',
             'module' => 'sectors',
             'descriptions' => __('update_payment_details'),
@@ -421,6 +425,7 @@ class SectorModelController extends Controller
         storeActivityLog([
             'user_id' => Auth::user()->id,
             'object_id' => $sector->id,
+            'object'=>'sector',
             'log_type' => 'edit',
             'module' => 'Sector',
             'descriptions' => "",
@@ -530,8 +535,9 @@ class SectorModelController extends Controller
             ]);
 
 
-        } catch (ValidationException $e) {
+        } catch (Exception $e) {
             DB::rollBack();
+            updateErrorlLogs($e, 'Sector Model Controller');
 
             return redirect()->back()->withErrors($e->getMessages())->withInput();
         }

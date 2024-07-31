@@ -214,6 +214,11 @@ function SectorCreate() {
     }, [id]);
     return <Fragment>
         <MainLoader loaderVisible={loading}/>
+        <div className="text-danger mb-2">
+            <div className="alert alert-warning" role="alert">If you have not created any Payment account,
+                please create the payment account first.
+            </div>
+        </div>
         <Card>
             <CardContent>
                 <Typography variant="h5" gutterBottom>
@@ -530,7 +535,8 @@ function SectorCreate() {
                                 style={{backgroundColor: '#eeeeee'}}
                                 focused={true}
                             >
-                                {categories.map((name) => <MenuItem key={name} value={name}>
+                                {categories.map((name) =>
+                                    <MenuItem key={name} value={name}>
                                     <Checkbox checked={categoryName.indexOf(name) > -1}/>
                                     <ListItemText primary={name}/>
                                 </MenuItem>)}
@@ -594,7 +600,7 @@ function SectorCreate() {
                             <Grid item xs={12} sm={2}>
                                 <TextField
                                     fullWidth
-                                    label="Amount"
+                                    label="Date"
                                     variant="outlined"
                                     name="listing_date"
                                     type='date'

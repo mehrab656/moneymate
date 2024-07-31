@@ -134,7 +134,7 @@ export default function Users() {
                             <th>ID</th>
                             <th>NAME</th>
                             <th className="text-center">EMAIL</th>
-                            <th className="text-center">DATE CREATED</th>
+                            <th className="text-center">Role</th>
                             {userRole === 'admin' && <th>ACTIONS</th>}
 
                         </tr>
@@ -149,14 +149,14 @@ export default function Users() {
                         ) : (
                             <tbody>
                             {users.filter(u => {
-                                const searchableFields = [u.id, u.name, u.email, u.created_at];
+                                const searchableFields = [ u.name, u.email];
                                 return searchableFields.some(field => field.toString().toLowerCase().includes(searchQuery.toLowerCase()));
                             }).map(u => (
                                 <tr key={u.id}>
                                     <td>{u.id}</td>
                                     <td>{u.name}</td>
                                     <td className="text-center">{u.email}</td>
-                                    <td className="text-center">{u.created_at}</td>
+                                    <td className="text-center">{u.role}</td>
                                     {userRole === 'admin' &&
                                         <td>
                                             <ActionButtonHelpers

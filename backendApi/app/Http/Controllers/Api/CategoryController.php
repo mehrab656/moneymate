@@ -58,6 +58,7 @@ class CategoryController extends Controller {
 		$category = $this->categoryRepository->create( $categoryData );
 		storeActivityLog( [
 			'object_id'    => $category->id,
+            'object'=>'category',
 			'log_type'     => 'create',
 			'module'       => 'Category',
 			'descriptions' => "",
@@ -86,6 +87,7 @@ class CategoryController extends Controller {
 
 		storeActivityLog( [
 			'object_id'    => $category->id,
+            'object'=>'category',
 			'log_type'     => 'edit',
 			'module'       => 'Category',
 			'descriptions' => "",
@@ -115,6 +117,7 @@ class CategoryController extends Controller {
 		$this->categoryRepository->delete( $category );
 		storeActivityLog( [
 			'object_id'    => $category->id,
+            'object'=>'category',
 			'log_type'     => 'delete',
 			'module'       => 'Category',
 			'descriptions' => "",

@@ -27,6 +27,7 @@ class ApplicationSettingsController extends Controller {
 
 			storeActivityLog( [
 				'object_id'     => $option->id,
+                'object'=>'settings',
 				'log_type'     => 'edit',
 				'module'       => 'settings',
 				'descriptions' => '',

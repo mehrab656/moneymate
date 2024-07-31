@@ -33,6 +33,7 @@ class AppServiceProvider extends ServiceProvider
             config($allOptions);
         } catch (\Exception $e) {
             echo $e->getMessage();
+            updateErrorlLogs($e, 'App Service Provider');
         }
     }
 }

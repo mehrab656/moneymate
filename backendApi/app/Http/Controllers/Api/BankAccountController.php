@@ -69,6 +69,7 @@ class BankAccountController extends Controller {
 
 			storeActivityLog( [
 				'object_id'     => $bankAccount->id,
+                'object'=>'bank',
 				'log_type'     => 'create',
 				'module'       => 'Account',
 				'descriptions' => '',
@@ -77,7 +78,7 @@ class BankAccountController extends Controller {
 			DB::commit();
 		} catch ( \Throwable $e ) {
 			DB::rollBack();
-
+            updateErrorlLogs($e, 'Bank Controller');
 			return response()->json( [
 				'message' => 'Failed to create Account.' . $e->getMessage(),
 			], 500 );
@@ -116,15 +117,16 @@ class BankAccountController extends Controller {
 			$bankAccount->delete();
 			storeActivityLog( [
 				'object_id'     => $bankAccount->id,
+                'object'=>'bank',
 				'log_type'     => 'delete',
 				'module'       => 'Bank Account',
 				'descriptions' => '',
 				'data_records' => $bankAccount,
 			] );
 			DB::commit();
-		} catch ( \Throwable $e ) {
+		} catch ( Exception $e ) {
 			DB::rollBack();
-
+            updateErrorlLogs($e, 'Bank Account Controller');
 			return response()->json( [
 				'message' => 'Failed to delete Account.' . $e->getMessage(),
 			], 500 );

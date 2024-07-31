@@ -73,6 +73,7 @@ class InvestmentController extends Controller {
 
 		storeActivityLog( [
 			'object_id'    => $invest['id'],
+			'object'    => 'investment',
 			'log_type'     => 'create',
 			'module'       => 'investment',
 			'descriptions' => "",
@@ -131,15 +132,16 @@ class InvestmentController extends Controller {
 
 			storeActivityLog( [
 				'object_id'    => $investment->id,
+                'object'=>'investment',
 				'log_type'     => 'edit',
 				'module'       => 'investment',
 				'descriptions' => "",
 				'data_records' => array_merge( json_decode( json_encode( $investment ), true ), [ 'account_balance' => $bankAccount->balance ] ),
 			] );
 
-		} catch ( ValidationException $e ) {
+		} catch ( Exception $e ) {
 			DB::rollBack();
-
+            updateErrorlLogs($e, 'Investment Controller');
 			return redirect()->back()->withErrors( $e->getMessages() )->withInput();
 		}
 		DB::commit();
@@ -170,7 +172,8 @@ class InvestmentController extends Controller {
 		storeActivityLog( [
 			'user_id'      => Auth::user()->id,
 			'object_id'    => $investment->id,
-			'log_type'     => 'delete',
+            'object'    => 'investment',
+            'log_type'     => 'delete',
 			'module'       => 'investment',
 			'descriptions' => "",
 			'data_records' => array_merge( json_decode( json_encode( $investment ), true ), [ 'account_balance' => $bankAccount->balance ] ),

@@ -68,6 +68,7 @@ class BankNameController extends Controller {
 			$bankName = BankName::create( $bank );
             storeActivityLog( [
 				'object_id'     => $bankName->id,
+                'object'=>'bankName',
 				'log_type'     => 'create',
 				'module'       => 'sectors',
 				'descriptions' => '',
@@ -75,9 +76,9 @@ class BankNameController extends Controller {
 			] );
 			DB::commit();
 
-		} catch ( Throwable $e ) {
+		} catch ( Exception $e ) {
 			DB::rollBack();
-
+            updateErrorlLogs($e, 'Bank Name Controller');
 			return response()->json( [
 				'message' => 'Failed to Create Bank.' . $e->getMessage(),
 			], 500 );
@@ -107,6 +108,7 @@ class BankNameController extends Controller {
 		$bankName->update( $data );
 		storeActivityLog( [
 			'object_id'     => $bankName->id,
+            'object'=>'bankName',
 			'log_type'     => 'edit',
 			'module'       => 'bank',
 			'descriptions' => '',
@@ -131,6 +133,7 @@ class BankNameController extends Controller {
 		$bankName->delete();
 		storeActivityLog( [
 			'object_id'     => $bankName->id,
+            'object'=>'bankName',
 			'log_type'     => 'delete',
 			'module'       => 'bank',
 			'descriptions' => '',

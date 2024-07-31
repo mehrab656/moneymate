@@ -25,7 +25,7 @@ export default function UserForm() {
     const [subscriptions, setSubscriptions] = useState([]);
     const {setNotification} = useStateContext();
     const [roles, setRoles] = useState([]);
-    const [selectedRole,setSelectedRole] = useState("")
+    const [selectedRole, setSelectedRole] = useState("")
     const {applicationSettings, userRole} = useContext(SettingsContext);
     const {
         default_currency,
@@ -97,7 +97,7 @@ export default function UserForm() {
 
     return (
         <>
-          <MainLoader loaderVisible={loading} />
+            <MainLoader loaderVisible={loading}/>
             {user.id && <h1 className="title-text">Update User: {user.name}</h1>}
             {!user.id && <h1 className="title-text">New User</h1>}
             <WizCard className="animated fadeInDown wiz-card-mh">
@@ -154,11 +154,13 @@ export default function UserForm() {
                                             setUser({...user, role_id: parseInt(value)});
                                         }}
                                     >
-
-                                        {roles.map((role) => (
-                                            <MenuItem key={role.id}
-                                                      value={role.id}>{role.role}</MenuItem>
-                                        ))}
+                                        {roles.length > 0 ?
+                                            roles.map((role) => (
+                                                <MenuItem key={role.id}
+                                                          value={role.id}>{role.role}</MenuItem>
+                                            )) :
+                                            <MenuItem disabled key={"nothing"} value={"0"}>{"No roles Found"}</MenuItem>
+                                        }
                                     </Select>
                                 </FormControl>
                             </Box>
@@ -174,7 +176,6 @@ export default function UserForm() {
                                     not want to change your account password
                                 </div>
                             </div>
-
                         }
 
 
@@ -262,7 +263,7 @@ export default function UserForm() {
                                             <td>
                                                 <Badge
                                                     className={subscription.status === "active" ? "badge-active" : "badge-inactive"}>
-                                                    {subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1) }
+                                                    {subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)}
                                                 </Badge>
                                             </td>
                                             <td> {default_currency + subscription.amount}</td>
@@ -274,7 +275,6 @@ export default function UserForm() {
                         </table>
                     </div>
                 )}
-
 
 
             </WizCard>

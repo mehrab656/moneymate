@@ -140,6 +140,7 @@ class IncomeController extends Controller {
 
 					storeActivityLog( [
 						'object_id'    => $income['id'],
+                        'object'=>'income',
 						'log_type'     => 'create',
 						'module'       => 'income',
 						'descriptions' => "added income.",
@@ -176,6 +177,7 @@ class IncomeController extends Controller {
 					] );
 					storeActivityLog( [
 						'object_id'    => $income_first['id'],
+                        'object'=>'income',
 						'log_type'     => 'create',
 						'module'       => 'income',
 						'descriptions' => "  added income.",
@@ -212,6 +214,7 @@ class IncomeController extends Controller {
 						] );
 						storeActivityLog( [
 							'object_id'    => $income_sec['id'],
+                            'object'=>'income',
 							'log_type'     => 'create',
 							'module'       => 'income',
 							'descriptions' => "added new income.",
@@ -221,9 +224,9 @@ class IncomeController extends Controller {
 				}
 				DB::commit();
 
-			} catch ( Throwable $e ) {
+			} catch ( Exception $e ) {
 				DB::rollBack();
-
+                updateErrorlLogs($e, 'Income Controller');
 				return response()->json( [
 					'message' => 'Something provided wrong data!',
 					'error'   => $e
@@ -262,6 +265,7 @@ class IncomeController extends Controller {
 				] );
 				storeActivityLog( [
 					'object_id'    => $income['id'],
+                    'object'=>'income',
 					'log_type'     => 'create',
 					'module'       => 'income',
 					'descriptions' => "added income.",
@@ -270,9 +274,9 @@ class IncomeController extends Controller {
 
 				DB::commit();
 
-			} catch ( Throwable $e ) {
+			} catch ( Exception $e ) {
 				DB::rollBack();
-
+                updateErrorlLogs($e, 'Income Controller');
 				return response()->json( [
 					'message'     => 'Cannot add Income.',
 					'description' => $e,
@@ -336,6 +340,7 @@ class IncomeController extends Controller {
 
 		storeActivityLog( [
 			'object_id'    => $income->id,
+            'object'=>'income',
 			'log_type'     => 'edit',
 			'module'       => 'income',
 			'descriptions' => "",
@@ -438,6 +443,7 @@ class IncomeController extends Controller {
 
 		storeActivityLog( [
 			'object_id'    => $income->id,
+            'object'=>'income',
 			'log_type'     => 'delete',
 			'module'       => 'income',
 			'descriptions' => "",
