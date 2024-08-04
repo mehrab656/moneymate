@@ -6,36 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="c7aab6cd-85c3-45f8-9232-3c188a37b109" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/AccountTransferController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/AccountTransferController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ApplicationSettingsController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ApplicationSettingsController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/BankAccountController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/BankAccountController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/BankNameController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/BankNameController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/BorrowController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/BorrowController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/CategoryController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/CategoryController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/CompanyController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/CompanyController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/DebtController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/DebtController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/IncomeController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/IncomeController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/InvestmentController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/InvestmentController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/LendController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/LendController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/RoleController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/RoleController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/UserController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/UserController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Requests/RoleRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Requests/RoleRequest.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Resources/RoleResource.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Resources/RoleResource.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/helpers.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/helpers.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Models/Company.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Models/Company.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Models/Income.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Models/Income.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Models/Role.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Models/Role.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app.zip" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Banks.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Banks.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Role/RoleForms.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Role/RoleForms.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Role/RoleLists.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Role/RoleLists.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Role/Roles.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Role/Roles.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Sectors/SectorCreate.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Sectors/SectorCreate.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/UserForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/UserForm.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Users.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Users.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/dist/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/react/dist/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -202,23 +175,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;saas&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/xampp/htdocs/moneymate/assets&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;php.test.frameworks.configurable&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\PhpStorm 2023.3\\plugins\\javascript-impl\\jsLanguageServicesImpl\\external&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "saas",
+    "last_opened_file_path": "D:/xampp/htdocs/moneymate/assets",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "php.test.frameworks.configurable",
+    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\PhpStorm 2023.3\\plugins\\javascript-impl\\jsLanguageServicesImpl\\external",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\xampp\htdocs\moneymate\assets" />
@@ -259,7 +233,7 @@
       <workItem from="1718747576980" duration="3311000" />
       <workItem from="1718833022104" duration="27492000" />
       <workItem from="1722280021548" duration="18404000" />
-      <workItem from="1722454627117" duration="4579000" />
+      <workItem from="1722454627117" duration="9432000" />
     </task>
     <servers />
   </component>
