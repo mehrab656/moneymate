@@ -405,111 +405,96 @@ export default function Accounts() {
             </WizCard>
 
 
-            <WizCard className="animated fadeInDown mt-4">
+            {/*<WizCard className="animated fadeInDown mt-4">*/}
 
-                <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
-                    <h1 className="title-text mb-0">Wallet/Handcash</h1>
-                    <div>
-                        <Link className="custom-btn btn-add" onClick={showCreateModal}><FontAwesomeIcon icon={faBank}/> Add
-                            New Wallet</Link>
-                    </div>
-                </div>
-               
-                <div className="mb-4">
-                    <input className="custom-form-control"
-                           type="text"
-                           placeholder="Search Account..."
-                           value={searchText}
-                           onChange={handleSearch}
-                    />
+            {/*    <div className="d-flex justify-content-between align-content-center gap-2 mb-3">*/}
+            {/*        <h1 className="title-text mb-0">Wallet/Handcash</h1>*/}
+            {/*        <div>*/}
+            {/*            <Link className="custom-btn btn-add" onClick={showCreateModal}><FontAwesomeIcon icon={faBank}/> Add*/}
+            {/*                New Wallet</Link>*/}
+            {/*        </div>*/}
+            {/*    </div>*/}
+            {/*   */}
+            {/*    <div className="mb-4">*/}
+            {/*        <input className="custom-form-control"*/}
+            {/*               type="text"*/}
+            {/*               placeholder="Search Account..."*/}
+            {/*               value={searchText}*/}
+            {/*               onChange={handleSearch}*/}
+            {/*        />*/}
 
-                </div>
-                <div className="table-responsive-sm">
-                    <table className="table table-bordered custom-table">
-                        <thead>
-                        <tr>
-                            <th>WALLET NAME</th>
-                            <th className="text-center">ACCOUNT HOLDER NAME</th>
-                            <th className="text-center">BANK NAME</th>
-                            <th className="text-center">ACCOUNT NUMBER</th>
-                            <th className="text-center">AVAILABLE BALANCE</th>
-                            {userRole ==='admin' && <th className="text-center" width="20%">ACTIONS</th>}
-                            
-                        </tr>
-                        </thead>
+            {/*    </div>*/}
+            {/*    <div className="table-responsive-sm">*/}
+            {/*        <table className="table table-bordered custom-table">*/}
+            {/*            <thead>*/}
+            {/*            <tr>*/}
+            {/*                <th>WALLET NAME</th>*/}
+            {/*                <th className="text-center">ACCOUNT HOLDER NAME</th>*/}
+            {/*                <th className="text-center">BANK NAME</th>*/}
+            {/*                <th className="text-center">ACCOUNT NUMBER</th>*/}
+            {/*                <th className="text-center">AVAILABLE BALANCE</th>*/}
+            {/*                {userRole ==='admin' && <th className="text-center" width="20%">ACTIONS</th>}*/}
+            {/*                */}
+            {/*            </tr>*/}
+            {/*            </thead>*/}
 
-                        {loading && (
-                            <tbody>
-                            <tr>
-                                <td colSpan={6} className="text-center">
-                                    Loading....
-                                </td>
-                            </tr>
-                            </tbody>
-                        )}
-                        {!loading && (
-                            <tbody>
-                            {filteredAccounts.length === 0 ? (
-                                <tr>
-                                    <td colSpan={6} className="text-center">
-                                        No bank account found
-                                    </td>
-                                </tr>
-                            ) : (
-                                filteredAccounts.map((account) => (
-                                    <tr key={account.id}>
-                                        <td>{account.customer_name}</td>
-                                        <td className="text-center">{account.account_name}</td>
-                                        <td className="text-center">{account.bank_name}</td>
-                                        <td className="text-center">{account.account_number}</td>
-                                        <td className="text-center">{default_currency}{account.balance}</td>
-                                        {/* {userRole ==='admin' && 
-                                        <td className="text-center">
-                                            <div className="d-flex flex-wrap justify-content-center gap-2">
-                                            <span>
-                                            <Link className="btn-edit" to={`#`} onClick={() => edit(account)}>
-                                            <FontAwesomeIcon icon={faEdit}/> Edit
-                                            </Link>
-                                                </span>
-                                                    <span>
-                                                    <a className="btn-delete"
-                                                    onClick={(e) => onDelete(account)}><FontAwesomeIcon icon={faTrash}/> Delete</a>
-                                                </span>
-                                                </div>
-                                            </td>
-                                        } */}
-                                        {userRole ==='admin' && 
-                                         <td>
-                                            <ActionButtonHelpers
-                                                module={account}
-                                                deleteFunc={onDelete}
-                                                showEditDropdown={edit}
-                                                editDropdown={true}
-                                                params={actionParams}
-                                            />
-                                        </td>}
-                                       
-                                    </tr>
-                                ))
-                            )}
-                            </tbody>
-                        )}
-                    </table>
-                </div>
-                {totalPages > 1 && (
-                    <Pagination>
-                        <Pagination.Prev
-                            disabled={currentPage === 1}
-                            onClick={() => handlePageChange(currentPage - 1)}
-                        />
-                        {paginationItems}
-                        <Pagination.Next
-                            disabled={currentPage === totalPages}
-                            onClick={() => handlePageChange(currentPage + 1)}
-                        />
-                    </Pagination>
-                )}
-            </WizCard>
+            {/*            {loading && (*/}
+            {/*                <tbody>*/}
+            {/*                <tr>*/}
+            {/*                    <td colSpan={6} className="text-center">*/}
+            {/*                        Loading....*/}
+            {/*                    </td>*/}
+            {/*                </tr>*/}
+            {/*                </tbody>*/}
+            {/*            )}*/}
+            {/*            {!loading && (*/}
+            {/*                <tbody>*/}
+            {/*                {filteredAccounts.length === 0 ? (*/}
+            {/*                    <tr>*/}
+            {/*                        <td colSpan={6} className="text-center">*/}
+            {/*                            No bank account found*/}
+            {/*                        </td>*/}
+            {/*                    </tr>*/}
+            {/*                ) : (*/}
+            {/*                    filteredAccounts.map((account) => (*/}
+            {/*                        <tr key={account.id}>*/}
+            {/*                            <td>{account.customer_name}</td>*/}
+            {/*                            <td className="text-center">{account.account_name}</td>*/}
+            {/*                            <td className="text-center">{account.bank_name}</td>*/}
+            {/*                            <td className="text-center">{account.account_number}</td>*/}
+            {/*                            <td className="text-center">{default_currency}{account.balance}</td>*/}
+            {/*                            {userRole ==='admin' && */}
+            {/*                             <td>*/}
+            {/*                                <ActionButtonHelpers*/}
+            {/*                                    module={account}*/}
+            {/*                                    deleteFunc={onDelete}*/}
+            {/*                                    showEditDropdown={edit}*/}
+            {/*                                    editDropdown={true}*/}
+            {/*                                    params={actionParams}*/}
+            {/*                                />*/}
+            {/*                            </td>}*/}
+            {/*                           */}
+            {/*                        </tr>*/}
+            {/*                    ))*/}
+            {/*                )}*/}
+            {/*                </tbody>*/}
+            {/*            )}*/}
+            {/*        </table>*/}
+            {/*    </div>*/}
+            {/*    {totalPages > 1 && (*/}
+            {/*        <Pagination>*/}
+            {/*            <Pagination.Prev*/}
+            {/*                disabled={currentPage === 1}*/}
+            {/*                onClick={() => handlePageChange(currentPage - 1)}*/}
+            {/*            />*/}
+            {/*            {paginationItems}*/}
+            {/*            <Pagination.Next*/}
+            {/*                disabled={currentPage === totalPages}*/}
+            {/*                onClick={() => handlePageChange(currentPage + 1)}*/}
+            {/*            />*/}
+            {/*        </Pagination>*/}
+            {/*    )}*/}
+            {/*</WizCard>*/}
 
             <Modal show={showModal} centered onHide={handleCloseModal} className="custom-modal">
                 <Modal.Header closeButton>

@@ -15,7 +15,9 @@ const ActionButtonHelpers = ({
                                  editDropdown,
                                  showEditDropdown,
                                  showPermission,
-                                 deletePermission
+                                 deletePermission,
+                                 contractExtend = false,
+                                 contractShowModule
                              }) => {
     const {applicationSettings, userRole} = useContext(SettingsContext);
     const navigate = useNavigate()
@@ -46,12 +48,20 @@ const ActionButtonHelpers = ({
                 }
 
 
-                {showEditDropdown ?
-                    <Dropdown.Item className="text-info"
-                                   onClick={() => showEditDropdown(module)}>
-                        <FontAwesomeIcon icon={faThList}/> Edit
-                    </Dropdown.Item>
-                    : ''
+                {/*{showEditDropdown ?*/}
+                {/*    <Dropdown.Item className="text-info"*/}
+                {/*                   onClick={() => showEditDropdown(module)}>*/}
+                {/*        <FontAwesomeIcon icon={faThList}/> Edit*/}
+                {/*    </Dropdown.Item>*/}
+                {/*    : ''*/}
+                {/*}*/}
+                {
+                    contractExtend ?
+                        <Dropdown.Item className="text-info"
+                                       onClick={() => contractShowModule(module)}>
+                            <FontAwesomeIcon icon={faThList}/> Extend Contract
+                        </Dropdown.Item>
+                        : ''
                 }
             </Dropdown.Menu>
         </Dropdown>

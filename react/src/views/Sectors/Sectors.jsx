@@ -16,6 +16,7 @@ import SummeryCard from "../../helper/SummeryCard.jsx";
 import {notification} from "../../components/ToastNotification.jsx";
 import {CDropdown, CDropdownDivider, CDropdownItem, CDropdownMenu, CDropdownToggle} from "@coreui/react";
 import Checkbox from "@mui/material/Checkbox";
+import ContractExtendCard from "../../helper/ContractExtendCard.jsx";
 
 export default function Sectors() {
     const {applicationSettings, userRole, userPermission} = useContext(SettingsContext);
@@ -28,6 +29,7 @@ export default function Sectors() {
     const [modalSector, setModalSector] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [showHelperModel, setShowHelperModel] = useState(false);
+    const [showContractModel, setShowContractModel] = useState(false);
     const [showHelperModelType, setShowHelperModelType] = useState('');
     const pageSize = num_data_per_page;
     const totalPages = Math.ceil(totalCount / pageSize);
@@ -72,6 +74,11 @@ export default function Sectors() {
         setModalSector(sector);
         setShowModal(true);
     };
+
+    const showContractExtendModel = (sector)=>{
+        setShowContractModel(true);
+        setSector(sector);
+    }
     const getSectors = (page, pageSize) => {
         setLoading(true);
         axiosClient
@@ -204,6 +211,9 @@ export default function Sectors() {
         setShowModal(false);
         setShowHelperModel(false);
     };
+    const closeContractExtendModal = ()=>{
+        setShowContractModel(false);
+    }
     const checkPayments = (payments, type) => {
         let message = '';
         for (let i = 0; i < payments.length; i++) {
@@ -413,6 +423,8 @@ export default function Sectors() {
                                                             editDropdown={userPermission.sector_edit}
                                                             showPermission={userPermission.sector_view}
                                                             deletePermission={userPermission.sector_delete}
+                                                            contractExtend = {true}
+                                                            contractShowModule = {showContractExtendModel}
                                                         />
                                                     </td>
                                                 </tr>
@@ -449,6 +461,11 @@ export default function Sectors() {
                 Toast={Toast}
                 navigation={useNavigate}
                 loadingMethod={setLoading}
+            />
+            <ContractExtendCard
+                showModal ={showContractModel}
+                sector={sector}
+                closeContractExtendModal = {closeContractExtendModal}
             />
 
             <Modal size="lg" show={showModal} centered onHide={handleCloseModal} className="custom-modal lg">

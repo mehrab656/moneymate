@@ -132,7 +132,7 @@ function SectorCreate() {
 
     const sectorSubmit = (e, stay) => {
         e.preventDefault();
-        setLoading(true)
+        setLoading(true);
         // Handle form submission, e.g., send data to an API
         let formData = new FormData();
         formData.append('name', sector.name);
@@ -155,17 +155,17 @@ function SectorCreate() {
         }
         //for payment
         if (!id && paymentData && paymentData.length > 0) {
-            paymentData.forEach(element => {
-                formData.append('payment_amount[]', element.amount);
-                formData.append('payment_date[]', element.paymentDate);
-                formData.append('payment_number[]', element.paymentNumber);
+            paymentData.forEach(payment => {
+                formData.append('payment_amount[]', payment.amount);
+                formData.append('payment_date[]', payment.paymentDate);
+                formData.append('payment_number[]', payment.paymentNumber);
             });
         }
         if (!id && channelData && channelData.length > 0) {
-            channelData.forEach(element => {
-                formData.append('channel_name[]', element.channel_name);
-                formData.append('reference_id[]', element.reference_id);
-                formData.append('listing_date[]', element.listing_date);
+            channelData.forEach(channel => {
+                formData.append('channel_name[]', channel.channel_name);
+                formData.append('reference_id[]', channel.reference_id);
+                formData.append('listing_date[]', channel.listing_date);
             });
         }
         // for category
@@ -197,7 +197,6 @@ function SectorCreate() {
             setErrors(response.data.errors);
             setLoading(false)
         });
-
     };
     useEffect(() => {
         if (id) {

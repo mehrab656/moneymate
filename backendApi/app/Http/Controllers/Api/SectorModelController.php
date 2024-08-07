@@ -268,7 +268,7 @@ class SectorModelController extends Controller
             storeActivityLog([
                 'user_id' => Auth::user()->id,
                 'object_id' => $id,
-                'object' => 'Payment',
+                'object' => 'Rent Payment',
                 'log_type' => 'Rent Payment',
                 'module' => 'Payment',
                 'descriptions' => __('sectors.rent_payment_payment_not_found', ['name' => auth()->user()->name]),
@@ -287,7 +287,7 @@ class SectorModelController extends Controller
             storeActivityLog([
                 'user_id' => Auth::user()->id,
                 'object_id' => $id,
-                'object' => 'Payment',
+                'object' => 'Rent Payment',
                 'log_type' => 'Rent Payment',
                 'module' => 'Payment',
                 'descriptions' => __('sectors.rent_payment_sector_not_found', ['name' => auth()->user()->name]),
@@ -304,7 +304,7 @@ class SectorModelController extends Controller
             storeActivityLog([
                 'user_id' => Auth::user()->id,
                 'object_id' => $id,
-                'object' => 'Payment',
+                'object' => 'Rent Payment',
                 'log_type' => 'Rent Payment',
                 'module' => 'Payment',
                 'descriptions' => __('sectors.rent_payment_sector_not_found', ['name' => auth()->user()->name]),
@@ -320,7 +320,7 @@ class SectorModelController extends Controller
             storeActivityLog([
                 'user_id' => Auth::user()->id,
                 'object_id' => $id,
-                'object' => 'Payment',
+                'object' => 'Rent Payment',
                 'log_type' => 'Rent Payment',
                 'module' => 'Payment',
                 'descriptions' => __('messages.rent_payment_insufficient_balance', ['name' => auth()->user()->name]),
@@ -342,7 +342,7 @@ class SectorModelController extends Controller
             storeActivityLog([
                 'user_id' => Auth::user()->id,
                 'object_id' => $id,
-                'object' => 'Payment',
+                'object' => 'Rent Payment',
                 'log_type' => 'failed',
                 'module' => 'Payment',
                 'descriptions' => __('sectors.rent_payment_category_not_found', ['name' => auth()->user()->name]),
@@ -356,13 +356,14 @@ class SectorModelController extends Controller
 
         $expense = [
             'user_id' => Auth::user()->id,
+            'company_id'        => Auth::user()->primary_company,
             'account_id' => $sector->payment_account_id,
             'amount' => $paymentDetails->amount,
             'refundable_amount' => 0,
             'category_id' => $category->id,
-            'description' => __('rent_payment_des', ['payment_number' => $paymentDetails->payment_number, 'sector' => $sector->name]), //$paymentDetails->payment_number . ' ' . 'payment of ' . $sector->name,
+            'description' => __('sectors.rent_payment_des', ['payment_number' => $paymentDetails->payment_number, 'sector' => $sector->name]), //$paymentDetails->payment_number . ' ' . 'payment of ' . $sector->name,
             'note' => __('sectors.rent_payment_note'),
-            'reference' => __('rent_payment_ref', ['name' => $sector->name]),
+            'reference' => __('sectors.rent_payment_ref', ['name' => $sector->name]),
             'date' => Carbon::now()->format('Y-m-d')
         ];
         // Create and response for this expense.
@@ -408,7 +409,7 @@ class SectorModelController extends Controller
 
         return response()->json([
             'message' => 'Success!',
-            'description' => __('update_payment_details'),
+            'description' => __('sectors.update_payment_details'),
         ]);
     }
 
