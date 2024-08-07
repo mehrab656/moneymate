@@ -1,9 +1,22 @@
-import React, {memo, useState} from "react";
-import {Button, Modal} from "react-bootstrap";
-import {Card, CardContent, Grid, TextField, Typography} from "@mui/material";
-import {faMinus, faPlus, faThList} from "@fortawesome/free-solid-svg-icons";
+import React, {memo, useEffect, useState} from "react";
+import {Button, Col, Modal, Row} from "react-bootstrap";
+import {Autocomplete, Card, CardContent, Grid, TextField, Typography} from "@mui/material";
+import {faMinus, faPlus} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import MainLoader from "../components/MainLoader.jsx";
+import axiosClient from "../axios-client.js";
+import {useStateContext} from "../contexts/ContextProvider.jsx";
+import {notification} from "../components/ToastNotification.jsx";
+import {makeStyles} from "@mui/styles";
+import {useNavigate} from "react-router-dom";
+
+const useStyles = makeStyles({
+    option: {
+        "&:hover": {
+            backgroundColor: "#ff7961 !important"
+        },
+    }
+});
 
 const initialPaymentState = [
     {
@@ -15,27 +28,52 @@ const initialPaymentState = [
 
 const initialExtraFees = [
     {
-        description:'',
-        date:'',
-        amount:'',
-        remarks:'',
+        description: '',
+        date: '',
+        amount: '',
+        refundable_amount: 0,
+        reference: '',
+        note: '',
+        selectedAccount: null,
+        selectedCategory: null
     }
 ]
-const ContractExtendCard = ({showModal,sector,closeContractExtendModal})=>{
+const ContractExtendCard = ({showModal, sector, closeContractExtendModal}) => {
 
-    // console.log(sector);
+    const classes = useStyles();
 
     const [loading, setLoading] = useState(false)
 
-    const [renewalData,setRenewalData] = useState({
-        start_date:'',
-        end_date:'',
-        contract_period:12,
-        renewal_fee:''
+    const [renewalData, setRenewalData] = useState({
+        start_date: '',
+        end_date: '',
+        contract_period: 12,
+        renewal_fee: ''
     });
     const [errors, setErrors] = useState({});
     const [paymentData, setPaymentData] = useState(initialPaymentState);
     const [extraFees, setExtraFees] = useState(initialExtraFees);
+    const [expenseCategories, setExpenseCategories] = useState([]);
+    const [bankAccounts, setBankAccounts] = useState([]);
+    const navigate = useNavigate();
+    useEffect(() => {
+        axiosClient.get('/expense-categories')
+            .then(({data}) => {
+                setExpenseCategories(data.categories);
+            })
+            .catch(error => {
+                console.error('Error loading expense categories:', error);
+                // handle error, e.g., show an error message to the user
+            });
+
+        axiosClient.get('/all-bank-account')
+            .then(({data}) => {
+                setBankAccounts(data.data);
+            })
+            .catch(error => {
+                console.warn('Error fetching bank accounts:', error)
+            });
+    }, [setExpenseCategories, setBankAccounts]);
 
     const handleInputChange = (e) => {
         const {name, value} = e.target;
@@ -64,7 +102,16 @@ const ContractExtendCard = ({showModal,sector,closeContractExtendModal})=>{
     };
 
     const handleAddExtraFeesRow = () => {
-        setExtraFees([...extraFees, {description: '', date: '', amount: '',remarks:''}]);
+        setExtraFees([...extraFees, {
+            description: '',
+            date: '',
+            amount: '',
+            refundable_amount: 0,
+            reference: '',
+            note: '',
+            selectedAccount: null,
+            selectedCategory: null
+        }]);
     };
     const handleRemoveExtraFeesRow = (index) => {
         const updateExtraFees = [...extraFees];
@@ -73,19 +120,19 @@ const ContractExtendCard = ({showModal,sector,closeContractExtendModal})=>{
     };
 
 
-    const renewContract = (e) =>{
+    const renewContract = (e) => {
         e.preventDefault();
         setLoading(true);
 
         let formData = new FormData();
 
-        formData.append('id',sector.id);
-        formData.append('contract_start_date',renewalData.start_date);
-        formData.append('contract_end_date',renewalData.end_date);
+        formData.append('id', sector.id);
+        formData.append('contract_start_date', renewalData.start_date);
+        formData.append('contract_end_date', renewalData.end_date);
         formData.append('contract_period', renewalData.contract_period);
         formData.append('renewal_fee', renewalData.renewal_fee);
 
-        if ( paymentData && paymentData.length > 0) {
+        if (paymentData && paymentData.length > 0) {
             paymentData.forEach(payment => {
                 formData.append('payment_amount[]', payment.amount);
                 formData.append('payment_date[]', payment.paymentDate);
@@ -93,9 +140,40 @@ const ContractExtendCard = ({showModal,sector,closeContractExtendModal})=>{
             });
         }
 
+        if (extraFees && extraFees.length > 0) {
+            extraFees.forEach(extra => {
+                formData.append('description[]', extra.description);
+                formData.append('date[]', extra.date);
+                formData.append('amount[]', extra.amount);
+                formData.append('refundable_amount[]', extra.refundable_amount);
+                formData.append('reference[]', extra.reference);
+                formData.append('note[]', extra.note);
+                formData.append('account_id[]', extra.selectedAccount?.id);
+                formData.append('category_id[]', extra.selectedCategory?.id);
+            });
+        }
 
+        // now submit the data
 
+        axiosClient.post('/contract-renew', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        }).then(({data}) => {
+            window.location.reload();
+            // navigate('/sectors');
+            notification('success', data?.message, data?.description);
+
+            setLoading(false)
+        }).catch((error) => {
+            const response = error.response;
+            notification('error', response.data.message, response.data.description);
+            setErrors(response.data.errors);
+            setLoading(false)
+        });
     }
+
+
     return (
         <Modal show={showModal}
                size={"xl"} centered onHide={closeContractExtendModal} className="custom-modal">
@@ -252,78 +330,154 @@ const ContractExtendCard = ({showModal,sector,closeContractExtendModal})=>{
                             <Typography variant="h5" gutterBottom>
                                 Extra Renewal Fees
                             </Typography>
-                            {extraFees.map((fees, index) => <Grid container spacing={2} key={index} sx={{mb: 2}}>
-                                <Grid item xs={12} sm={4}>
-                                    <TextField
-                                        fullWidth
-                                        label="Description"
-                                        variant="outlined"
-                                        name="description"
-                                        value={fees.description}
-                                        onChange={(e) => handleExtraFeesInputChange(e, index)}
-                                        focused={true}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={2}>
-                                    <TextField
-                                        fullWidth
-                                        label="Payment Date"
-                                        type="date"
-                                        variant="outlined"
-                                        name="paymentDate"
-                                        value={fees.date}
-                                        onChange={(e) => handleExtraFeesInputChange(e, index)}
-                                        InputLabelProps={{shrink: true}}
-                                        focused={true}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={2}>
-                                    <TextField
-                                        fullWidth
-                                        label="Amount"
-                                        variant="outlined"
-                                        name="amount"
-                                        type='number'
-                                        value={fees.amount}
-                                        onChange={(e) => handleExtraFeesInputChange(e, index)}
-                                        focused={true}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={3}>
-                                    <TextField
-                                        fullWidth
-                                        label="Remarks"
-                                        variant="outlined"
-                                        name="remarks"
-                                        type='text'
-                                        value={fees.remarks}
-                                        onChange={(e) => handleExtraFeesInputChange(e, index)}
-                                        focused={true}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={1}>
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={handleAddExtraFeesRow}
-                                    >
-                                        <FontAwesomeIcon icon={faPlus}/>
-                                    </Button>
-                                    {index > 0 && (
-                                        <Button
-                                            variant="contained"
-                                            color="danger"
-                                            onClick={() => handleRemoveExtraFeesRow(index)}
-                                        >
-                                            <FontAwesomeIcon icon={faMinus}/>
+                            {extraFees.map((fees, index) =>
+
+                                <Grid container spacing={2} key={index} sx={{mb: 4}} className={"border-bottom"}>
+
+                                    <Grid item xs={12} sm={4}>
+                                        <TextField
+                                            fullWidth
+                                            className={"mb-2"}
+                                            label="Description"
+                                            variant="outlined"
+                                            name="description"
+                                            value={fees.description}
+                                            onChange={(e) => handleExtraFeesInputChange(e, index)}
+                                            focused={true}
+                                            placeholder={"Expense Descriptions"}
+
+                                        />
+                                        <Autocomplete
+                                            classes={{option: classes.option}}
+                                            options={expenseCategories}
+                                            getOptionLabel={(option) => option.name}
+                                            id="parentCategory"
+                                            isOptionEqualToValue={(option, selectedCategoryID) => option.id === selectedCategoryID.id}
+                                            value={fees.selectedCategory}
+                                            onChange={(event, newValue) => {
+                                                if (newValue) {
+                                                    const updateExtraFees = [...extraFees];
+                                                    updateExtraFees[index]['selectedCategory'] = newValue;
+                                                    setExtraFees(updateExtraFees);
+                                                }
+                                            }}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label='Expense Category'
+                                                    variant="outlined"
+                                                    placeholder="Expense Category"
+                                                    focused={true}
+                                                />
+                                            )}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={2}>
+                                        <TextField
+                                            fullWidth
+                                            className={"mb-2"}
+                                            label="Payment Date"
+                                            type="date"
+                                            variant="outlined"
+                                            name="date"
+                                            value={fees.date}
+                                            onChange={(e) => handleExtraFeesInputChange(e, index)}
+                                            InputLabelProps={{shrink: true}}
+                                            focused={true}
+                                            placeholder={"Expense Date"}
+
+                                        />
+
+                                        <Autocomplete
+                                            classes={{option: classes.option}}
+                                            options={bankAccounts}
+                                            getOptionLabel={(option) => (option.bank_name + '-' + (option.account_number))}
+                                            id="parentCategory"
+                                            isOptionEqualToValue={(option, selectedBankAccountID) => option.id === selectedBankAccountID.id}
+                                            value={fees.selectedAccount}
+                                            onChange={(event, newValue) => {
+                                                if (newValue) {
+                                                    const updateExtraFees = [...extraFees];
+                                                    updateExtraFees[index]['selectedAccount'] = newValue;
+                                                    setExtraFees(updateExtraFees);
+                                                }
+                                            }}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label='Bank Account'
+                                                    variant="outlined"
+                                                    placeholder="Expense Account"
+                                                    focused={true}
+                                                />
+                                            )}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={2}>
+                                        <TextField
+                                            fullWidth
+                                            className={"mb-2"}
+                                            label="Amount"
+                                            variant="outlined"
+                                            name="amount"
+                                            type='number'
+                                            value={fees.amount}
+                                            onChange={(e) => handleExtraFeesInputChange(e, index)}
+                                            focused={true}
+                                            placeholder="Expense Amount"
+                                        />
+                                        <TextField
+                                            fullWidth
+                                            label="Refundable Amount"
+                                            variant="outlined"
+                                            name="refundable_amount"
+                                            type='number'
+                                            value={fees.refundable_amount}
+                                            onChange={(e) => handleExtraFeesInputChange(e, index)}
+                                            focused={true}
+                                            placeholder="Refundable Account"
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={3}>
+                                        <TextField
+                                            fullWidth
+                                            className={"mb-2"}
+                                            label="Reference"
+                                            variant="outlined"
+                                            name="reference"
+                                            type='text'
+                                            value={fees.reference}
+                                            onChange={(e) => handleExtraFeesInputChange(e, index)}
+                                            focused={true}
+                                            placeholder="Expense Reference"
+                                        />
+                                        <TextField
+                                            fullWidth
+                                            label="Note"
+                                            variant="outlined"
+                                            name="note"
+                                            type='text'
+                                            value={fees.note}
+                                            onChange={(e) => handleExtraFeesInputChange(e, index)}
+                                            focused={true}
+                                            placeholder="Extra Note"
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={1}>
+                                        <Button variant="contained" color="primary" onClick={handleAddExtraFeesRow}>
+                                            <FontAwesomeIcon icon={faPlus}/>
                                         </Button>
-                                    )}
-                                </Grid>
-                            </Grid>)}
+                                        {index > 0 && (
+                                            <Button variant="contained" color="danger"
+                                                    onClick={() => handleRemoveExtraFeesRow(index)}>
+                                                <FontAwesomeIcon icon={faMinus}/>
+                                            </Button>
+                                        )}
+                                    </Grid>
+                                </Grid>)}
                         </CardContent>
                     </Card>
                 </form>
-
 
 
             </Modal.Body>

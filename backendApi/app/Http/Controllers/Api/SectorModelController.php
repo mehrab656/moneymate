@@ -16,6 +16,7 @@ use App\Models\Investment;
 use App\Models\PaymentModel;
 use App\Models\SectorModel;
 use Carbon\Carbon;
+use DateTime;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -178,7 +179,7 @@ class SectorModelController extends Controller
             storeActivityLog([
                 'user_id' => Auth::user()->id,
                 'object_id' => $sector['id'],
-                'object'=>'sector',
+                'object' => 'sector',
                 'log_type' => 'create',
                 'module' => 'sectors',
                 'descriptions' => '',
@@ -356,7 +357,7 @@ class SectorModelController extends Controller
 
         $expense = [
             'user_id' => Auth::user()->id,
-            'company_id'        => Auth::user()->primary_company,
+            'company_id' => Auth::user()->primary_company,
             'account_id' => $sector->payment_account_id,
             'amount' => $paymentDetails->amount,
             'refundable_amount' => 0,
@@ -398,7 +399,7 @@ class SectorModelController extends Controller
         storeActivityLog([
             'user_id' => Auth::user()->id,
             'object_id' => $id,
-            'object'=>'sector',
+            'object' => 'sector',
             'log_type' => 'success',
             'module' => 'sectors',
             'descriptions' => __('update_payment_details'),
@@ -426,7 +427,7 @@ class SectorModelController extends Controller
         storeActivityLog([
             'user_id' => Auth::user()->id,
             'object_id' => $sector->id,
-            'object'=>'sector',
+            'object' => 'sector',
             'log_type' => 'edit',
             'module' => 'Sector',
             'descriptions' => "",
@@ -437,6 +438,9 @@ class SectorModelController extends Controller
         return new SectorResource($sector);
     }
 
+    /**
+     * @throws Throwable
+     */
     public function payBills($paymentID, Request $request)
     {
         $id = abs($paymentID);
@@ -555,6 +559,195 @@ class SectorModelController extends Controller
     {
         $sectors = SectorModel::where('company_id', Auth::user()->primary_company)->get();
         return response()->json(['sectors' => $sectors]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse|RedirectResponse
+     * @throws Throwable
+     */
+    public function renew(Request $request): JsonResponse|RedirectResponse
+    {
+        $data = $request->input();
+        $sectorID = abs($data['id']);
+        //first check if this sector belongs to this current company
+        $sector = SectorModel::find($sectorID);
+        if (!$sector) {
+            return response()->json([
+                'message' => 'Not Found!',
+                'description' => __('messages.not_found', ['name' => 'Sector']),
+            ], 404);
+        }
+        $oldSectorData = $sector->toArray();
+
+        $company_id = auth()->user()->primary_company;
+        if ($company_id !== $sector->company_id) {
+            return response()->json([
+                'message' => 'Access Denied!',
+                'description' => "You have no access on this company!",
+            ], 403);
+        }
+
+
+        if ($data['contract_start_date'] === null || $data['contract_end_date'] === null ){
+            return response()->json([
+                'message' => 'Insufficient Data',
+                'description' => "Please provide contact start or end Date!",
+            ], 403);
+        }
+
+        if ($data['payment_number'][0] === null ){
+            return response()->json([
+                'message' => 'Invalid Data',
+                'description' => "Please provide at least one payment information!",
+            ], 403);
+        }
+        $totalPayment = count($data['payment_number']);
+
+
+        DB::beginTransaction();
+        try {
+            $rent = array_sum($data['payment_amount']);
+            $startDate = Carbon::parse($data['contract_start_date'])->format('Y-m-d');
+            $endDate = Carbon::parse($data['contract_end_date'])->format('Y-m-d');
+
+
+            $sector['contract_start_date'] = $startDate;
+            $sector['contract_end_date'] = $endDate;
+            $sector['rent'] = $rent;//this is the new rent amount
+
+            storeActivityLog([
+                'object_id' => $sectorID,
+                'object' => 'sectors',
+                'log_type' => 'extend',
+                'module' => 'sector',
+                'descriptions' => Auth::user()->name . " has extended the contract for " . $sector['name'],
+                'data_records' => json_decode(json_encode($oldSectorData), true),
+            ]);
+
+            $contract_period_days = (new DateTime($startDate))->diff((new DateTime($endDate)));
+            $contract_period_months = ceil(($contract_period_days->days) / 30);
+            //now add payments on payment account
+            for ($i = 1; $i <= $contract_period_months; $i++) {
+                $payment = PaymentModel::create([
+                    'sector_id' => $sectorID,
+                    'payment_number' => $sector['name'] . ' internet bill for ' . date('Y-m-d', strtotime("+$i month", strtotime($sector['internet_billing_date']))),
+                    'date' => date('Y-m-d', strtotime("+$i month", strtotime($sector['internet_billing_date']))),
+                    'amount' => 0,
+                    'type' => 'internet',
+                    'note' => null,
+                ]);
+                storeActivityLog([
+                    'object_id' => $payment->id,
+                    'object' => 'payments',
+                    'log_type' => 'extend',
+                    'module' => 'payments',
+                    'descriptions' => "Automatic Internet bill payment was created while extending sector's contract",
+                    'data_records' => json_decode(json_encode($payment), true),
+                ]);
+            }
+
+            //now insert electricity billing date on payment table
+            for ($i = 1; $i <= $contract_period_months; $i++) {
+                $payment = PaymentModel::create([
+                    'sector_id' => $sectorID,
+                    'payment_number' => $sector['name'] . ' electricity bill for ' . date('Y-m-d', strtotime("+$i month", strtotime($sector['el_billing_date']))),
+                    'date' => date('Y-m-d', strtotime("+$i month", strtotime($sector['el_billing_date']))),
+                    'amount' => 0,
+                    'type' => 'electricity',
+                    'note' => null,
+                ]);
+                storeActivityLog([
+                    'object_id' => $payment->id,
+                    'object' => 'payments',
+                    'log_type' => 'extend',
+                    'module' => 'payments',
+                    'descriptions' => "Automatic Electricity bill payment was created while extending sector's contract",
+                    'data_records' => json_decode(json_encode($payment), true),
+                ]);
+            }
+
+            //now insert the payment plans for the sectors cheque.
+            if (!empty($data['payment_number'])) {
+                for ($i = 0; $i < $totalPayment; $i++) {
+                    $payment =  PaymentModel::create([
+                        'sector_id' => $sectorID,
+                        'payment_number' => $data['payment_number'][$i],
+                        'date' => Carbon::parse($data['payment_date'][$i])->format('Y-m-d'),
+                        'amount' => $data['payment_amount'][$i],
+                        'type' => 'cheque',
+                        'note' => null,
+                    ]);
+                    storeActivityLog([
+                        'object_id' => $payment->id,
+                        'object' => 'payments',
+                        'log_type' => 'extend',
+                        'module' => 'payments',
+                        'descriptions' => "Automatic Cheque payment was created while extending sector's contract",
+                        'data_records' => json_decode(json_encode($payment), true),
+                    ]);
+                }
+            }
+
+
+            //now add the extra costings as an expense
+            if ($data['description'][0] !== null) {
+
+                $extraCosts = count($data['description']);
+                for ($i = 0; $i < $extraCosts; $i++) {
+                    $bankAccount = BankAccount::find( $data['account_id'][$i] );
+                    $oldAccountBalance = $bankAccount->balance;
+                    $expense     = Expense::create( [
+                        'user_id'           => Auth::user()->id,
+                        'company_id'        => Auth::user()->primary_company,
+                        'account_id'        => $data['account_id'][$i],
+                        'amount'            => $data['amount'][$i],
+                        'refundable_amount' => $data['refundable_amount'][$i],//$data['refundable_amount'][$i] ?? 0,
+                        'category_id'       => $data['category_id'][$i],//$data['category_id'][$i],
+                        'description'       => $data['description'][$i],
+                        'note'              => $data['note'][$i],//$data['note'][$i],
+                        'reference'         => $data['reference'][$i],
+                        'date'              => Carbon::parse( $data['date'][$i] )->format( 'Y-m-d' ),
+                        'attachment'        => null
+                    ] );
+
+                    // Update the balance of the bank account
+                    $bankAccount->balance -= $data['amount'][$i];
+                    $bankAccount->save();
+                    $objectID = $expense['id'];
+                    unset($expense['id']);
+                    unset($expense['user_id']);
+                    unset($expense['account_id']);
+                    unset($expense['category_id']);
+
+                    storeActivityLog( [
+                        'object_id'    => $objectID,
+                        'object'       => 'expense',
+                        'log_type'     => 'create',
+                        'module'       => 'expense',
+                        'descriptions' => "Created while updating the contract renewal",
+                        'data_records' => array_merge( json_decode( json_encode( $expense ), true ), [ 'old_account_balance' => $oldAccountBalance,'new_account_balance' => $bankAccount->balance ] ),
+                    ] );
+                }
+            }
+
+        }catch (Exception $e){
+            DB::rollBack();
+            updateErrorlLogs($e, 'Sector Model Controller');
+
+            return response()->json( [
+                'message'     => 'Cannot add Expenses.',
+                'description' => $e,
+            ], 400 );
+        }
+
+        DB::commit();
+
+        return response()->json([
+            'message' => "success",
+            'description' => "New information was updated successfully!",
+            'data' => $sector
+        ]);
     }
 }
 

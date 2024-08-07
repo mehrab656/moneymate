@@ -5,17 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7aab6cd-85c3-45f8-9232-3c188a37b109" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/csv-editor.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/react/src/helper/ContractExtendCard.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/routes/api.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/helper/ActionButtonHelpers.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/helper/ActionButtonHelpers.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Accounts.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Accounts.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Expenses.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Expenses.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Sectors/SectorCreate.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Sectors/SectorCreate.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/helper/ContractExtendCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/helper/ContractExtendCard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/ExpenseForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/ExpenseForm.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -240,7 +236,7 @@
       <workItem from="1718747576980" duration="3311000" />
       <workItem from="1718833022104" duration="27492000" />
       <workItem from="1722280021548" duration="18404000" />
-      <workItem from="1722454627117" duration="21082000" />
+      <workItem from="1722454627117" duration="41209000" />
     </task>
     <servers />
   </component>
@@ -263,6 +259,12 @@
           <url>file://$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php</url>
           <line>54</line>
           <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/react/src/views/ExpenseForm.jsx</url>
+          <line>301</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
