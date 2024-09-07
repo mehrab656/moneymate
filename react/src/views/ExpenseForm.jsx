@@ -45,8 +45,8 @@ export default function ExpenseForm() {
     const [expenseCategories, setExpenseCategories] = useState([]);
     const [bankAccounts, setBankAccounts] = useState([]);
     const [selectUserID, setUsers] = useState([]);
-    const [selectedAccountId, setSelectedAccountId] = useState(null);
-    const [selectedUserId, setSelectedUserId] = useState(null);
+    const [selectedAccountId, setSelectedAccountId] = useState('');
+    const [selectedUserId, setSelectedUserId] = useState('');
     const navigate = useNavigate();
     const [categoryValue, setCategoryValue] = useState(null);
     const [storeCategoryValue, setStoreCategoryValue] = useState(null);
@@ -320,30 +320,26 @@ export default function ExpenseForm() {
                                         )}
                                     />
                                 </div>
-                                <div className="">
-                                    <Autocomplete
-                                        classes={{option: classes.option}}
-                                        options={bankAccounts}
-                                        getOptionLabel={(option) => (option.bank_name+  '-' + (option.account_number))}
-                                        id="parentCategory"
-                                        isOptionEqualToValue={(option, selectedAccountId) => option.id === selectedAccountId.id}
+                                <div className="form-group">
+                                    <label className="custom-form-label" htmlFor="bank_account">Bank Account</label>
+                                    <select
+                                        className="custom-form-control"
                                         value={selectedAccountId}
-                                        onChange={(event, newValue) => {
-                                            if (newValue) {
-                                                setSelectedAccountId(newValue);
-                                            }
-                                        }}
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                label='Bank Account'
-                                                variant="outlined"
-                                                margin="normal"
-                                                placeholder="Select Bank Account"
-                                                focused={true}
-                                            />
-                                        )}
-                                    />
+                                        id="bank-account"
+                                        name="bank-account"
+                                        onChange={(event) => {
+                                            const value = event.target.value || '';
+                                            setSelectedAccountId(value);
+                                            setExpense({...expense, account_id: parseInt(value)});
+                                        }}>
+                                        <option defaultValue>Bank account</option>
+                                        {bankAccounts.map(account => (
+                                            <option key={account.id} value={account.id}>
+                                                {account.bank_name} - {account.account_number} - Balance
+                                                ({account.balance})
+                                            </option>
+                                        ))}
+                                    </select>
                                     {errors.account_id && <p className="error-message mt-2">{errors.account_id[0]}</p>}
                                 </div>
                                 <div className="form-group">

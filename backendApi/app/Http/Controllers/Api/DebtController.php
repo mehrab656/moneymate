@@ -102,7 +102,6 @@ class DebtController extends Controller {
 
 			storeActivityLog( [
 				'object_id'     => $debt['id'],
-                'object'=>'debt',
 				'log_type'     => 'create',
 				'module'       => 'Debt',
 				'descriptions' => " lend an amount of $debtAmount to $person",
@@ -138,7 +137,6 @@ class DebtController extends Controller {
 
 			storeActivityLog( [
 				'user_id'      => Auth::user()->id,
-                'object'=>'debt',
 				'object_id'     => $borrowData['id'],
 				'log_type'     => 'create',
 				'module'       => 'Debt',
@@ -223,7 +221,6 @@ class DebtController extends Controller {
 		Debt::where( 'id', $id )->delete();
 		storeActivityLog( [
 			'object_id'     => $id,
-            'object'=>'debt',
 			'log_type'     => 'delete',
 			'module'       => 'Debt',
 			'descriptions' => "",

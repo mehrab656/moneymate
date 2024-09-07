@@ -132,7 +132,7 @@ function SectorCreate() {
 
     const sectorSubmit = (e, stay) => {
         e.preventDefault();
-        setLoading(true);
+        setLoading(true)
         // Handle form submission, e.g., send data to an API
         let formData = new FormData();
         formData.append('name', sector.name);
@@ -155,17 +155,17 @@ function SectorCreate() {
         }
         //for payment
         if (!id && paymentData && paymentData.length > 0) {
-            paymentData.forEach(payment => {
-                formData.append('payment_amount[]', payment.amount);
-                formData.append('payment_date[]', payment.paymentDate);
-                formData.append('payment_number[]', payment.paymentNumber);
+            paymentData.forEach(element => {
+                formData.append('payment_amount[]', element.amount);
+                formData.append('payment_date[]', element.paymentDate);
+                formData.append('payment_number[]', element.paymentNumber);
             });
         }
         if (!id && channelData && channelData.length > 0) {
-            channelData.forEach(channel => {
-                formData.append('channel_name[]', channel.channel_name);
-                formData.append('reference_id[]', channel.reference_id);
-                formData.append('listing_date[]', channel.listing_date);
+            channelData.forEach(element => {
+                formData.append('channel_name[]', element.channel_name);
+                formData.append('reference_id[]', element.reference_id);
+                formData.append('listing_date[]', element.listing_date);
             });
         }
         // for category
@@ -197,6 +197,7 @@ function SectorCreate() {
             setErrors(response.data.errors);
             setLoading(false)
         });
+
     };
     useEffect(() => {
         if (id) {
@@ -213,11 +214,6 @@ function SectorCreate() {
     }, [id]);
     return <Fragment>
         <MainLoader loaderVisible={loading}/>
-        <div className="text-danger mb-2">
-            <div className="alert alert-warning" role="alert">If you have not created any Payment account,
-                please create the payment account first.
-            </div>
-        </div>
         <Card>
             <CardContent>
                 <Typography variant="h5" gutterBottom>
@@ -534,8 +530,7 @@ function SectorCreate() {
                                 style={{backgroundColor: '#eeeeee'}}
                                 focused={true}
                             >
-                                {categories.map((name) =>
-                                    <MenuItem key={name} value={name}>
+                                {categories.map((name) => <MenuItem key={name} value={name}>
                                     <Checkbox checked={categoryName.indexOf(name) > -1}/>
                                     <ListItemText primary={name}/>
                                 </MenuItem>)}
@@ -599,7 +594,7 @@ function SectorCreate() {
                             <Grid item xs={12} sm={2}>
                                 <TextField
                                     fullWidth
-                                    label="Date"
+                                    label="Amount"
                                     variant="outlined"
                                     name="listing_date"
                                     type='date'

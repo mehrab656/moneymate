@@ -877,55 +877,13 @@ select option:focus {
 .table-wrapper-scroll-y {
     display: block;
 }
-.logo-agoda{
-    display: inline-block;
-    background: url('/channels/agoda.svg') 50% no-repeat;
-    background-size: contain;
-}
-.logo-bank-transfer{
-    display: inline-block;
-    background: url('/channels/bank_transfer.png') 50% no-repeat;
-    background-size: contain;
-}
 .logo-bookingcom{
     display: inline-block;
-    background: url('/channels/Booking.com.svg') 50% no-repeat;
+    background: url('https://dashboard.hostaway.com/src/assets/images/logo/booking_logo.png') 50% no-repeat;
     background-size: contain;
-
+    width: 128px;
+    height: 36px;
 }
-.logo-cheque{
-    display: inline-block;
-    background: url('/channels/cheque.png') 50% no-repeat;
-    background-size: contain;
-}
-.logo-expedia{
-    display: inline-block;
-    background: url('/channels/expedia.svg') 50% no-repeat;
-    background-size: contain;
-}
-.logo-hostaway{
-    display: inline-block;
-    background: url('/channels/hostaway.png') 50% no-repeat;
-    background-size: contain;
-}
-.logo-trivago{
-    display: inline-block;
-    background: url('/channels/trivago.png') 50% no-repeat;
-    background-size: contain;
-}
-.logo-undefined{
-    display: inline-block;
-    background: url('/channels/undefined.png') 50% no-repeat;
-    background-size: contain;
-}
-.logo-vrbo{
-    display: inline-block;
-    background: url('/channels/vrbo.svg') 50% no-repeat;
-    background-size: contain;
-    /*width: 128px;*/
-    /*height: 36px;*/
-}
-
 .logo-reservations {
     width: 35px!important;
     height: 17px!important;

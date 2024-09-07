@@ -10,7 +10,7 @@ import {
     faEye,
     faEyeDropper,
     faEyeSlash, faFilter,
-    faListAlt, faPlus,
+    faListAlt,
     faStreetView
 } from "@fortawesome/free-solid-svg-icons";
 import ExpenseModal from "../helper/ExpenseModal.jsx";
@@ -21,31 +21,9 @@ import {Link} from "react-router-dom";
 import ExpenseFilter from "../helper/filter-icons/ExpenseFilter.jsx";
 import { Box, Button } from "@mui/material";
 import ReactToPrint from "react-to-print";
-import Pagination from "react-bootstrap/Pagination";
-import IncomeExportButton from "../components/IncomeExportButton.jsx";
-import {createData} from "../helper/HelperFunctions.js";
-import TableContainer from '@mui/material/TableContainer';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import TableCell, {tableCellClasses} from "@mui/material/TableCell";
-import {TablePagination} from "@mui/material";
-import TableBody from '@mui/material/TableBody';
-import {BeatLoader} from "react-spinners";
-import {styled} from "@mui/material/styles";
-import {makeStyles} from "@mui/styles";
 
-
-const useStyles = makeStyles({
-    root: {
-        width: '100%',
-    },
-    container: {
-        maxHeight: 440,
-    },
-});
 export default function ExpenseReport() {
+    const componentRef  = useRef()
     const [loading, setLoading] = useState(false);
     const [expenseReport, setExpenseReport] = useState([]);
     const [startDate, setStartDate] = useState(null);
@@ -57,11 +35,6 @@ export default function ExpenseReport() {
     const [totalExpense, setTotalExpense] = useState(parseFloat(0).toFixed(2));
     const [searchParoms, setSearchParoms] = useState(null);
     const [activeModal, setActiveModal] = useState('');
-    const [totalCount, setTotalCount] = useState(0);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(20);
-
     const [modalData, setModalData] = useState({
         id: null,
         user_id: null,
@@ -82,16 +55,13 @@ export default function ExpenseReport() {
 
     const {applicationSettings} = useContext(SettingsContext);
     let {
-        default_currency,
-        num_data_per_page
+        default_currency
     } = applicationSettings;
 
     if (default_currency === undefined) {
         default_currency = 'AED ';
     }
 
-    const pageSize = num_data_per_page;
-    const totalPages = Math.ceil(totalCount / pageSize);
     const showExpenseDetails = (expense, index) => {
         setActiveModal(index)
         setModalData(expense);
@@ -124,7 +94,7 @@ export default function ExpenseReport() {
         setActiveModal('');
         setShowModal(false);
     };
-    const getExpenseReport = (page, pageSize) => {
+    const getExpenseReport = () => {
         setLoading(true);
         setTotalExpense(0);
         axiosClient
@@ -134,16 +104,12 @@ export default function ExpenseReport() {
                     end_date: endDate,
                     cat_id: selectedCategoryId,
                     sec_id: selectedSectorId,
-                    search_terms: searchParoms,
-                    page: page,
-                    pageSize: pageSize,
+                    search_terms: searchParoms
                 },
             })
             .then(({data}) => {
                 setExpenseReport(data.expenses);
                 setTotalExpense(data.totalExpense);
-                setTotalCount(data.total);
-
                 setLoading(false);
             }).catch((e) => {
             setLoading(false);
@@ -152,8 +118,8 @@ export default function ExpenseReport() {
 
     useEffect(() => {
         document.title = "Expenses Report";
-        getExpenseReport(currentPage, pageSize);
-    }, [currentPage, pageSize]);
+        getExpenseReport();
+    }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -169,94 +135,116 @@ export default function ExpenseReport() {
         setHasFilter(false);
         getExpenseReport();
     };
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(+event.target.value);
-        setPage(0);
-    };
-    const classes = useStyles();
 
     return (
-        <div>
+        <>
             <MainLoader loaderVisible={loading}/>
-            <WizCard className="animated fadeInDown">
+            <WizCard className="animated fadeInDown wiz-card-mh expx">
                 <div className="row">
-                    <div className="col-6">
-                        <h6>{'Total Expense: ' + default_currency +' '+ totalExpense} </h6>
-                    </div>
-                    <div className="col-6">
-                        <ExpenseFilter
-                            handleSubmit={handleSubmit}
-                            selectedSectorId={selectedSectorId}
-                            setSelectedSectorId={setSelectedSectorId}
-                            sectors={sectors}
-                            selectedCategoryId={selectedCategoryId}
-                            setSelectedCategoryId={setSelectedCategoryId}
-                            expenseCategories={expenseCategories}
-                            startDate={startDate}
-                            setStartDate={setStartDate}
-                            endDate={endDate}
-                            setEndDate={setEndDate}
-                            searchParoms={searchParoms}
-                            setSearchParoms={setSearchParoms}
-                            resetFilterParameter={resetFilterParameter}
-                            hasFilter={hasFilter}
-                        />
-                    </div>
-                </div>
-
-                <TableContainer component={Paper}>
-                    <Table  className={classes.table} size="small" aria-label="enhanced table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell><b>Expense Date</b></TableCell>
-                                <TableCell><b>Expense Category</b></TableCell>
-                                <TableCell><b>Description</b></TableCell>
-                                <TableCell><b>Expense Amount</b></TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {
-                                loading &&
-                                <TableRow>
-                                    <TableCell component="th" scope="row" colSpan={"4"} align={"center"}>
-                                        <span><BeatLoader loading color="#36d7b7"/></span>
-                                    </TableCell>
-                                </TableRow>
-                            }
-                            {expenseReport.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((expense,index) => (
-                                <TableRow key={expense.id}>
-                                    <TableCell component="th" scope="row">{expense.date}</TableCell>
-                                    <TableCell>{expense.category_name}</TableCell>
-                                    <TableCell>{expense.description}
-                                        <a onClick={() => showExpenseDetails(expense, index)}
-                                           className={index === activeModal ? 'text-primary fa-pull-right ' : 'text-muted fa-pull-right'}
-                                           data-tooltip-id='expense-details'
-                                           data-tooltip-content={"View details"}>
+                    <Container>
+                        <Row>
+                            <ExpenseFilter
+                                handleSubmit={handleSubmit}
+                                selectedSectorId={selectedSectorId}
+                                setSelectedSectorId={setSelectedSectorId}
+                                sectors={sectors}
+                                selectedCategoryId={selectedCategoryId}
+                                setSelectedCategoryId={setSelectedCategoryId}
+                                expenseCategories={expenseCategories}
+                                startDate={startDate}
+                                setStartDate={setStartDate}
+                                endDate={endDate}
+                                setEndDate={setEndDate}
+                                searchParoms={searchParoms}
+                                setSearchParoms={setSearchParoms}
+                                resetFilterParameter={resetFilterParameter}
+                                hasFilter={hasFilter}
+                            />
+                        </Row>
+                        <Row>
+                            <Col xs={12} md={9} ref={componentRef}>
+                                <div className="table-responsive-sm my-custom-scrollbar table-wrapper-scroll-y">
+                                    <table className="table table-bordered custom-table">
+                                        <thead>
+                                        <tr className={'text-center'}>
+                                            <th>Expense Date</th>
+                                            <th>Expense Category</th>
+                                            <th>Description</th>
+                                            <th>Expense Amount</th>
+                                        </tr>
+                                        </thead>
+                                        {loading && (
+                                            <tbody>
+                                            <tr className={'text-center'}>
+                                                <td colSpan={4} className="text-center">
+                                                    Loading...
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        )}
+                                        {!loading && (
+                                            <tbody>
+                                            {expenseReport.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan={4} className="text-center">
+                                                        Nothing found !
+                                                    </td>
+                                                </tr>
+                                            ) : (
+                                                expenseReport.map((expense, index) => (
+                                                    <tr key={expense.id} className={'text-start'}>
+                                                        <td>{expense.date}</td>
+                                                        <td>{expense.category_name}</td>
+                                                        <td>{expense.description}
+                                                            <a onClick={() => showExpenseDetails(expense, index)}
+                                                               className={index === activeModal ? 'text-primary fa-pull-right ' : 'text-muted fa-pull-right'}
+                                                               data-tooltip-id='expense-details'
+                                                               data-tooltip-content={"View details"}>
                                                     <span className="aside-menu-icon">
                                                         <FontAwesomeIcon
                                                             icon={index === activeModal ? faEye : faEyeSlash}/>
                                                     </span>
-                                        </a>
-                                        <Tooltip id={"expense-details"}/>
-                                    </TableCell>
-                                    <TableCell>{default_currency + ' ' + expense.amount}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-                <TablePagination
-                    rowsPerPageOptions={[20, 50, 500]}
-                    component="div"
-                    count={expenseReport.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                />
+                                                            </a>
+                                                            <Tooltip id={"expense-details"}/>
+                                                        </td>
+                                                        <td className={'text-end'}>{default_currency + ' ' + expense.amount}</td>
+                                                    </tr>
+                                                ))
+                                            )}
+                                            </tbody>
+                                        )}
+
+                                        <tfoot>
+                                        <tr>
+                                            <td className={'text-center fw-bold'} colSpan={2}>Total Expense</td>
+                                            <td className={'text-end fw-bold'}
+                                                colSpan={2}>{default_currency + ' ' + totalExpense}</td>
+                                        </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+
+                            </Col>
+                            <Col xs={12} md={3}>
+                                <div className="card ">
+                                    <div className="card-block">
+                                        <h6 className="text-muted m-b-20">Total Expense</h6>
+                                        <h4>{default_currency + ' ' + totalExpense}</h4>
+                                        <p className="text-muted">Total expense amount</p>
+                                    </div>
+                                </div>
+
+                                <Box display={'flex'} justifyContent={'center'} alignItems={'center'} >
+                                <ReactToPrint
+                                    trigger={() => <Button sx={{ml:1}} variant="outlined">Print</Button>}
+                                    content={()=> componentRef.current}
+                                />
+                                </Box>
+
+                            </Col>
+                        </Row>
+                    </Container>
+                </div>
             </WizCard>
 
             <ExpenseModal showModal={showModal}
@@ -265,6 +253,6 @@ export default function ExpenseReport() {
                           data={modalData}
                           currency={default_currency}
             />
-        </div>
-)
+        </>
+    );
 }

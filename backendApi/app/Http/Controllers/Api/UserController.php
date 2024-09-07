@@ -17,7 +17,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Nette\Schema\ValidationException;
 
 class UserController extends Controller
 {
@@ -30,24 +29,15 @@ class UserController extends Controller
         $page = $request->query('page', 1);
         $pageSize = $request->query('pageSize', 10);
 
-//        $users = Company::with(['users'])->find(Auth::user()->primary_company)->users()->skip(($page - 1) * $pageSize)
-//            ->take($pageSize)
-//            ->orderBy('id', 'desc')
-//            ->get();
-
-        $users = DB::table('companies')->select(['users.id','users.name','users.email','roles.role','users.profile_picture'])
-            ->join( 'company_user', 'companies.id', '=', 'company_user.company_id' )
-            ->join( 'users', 'company_user.user_id', '=', 'users.id' )
-            ->join( 'roles', 'company_user.role_id', '=', 'roles.id' )
-            ->where( 'companies.id', '=', Auth::user()->primary_company )
-            ->skip(($page-1)*$pageSize)
+        $users = Company::with(['users'])->find(Auth::user()->primary_company)->users()->skip(($page - 1) * $pageSize)
             ->take($pageSize)
-            ->orderBy('id', 'desc');
+            ->orderBy('id', 'desc')
+            ->get();;
 
-        $totalCount = $users->count();
+        $totalCount = User::count();
 
         return response()->json([
-            'data' => $users->get(),
+            'data' => UserResource::collection($users),
             'total' => $totalCount,
         ]);
     }
@@ -57,27 +47,21 @@ class UserController extends Controller
      *
      * @param StoreUserRequest $request
      *
-     * @return JsonResponse
+     * @return Response
      * @throws Exception
      */
-    public function store(StoreUserRequest $request)
+    public function store(StoreUserRequest $request): Response
     {
-        $user = $request->validated();
-        $user['password'] = bcrypt($user['password']);
-        $roleID =  $request->role_id;
+        $data = $request->validated();
+        $data['password'] = bcrypt($data['password']);
+        $data['primary_company'] = Auth::user()->primary_comany;
         try {
             DB::beginTransaction();
-            $user = User::create([
-                'name'=>$user['name'],
-                'email'=>$user['email'],
-                'password'=>$user['password'],
-                'role_as'=>'sub-user',
-                'primary_company'=>Auth::user()->primary_company
-            ]);
+            $user = User::create($data);
             DB::table('company_user')->insert([
-                'company_id' => Auth::user()->primary_company,
+                'company_id' => Auth::user()->primary_comany,
                 'user_id' => $user->id,
-                'role_id' => $roleID,
+                'role_id' => $data['role_id'],//admin role.
                 'status' => true,
                 'created_by' => Auth::user()->id,
                 'updated_by' => Auth::user()->id,
@@ -87,27 +71,19 @@ class UserController extends Controller
 
             storeActivityLog([
                 'object_id' => $user['id'],
-                'object' => 'user',
                 'log_type' => 'create',
                 'module' => 'user',
                 'descriptions' => "",
                 'data_records' => $user,
             ]);
             DB::commit();
-
-        } catch (ValidationException $e) {
+        } catch (Exception $e) {
             DB::rollBack();
-            updateErrorlLogs($e, 'User Controller');
 
-            return response()->json([
-                'data' => $e
-            ]);
         }
-        return response()->json([
-            'data' => $user,
-            'message' => 'User was successfully updated',
-        ]);
 
+
+        return response(new UserResource($user), 200);
     }
 
     /**

@@ -17,9 +17,67 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faBuildingFlag} from "@fortawesome/free-solid-svg-icons";
 import CompanyViewModal from "../Company/CompanyViewModal.jsx";
 import {checkPermission} from "../../helper/HelperFunctions.js";
-
+import { useGetCompanyDataQuery } from '../../api/slices/companySlice.js';
+import useTable, { getComparator, emptyRows } from "../../hooks/useTable.js";
+import { useStateContext } from '../../contexts/ContextProvider.jsx';
 
 export default function companies() {
+
+    const TABLE_HEAD = [
+        { id: "name", label: "", align: "left" },
+        { id: "name", label: "Name", align: "left" },
+        { id: "email", label: "Email", align: "left" },
+        { id: "id", label: "ID No", align: "left" },
+        { id: "mobile", label: "Mobile", align: "left" },
+        { id: "status", label: "Status", align: "left" },
+        { id: "", label: "Actions", align: "right" },
+      ];
+      const {
+        dense,
+        page,
+        order,
+        orderBy,
+        rowsPerPage,
+        setPage,
+        //
+        selected,
+        setSelected,
+        onSelectRow,
+        onSelectAllRows,
+        //
+        onSort,
+        onChangeDense,
+        onChangeRowsPerPage,
+      } = useTable();
+
+      const {user, token, setUser, setToken} = useStateContext();
+      const [tableData, setTableData] = useState([]);
+      const [filterName, setFilterName] = useState("");
+      const [filterRole, setFilterRole] = useState("all");
+      const [currentPage, setCurrentPage] = useState(1);
+      const [lastPage, setLastPage] = useState(null);
+      const [totalLength, setTotalLength] = useState(0)
+      const [searchValue, setSearchValue] = useState('')
+      const {applicationSettings, userRole, userPermission} = useContext(SettingsContext);
+      const {num_data_per_page} = applicationSettings;
+      const navigate = useNavigate();
+  
+      const pageSize = 2;
+      const {data: getCompanyData, isFetching: getCompanyDataFetching, isError:getCompanyDataError} = useGetCompanyDataQuery({token,searchValue,currentPage,pageSize});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     const [companies, setCompanies] = useState([]);
     const [company, setCompany] = useState({
@@ -37,14 +95,9 @@ export default function companies() {
         logo: null,
     });
     const [loading, setLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState(1);
+    // const [currentPage, setCurrentPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
-    const {applicationSettings, userRole, userPermission} = useContext(SettingsContext);
-    const {num_data_per_page} = applicationSettings;
-    const navigate = useNavigate();
 
-    const pageSize = num_data_per_page;
-    const totalPages = Math.ceil(totalCount / pageSize);
 
     useEffect(() => {
         document.title = "Manage Companies";

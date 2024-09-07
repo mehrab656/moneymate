@@ -54,7 +54,6 @@ const RoleLists = ({handelCheck}) => {
                                 <FormGroup aria-label="position" row>
                                     {
                                         moduleArray.map(permission => {
-                                            console.log('permission2', permission)
                                             return (
                                                 <FormControlLabel key={moduleName+"_" + permission}
                                                                   value={moduleName+"_" + permission}

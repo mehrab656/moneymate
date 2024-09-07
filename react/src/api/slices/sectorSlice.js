@@ -11,9 +11,9 @@ export const sectorSlice = createApi({
   tagTypes: ["sectors"],
   endpoints: (builder) => ({
     getSectorsData: builder.query({
-      query: ({token}) => {
+      query: ({token,searchValue,currentPage,pageSize}) => {
         return {
-          url: `/sectors`,
+          url: `/sectors?keyword=${searchValue}&page=${currentPage}&pageSize=${pageSize}`,
           method: "GET",
           headers:{
             Authorization: `Bearer ${token}`

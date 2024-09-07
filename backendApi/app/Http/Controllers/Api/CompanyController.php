@@ -69,7 +69,6 @@ class CompanyController extends Controller {
 		}
 
 
-
 		$store = ( new Company() )->addNewCompany( $companyData );
 
 
