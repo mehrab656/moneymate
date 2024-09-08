@@ -105,6 +105,7 @@ Route::middleware( 'auth:sanctum' )->group( function () {
 	Route::get( '/export-expense-csv', [ ExpenseController::class, 'exportExpenseCsv' ] );
 	Route::get( '/expenses/graph', [ ExpenseController::class, 'getCategoryExpensesGraphForCurrentMonth' ] );
 	Route::get( '/total-expense', [ ExpenseController::class, 'totalExpense' ] );
+	Route::get( '/expense-elements', [ ExpenseController::class, 'getExpenseElements' ] );
 
 	// Returns from market api
 	Route::get( 'returns', [ ExpenseController::class, 'getReturns' ] );

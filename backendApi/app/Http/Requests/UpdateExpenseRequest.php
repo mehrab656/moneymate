@@ -24,6 +24,7 @@ class UpdateExpenseRequest extends FormRequest
     {
         $rules = [
             'account_id' => 'required',
+            'user_id' => 'required',
             'amount' => 'required|numeric',
             'return_amount' => 'nullable|numeric',
             'category_id' => 'required',

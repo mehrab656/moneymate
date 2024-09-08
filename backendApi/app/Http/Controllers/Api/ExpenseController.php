@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExpenseRequest;
 use App\Http\Requests\UpdateExpenseRequest;
+use App\Http\Resources\BankAccountResource;
 use App\Http\Resources\ExpenseResource;
 use App\Models\BankAccount;
 use App\Models\Budget;
@@ -506,5 +507,38 @@ class ExpenseController extends Controller {
 			'amount' => $totalAccount
 		] );
 	}
+
+    public function getExpenseElements():JsonResponse
+    {
+        //user
+        $companyID = Auth::user()->primary_company;
+        $users = DB::table('users')->select(['users.name','users.id','users.email'])
+            ->join('company_user','users.id','=','company_user.user_id')
+            ->where('company_id',$companyID)
+            ->get();
+
+        //bank accounts
+        $bankAccounts = BankAccount::where('company_id',Auth::user()->primary_company)->get();
+
+        //categories
+        $categories = DB::table( 'categories' )->select( 'categories.*' )
+            ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
+            ->where( 'sectors.company_id', '=', Auth::user()->primary_company )
+            ->where('categories.type','expense')
+        ->get();
+
+        return response()->json([
+            'users'=> $users,
+            'banks'=> BankAccountResource::collection( $bankAccounts ),
+            'categories'=> $categories,
+        ]);
+
+        //expense categories
+
+
+
+
+
+    }
 
 }

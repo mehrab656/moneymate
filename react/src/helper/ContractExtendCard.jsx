@@ -1,11 +1,10 @@
 import React, {memo, useEffect, useState} from "react";
-import {Button, Col, Modal, Row} from "react-bootstrap";
+import {Button, Modal} from "react-bootstrap";
 import {Autocomplete, Card, CardContent, Grid, TextField, Typography} from "@mui/material";
 import {faMinus, faPlus} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import MainLoader from "../components/MainLoader.jsx";
 import axiosClient from "../axios-client.js";
-import {useStateContext} from "../contexts/ContextProvider.jsx";
 import {notification} from "../components/ToastNotification.jsx";
 import {makeStyles} from "@mui/styles";
 import {useNavigate} from "react-router-dom";
@@ -55,7 +54,6 @@ const ContractExtendCard = ({showModal, sector, closeContractExtendModal}) => {
     const [extraFees, setExtraFees] = useState(initialExtraFees);
     const [expenseCategories, setExpenseCategories] = useState([]);
     const [bankAccounts, setBankAccounts] = useState([]);
-    const navigate = useNavigate();
     useEffect(() => {
         axiosClient.get('/expense-categories')
             .then(({data}) => {
@@ -63,7 +61,6 @@ const ContractExtendCard = ({showModal, sector, closeContractExtendModal}) => {
             })
             .catch(error => {
                 console.error('Error loading expense categories:', error);
-                // handle error, e.g., show an error message to the user
             });
 
         axiosClient.get('/all-bank-account')
@@ -160,10 +157,11 @@ const ContractExtendCard = ({showModal, sector, closeContractExtendModal}) => {
                 'Content-Type': 'multipart/form-data',
             },
         }).then(({data}) => {
-            window.location.reload();
             // navigate('/sectors');
             notification('success', data?.message, data?.description);
-
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000)
             setLoading(false)
         }).catch((error) => {
             const response = error.response;
@@ -259,13 +257,13 @@ const ContractExtendCard = ({showModal, sector, closeContractExtendModal}) => {
                         </div>
 
                     </div>
-
                     <Card className={"shadow-none"}>
                         <CardContent>
                             <Typography variant="h5" gutterBottom>
                                 Payment
                             </Typography>
-                            {paymentData.map((payment, index) => <Grid container spacing={2} key={index} sx={{mb: 2}}>
+                            {paymentData.map((payment, index) =>
+                                <Grid container spacing={2} key={index} sx={{mb: 2}}>
                                 <Grid item xs={12} sm={4}>
                                     <TextField
                                         fullWidth
@@ -323,17 +321,13 @@ const ContractExtendCard = ({showModal, sector, closeContractExtendModal}) => {
                             </Grid>)}
                         </CardContent>
                     </Card>
-
-
                     <Card className={"shadow-none"}>
                         <CardContent>
                             <Typography variant="h5" gutterBottom>
                                 Extra Renewal Fees
                             </Typography>
                             {extraFees.map((fees, index) =>
-
                                 <Grid container spacing={2} key={index} sx={{mb: 4}} className={"border-bottom"}>
-
                                     <Grid item xs={12} sm={4}>
                                         <TextField
                                             fullWidth
@@ -478,18 +472,13 @@ const ContractExtendCard = ({showModal, sector, closeContractExtendModal}) => {
                         </CardContent>
                     </Card>
                 </form>
-
-
             </Modal.Body>
             <Modal.Footer>
-
                 <Button className="btn-sm" variant="primary" onClick={renewContract}>
                     Renew
                 </Button>
-
             </Modal.Footer>
         </Modal>
-
     )
 }
 
