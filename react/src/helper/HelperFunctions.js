@@ -47,26 +47,17 @@ export function reservationValidationBuilder(check_in, check_out) {
 }
 
 export const checkPermission = (_permission, _checkLimit = false)=>{
-
+//create_category
         const userRole = localStorage.getItem('ACCESS_ROLE');
         if (userRole === 'admin') {
             return true;
-        } else {
+        }else if(userRole === 'baseUser'){
+            return true; //@FIx Me for base user and subscriptions limit.
+        } else { // sub-user
+
+
+
             return _permission;
         }
 }
 
-export function createData(name, calories, fat, carbs, protein, price) {
-    return {
-        name,
-        calories,
-        fat,
-        carbs,
-        protein,
-        price,
-        history: [
-            { date: '2020-01-05', customerId: '11091700', amount: 3 },
-            { date: '2020-01-02', customerId: 'Anonymous', amount: 1 },
-        ],
-    };
-}

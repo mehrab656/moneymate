@@ -151,7 +151,6 @@ class ExpenseController extends Controller {
 
 			storeActivityLog( [
 				'object_id'    => $expense['id'],
-                'object'=>'expense',
 				'log_type'     => 'create',
 				'module'       => 'expense',
 				'descriptions' => "",
@@ -160,9 +159,9 @@ class ExpenseController extends Controller {
 
 			DB::commit();
 
-		} catch ( Exception $e ) {
+		} catch ( Throwable $e ) {
 			DB::rollBack();
-            updateErrorlLogs($e, 'Expense Controller');
+
 			return response()->json( [
 				'message'     => 'Cannot add Expenses.',
 				'description' => $e,
@@ -223,7 +222,6 @@ class ExpenseController extends Controller {
 
 		storeActivityLog( [
 			'object_id'    => $expense->id,
-            'object'=>'expense',
 			'log_type'     => 'delete',
 			'module'       => 'expense',
 			'descriptions' => "",
@@ -291,7 +289,6 @@ class ExpenseController extends Controller {
 		}
 		storeActivityLog( [
 			'object_id'    => $expense->id,
-            'object'=>'expense',
 			'log_type'     => 'edit',
 			'module'       => 'expense',
 			'descriptions' => "",
@@ -477,7 +474,6 @@ class ExpenseController extends Controller {
 
 			storeActivityLog( [
 				'object_id'    => $return->id,
-                'object'=>'expense',
 				'log_type'     => 'edit',
 				'module'       => 'return',
 				'descriptions' => "added returns. Amount: $refundAmount",
@@ -485,13 +481,13 @@ class ExpenseController extends Controller {
 			] );
 
 			$return->save();
-            DB::commit();
-		} catch ( Exception $e ) {
+		} catch ( ValidationException $e ) {
 			DB::rollBack();
-            updateErrorlLogs($e, 'Expense Controller');
+
 			return redirect()->back()->withErrors( $e->getMessages() )->withInput();
 		}
 
+		DB::commit();
 
 		return response()->json( [
 			'message'     => 'Success',

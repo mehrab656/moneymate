@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\SignupRequest;
+use App\Models\Company;
 use App\Models\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -18,33 +19,45 @@ use Illuminate\Support\Facades\Hash;
 class AuthController extends Controller {
 
 
-	/**
-	 * @param SignupRequest $request
-	 *
-	 * @return Response|Application|ResponseFactory
-	 * @throws ApiErrorException
-	 */
+    /**
+     * @param SignupRequest $request
+     *
+     * @return Response|Application|ResponseFactory
+     * @throws ApiErrorException
+     * @throws \Exception
+     */
 
 	public function signup( SignupRequest $request ): Response|Application|ResponseFactory {
 		$data = $request->validated();
-
-
-		if ( User::count() > 0 ) {
 			// Create the user
 			$user = User::create( [
 				'name'     => $data['name'],
 				'email'    => $data['email'],
 				'password' => Hash::make( $data['password'] ),
+                'primary_company'=>0
 			] );
-		} else {
-			// Create the user
-			$user = User::create( [
-				'name'     => $data['name'],
-				'email'    => $data['email'],
-				'role_as'  => 'admin',
-				'password' => Hash::make( $data['password'] ),
-			] );
-		}
+        //add a default company
+        $company = Company::create( [
+            'name'                => $data['name'] . ' company',
+            'phone'               => '+0000000',
+            'email'               => $data['email'],
+            'uid'                 => random_string( 'alnum', 32 ),
+            'registration_number' => $data['registration_number'],
+            'extra'               => $data['extra'],
+            'created_by'          => $user->id,
+            'updated_by'          => $user->id,
+        ] );
+
+        //update primary company for user
+         $user->update(['primary_company'=>$company->id]);
+
+
+
+        //create a role for baseUser
+
+
+
+
 
 		// Generate a token for the user
 		if ( $user->role_as == 'admin' ) {

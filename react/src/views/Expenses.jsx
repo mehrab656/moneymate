@@ -228,6 +228,7 @@ export default function Expenses() {
                                                 </small>
                                             </div>
                                         </td>
+                                        {/*<td className={'text-start'}>{expense.category_name}</td>*/}
                                         <td className={'amount'}>{default_currency + ' ' + expense.amount}</td>
                                         <td className={'amount'}>{default_currency + ' ' + expense.refundable_amount}</td>
                                         <td className={"amount text-" + expense.refunded_txt_clr}>{default_currency + ' ' + expense.refunded_amount}</td>

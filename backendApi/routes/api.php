@@ -191,7 +191,6 @@ Route::middleware( 'auth:sanctum' )->group( function () {
 	] );
 	Route::post( '/change-payment-status/{sector}', [ SectorModelController::class, 'changePaymentStatus' ] );
 	Route::post( '/pay-bill/{payment}', [ SectorModelController::class, 'payBills' ] );
-	Route::post( '/contract-renew', [ SectorModelController::class, 'renew' ] );
 	Route::get( '/sectors-list', [ SectorModelController::class, 'sectorList' ] );
 
 	//finance report
@@ -220,8 +219,9 @@ Route::middleware( 'auth:sanctum' )->group( function () {
 	Route::post('/role/add/',[RoleController::class,'addRole']);
 	Route::post('/role/update/{id}',[RoleController::class,'updateRole']);
 	Route::delete( 'role/{id}', [ RoleController::class, 'destroy' ] );
+
+
     Route::get('permission',[ RoleController::class,'getPermission']);
-    Route::get('company-role-list',[RoleController::class,'getCompanyRoleList']);
 
 } );
 

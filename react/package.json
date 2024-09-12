@@ -24,6 +24,7 @@
         "@fullcalendar/daygrid": "^6.1.8",
         "@fullcalendar/interaction": "^6.1.8",
         "@fullcalendar/react": "^6.1.8",
+        "@iconify/react": "^3.1.4",
         "@mui/icons-material": "^5.11.16",
         "@mui/material": "^5.14.7",
         "@mui/styles": "^5.14.7",
@@ -53,6 +54,7 @@
         "recharts": "^2.6.2",
         "sweetalert2": "^11.4.8",
         "sweetalert2-react-content": "^5.0.7",
+        "simplebar-react": "^2.3.6",
         "victory": "^36.6.11"
     },
     "devDependencies": {

@@ -18,13 +18,20 @@ class CompanyController extends Controller {
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function getCompanyList() {
-
-		$companies = User::with( [ 'companies' ] )->find( Auth::user()->id )->companies()->get();
-
+	public function getCompanyList(Request $request): JsonResponse
+    {
+        $page         = $request->query( 'page', 1 );
+        $pageSize     = $request->query( 'pageSize', 10 );
+		$companies = User::with( [ 'companies' ] )->find( Auth::user()->id )
+            ->companies()
+            ->skip( ( $page - 1 ) * $pageSize )
+            ->take( $pageSize )
+            ->orderBy( 'id', 'desc' )
+            ->get();
+        $totalCount = User::with( [ 'companies' ] )->find( Auth::user()->id )->companies()->count();
 		return response()->json( [
 			'status' => 'success',
-			'total'  => count( $companies ),
+			'total'  => $totalCount,
 			'data'   => $companies
 		] );
 	}
@@ -67,7 +74,6 @@ class CompanyController extends Controller {
 			$attachment->storeAs( 'files/company', $filename );
 			$companyData['filename'] = $filename;
 		}
-
 
 
 		$store = ( new Company() )->addNewCompany( $companyData );

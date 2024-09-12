@@ -5,6 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7aab6cd-85c3-45f8-9232-3c188a37b109" name="Changes" comment="">
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Requests/UpdateExpenseRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Requests/UpdateExpenseRequest.php" afterDir="false" />
@@ -15,6 +16,20 @@
       <change beforePath="$PROJECT_DIR$/react/src/helper/ContractExtendCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/helper/ContractExtendCard.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/views/ExpenseForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/ExpenseForm.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/react/yarn.lock" afterDir="false" />
+=======
+      <change afterPath="$PROJECT_DIR$/backendApi/lang/en/messages.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/lang/en/sectors.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/BankAccountController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/BankAccountController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ReportController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ReportController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/helpers.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/helpers.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/dist/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/react/dist/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Accounts.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Accounts.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx" afterDir="false" />
+>>>>>>> 986f2f32b66396b8d6c18db6490283b7006d2e00
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,9 +38,7 @@
   </component>
   <component name="ComposerSettings" synchronizationState="SYNCHRONIZE">
     <pharConfigPath>$PROJECT_DIR$/backendApi/composer.json</pharConfigPath>
-    <execution>
-      <interpreter composer="composer" />
-    </execution>
+    <execution />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -183,18 +196,29 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+<<<<<<< HEAD
     &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;saas&quot;,
     &quot;last_opened_file_path&quot;: &quot;D:/xampp/htdocs/moneymate/assets&quot;,
+=======
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;saas&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/DevRoot/rox-wp&quot;,
+>>>>>>> 986f2f32b66396b8d6c18db6490283b7006d2e00
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+<<<<<<< HEAD
     &quot;settings.editor.selected.configurable&quot;: &quot;php.test.frameworks.configurable&quot;,
+=======
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+>>>>>>> 986f2f32b66396b8d6c18db6490283b7006d2e00
     &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\PhpStorm 2023.3\\plugins\\javascript-impl\\jsLanguageServicesImpl\\external&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
@@ -202,8 +226,6 @@
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\xampp\htdocs\moneymate\assets" />
-      <recent name="D:\xampp\htdocs\moneymate\react\public\channels" />
-      <recent name="D:\xampp\htdocs\moneymate\react\public" />
     </key>
   </component>
   <component name="RunManager">
@@ -237,11 +259,15 @@
       <workItem from="1717791851155" duration="695000" />
       <workItem from="1718128056620" duration="26728000" />
       <workItem from="1718747576980" duration="3311000" />
+<<<<<<< HEAD
       <workItem from="1718833022104" duration="27492000" />
       <workItem from="1722280021548" duration="18404000" />
       <workItem from="1722454627117" duration="56242000" />
       <workItem from="1724612637464" duration="2151000" />
       <workItem from="1725778883405" duration="806000" />
+=======
+      <workItem from="1718833022104" duration="4257000" />
+>>>>>>> 986f2f32b66396b8d6c18db6490283b7006d2e00
     </task>
     <servers />
   </component>
@@ -253,13 +279,14 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="php-line-method">
           <url>file://$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/IncomeController.php</url>
-          <line>519</line>
+          <line>513</line>
           <properties>
             <option name="className" value="\App\Http\Controllers\Api\IncomeController" />
             <option name="methodName" value="addIncomeFromCSV" />
           </properties>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
+<<<<<<< HEAD
         <line-breakpoint enabled="true" type="php">
           <url>file://$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php</url>
           <line>55</line>
@@ -270,11 +297,9 @@
           <line>282</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
+=======
+>>>>>>> 986f2f32b66396b8d6c18db6490283b7006d2e00
       </breakpoints>
     </breakpoint-manager>
-  </component>
-  <component name="XSLT-Support.FileAssociations.UIState">
-    <expand />
-    <select />
   </component>
 </project>

@@ -37,7 +37,6 @@ class UserResource extends JsonResource
             'primary_company' => $this->primary_company,
             'name' => $this->name,
             'email' => $this->email,
-            'role_as' => $this->role_as,
             'is_active_membership' => $is_active_membership,
             'created_at' => $this->created_at, //->format('Y-m-d H:i:s')
         ];

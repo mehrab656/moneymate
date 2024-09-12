@@ -34,6 +34,7 @@ export default function Roles() {
     const [roles, setRoles] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
 
+    const classes = useStyles();
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(20);
     const {userPermission} = useContext(SettingsContext);
@@ -119,7 +120,7 @@ export default function Roles() {
         },
     };
     return (
-        <Paper sx={{width: '100%', overflow: 'hidden'}} >
+        <Paper sx={{width: '100%', overflow: 'hidden'}} classes={"root"}>
             <div className="row p-3">
                 <div className="col-3">
                     <h3>Role List</h3>
@@ -159,8 +160,6 @@ export default function Roles() {
                             <StyledTableCell><b>Status</b></StyledTableCell>
                             <StyledTableCell><b>Added By</b></StyledTableCell>
                             <StyledTableCell><b>Date</b></StyledTableCell>
-                            <StyledTableCell><b>Last Modified Date</b></StyledTableCell>
-                            <StyledTableCell><b>Last Modified By</b></StyledTableCell>
                             <StyledTableCell><b>Actions</b></StyledTableCell>
                         </TableRow>
                     </TableHead>
@@ -170,11 +169,9 @@ export default function Roles() {
                                 key={role.id}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                 <TableCell>{role.role}</TableCell>
-                                <TableCell >{role.status===1?"Active":"Inactive"}</TableCell>
+                                <TableCell >{role.status===1?'Active':'Inactive'}</TableCell>
                                 <TableCell >{role.added_by}</TableCell>
                                 <TableCell >{(new Date(role.added_date)).toLocaleDateString("en-US", dateOptions)}</TableCell>
-                                <TableCell >{(new Date(role.modified_date)).toLocaleDateString("en-US", dateOptions)}</TableCell>
-                                <TableCell >{role.modified_by}</TableCell>
                                 <TableCell >
                                     <ActionButtonHelpers
                                         module={role}

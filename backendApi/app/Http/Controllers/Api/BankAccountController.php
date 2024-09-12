@@ -23,7 +23,8 @@ class BankAccountController extends Controller {
 		$user         = Auth::user();
 		$page         = $request->query( 'page', 1 );
 		$pageSize     = $request->query( 'pageSize', 10 );
-		$bankAccounts = BankAccount::where('company_id',Auth::user()->primary_company)->skip( ( $page - 1 ) * $pageSize )
+		$bankAccounts = BankAccount::where('company_id',Auth::user()->primary_company)
+            ->skip( ( $page - 1 ) * $pageSize )
 		                           ->take( $pageSize )
 		                           ->orderBy( 'id', 'desc' )
 		                           ->get();
@@ -69,7 +70,6 @@ class BankAccountController extends Controller {
 
 			storeActivityLog( [
 				'object_id'     => $bankAccount->id,
-                'object'=>'bank',
 				'log_type'     => 'create',
 				'module'       => 'Account',
 				'descriptions' => '',
@@ -78,7 +78,7 @@ class BankAccountController extends Controller {
 			DB::commit();
 		} catch ( \Throwable $e ) {
 			DB::rollBack();
-            updateErrorlLogs($e, 'Bank Controller');
+
 			return response()->json( [
 				'message' => 'Failed to create Account.' . $e->getMessage(),
 			], 500 );
@@ -117,16 +117,15 @@ class BankAccountController extends Controller {
 			$bankAccount->delete();
 			storeActivityLog( [
 				'object_id'     => $bankAccount->id,
-                'object'=>'bank',
 				'log_type'     => 'delete',
 				'module'       => 'Bank Account',
 				'descriptions' => '',
 				'data_records' => $bankAccount,
 			] );
 			DB::commit();
-		} catch ( Exception $e ) {
+		} catch ( \Throwable $e ) {
 			DB::rollBack();
-            updateErrorlLogs($e, 'Bank Account Controller');
+
 			return response()->json( [
 				'message' => 'Failed to delete Account.' . $e->getMessage(),
 			], 500 );

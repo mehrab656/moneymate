@@ -1,415 +1,475 @@
-import React, {useEffect, useState, useContext} from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import axiosClient from "../axios-client.js";
 import Swal from "sweetalert2";
-import Pagination from "react-bootstrap/Pagination";
-import WizCard from "../components/WizCard";
-import {Button, Modal} from "react-bootstrap";
-import {useStateContext} from "../contexts/ContextProvider";
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faCoins} from "@fortawesome/free-solid-svg-icons";
-import {SettingsContext} from "../contexts/SettingsContext";
-import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
+import { Modal } from "react-bootstrap";
+import { useStateContext } from "../contexts/ContextProvider";
+import { SettingsContext } from "../contexts/SettingsContext";
 import MainLoader from "../components/MainLoader.jsx";
-import {notification} from "../components/ToastNotification.jsx";
-import ReactToPrint from "react-to-print";
+import { notification } from "../components/ToastNotification.jsx";
+
+import useTable, { emptyRows, getComparator } from "../hooks/useTable.js";
+import {
+  Box,
+  Card,
+  Table,
+  Switch,
+  Button,
+  TableBody,
+  Container,
+  TableContainer,
+  TablePagination,
+  FormControlLabel,
+} from "@mui/material";
+import {
+  TableEmptyRows,
+  TableHeadCustom,
+  TableNoData,
+  TableToolbar,
+} from "../components/table/index.js";
+import Scrollbar from "../components/Scrollbar.jsx";
+import HeaderBreadcrumbs from "../components/HeaderBreadcrumbs.jsx";
+import { useNavigate } from "react-router-dom";
+import CategoryTableRow from "../components/table/TableRows/CategoryTableRow.jsx";
+import CreateBtnComponent from "../components/createBtnComponent.jsx";
+import { PrintBtn } from "../components/PrintBtnComponent.JSX";
+import { useCreateCategoryMutation, useDeleteCategoryMutation, useGetCategoryDataQuery, useGetCategorySectorListDataQuery } from "../api/slices/categorySlice.js";
 import {checkPermission} from "../helper/HelperFunctions.js";
 
+const typeOption = [
+  {id:1, name:'income'},
+  {id:2, name:'expense'}
+]
+const TABLE_HEAD = [
+  { id: "id", label: "ID", align: "left" },
+  { id: "name", label: " Category Name", align: "left" },
+  { id: "type", label: "Category Type", align: "left" },
+  { id: "action", label: "Actions", align: "right" },
+  { id: "" },
+];
+
 export default function Categories() {
-    const [loading, setLoading] = useState(false);
-    const [categories, setCategories] = useState([]);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalCount, setTotalCount] = useState(0);
-    const [showModal, setShowModal] = useState(false);
-    const [errors, setErrors] = useState(null);
-    const [category, setCategory] = useState({
-        id: null,
-        sector_id: null,
-        name: '',
-        type: 'income'
-    });
-    const [sectors, setSector] = useState([])
-    const [selectedSectorId, setSelectedSectorId] = useState('');
-    const [categoryType, setCategoryType] = useState('');
+  const componentRef  = useRef()
+  const [tableData, setTableData] = useState([]);
 
-    const {applicationSettings, userRole,userPermission} = useContext(SettingsContext);
-    const {
-        num_data_per_page
-    } = applicationSettings;
-    const pageSize = num_data_per_page;
-    const totalPages = Math.ceil(totalCount / pageSize);
+  const {
+    dense,
+    page,
+    order,
+    orderBy,
+    //
+    selected,
+    onSelectRow,
+    //
+    onSort,
+    onChangeDense,
+  } = useTable();
 
-    const filteredCategories = categories.filter(
-        (category) =>
-            category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            category.type.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const [showModal, setShowModal] = useState(false);
+  const [errors, setErrors] = useState(null);
+  const [category, setCategory] = useState({
+    id: null,
+    sector_id: null,
+    name: "",
+    type: "income",
+  });
+  const [sectors, setSector] = useState([]);
 
+  const { applicationSettings, userPermission } = useContext(SettingsContext);
+  const { num_data_per_page } = applicationSettings;
+  const pageSize = num_data_per_page;
+  const totalPages = Math.floor(totalCount / pageSize);
 
-    const showCreateModal = () => {
-        setErrors(null);
-        setShowModal(true);
-    };
+  //Filter By
+  const [filterName, setFilterName] = useState("");
+  const [filterSecterValue, setFilterSeacterValue] = useState('')
+  const [filterTypeValue, setFilterTypeValue] = useState('')
 
-    const handleCloseModal = () => {
-        setShowModal(false);
-    };
-    const {setNotification} = useStateContext();
+  const dataFiltered = applySortFilter({
+    tableData,
+    comparator: getComparator(order, orderBy),
+    filterName,
+  });
 
-    const categorySubmit = (event) => {
-        event.preventDefault();
-        setLoading(true)
-        if (category.id) {
-            axiosClient.put(`/category/${category.id}`, category)
-                .then((data) => {
-                    // setNotification("Category has been successfully updated");
+  const denseHeight = dense ? 52 : 72;
+  const isNotFound =(!dataFiltered.length && !!filterName) 
 
-                    setShowModal(false);
-                    getCategories(currentPage, pageSize);
-                    setCategory({
-                        id: null,
-                        name: '',
-                        type: 'income',
-                        sector_id: null
-                    });
+  // api call
+  const {user, token} = useStateContext();
+  const {data: getCategoryData, isFetching: getCategoryDataFetching, isError:getCategoryDataError} = useGetCategoryDataQuery({token,searchValue:filterName,currentPage,pageSize,selectedSectorId:filterSecterValue, categoryType:filterTypeValue});
+  const {data: getCategorySectorListData, isFetching: getCategorySectorListDataFetching, isError:getCategorySectorListDataError} = useGetCategorySectorListDataQuery({token});
 
-                    notification('success', data?.message, data?.description)
-                    setLoading(false)
-                }).catch(err => {
-                if (err.response) {
-                    const error = err.response.data
-                    notification('error', error?.message, error.description)
-                }
-                setLoading(false)
-            });
-        } else {
-            axiosClient.post('category/add', category).then((data) => {
-                // setNotification(`${category.name} was successfully created`);
-                setShowModal(false);
-                getCategories(currentPage, pageSize);
-                setCategory({
-                    id: null,
-                    name: '',
-                    type: 'income',
-                    sector_id: null
-                });
+  const [createCategory] = useCreateCategoryMutation()
+  const [deleteCategory] = useDeleteCategoryMutation()
 
-                notification('success', data?.message, data?.description)
-                setLoading(false)
-            }).catch(err => {
-                if (err.response) {
-                    const error = err.response.data
-                    notification('error', error?.message, error.description)
-                }
-                setLoading(false)
-            });
-        }
-    };
+  const getCategories = (page, pageSize) => {
+    setLoading(true);
+    axiosClient
+      .get("/categories", {
+        params: { page: page + 1, pageSize, selectedSectorId:filterSecterValue, categoryType:filterTypeValue},
+      })
+      .then(({ data }) => {
+        setTableData(data.data);
+        setTotalCount(data.total);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  };
 
-    const edit = (category) => {
-        setCategory(category);
-        setErrors(null);
-        setShowModal(true);
-    };
+  useEffect(() => {
+    document.title = "Categories";
+    if(getCategoryData?.data){
+      setTableData(getCategoryData.data);
+      setTotalCount(getCategoryData.total);
+    }
+    if(getCategorySectorListData?.sectors){
+      setSector(getCategorySectorListData.sectors);
+    }
 
-    const onDelete = (category) => {
-        Swal.fire({
-            title: "Are you sure?",
-            text: `You will not be able to recover the category ${category.name}!`,
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Yes, delete it!",
-            cancelButtonText: "Cancel",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                axiosClient
-                    .delete(`category/${category.id}`)
-                    .then((data) => {
-                        getCategories(currentPage, pageSize);
-                        notification('success', data?.message, data?.description)
-                    }).catch(err => {
-                    if (err.response) {
-                        const error = err.response.data
-                        notification('error', error?.message, error.description)
-                    }
-                })
-            }
+    // if(sectors && sectors?.length ===1){
+    //   setCategory({...category,sector_id:sectors[0].id})
+    // }
+
+  }, [getCategoryData,getCategorySectorListData]); 
+
+  const handleFilterName = (filterName) => {
+    setFilterName(filterName);
+    setCurrentPage(0);
+  };
+  const onChangeSectorFilter = (event)=>{
+    setFilterSeacterValue(event.target.value)
+  }
+  const onChangeTypeFilter = (event)=>{
+    setFilterTypeValue(event.target.value)
+  }
+
+  // handleResetFilter
+    const handleResetFilter = ()=>{
+      setFilterName("")
+      setFilterSeacterValue("");
+      setFilterTypeValue("");
+    }
+
+  const showCreateModal = () => {
+    setErrors(null);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+  const categorySubmit = (event) => {
+    event.preventDefault();
+    setLoading(true);
+    if (category.id) {
+      axiosClient
+        .put(`/category/${category.id}`, category)
+        .then((data) => {
+          setShowModal(false);
+          getCategories(currentPage, pageSize);
+          setCategory({
+            id: null,
+            name: "",
+            type: "income",
+            sector_id: null,
+          });
+
+          notification("success", data?.message, data?.description);
+          setLoading(false);
+        })
+        .catch((err) => {
+          if (err.response) {
+            const error = err.response.data;
+            notification("error", error?.message, error.description);
+          }
+          setLoading(false);
         });
-    };
+    } else {
+      // axiosClient
+      //   .post("category/add", category)
+      //   .then((data) => {
+      //     setShowModal(false);
+      //     getCategories(currentPage, pageSize);
+      //     setCategory({
+      //       id: null,
+      //       name: "",
+      //       type: "income",
+      //       sector_id: null,
+      //     });
 
-    useEffect(() => {
-        document.title = "Categories";
-        axiosClient.get('/sectors-list')
-            .then(({data}) => {
-                setSector(data.sectors);
-            })
-            .catch(error => {
-                console.warn('Error fetching bank accounts:', error)
-            });
+      //     notification("success", data?.message, data?.description);
+      //     setLoading(false);
+      //   })
 
-
-        getCategories(currentPage, pageSize);
-    }, [currentPage, pageSize, setSector]); // Fetch categories when currentPage or pageSize changes
-    const handelCategoryFilterSubmit = (e) => {
-        e.preventDefault();
-        getCategories();
-    };
-    const getCategories = (page, pageSize) => {
-        setLoading(true);
-        axiosClient
-            .get("/categories", {params: {page, pageSize, selectedSectorId,categoryType}})
-            .then(({data}) => {
-                setLoading(false);
-                setCategories(data.data);
-                setTotalCount(data.total);
-            })
-            .catch(() => {
-                setLoading(false);
-            });
-    };
-
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
-    };
-
-    const paginationItems = [];
-    for (let i = 1; i <= totalPages; i++) {
-        paginationItems.push(
-            <Pagination.Item
-                key={i}
-                active={i === currentPage}
-                onClick={() => handlePageChange(i)}
-            >
-                {i}
-            </Pagination.Item>
-        );
+        // let formData = new FormData(); //formdata object
+        // formData.append("name", category?.name);
+        // formData.append("type", category?.type);
+        // formData.append("sector_id", category?.sector_id);
+        
+        createCategory({token,formData:category})
+        .unwrap()
+        .then((response) => {
+          console.log('response', response)
+          setShowModal(false);
+          notification("success", data?.message, data?.description);
+        })
+        .catch((err) => {
+          console.log('err', err)
+          if (err.error) {
+            const error = err.error;
+            notification("error", error?.message, error.description);
+          }
+          setLoading(false);
+        });
     }
+  };
 
-    const actionParams = {
-        route: {
-            viewRoute: '',
-            deleteRoute: ''
-        },
-    }
+  const edit = (category) => {
+    setCategory(category);
+    setErrors(null);
+    setShowModal(true);
+  };
 
-    const resetFilterParameter = () => {
-        setSelectedSectorId('')
-        setCategoryType('')
-        getCategories();
-    };
+  const onDelete = (category) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: `You will not be able to recover the category ${category.name}!`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteCategory({token,id:category?.id})
+      }
+    });
+  };
 
-    return (
-        <div>
-            <MainLoader loaderVisible={loading}/>
-            <WizCard className="animated fadeInDown">
-                <div className="row mb-4">
-                    <form onSubmit={handelCategoryFilterSubmit}>
-                        <div className={"col-md-3 col-sm-3 col-3"}>
-                            <div className="form-group">
-                                <select
-                                    className="custom-form-control"
-                                    value={selectedSectorId}
-                                    id="income-category"
-                                    name="income-category"
-                                    onChange={(event) => {
-                                        const value = event.target.value || '';
-                                        setSelectedSectorId(value);
-                                    }}>
-                                    <option defaultValue>Filter by Sectors</option>
-                                    {sectors.map(sector => (
-                                        <option key={sector.id} value={sector.id}>
-                                            {sector.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
+  const handlePageChange = (event, newPage) => {
+    setCurrentPage(newPage);
+  };
 
-                        </div>
-                        <div className={"col-md-3 col-sm-3 col-3"}>
-                            <div className="form-group">
-                                <select
-                                    className="custom-form-control"
-                                    value={categoryType}
-                                    id="category-type"
-                                    name="category-type"
-                                    onChange={(event) => {
-                                        const value = event.target.value || '';
-                                        setCategoryType(value);
-                                    }}>
-                                    <option defaultValue>Filter by Type</option>
-                                    <option key={'expense'} value={"expense"}>{"Expense"}</option>
-                                    <option key={'income'} value={"income"}>{"Income"}</option>
-                                </select>
-                            </div>
+  console.log('category', category)
 
-                        </div>
-                        <div className="col-md-3 col-sm-3 col-3">
-                            <input
-                                className="custom-form-control"
-                                type="text"
-                                placeholder="Search category..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                        </div>
-                        <div className="col-3">
-                            <button className={'btn-add right'} type="submit">Filter</button>
-                            <button className={"btn btn-warning ml-2"} onClick={resetFilterParameter}>Reset</button>
-                            {checkPermission(userPermission.category_create) &&
-                                <button className="btn-add ml-2" onClick={showCreateModal}>Add New</button>
-                            }
-                        </div>
-                    </form>
+  return (
+    <div>
+      <MainLoader loaderVisible={(getCategoryDataFetching)} />
+
+      <Container maxWidth={"xl"}>
+        <Card sx={{ p: 5 }}>
+          <HeaderBreadcrumbs
+            heading="Category Lists"
+            links={[
+              { name: "Dashboard", href: "/" },
+              { name: "Category" },
+              { name: "List" },
+            ]}
+            action={
+              <CreateBtnComponent
+                path={''}
+                action={showCreateModal}
+                status={checkPermission("category_create")}
+                title={'Add Category'}
+               />
+            }
+          />
+
+          <TableToolbar
+            filterByText={true}
+            searchText={"Search Category..."}
+            filterName={filterName}
+            onFilterName={handleFilterName}
+
+            filterBySectowShow={true}
+            filterSecterValue={filterSecterValue}
+            onChangeSectorFilter={onChangeSectorFilter}
+            filterSectorOption={sectors}
+
+            filterBytypeShow={true}
+            filterTypeValue={filterTypeValue}
+            onChangeTypeFilter={onChangeTypeFilter}
+            filterTypeOption={typeOption}
+
+            filterDisabled = {(filterName ==='' && filterSecterValue ==='' && filterTypeValue ==='' )?true:false}
+            handleResetFilter={handleResetFilter}
+
+            printShow={false}
+            printComponent={PrintBtn(componentRef.current)}
+
+          />
+
+          <Scrollbar>
+            <TableContainer ref={componentRef}>
+              <Table size={dense ? "small" : "medium"}>
+                <TableHeadCustom
+                  order={order}
+                  orderBy={orderBy}
+                  headLabel={TABLE_HEAD}
+                  rowCount={tableData.length}
+                  numSelected={selected.length}
+                  onSort={onSort}
+                  userPermission={userPermission}
+                />
+                <TableBody >
+                  {dataFiltered
+                    .slice(page * pageSize, page * pageSize + pageSize)
+                    .map((row) => (
+                      <CategoryTableRow
+                        key={row.id}
+                        row={row}
+                        userPermission={userPermission}
+                        selected={selected.includes(row.id)}
+                        onSelectRow={() => onSelectRow(row.id)}
+                        onEditRow={() => edit(row)}
+                        onDeleteRow={() => onDelete(row)}
+                      />
+                    ))}
+
+                  <TableEmptyRows
+                    height={denseHeight}
+                    emptyRows={emptyRows(page, pageSize, tableData.length)}
+                  />
+
+                  <TableNoData isNotFound={(isNotFound || tableData.length===0)?true:false} />
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Scrollbar>
+
+        {pageSize && 
+            <Box sx={{ position: "relative" }}>
+              <TablePagination
+                rowsPerPageOptions={[pageSize]}
+                component="div"
+                count={totalPages}
+                rowsPerPage={pageSize}
+                page={currentPage}
+                onPageChange={handlePageChange}
+              />
+              <FormControlLabel
+                control={<Switch checked={dense} onChange={onChangeDense} />}
+                label="Dense"
+                sx={{
+                  px: 3,
+                  py: 1.5,
+                  top: 0,
+                  position: { md: "absolute" },
+                }}
+              />
+            </Box>
+          }
+        </Card>
+      </Container>
+
+      <Modal
+        show={showModal}
+        onHide={handleCloseModal}
+        animation={false}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {category.id ? "Update Category" : "Add New Category"}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="row">
+            <div className="col-md-12">
+              {errors && (
+                <div className="alert alert-danger">
+                  <ul className="mt-0 mb-0">
+                    {Object.keys(errors).map((key) => (
+                      <li key={key}>{errors[key][0]}</li>
+                    ))}
+                  </ul>
                 </div>
-                <div className="table-responsive-sm">
-                    <table className="table table-bordered custom-table">
-                        <thead>
-                        <tr>
-                            {
-                                userRole === 'admin'&&
-                                <th>id</th>
-                            }
-                            <th>CATEGORY NAME</th>
-                            <th className="text-center">CATEGORY TYPE</th>
-                            {userRole === 'admin' && <th>ACTIONS</th>}
-
-                        </tr>
-                        </thead>
-                        {loading && (
-                            <tbody>
-                            <tr>
-                                <td colSpan={3} className="text-center">
-                                    Loading...
-                                </td>
-                            </tr>
-                            </tbody>
-                        )}
-                        {!loading && (
-                            <tbody>
-                            {filteredCategories.length === 0 ? (
-                                <tr>
-                                    <td colSpan={3} className="text-center">
-                                        No categories found
-                                    </td>
-                                </tr>
-                            ) : (
-                                filteredCategories.map((category) => (
-                                    <tr key={category.id}>
-                                        {
-                                            userRole === 'admin'&&
-                                            <td>{category.id}</td>
-                                        }
-                                        <td>{category.name}</td>
-                                        <td className="text-center">{category.type}</td>
-
-                                        {userRole === 'admin' &&
-                                            <td>
-                                                <ActionButtonHelpers
-                                                    module={category}
-                                                    deleteFunc={onDelete}
-                                                    showEditDropdown={edit}
-                                                    params={actionParams}
-                                                    editDropdown={userPermission.category_edit}
-                                                    showPermission={userPermission.category_view}
-                                                    deletePermission={userPermission.category_delete}
-
-                                                />
-                                            </td>}
-
-                                    </tr>
-                                ))
-                            )}
-                            </tbody>
-                        )}
-                    </table>
-                </div>
-                {totalPages > 1 && (
-                    <Pagination>
-                        <Pagination.Prev
-                            disabled={currentPage === 1}
-                            onClick={() => handlePageChange(currentPage - 1)}
-                        />
-                        {paginationItems}
-                        <Pagination.Next
-                            disabled={currentPage === totalPages}
-                            onClick={() => handlePageChange(currentPage + 1)}
-                        />
-                    </Pagination>
-                )}
-            </WizCard>
-
-            <Modal show={showModal} centered onHide={handleCloseModal} className="custom-modal">
-                <Modal.Header closeButton>
-                    <Modal.Title>
-                        {category.id && <span>Update Category: {category.name}</span>}
-                        {!category.id && <span>Add New Category</span>}
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <form className="custom-form">
-                        <div className="form-group">
-                            <label htmlFor="category_name" className="custom-form-label">Category Name</label>
-                            <input
-                                value={category.name}
-                                className="custom-form-control"
-                                onChange={e => setCategory({...category, name: e.target.value})}
-                                placeholder="Category Name"
-                            />
-
-                            {errors && errors.name && (
-                                <div className="text-danger mt-2">{errors.name[0]}</div>
-                            )}
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="category_type" className="custom-form-label">Category Type</label>
-                            <select
-                                value={category.type}
-                                className="custom-form-control"
-                                onChange={e => setCategory({...category, type: e.target.value})}
-                            >
-                                <option value="income">Income</option>
-                                <option value="expense">Expense</option>
-                            </select>
-
-                            {errors && errors.type && (
-                                <div className="text-danger mt-2">{errors.type[0]}</div>
-                            )}
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="category_type" className="custom-form-label">Sector</label>
-                            <select
-                                value={category.sector_id}
-                                className="custom-form-control"
-                                id="sector-id"
-                                name="sector-id"
-                                onChange={e => setCategory({...category, sector_id: e.target.value})}>
-                                <option defaultValue>Sector</option>
-                                {sectors.map(sector => (
-                                    <option key={sector.id} value={sector.id}>
-                                        {sector.name}
-                                    </option>
-                                ))}
-                            </select>
-
-                            {errors && errors.sector_id && (
-                                <div className="text-danger mt-2">{errors.sector_id[0]}</div>
-                            )}
-                        </div>
-
-                    </form>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button className="btn-sm" variant="primary" onClick={categorySubmit}>
-                        Save
-                    </Button>
-                    <Button className="btn-sm" variant="secondary" onClick={handleCloseModal}>
-                        Close
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-        </div>
-    );
+              )}
+            </div>
+          </div>
+          <form onSubmit={categorySubmit}>
+            <div className="row">
+              <div className="col-md-6">
+                <label>Category Name</label>
+                <input
+                  type="text"
+                  className="form-control mb-3"
+                  value={category.name}
+                  onChange={(e) =>
+                    setCategory({ ...category, name: e.target.value })
+                  }
+                />
+              </div>
+              <div className="col-md-6">
+                <label>Category Type</label>
+                <select
+                  className="form-control mb-3"
+                  value={category.type}
+                  onChange={(e) =>
+                    setCategory({ ...category, type: e.target.value })
+                  }
+                >
+                  <option value="income">Income</option>
+                  <option value="expense">Expense</option>
+                </select>
+              </div>
+              <div className="col-md-6">
+                <label>Sector</label>
+                <select
+                  className="form-control mb-3"
+                  value={category.sector_id}
+                  onChange={(e) =>
+                    setCategory({ ...category, sector_id: e.target.value })
+                  }
+                >
+                  {sectors.map((sector) => (
+                    <option key={sector.id} value={sector.id}>
+                      {sector.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <Button variant="contained" color="primary" type="submit">
+              {category.id ? "Update Category" : "Add Category"}
+            </Button>
+          </form>
+        </Modal.Body>
+      </Modal>
+    </div>
+  );
 }
 
+
+// ----------------------------------------------------------------------
+
+function applySortFilter({
+  tableData,
+  comparator,
+  filterName,
+}) {
+  const stabilizedThis = tableData.map((el, index) => [el, index]);
+
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+
+  tableData = stabilizedThis.map((el) => el[0]);
+
+  if (filterName) {
+    tableData = tableData.filter(
+      (item) =>
+        item.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+    );
+  }
+
+  return tableData;
+}
 

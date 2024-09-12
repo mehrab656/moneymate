@@ -214,16 +214,4 @@ function is_ip_address(string $ip): bool|string
             $checkoutDate,
         );
     }
-
-    function updateErrorlLogs($error,$module)
-    {
-
-        DB::table('error_logs')->insert([
-            'message' => $error->getMessage(),
-            'table_name' => 'company model',
-            'description' => property_exists( $error , "errorInfo" )?json_encode($error->errorInfo, true):null,
-            'created_at' => date('y-m-d'),
-            'updated_at' => date('y-m-d'),
-        ]);
-    }
 }

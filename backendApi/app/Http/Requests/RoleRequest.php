@@ -22,13 +22,13 @@ class RoleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'role'                  => 'required',
+            'name'                  => 'required',
         ];
     }
 
     public function messages(): array {
         return [
-            'role.required'                => 'Role name is required.',
+            'name.required'                => 'Role name is required.',
         ];
     }
 }

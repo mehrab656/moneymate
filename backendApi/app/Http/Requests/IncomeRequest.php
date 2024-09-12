@@ -28,14 +28,14 @@ class IncomeRequest extends FormRequest {
             'description'   => 'required|string',
             'account_id'    => 'required',
             'amount'        => 'required|numeric',
-            'income_type'   => 'required',
             'category_id'   => 'required',
-            'attachment'    => 'nullable|file',
-            'note'          => 'nullable',
-            'reference'     => 'required',
-            'date'          => 'nullable',
-            'checkin_date'  => 'nullable',
-            'checkout_date' => 'nullable',
+			'attachment'    => 'nullable|file',
+			'note'          => 'nullable',
+			'reference'     => 'required',
+			'date'          => 'nullable',
+			'checkin_date'  => 'nullable',
+			'checkout_date' => 'nullable',
+			'income_type'   => 'required',
 		];
 	}
 
@@ -49,7 +49,6 @@ class IncomeRequest extends FormRequest {
 			'category_id.required' => 'Please select an income category',
 			'description.required' => 'Income description is missing!',
 			'description.string' => 'A valid description is required!',
-			'income_type.required' => 'Need to select Income type!',
 			'reference.required' => 'Need to select the reference!',
 		];
 	}

@@ -167,8 +167,6 @@ export default function InvestmentForm() {
                 },
             })
                 .then(({data}) => {
-
-                    console.log(data);
                     notification('success', data?.message, data?.description)
                     navigate('/investments');
                     setLoading(false)

@@ -135,11 +135,8 @@ export default function CompanyCreate() {
                     setLoading(false);
                 })
                 .catch((err) => {
-                    console.log(err)
                     if (err.response) {
                         const error = err.response.data;
-                        console.log(error)
-
                         notification('error', error?.message, error.description)
                     }
                     setLoading(false);

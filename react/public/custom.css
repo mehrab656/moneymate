@@ -221,7 +221,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .wrapper > .wrapping-body {
-    width: calc(100% - 233px);
+    width: calc(100% - 245px);
     min-height: 100vh;
     margin-left: auto;
     transition: width .2s ease;
@@ -414,4 +414,8 @@ footer {
 .actionDropDownMenu{
     position: fixed !important;
     z-index: 1 !important;
+}
+
+.simplebar-placeholder{
+    display: none !important;
 }

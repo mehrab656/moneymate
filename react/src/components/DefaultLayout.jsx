@@ -232,7 +232,7 @@ export default function DefaultLayout() {
             <Container fluid>
                 <Row>
                     {/* Sidebar Toggle Button */}
-                    <Col xs={1} className="ml-2 ">
+                    <Col xs={1} className="mt-3 ml-2 mb-2">
                         <Button
                             variant="primary"
                             onClick={toggleSidebar}

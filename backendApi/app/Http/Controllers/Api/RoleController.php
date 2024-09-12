@@ -23,7 +23,7 @@ class RoleController extends Controller
         $page = $request->query('page', 1);
         $pageSize = $request->query('pageSize', 1000);
 
-        $roles = Role::with(['createdBy','updatedBy'])->where('company_id', Auth::user()->primary_company)->skip(($page - 1) * $pageSize)
+        $roles = Role::with(['createdBy'])->where('company_id', Auth::user()->primary_company)->skip(($page - 1) * $pageSize)
             ->take($pageSize)
             ->orderBy('id', 'desc')
             ->get();
@@ -37,7 +37,6 @@ class RoleController extends Controller
 
 
     }
-
 
     /**
      * Display a listing of the resource.
@@ -98,10 +97,10 @@ class RoleController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function addRole(RoleRequest $request)
+    public function addRole(Request $request)
     {
 
-        $data = $request->validated();
+        $data = $request->all();
 
         $roleName = strtolower($data['role']);
         $roleStatus = abs($data['status']);
@@ -122,10 +121,8 @@ class RoleController extends Controller
             $addNewRole = Role::create($roleData);
             DB::commit();
 
-
         } catch (Exception $e) {
             DB::rollBack();
-            updateErrorlLogs($e, 'Role Controller');
             return response()->json([
                 'status' => 'error',
                 'message' => 'Role created successfully',
@@ -136,10 +133,9 @@ class RoleController extends Controller
         if ($addNewRole) {
             storeActivityLog([
                 'object_id' => $addNewRole['id'],
-                'object'=>'role',
                 'log_type' => 'create',
                 'module' => 'roles',
-                'descriptions' => 'Added new role',
+                'descriptions' => '',
                 'data_records' => $addNewRole,
             ]);
         }
@@ -186,7 +182,6 @@ class RoleController extends Controller
 
         } catch (Exception $e) {
             DB::rollBack();
-            updateErrorlLogs($e, 'Role Controller');
             return response()->json([
                 'status' => 'error',
                 'message' => 'Role update failed!',
@@ -197,7 +192,6 @@ class RoleController extends Controller
         if ($updatedRole) {
             storeActivityLog([
                 'object_id' => $id,
-                'object'=>'role',
                 'log_type' => 'update',
                 'module' => 'roles',
                 'descriptions' => 'Role Updated',
@@ -248,20 +242,5 @@ class RoleController extends Controller
     {
         return response()->json([
             'permission' => true]);
-    }
-
-    public function getCompanyRoleList()
-    {
-
-
-        $roles = Role::where('company_id', Auth::user()->primary_company)
-            ->orderBy('id', 'desc')
-            ->get();
-
-        $totalCount = Role::where('company_id', Auth::user()->primary_company)->count();
-        return response()->json([
-            'data' => $roles,
-            'total' => $totalCount,
-        ]);
     }
 }

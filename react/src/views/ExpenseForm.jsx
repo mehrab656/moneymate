@@ -37,12 +37,12 @@ export default function ExpenseForm() {
     const [expense, setExpense] = useState(_initialExpense);
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
-
-    const navigate = useNavigate();
-
-    const [bankAccounts, setBankAccounts] = useState([]);
-    const [selectedBankAccount, setSelectedBankAccount] = useState(null);
     const [expenseCategories, setExpenseCategories] = useState([]);
+    const [bankAccounts, setBankAccounts] = useState([]);
+    const [selectedAccountId, setSelectedAccountId] = useState('');
+    const [selectedUserId, setSelectedUserId] = useState('');
+    const navigate = useNavigate();
+    const [selectedBankAccount, setSelectedBankAccount] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
@@ -326,6 +326,7 @@ export default function ExpenseForm() {
                                             />
                                         )}
                                     />
+
                                     {errors.account_id && <p className="error-message mt-2">{errors.account_id[0]}</p>}
                                 </div>
                                 <div className="form-group">

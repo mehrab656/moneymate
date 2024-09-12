@@ -4,9 +4,10 @@ import {Link} from "react-router-dom";
 import Swal from 'sweetalert2';
 import WizCard from "../components/WizCard";
 import {Button, Modal} from "react-bootstrap";
+import {useStateContext} from "../contexts/ContextProvider";
 import Pagination from "react-bootstrap/Pagination";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faBank} from "@fortawesome/free-solid-svg-icons";
+import {faBank, faEdit, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 import MainLoader from "../components/MainLoader.jsx";
@@ -214,9 +215,9 @@ export default function Banks() {
                                 userRole === 'admin'&&
                                 <th>id</th>
                             }
-                            <th className="text-center">Bank Name</th>
-                            <th className="text-center">Added by</th>
-                            <th className="text-center">Created date</th>
+                            <th className="text-center">BANK NAME</th>
+                            <th className="text-center">ADDED BY</th>
+                            <th className="text-center">ADDED On</th>
                             {userRole ==='admin' && <th className={'text-center'}>ACTIONS</th>}
                             
                         </tr>
@@ -246,8 +247,8 @@ export default function Banks() {
                                             <td>{bank.id}</td>
                                         }
                                         <td>{bank.bank_name}</td>
-                                        <td>{bank.user_name}</td>
-                                        <td>{new Date(bank.created_at).toDateString()}</td>
+                                        <td></td>
+                                        <td></td>
                                         {userRole ==='admin' && 
                                          <td>
                                             <ActionButtonHelpers

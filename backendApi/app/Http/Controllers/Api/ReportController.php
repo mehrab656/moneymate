@@ -87,8 +87,6 @@ class ReportController extends Controller {
 		$endDate   = $request->end_date;
 		$cat_id    = $request->cat_id;
 		$sec_id    = $request->sec_id;
-		$page    = $request->page;
-		$pageSize    = $request->pageSize;
 
 		if ( $startDate ) {
 			$startDate = date( 'Y-m-d', strtotime( $startDate ) );
@@ -135,7 +133,6 @@ class ReportController extends Controller {
 			'end_date'     => $endDate ?: null,
 			'sector_id'    => $sec_id ?: null,
 			'category_id'  => $cat_id ?: null,
-            'total'=>$expensesRes->count()
 		] );
 	}
 
