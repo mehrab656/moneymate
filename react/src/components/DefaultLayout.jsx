@@ -232,7 +232,7 @@ export default function DefaultLayout() {
             <Container fluid>
                 <Row>
                     {/* Sidebar Toggle Button */}
-                    <Col xs={1} className="mt-3 ml-2 mb-2">
+                    <Col xs={1} className="ml-2">
                         <Button
                             variant="primary"
                             onClick={toggleSidebar}
@@ -639,7 +639,7 @@ export default function DefaultLayout() {
                                     </header>
 
 
-                                    <main className="flex-grow-1 py-4">
+                                    <main className="flex-grow-1 py-2">
                                         <Outlet/>
 
                                         {/*{notification &&*/}

@@ -1,28 +1,14 @@
 import * as React from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
 import {useContext, useEffect, useState} from "react";
 import {SettingsContext} from "../../contexts/SettingsContext.jsx";
-import {Link} from "react-router-dom";
 import axiosClient from "../../axios-client.js";
-import ActionButtonHelpers from "../../helper/ActionButtonHelpers.jsx";
 import Swal from "sweetalert2";
 import MainLoader from "../../components/MainLoader.jsx";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faBuildingFlag} from "@fortawesome/free-solid-svg-icons";
 import CompanyViewModal from "../Company/CompanyViewModal.jsx";
 import {checkPermission} from "../../helper/HelperFunctions.js";
-import {useStateContext} from '../../contexts/ContextProvider.jsx';
-// import Pagination from "react-bootstrap/Pagination";
-
-import Pagination from '@mui/material/Pagination';
-import Stack from '@mui/material/Stack';
-import {TableFooter} from "@mui/material";
+import CommonTable from "../../helper/CommonTable.jsx";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 
 const _initialCompanyData = {
@@ -40,13 +26,10 @@ const _initialCompanyData = {
     logo: null,
 };
 export default function companies() {
-    const {user, token, setUser, setToken} = useStateContext();
 
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
-    const [searchText, setSearchText] = useState("");
-
-    const [searchValue, setSearchValue] = useState('')
+    const [searchTerm, setSearchTerm] = useState("");
     const {applicationSettings, userRole, userPermission} = useContext(SettingsContext);
     const [companies, setCompanies] = useState([]);
     const [company, setCompany] = useState(_initialCompanyData);
@@ -56,11 +39,8 @@ export default function companies() {
         default_currency
     } = applicationSettings;
 
-    const pageSize = 5;
+    const pageSize = num_data_per_page;
     const totalPages = Math.ceil(totalCount / pageSize);
-
-
-
     const actionParams = {
         route: {
             editRoute: '/company/',
@@ -68,6 +48,15 @@ export default function companies() {
             deleteRoute: ''
         },
     }
+
+    const filteredCompanies = companies.filter(
+        (company) =>
+            company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            company.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            company.license_no.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            company.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            company.activity.toLowerCase().includes(searchTerm.toLowerCase())
+    );
     const onDelete = (u) => {
         Swal.fire({
             title: 'Are you sure?',
@@ -110,7 +99,6 @@ export default function companies() {
             .then(({data}) => {
                 setLoading(false);
                 setCompanies(data.data);
-                console.log(data)
                 setTotalCount(data.total);
             })
             .catch(() => {
@@ -120,102 +108,57 @@ export default function companies() {
 
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
-        console.log(event);
     };
-    const paginationItems = [];
-    // for (let i = 1; i <= totalPages; i++) {
-    //     paginationItems.push(
-    //         <Pagination.Item
-    //             key={i}
-    //             active={i === currentPage}
-    //             onClick={() => handlePageChange(i)}>
-    //             {i}
-    //         </Pagination.Item>
-    //     );
-    // }
 
     return (
-
         <div>
             <MainLoader loaderVisible={loading}/>
-            <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
-                <h1 className="title-text mb-0">List of Companies</h1>
-                {checkPermission(userPermission.company_create) &&
-                    <div>
-                        <Link className="custom-btn btn-add" to="/company/add">
-                            <FontAwesomeIcon icon={faBuildingFlag}/> Add New
-                        </Link>
-                    </div>
+            <CommonTable
+                cardTitle={"List of Companies"}
+                addBTN={
+                    {
+                        permission: checkPermission(userPermission.company_create),
+                        txt: "Create New",
+                        icon:(<FontAwesomeIcon icon={faBuildingFlag}/>), //"faBuildingFlag",
+                        link:"/company/add"
+                    }
                 }
-
-            </div>
-            <TableContainer component={Paper}>
-                <Table size="small" aria-label="company table">
-                    <TableHead>
-                        <TableRow>
-                            {
-                                userRole === 'admin' &&
-                                <TableCell>id</TableCell>
-                            }
-                            <TableCell>Company Name</TableCell>
-                            <TableCell align="right">Manager</TableCell>
-                            <TableCell align="right">Active Sector</TableCell>
-                            <TableCell align="right">Account Balance</TableCell>
-                            <TableCell align="right">Status</TableCell>
-                            <TableCell align="right">Action</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {
-                            loading ?
-                                <>
-                                    <TableRow>
-                                        <TableCell scope="row" style={{textAlign: "center"}}
-                                                   colSpan={6}>{"Loading..."}</TableCell>
-                                    </TableRow>
-
-                                </> : (
-                                    companies?.map((company) => (
-                                        <TableRow key={company.uid}>
-                                            {
-                                                userRole === 'admin' &&
-                                                <TableCell component="th" scope="row">{company.id}</TableCell>
-                                            }
-                                            <TableCell component="th" scope="row">{company.name}</TableCell>
-                                            <TableCell align="right">{company.phone}</TableCell>
-                                            <TableCell align="right">{company.issue_date}</TableCell>
-                                            <TableCell align="right">{company.license_no}</TableCell>
-                                            <TableCell align="right">{company?.status}</TableCell>
-                                            <TableCell align="right">
-                                                <ActionButtonHelpers
-                                                    module={company}
-                                                    showModule={showCompany}
-                                                    deleteFunc={onDelete}
-                                                    params={actionParams}
-                                                    editDropdown={userPermission.company_edit}
-                                                    showPermission={userPermission.company_view}
-                                                    deletePermission={userPermission.company_delete}/>
-                                            </TableCell>
-
-                                        </TableRow>
-                                    )))
-                        }
-                    </TableBody>
-                    <TableFooter style={{background:"#dd2221"}}>
-                        {totalPages > 1 && (
-                            <Pagination count={totalCount}
-                                        variant="outlined"
-                                        shape="rounded"
-                                // page={currentPage}
-                                        onChange={handlePageChange}
-                            />
-
-
-                        )}
-                    </TableFooter>
-                </Table>
-            </TableContainer>
-
+                paginations={{
+                    totalPages: totalPages,
+                    totalCount: totalCount,
+                    currentPage: currentPage,
+                    handlePageChange: handlePageChange
+                }}
+                table={{
+                    size: "small",
+                    ariaLabel: 'company table',
+                    showIdColumn: userRole === 'admin' ?? false,
+                    tableHead: {
+                        columns: ['Name', 'Manager', 'Active Sector', 'Account Balance', 'Activity']
+                    },
+                    tableBody: {
+                        loading: loading,
+                        loadingColSpan: 6,
+                        rows: filteredCompanies,//rendering data
+                        columns: ['name', 'phone', 'issue_date', 'license_no', 'activity']
+                    },
+                    actionBtn: {
+                        module: company,
+                        showModule: showCompany,
+                        deleteFunc: onDelete,
+                        params: actionParams,
+                        editDropdown: userPermission.company_edit,
+                        showPermission: userPermission.company_view,
+                        deletePermission: userPermission.company_delete
+                    }
+                }}
+                filter={{
+                    filterByText:true,
+                    placeHolderTxt:'Search by Company Name,Activity etc...',
+                    searchBoxValue:searchTerm,
+                    handelSearch: setSearchTerm
+                }}
+            />
             <CompanyViewModal
                 showModal={showModal}
                 handelCloseModal={handleCloseModal}

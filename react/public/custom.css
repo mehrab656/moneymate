@@ -227,8 +227,15 @@ h1, h2, h3, h4, h5, h6 {
     transition: width .2s ease;
 }
 
+/*header,*/
+/*main,*/
+/*footer {*/
+/*    !*padding-left: 1.5rem;*!*/
+/*    !*padding-right: 1.5rem;*!*/
+/*}*/
+
+/*custom by MEHRAB*/
 header,
-main,
 footer {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
@@ -412,7 +419,7 @@ footer {
 }
 
 .actionDropDownMenu{
-    position: fixed !important;
+    /*position: fixed !important;*/
     z-index: 1 !important;
 }
 
