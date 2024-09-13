@@ -38,6 +38,14 @@ export default function companies() {
         num_data_per_page,
         default_currency
     } = applicationSettings;
+    const TABLE_HEAD = [
+        { id: "name", label: "Name", align: "left" },
+        { id: "phone", label: "Phone", align: "left" },
+        { id: "issue_date", label: "Issue Date", align: "left" },
+        { id: "license_no", label: "License No.", align: "left" },
+        { id: "activity", label: "Activity", align: "left" },
+    ];
+
 
     const pageSize = num_data_per_page;
     const totalPages = Math.ceil(totalCount / pageSize);
@@ -133,14 +141,11 @@ export default function companies() {
                     size: "small",
                     ariaLabel: 'company table',
                     showIdColumn: userRole === 'admin' ?? false,
-                    tableHead: {
-                        columns: ['Name', 'Manager', 'Active Sector', 'Account Balance', 'Activity']
-                    },
+                    tableColumns: TABLE_HEAD,
                     tableBody: {
                         loading: loading,
-                        loadingColSpan: 6,
+                        loadingColSpan: 6, //Table head length + 1
                         rows: filteredCompanies,//rendering data
-                        columns: ['name', 'phone', 'issue_date', 'license_no', 'activity']
                     },
                     actionBtn: {
                         module: company,

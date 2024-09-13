@@ -1,124 +1,147 @@
 import React, { useEffect, useState, useContext } from "react";
 import axiosClient from "../../axios-client.js";
 import Swal from "sweetalert2";
-import { Link, useNavigate } from "react-router-dom";
-import Pagination from "react-bootstrap/Pagination";
-import WizCard from "../../components/WizCard.jsx";
+import { useNavigate } from "react-router-dom";
 import { Modal } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { SettingsContext } from "../../contexts/SettingsContext.jsx";
-import ActionButtonHelpers from "../../helper/ActionButtonHelpers.jsx";
-import { Tooltip } from "react-tooltip";
 import MainLoader from "../../components/MainLoader.jsx";
-import { checkPermission, compareDates } from "../../helper/HelperFunctions.js";
+import {checkPermission, compareDates} from "../../helper/HelperFunctions.js";
 import SummeryCard from "../../helper/SummeryCard.jsx";
 import { notification } from "../../components/ToastNotification.jsx";
-import {
-  CDropdown,
-  CDropdownDivider,
-  CDropdownItem,
-  CDropdownMenu,
-  CDropdownToggle,
-} from "@coreui/react";
-import Checkbox from "@mui/material/Checkbox";
-import useTable, { emptyRows, getComparator } from "../../hooks/useTable.js";
+
 import {
   Box,
-  Card,
-  Table,
-  Switch,
+
   Button,
-  Divider,
-  TableBody,
-  Container,
-  TableContainer,
-  TablePagination,
-  FormControlLabel,
-  Backdrop,
+
 } from "@mui/material";
-import {
-  TableEmptyRows,
-  TableHeadCustom,
-  TableNoData,
-  TableToolbar,
-} from "../../components/table/index.js";
-import Scrollbar from "../../components/Scrollbar.jsx";
-import SectorTableRow from "../../components/table/TableRows/SectorTableRow.jsx";
-import HeaderBreadcrumbs from "../../components/HeaderBreadcrumbs.jsx";
+
 import Iconify from "../../components/Iconify.jsx";
+import CommonTable from "../../helper/CommonTable.jsx";
 
+const _initialSectorData = {
+  contract_end_date: "",
+  contract_start_date: "",
+  el_acc_no: "",
+  el_billing_date: "",
+  el_business_acc_no: "",
+  el_note: "",
+  el_premises_no: "",
+  id: null,
+  int_note: "",
+  internet_acc_no: "",
+  internet_billing_date: "",
+  name: "",
+  payments: [],
+};
 export default function Sectors() {
-  const navigate = useNavigate()
-  const [tableData, setTableData] = useState([]);
-  const [filterName, setFilterName] = useState("");
-  const [filterRole, setFilterRole] = useState("all");
-  const [filterStatus, setFilterStatus] = useState(1);
-
-  const TABLE_HEAD = [
-    { id: "id", label: "ID", align: "left" },
-    { id: "sector", label: "Sector", align: "left" },
-    { id: "electricity", label: "Electricity next payment", align: "left" },
-    { id: "internet", label: "Internet next payment", align: "left" },
-    { id: "cheque", label: "Cheque next payment", align: "left" },
-    { id: "action", label: "Actions", align: "right" },
-    { id: "" },
-  ];
-  const {
-    dense,
-    page,
-    order,
-    orderBy,
-    rowsPerPage,
-    setPage,
-    //
-    selected,
-    onSelectRow,
-    //
-    onSort,
-    onChangeDense,
-    onChangePage,
-    onChangeRowsPerPage,
-  } = useTable();
-
-  const dataFiltered = applySortFilter({
-    tableData,
-    comparator: getComparator(order, orderBy),
-    filterName,
-    filterRole,
-    filterStatus,
-  });
-
-  const denseHeight = dense ? 52 : 72;
-
-  const isNotFound =
-    (!dataFiltered.length && !!filterName) ||
-    (!dataFiltered.length && !!filterRole) ||
-    (!dataFiltered.length && !!filterStatus);
-
-  const handleFilterName = (filterName) => {
-    setFilterName(filterName);
-    setPage(0);
-  };
-
-  const handleFilterRole = (event) => {
-    setFilterRole(event.target.value);
-  };
-
-  const { applicationSettings, userRole, userPermission } =
-    useContext(SettingsContext);
-  const { num_data_per_page, default_currency } = applicationSettings;
-  const [loading, setLoading] = useState(false);
-  const [sectors, setSectors] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  const [modalSector, setModalSector] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const {applicationSettings, userRole, userPermission} = useContext(SettingsContext);
+  const [sectors, setSectors] = useState([]);
+  const [sector, setSector] = useState(_initialSectorData);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [showHelperModel, setShowHelperModel] = useState(false);
-  const [showHelperModelType, setShowHelperModelType] = useState("");
+
+  const { num_data_per_page,
+    default_currency } = applicationSettings;
+  const TABLE_HEAD = [
+    { id: "name", label: "Sector", align: "left" },
+    { id: "rent", label: "Rent", align: "right" },
+    { id: "el_acc_no", label: "Elec. Account", align: "right" },
+    { id: "internet_acc_no", label: "Int. Account", align: "right" },
+    { id: "electricity", label: "Electricity next payment", align: "right" },
+    { id: "internet", label: "Internet next payment", align: "left" },
+    { id: "cheque", label: "Cheque next payment", align: "right" },
+  ];
   const pageSize = num_data_per_page;
   const totalPages = Math.ceil(totalCount / pageSize);
+  const actionParams = {
+    route: {
+      editRoute: "/sector/update/",
+      viewRoute: "",
+      deleteRoute: "",
+    },
+  };
+
+  const filteredSectors = sectors.filter(
+      (sector) =>
+          sector.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const onDelete = (sector) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: `You will not be able to recover the sector !`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axiosClient
+            .delete(`sector/${sector.id}`)
+            .then((data) => {
+              getSectors(currentPage,pageSize);
+              notification("success", data?.message, data?.description);
+            })
+            .catch((err) => {
+              if (err.response) {
+                const error = err.response.data;
+                notification("error", error?.message, error.description);
+              }
+            });
+      }
+    });
+  };
+
+  const showSector = (sector) => {
+    axiosClient(`/sectorsIncomeExpense/${sector.id}`)
+        .then(({ data }) => {
+          setIncomeExpense(data);
+        })
+        .catch((e) => {
+          console.warn(e);
+        });
+    setModalSector(sector);
+
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setActiveElectricityModal("");
+    setActiveInternetModal("");
+    setShowModal(false);
+    setShowHelperModel(false);
+  };
+
+  const getSectors = (page, pageSize) => {
+    setLoading(true);
+    axiosClient
+        .get("/sectors", { params: { page, pageSize } })
+        .then(({ data }) => {
+          setLoading(false);
+          setSectors(data.data);
+          setTotalCount(data.total);
+        })
+        .catch(() => {
+          setLoading(false);
+        });
+  };
+
+  useEffect(() => {
+    document.title = "Manage Sectors";
+    getSectors(currentPage, pageSize);
+  }, [currentPage, pageSize]);
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
+  const [modalSector, setModalSector] = useState(false);
+  const [showHelperModel, setShowHelperModel] = useState(false);
+  const [showHelperModelType, setShowHelperModelType] = useState("");
+  const [activeInternetModal, setActiveInternetModal] = useState(null);
   const [activeElectricityModal, setActiveElectricityModal] = useState(null);
   const [incomeExpense, setIncomeExpense] = useState({
     income: 0,
@@ -135,123 +158,7 @@ export default function Sectors() {
       toast.onmouseleave = Swal.resumeTimer;
     },
   });
-  const [sector, setSector] = useState({
-    contract_end_date: "",
-    contract_start_date: "",
-    el_acc_no: "",
-    el_billing_date: "",
-    el_business_acc_no: "",
-    el_note: "",
-    el_premises_no: "",
-    id: null,
-    int_note: "",
-    internet_acc_no: "",
-    internet_billing_date: "",
-    name: "",
-    payments: [],
-  });
 
-  const showSector = (sector) => {
-    axiosClient(`/sectorsIncomeExpense/${sector.id}`)
-      .then(({ data }) => {
-        setIncomeExpense(data);
-      })
-      .catch((e) => {
-        console.warn(e);
-      });
-    setModalSector(sector);
-    setShowModal(true);
-  };
-  const getSectors = (page, pageSize) => {
-    setLoading(true);
-    axiosClient
-      .get("/sectors", { params: { page, pageSize } })
-      .then(({ data }) => {
-        setLoading(false);
-        setSectors(data.data);
-        setTableData(data.data);
-        setTotalCount(data.total);
-      })
-      .catch(() => {
-        setLoading(false);
-      });
-  };
-
-  useEffect(() => {
-    document.title = "Manage Sectors";
-    getSectors(currentPage, pageSize);
-  }, [currentPage, pageSize]);
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  const paginationItems = [];
-  for (let i = 1; i <= totalPages; i++) {
-    paginationItems.push(
-      <Pagination.Item
-        key={i}
-        active={i === currentPage}
-        onClick={() => handlePageChange(i)}
-      >
-        {i}
-      </Pagination.Item>
-    );
-  }
-
-  const handleDeleteRow = (sector) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: `You will not be able to recover the sector !`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "Cancel",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        axiosClient
-          .delete(`sector/${sector.id}`)
-          .then((data) => {
-            getSectors();
-            notification("success", data?.message, data?.description);
-          })
-          .catch((err) => {
-            if (err.response) {
-              const error = err.response.data;
-              notification("error", error?.message, error.description);
-            }
-          });
-      }
-    });
-  };
-
-  function dateOrdinal(date) {
-    return (
-      date +
-      (31 === date || 21 === date || 1 === date
-        ? "st"
-        : 22 === date || 2 === date
-        ? "nd"
-        : 23 === date || 3 === date
-        ? "rd"
-        : "th")
-    );
-  }
-
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
 
   // handle pay
   const handlePay = async (payment) => {
@@ -284,18 +191,8 @@ export default function Sectors() {
     });
   };
 
-  const actionParams = {
-    route: {
-      editRoute: "/sector/update/",
-      viewRoute: "",
-      deleteRoute: "",
-    },
-  };
-  const handleCloseModal = () => {
-    setActiveElectricityModal("");
-    setShowModal(false);
-    setShowHelperModel(false);
-  };
+
+
   const checkPayments = (payments, type) => {
     let message = "";
     for (let i = 0; i < payments.length; i++) {
@@ -313,14 +210,16 @@ export default function Sectors() {
   };
 
   const showHelperModels = (sector, index, type = "electricity") => {
-    setActiveElectricityModal(index);
+    if (type==='electricity'){
+      setActiveElectricityModal(index);
+    }else{
+      setActiveInternetModal(index);
+    }
     setSector(sector);
     setShowHelperModelType(type);
     setShowHelperModel(true);
   };
-  const showTableColumns = (column) => {
-    console.log({ column });
-  };
+
   const remainingContract = (end) => {
     let startDate = new Date();
 
@@ -349,121 +248,104 @@ export default function Sectors() {
       }
       dayDiff += daysInMonth[startDate.getMonth()];
     }
-
     return yearDiff + " Year " + monthDiff + " Months " + dayDiff + " Days.";
   };
+  const nextPaymentColumn = (payments,currency,handelPayment)=>{
+    let breakStatement = false;
+    let nextPayment;
+    payments.map((payment) => {
+      if (breakStatement) {
+        return;
+      }
+      if (payment.status === "unpaid" && payment.type === 'cheque') {
+        nextPayment = payment;
+        breakStatement = true;
+      }
+    });
+
+    if (nextPayment) {
+    return <Box display={'flex'}>
+      <Box sx={{ml: 2}}>
+        <span className={"text-" + compareDates(nextPayment.date)}>{nextPayment.date}</span>
+        {compareDates(nextPayment.date) === 'danger' &&
+            <Button
+                onClick={() => handlePay(nextPayment)}
+                sx={{cursor: "pointer"}}>
+              <small>pay</small>
+            </Button>
+        }
+      </Box>
+
+    </Box>
+    }else {
+      return <Box sx={{ml:2}}><Button variant='outlined'>All Paid</Button></Box>;
+    }
+  }
+
+  const electricityBillColumn =(sector,index)=>{
+    return (<Box display={'flex'}>
+      <Box sx={{ml:2}} onClick={() => showHelperModels(sector, index)}>{checkPayments(sector.payments, 'internet')}</Box>
+    </Box>)
+  }
+  const internetBillColumn =(sector,index)=>{
+    return (<Box display={'flex'}>
+      <Box sx={{ml:2}} onClick={() => showHelperModels(sector, index,"internet")}>{checkPayments(sector.payments, 'internet')}</Box>
+    </Box>)
+  }
+
+  const modifiedSectors = filteredSectors.map((sector,index)=>{
+    sector.electricity = electricityBillColumn(sector,index);
+    sector.internet = internetBillColumn(sector, index);
+    sector.cheque = nextPaymentColumn(sector.payments,default_currency,handlePay);
+    return sector;
+  });
+
+
   return (
     <div>
       <MainLoader loaderVisible={loading} />
-      <Container maxWidth={"xl"}>
-      <Card sx={{p:5}}>
-        <HeaderBreadcrumbs
-          heading="Sector List"
-          links={[
-            { name: "Dashboard", href:'/' },
-            { name: "Sector" },
-            { name: "List" },
-          ]}
-          action={
-            <Button
-              variant="contained"
-              component={Link}
-              to={'/sector/new'}
-              startIcon={<Iconify icon={"eva:plus-fill"} />}
-            >
-              New Sector
-            </Button>
+      <CommonTable
+          cardTitle={"List of Sectors"}
+          addBTN={
+            {
+              permission: checkPermission(userPermission.sector_create),
+              txt: "Create New",
+              icon:(<Iconify icon={"eva:plus-fill"} />), //"faBuildingFlag",
+              link:"/sector/new"
+            }
           }
-        />
-
-          <TableToolbar
-            searchText ={'Search Sector...'}
-            filterName={filterName}
-            filterRole={filterRole}
-            onFilterName={handleFilterName}
-            onFilterRole={handleFilterRole}
-          />
-
-          <Scrollbar>
-            <TableContainer >
-              <Table size={dense ? "small" : "medium"}>
-                <TableHeadCustom
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={tableData.length}
-                  onSort={onSort}
-                />
-
-                <TableBody>
-                  {dataFiltered
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row, key) => {
-                        let breakStatement = false;
-                        let nextPayment;
-                        sector?.payments.map((payment) => {
-                            if (breakStatement) {
-                                return;
-                            }
-                            if (payment.status === "unpaid" && payment.type === 'cheque') {
-                                nextPayment = payment;
-                                breakStatement = true;
-                            }
-                        });
-                        return(
-                            <SectorTableRow
-                                key={key}
-                                row={row}
-                                showHelperModels = {showHelperModels}
-                                checkPayments ={checkPayments}
-                                index={key}
-                                activeElectricityModal={activeElectricityModal}
-                                handlePay={handlePay}
-                                nextPayment={nextPayment}
-                                default_currency
-
-                                selected={selected.includes(row.uuid)}
-                                onSelectRow={() => onSelectRow(row.uuid)}
-                                onEditRow={() => navigate(`/sector/update/${row?.id}`)}
-                                onViewRow ={()=> showSector(row)}
-                                onDeleteRow={() => handleDeleteRow(row)}
-
-                                />
-                        )
-                    }
-                    )}
-
-                  <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
-                  />
-
-                  <TableNoData isNotFound={isNotFound} />
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Scrollbar>
-
-          <Box sx={{ position: "relative" }}>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component="div"
-              count={dataFiltered.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={onChangePage}
-              onRowsPerPageChange={onChangeRowsPerPage}
-            />
-
-            <FormControlLabel
-              control={<Switch checked={dense} onChange={onChangeDense} />}
-              label="Dense"
-              sx={{ px: 3, py: 1.5, top: 0, position: { md: "absolute" } }}
-            />
-          </Box>
-        </Card>
-        {/* <ToastContainer /> */}
-      </Container>
+          paginations={{
+            totalPages: totalPages,
+            totalCount: totalCount,
+            currentPage: currentPage,
+            handlePageChange: handlePageChange
+          }}
+          table={{
+            size: "small",
+            ariaLabel: 'sector table',
+            showIdColumn: userRole === 'admin' ?? false,
+            tableColumns: TABLE_HEAD,
+            tableBody: {
+              loading: loading,
+              loadingColSpan: 8,
+              rows: filteredSectors,//rendering data
+            },
+            actionBtn: {
+              showModule: showSector,
+              deleteFunc: onDelete,
+              params: actionParams,
+              editDropdown: userPermission.sector_edit,
+              showPermission: userPermission.sector_view,
+              deletePermission: userPermission.sector_delete
+            }
+          }}
+          filter={{
+            filterByText:true,
+            placeHolderTxt:'Search Sector...',
+            searchBoxValue:searchTerm,
+            handelSearch: setSearchTerm
+          }}
+      />
 
       <SummeryCard
         showModal={showHelperModel}
@@ -658,33 +540,4 @@ export default function Sectors() {
       </Modal>
     </div>
   );
-}
-
-// ----------------------------------------------------------------------
-
-function applySortFilter({
-  tableData,
-  comparator,
-  filterName,
-  filterStatus,
-  filterRole,
-}) {
-  const stabilizedThis = tableData.map((el, index) => [el, index]);
-
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-
-  tableData = stabilizedThis.map((el) => el[0]);
-
-  if (filterName) {
-    tableData = tableData.filter(
-      (item) =>
-        item.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
-    );
-  }
-
-  return tableData;
 }

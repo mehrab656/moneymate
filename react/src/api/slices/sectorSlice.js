@@ -13,7 +13,7 @@ export const sectorSlice = createApi({
     getSectorsData: builder.query({
       query: ({token,searchValue,currentPage,pageSize}) => {
         return {
-          url: `/sectors?keyword=${searchValue}&page=${currentPage}&pageSize=${pageSize}`,
+          url: `/sectors`,
           method: "GET",
           headers:{
             Authorization: `Bearer ${token}`

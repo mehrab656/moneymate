@@ -1,186 +1,95 @@
-import React, { useEffect, useState, useContext } from "react";
-import axiosClient from "../../axios-client.js";
+import {Link} from "react-router-dom";
+import React, {useContext, useEffect, useState} from "react";
+import axiosClient from "../axios-client.js";
 import Swal from "sweetalert2";
-import { Link, useNavigate } from "react-router-dom";
+import ExpenseExportButton from "../components/ExpenseExportButton.jsx";
+import WizCard from "../components/WizCard";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {
+  faBuildingFlag,
+  faEdit,
+  faList12,
+  faListOl,
+  faMinus, faPlus,
+  faThList,
+  faTrash
+} from "@fortawesome/free-solid-svg-icons";
 import Pagination from "react-bootstrap/Pagination";
-import WizCard from "../../components/WizCard.jsx";
-import { Modal } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { SettingsContext } from "../../contexts/SettingsContext.jsx";
-import ActionButtonHelpers from "../../helper/ActionButtonHelpers.jsx";
-import { Tooltip } from "react-tooltip";
-import MainLoader from "../../components/MainLoader.jsx";
-import { checkPermission, compareDates } from "../../helper/HelperFunctions.js";
-import SummeryCard from "../../helper/SummeryCard.jsx";
-import { notification } from "../../components/ToastNotification.jsx";
-import {
-  CDropdown,
-  CDropdownDivider,
-  CDropdownItem,
-  CDropdownMenu,
-  CDropdownToggle,
-} from "@coreui/react";
-import Checkbox from "@mui/material/Checkbox";
-import useTable, { emptyRows, getComparator } from "../../hooks/useTable.js";
-import {
-  Box,
-  Card,
-  Table,
-  Switch,
-  Button,
-  Divider,
-  TableBody,
-  Container,
-  TableContainer,
-  TablePagination,
-  FormControlLabel,
-  Backdrop,
-} from "@mui/material";
-import {
-  TableEmptyRows,
-  TableHeadCustom,
-  TableNoData,
-  TableToolbar,
-} from "../../components/table/index.js";
-import Scrollbar from "../../components/Scrollbar.jsx";
-import SectorTableRow from "../../components/table/TableRows/SectorTableRow.jsx";
-import HeaderBreadcrumbs from "../../components/HeaderBreadcrumbs.jsx";
-import Iconify from "../../components/Iconify.jsx";
+import DownloadAttachment from "../components/DownloadAttachment";
+import {SettingsContext} from "../contexts/SettingsContext";
+import {Button, Image, Modal} from "react-bootstrap";
+import Dropdown from "react-bootstrap/Dropdown"
+import ActionButtonHelpers from "../helper/ActionButtonHelpers";
+import MainLoader from "../components/MainLoader.jsx";
+import ExpenseModal from "../helper/ExpenseModal.jsx";
+import { notification } from "../components/ToastNotification.jsx";
+import {checkPermission} from "../helper/HelperFunctions.js";
+import CommonTable from "../helper/CommonTable.jsx";
 
-export default function Sectors() {
-  const navigate = useNavigate()
-  const [tableData, setTableData] = useState([]);
-  const [filterName, setFilterName] = useState("");
-  const [filterRole, setFilterRole] = useState("all");
-  const [filterStatus, setFilterStatus] = useState(1);
+export default function Expenses() {
 
-  const TABLE_HEAD = [
-    { id: "id", label: "ID", align: "left" },
-    { id: "sector", label: "Sector", align: "left" },
-    { id: "electricity", label: "Electricity next payment", align: "left" },
-    { id: "internet", label: "Internet next payment", align: "left" },
-    { id: "cheque", label: "Cheque next payment", align: "left" },
-    { id: "action", label: "Actions", align: "right" },
-    { id: "" },
-  ];
-  const {
-    dense,
-    page,
-    order,
-    orderBy,
-    rowsPerPage,
-    setPage,
-    //
-    selected,
-    onSelectRow,
-    //
-    onSort,
-    onChangeDense,
-    onChangePage,
-    onChangeRowsPerPage,
-  } = useTable();
-
-  const dataFiltered = applySortFilter({
-    tableData,
-    comparator: getComparator(order, orderBy),
-    filterName,
-    filterRole,
-    filterStatus,
-  });
-
-  const denseHeight = dense ? 52 : 72;
-
-  const isNotFound =
-    (!dataFiltered.length && !!filterName) ||
-    (!dataFiltered.length && !!filterRole) ||
-    (!dataFiltered.length && !!filterStatus);
-
-  const handleFilterName = (filterName) => {
-    setFilterName(filterName);
-    setPage(0);
-  };
-
-  const handleFilterRole = (event) => {
-    setFilterRole(event.target.value);
-  };
-
-  const { applicationSettings, userRole, userPermission } =
-    useContext(SettingsContext);
-  const { num_data_per_page, default_currency } = applicationSettings;
   const [loading, setLoading] = useState(false);
-  const [sectors, setSectors] = useState([]);
+  const [expenses, setExpenses] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  const [modalSector, setModalSector] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [showHelperModel, setShowHelperModel] = useState(false);
-  const [showHelperModelType, setShowHelperModelType] = useState("");
+  const baseURL= `${window.__APP_CONFIG__.VITE_APP_BASE_URL}/api`
+  const [expense, setExpense] = useState({
+    id: null,
+    user_id: null,
+    account_id: '', // Set default value to an empty string
+    amount: '', // Set default value to an empty string
+    refundable_amount: '', // Set default value to an empty string
+    refunded_amount: '',
+    category_id: null,
+    description: '',
+    reference: '',
+    date: '',
+    note: '',
+    attachment: ''
+  });
+  const TABLE_HEAD = [
+    { id: "date", label: "Date", align: "left" },
+    { id: "description", label: "Details", align: "left" },
+    { id: "amount", label: "Amount", align: "right" },
+    { id: "refundable_amount", label: "Refundable amount", align: "right" },
+    { id: "refunded_amount", label: "Refunded amount", align: "right" },
+  ];
+  const showExpense = (expense) => {
+    setExpense(expense);
+    setShowModal(true);
+  }
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+  const {applicationSettings, userRole} = useContext(SettingsContext);
+  const {
+    num_data_per_page,
+    default_currency
+  } = applicationSettings;
+
   const pageSize = num_data_per_page;
   const totalPages = Math.ceil(totalCount / pageSize);
-  const [activeElectricityModal, setActiveElectricityModal] = useState(null);
-  const [incomeExpense, setIncomeExpense] = useState({
-    income: 0,
-    expense: 0,
-  });
-  const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.onmouseenter = Swal.stopTimer;
-      toast.onmouseleave = Swal.resumeTimer;
-    },
-  });
-  const [sector, setSector] = useState({
-    contract_end_date: "",
-    contract_start_date: "",
-    el_acc_no: "",
-    el_billing_date: "",
-    el_business_acc_no: "",
-    el_note: "",
-    el_premises_no: "",
-    id: null,
-    int_note: "",
-    internet_acc_no: "",
-    internet_billing_date: "",
-    name: "",
-    payments: [],
-  });
-
-  const showSector = (sector) => {
-    axiosClient(`/sectorsIncomeExpense/${sector.id}`)
-      .then(({ data }) => {
-        setIncomeExpense(data);
-      })
-      .catch((e) => {
-        console.warn(e);
-      });
-    setModalSector(sector);
-    setShowModal(true);
-  };
-  const getSectors = (page, pageSize) => {
-    setLoading(true);
-    axiosClient
-      .get("/sectors", { params: { page, pageSize } })
-      .then(({ data }) => {
-        setLoading(false);
-        setSectors(data.data);
-        setTableData(data.data);
-        setTotalCount(data.total);
-      })
-      .catch(() => {
-        setLoading(false);
-      });
-  };
 
   useEffect(() => {
-    document.title = "Manage Sectors";
-    getSectors(currentPage, pageSize);
+    document.title = "Manage Expenses";
+    getExpenses(currentPage, pageSize);
   }, [currentPage, pageSize]);
+
+  const getExpenses = (page, pageSize) => {
+    setLoading(true);
+    axiosClient.get('/expenses', {params: {page, pageSize}})
+        .then(({data}) => {
+          setLoading(false);
+          setExpenses(data.data);
+          setTotalCount(data.total);
+        })
+        .catch(() => {
+          setLoading(false);
+        })
+  }
+
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -189,477 +98,243 @@ export default function Sectors() {
   const paginationItems = [];
   for (let i = 1; i <= totalPages; i++) {
     paginationItems.push(
-      <Pagination.Item
-        key={i}
-        active={i === currentPage}
-        onClick={() => handlePageChange(i)}
-      >
-        {i}
-      </Pagination.Item>
+        <Pagination.Item
+            key={i}
+            active={i === currentPage}
+            onClick={() => handlePageChange(i)}>
+          {i}
+        </Pagination.Item>
     );
   }
 
-  const onDelete = (sector) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: `You will not be able to recover the sector !`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "Cancel",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        axiosClient
-          .delete(`sector/${sector.id}`)
-          .then((data) => {
-            getSectors();
-            notification("success", data?.message, data?.description);
-          })
-          .catch((err) => {
-            if (err.response) {
-              const error = err.response.data;
-              notification("error", error?.message, error.description);
-            }
-          });
+  const filteredExpenses = expenses.filter((expense) => {
+
+    if (expense.refundable_amount > 0) {
+      if (expense.refunded_amount === expense.refundable_amount) {
+        expense.refunded_txt_clr = 'success';
+      } else {
+        expense.refunded_txt_clr = 'danger';
       }
-    });
-  };
+    } else {
+      expense.refunded_txt_clr = 'dark';
+    }
 
-  function dateOrdinal(date) {
-    return (
-      date +
-      (31 === date || 21 === date || 1 === date
-        ? "st"
-        : 22 === date || 2 === date
-        ? "nd"
-        : 23 === date || 3 === date
-        ? "rd"
-        : "th")
-    );
-  }
+    return expense.user_name.toLowerCase().includes(searchTerm.toLowerCase())
+        || expense.account_number.toLowerCase().includes(searchTerm.toLowerCase())
+        || expense.category_name.toLowerCase().includes(searchTerm.toLowerCase())
+        || expense.amount.toLowerCase().includes(searchTerm.toLowerCase())
+        || expense.refundable_amount.toLowerCase().includes(searchTerm.toLowerCase())
+        || expense.refunded_amount.toLowerCase().includes(searchTerm.toLowerCase())
+        || expense.description.toLowerCase().includes(searchTerm.toLowerCase())
+        || expense.bank_name.toLowerCase().includes(searchTerm.toLowerCase())
+  });
 
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
 
-  // handle pay
-  const handlePay = async (payment) => {
-    await Swal.fire({
-      title: `${default_currency + " " + payment.amount} has already paid?`,
-      text: "Are You sure the payment has paid!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes ! Sure",
-      cancelButtonText: "Not Now !",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        axiosClient
-          .post(`/change-payment-status/${payment.id}`)
-          .then(({ data }) => {
-            notification("success", data?.message, data?.description);
-            setTimeout(() => {
-              window.location.reload();
-            }, 1000);
-          })
-          .catch((err) => {
+  const onDelete = (expense) => {
+    if (userRole !== 'admin') {
+      Swal.fire({
+        title: 'Permission Denied!',
+        text: 'Investors are not permitted to delete any data!',
+        icon: 'danger',
+      });
+    } else {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: `You will not be able to recover the expense !`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          axiosClient.delete(`expense/${expense.id}`).then((data) => {
+            getExpenses();
+            notification('success',data?.message,data?.description)
+          }).catch(err => {
             if (err.response) {
-              const error = err.response.data;
-              notification("error", error?.message, error.description);
+              const error = err.response.data
+              notification('error',error?.message,error.description)
             }
-          });
-      }
-    });
+          })
+        }
+      });
+    }
+
+
   };
 
   const actionParams = {
     route: {
-      editRoute: "/sector/update/",
-      viewRoute: "",
-      deleteRoute: "",
+      editRoute: '/expense/',
+      viewRoute: '',
+      deleteRoute: ''
     },
-  };
-  const handleCloseModal = () => {
-    setActiveElectricityModal("");
-    setShowModal(false);
-    setShowHelperModel(false);
-  };
-  const checkPayments = (payments, type) => {
-    let message = "";
-    for (let i = 0; i < payments.length; i++) {
-      const payment = payments[i];
-      if (payment.type === type && payment.status === "unpaid") {
-        message = payment.date;
-        break;
-      }
-    }
-    return (
-      <span className={message === "" ? "text-success" : "text-warning"}>
-        {message === "" ? "All Clear" : message}
-      </span>
-    );
-  };
-
-  const showHelperModels = (sector, index, type = "electricity") => {
-    setActiveElectricityModal(index);
-    setSector(sector);
-    setShowHelperModelType(type);
-    setShowHelperModel(true);
-  };
-  const showTableColumns = (column) => {
-    console.log({ column });
-  };
-  const remainingContract = (end) => {
-    let startDate = new Date();
-
-    let endDate = new Date(end);
-
-    const startYear = startDate.getFullYear();
-    const february =
-      (startYear % 4 === 0 && startYear % 100 !== 0) || startYear % 400 === 0
-        ? 29
-        : 28;
-    const daysInMonth = [31, february, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-
-    let yearDiff = endDate.getFullYear() - startYear;
-    let monthDiff = endDate.getMonth() - startDate.getMonth();
-    if (monthDiff < 0) {
-      yearDiff--;
-      monthDiff += 12;
-    }
-    let dayDiff = endDate.getDate() - startDate.getDate();
-    if (dayDiff < 0) {
-      if (monthDiff > 0) {
-        monthDiff--;
-      } else {
-        yearDiff--;
-        monthDiff = 11;
-      }
-      dayDiff += daysInMonth[startDate.getMonth()];
-    }
-
-    return yearDiff + " Year " + monthDiff + " Months " + dayDiff + " Days.";
-  };
+  }
   return (
-    <div>
-      <MainLoader loaderVisible={loading} />
-      <Container maxWidth={"xl"}>
-      <Card sx={{p:5}}>
-        <HeaderBreadcrumbs
-          heading="Sector List"
-          links={[
-            { name: "Dashboard", href:'/' },
-            { name: "Sector" },
-            { name: "List" },
-          ]}
-          action={
-            <Button
-              variant="contained"
-              component={Link}
-              to={'/dashboard/hr/jobCreate'}
-              startIcon={<Iconify icon={"eva:plus-fill"} />}
-            >
-              New Sector
-            </Button>
-          }
+      <div>
+        <MainLoader loaderVisible={loading}/>
+        <CommonTable
+            cardTitle={"Expense Histories"}
+            addBTN={
+              {
+                permission: checkPermission(userPermission.expense_create),
+                txt: "Create New",
+                icon:(<FontAwesomeIcon icon={faPlus}/>), //"faBuildingFlag",
+                link:"/expense/new"
+              }
+            }
+            paginations={{
+              totalPages: totalPages,
+              totalCount: totalCount,
+              currentPage: currentPage,
+              handlePageChange: handlePageChange
+            }}
+            table={{
+              size: "small",
+              ariaLabel: 'expense table',
+              showIdColumn: userRole === 'admin' ?? false,
+              tableColumns: TABLE_HEAD,
+              tableBody: {
+                loading: loading,
+                loadingColSpan: 6, //Table head length + 1
+                rows: filteredCompanies,//rendering data
+              },
+              actionBtn: {
+                module: company,
+                showModule: showCompany,
+                deleteFunc: onDelete,
+                params: actionParams,
+                editDropdown: userPermission.company_edit,
+                showPermission: userPermission.company_view,
+                deletePermission: userPermission.company_delete
+              }
+            }}
+            filter={{
+              filterByText:true,
+              placeHolderTxt:'Search by Company Name,Activity etc...',
+              searchBoxValue:searchTerm,
+              handelSearch: setSearchTerm
+            }}
         />
 
-          <TableToolbar
-            filterName={filterName}
-            filterRole={filterRole}
-            onFilterName={handleFilterName}
-            onFilterRole={handleFilterRole}
-          />
 
-          <Scrollbar>
-            <TableContainer >
-              <Table size={dense ? "small" : "medium"}>
-                <TableHeadCustom
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={tableData.length}
-                  onSort={onSort}
-                />
 
-                <TableBody>
-                  {dataFiltered
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row, key) => (
-                        <SectorTableRow
-                      key={key}
-                      row={row}
-                      selected={selected.includes(row.uuid)}
-                      onSelectRow={() => onSelectRow(row.uuid)}
-                      onDeleteRow={() => handleDeleteRow(row.uuid)}
-                      onEditRow={() => navigate(`sector/update/${roe?.id}`)}
-                    />
-                    ))}
 
-                  <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
-                  />
 
-                  <TableNoData isNotFound={isNotFound} />
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Scrollbar>
 
-          <Box sx={{ position: "relative" }}>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component="div"
-              count={dataFiltered.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={onChangePage}
-              onRowsPerPageChange={onChangeRowsPerPage}
-            />
+        <WizCard className="animated fadeInDown">
+          <div className="row">
+            <div className="col-3">
+              <h1 className="title-text mb-0">Expense Histories</h1>
+            </div>
+            <div className="col-7">
+              <div className="mb-4">
+                <input className="custom-form-control"
+                       type="text"
+                       placeholder="Search Expense..."
+                       value={searchTerm}
+                       onChange={(e) => setSearchTerm(e.target.value)}/>
+              </div>
+            </div>
+            <div className="col-2">
+              <ExpenseExportButton/>
+              {userRole === 'admin' &&
+                  <Link className="btn-add float-end" to="/expense/new"><FontAwesomeIcon icon={faMinus}/> Add New</Link>}
+            </div>
+          </div>
 
-            <FormControlLabel
-              control={<Switch checked={dense} onChange={onChangeDense} />}
-              label="Dense"
-              sx={{ px: 3, py: 1.5, top: 0, position: { md: "absolute" } }}
-            />
-          </Box>
-        </Card>
-        {/* <ToastContainer /> */}
-      </Container>
+          <div className="table-responsive-sm">
+            <table className="table table-bordered custom-table">
+              <thead>
+              <tr className={'text-center'}>
+                {
+                    userRole === 'admin'&&
+                    <th>id</th>
+                }
+                <th>Date</th>
+                <th>Details</th>
+                {/*<th>Sector</th>*/}
+                <th>Amount</th>
+                <th>Refundable amount</th>
+                <th>Refunded amount</th>
+                <th>Action</th>
 
-      <SummeryCard
-        showModal={showHelperModel}
-        handelCloseModal={handleCloseModal}
-        data={sector}
-        currency={default_currency}
-        modalType={showHelperModelType}
-        Toast={Toast}
-        navigation={useNavigate}
-        loadingMethod={setLoading}
-      />
-
-      <Modal
-        size="lg"
-        show={showModal}
-        centered
-        onHide={handleCloseModal}
-        className="custom-modal lg"
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            <span>{modalSector?.name}</span>
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <table className="table table-bordered border-primary ">
-            <tbody>
-              <tr>
-                <td>
-                  Rent:<strong>{modalSector?.rent}</strong>
-                </td>
-                <td>
-                  Contract Start:
-                  <strong> {modalSector?.contract_start_date}</strong>
-                </td>
-                <td>
-                  Contract End:
-                  <strong> {modalSector?.contract_end_date}</strong>
-                </td>
               </tr>
-              <tr>
-                <td colSpan={2}>Contract Remaining</td>
-                <td>
-                  <strong>
-                    {" "}
-                    {remainingContract(modalSector.contract_end_date)}
-                  </strong>
-                </td>
-              </tr>
-
-              <tr>
-                <td rowSpan={3}>DEWA account</td>
-                <td>
-                  AC/No:<strong> {modalSector?.el_acc_no}</strong>
-                </td>
-                <td>
-                  Business Num.:
-                  <strong> {modalSector?.el_business_acc_no}</strong>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  Premises:<strong> {modalSector?.el_premises_no}</strong>
-                </td>
-                <td>
-                  Billing Date:<strong> {modalSector?.el_billing_date}</strong>
-                </td>
-              </tr>
-              <tr>
-                <td colSpan={2}>Note:</td>
-              </tr>
-              <tr>
-                <td rowSpan={2}>Internet</td>
-                <td>
-                  Acc No:<strong> {modalSector?.internet_acc_no}</strong>
-                </td>
-                <td>
-                  Billing Date:
-                  <strong> {modalSector?.internet_billing_date}</strong>
-                </td>
-              </tr>
-              <tr>
-                <td colSpan={2}>{"Note: " + modalSector?.int_note}</td>
-              </tr>
-
-              <tr>
-                <td rowSpan={2}>{" Income and Expense"}</td>
-                <td colSpan={2}>
-                  Total Income:{" "}
-                  <strong>
-                    {default_currency + " " + incomeExpense.income}
-                  </strong>
-                </td>
-              </tr>
-              <tr>
-                <td colSpan={2}>
-                  Total Expense:{" "}
-                  <strong>
-                    {default_currency + " " + incomeExpense.expense}
-                  </strong>
-                </td>
-              </tr>
-
-              {modalSector?.channels && modalSector?.channels.length > 0 && (
-                <>
+              </thead>
+              {loading && (
+                  <tbody>
                   <tr>
-                    <td rowSpan={modalSector.channels.length + 1}>
-                      {"Channels"}
+                    <td colSpan={8} className="text-center">
+                      Loading...
                     </td>
                   </tr>
-                  {modalSector?.channels.map((data, i) => {
-                    return (
-                      <tr key={"channel-row-" + i}>
-                        <td colSpan={2}>
-                          {data.channel_name} listing reference id{" "}
-                          <strong>{data.reference_id}</strong> and listed on{" "}
-                          {data.listing_date}
+                  </tbody>
+              )}
+              {!loading && (
+                  <tbody>
+                  {filteredExpenses.length === 0 ? (
+                      <tr>
+                        <td colSpan={8} className="text-center">
+                          No expense found
                         </td>
                       </tr>
-                    );
-                  })}
-                </>
+                  ) : (
+                      filteredExpenses.map((expense) => (
+                          <tr className={'text-center'} key={expense.id}>
+                            {
+                                userRole === 'admin'&&
+                                <td>{expense.id}</td>
+                            }
+                            <td><small>{expense.date}</small></td>
+                            <td className={'text-start'}>{expense.description}
+                              <div>
+                                <small>
+                                  <a href={`/categories`}>{expense.category_name}</a>
+                                </small>
+                              </div>
+                            </td>
+                            {/*<td className={'text-start'}>{expense.category_name}</td>*/}
+                            <td className={'amount'}>{default_currency + ' ' + expense.amount}</td>
+                            <td className={'amount'}>{default_currency + ' ' + expense.refundable_amount}</td>
+                            <td className={"amount text-" + expense.refunded_txt_clr}>{default_currency + ' ' + expense.refunded_amount}</td>
+                            <td>
+                              <ActionButtonHelpers
+                                  module={expense}
+                                  showModule={showExpense}
+                                  deleteFunc={onDelete}
+                                  params={actionParams}
+                              />
+                            </td>
+                          </tr>
+                      ))
+                  )}
+                  </tbody>
               )}
+            </table>
+          </div>
 
-              <tr>
-                <td colSpan={3}>
-                  <strong>Payment Information</strong>
-                </td>
-              </tr>
-              <tr>
-                <th>#</th>
-                <th>Payment No.</th>
-                <th>Amount</th>
-              </tr>
-              {modalSector?.payments &&
-                modalSector?.payments.length > 0 &&
-                modalSector?.payments.map((data, i) => {
-                  return (
-                    <tr key={data.id}>
-                      <td>{i + 1}</td>
-                      <td>
-                        {data?.payment_number}
-                        <ul style={{ display: "inline" }}>
-                          ({" "}
-                          <a
-                            href="#"
-                            style={{
-                              textDecoration: "none",
-                              marginRight: 10,
-                            }}
-                          >
-                            {data.date}
-                          </a>
-                          <a
-                            href="#"
-                            style={{
-                              textDecoration: "none",
-                              marginRight: 10,
-                            }}
-                          >
-                            {data?.type}
-                          </a>
-                          )
-                        </ul>
-                      </td>
-                      <td>
-                        {default_currency + " " + data?.amount}
-                        <div>
-                          <a
-                            href="#"
-                            style={{
-                              textDecoration: "none",
-                              float: "right",
-                              color: data?.status === "paid" ? "green" : "red",
-                            }}
-                          >
-                            {data?.status}
-                          </a>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-            </tbody>
-          </table>
-        </Modal.Body>
-        <Modal.Footer>
-          <button className="btn btn-primary" onClick={handleCloseModal}>
-            Close
-          </button>
-        </Modal.Footer>
-      </Modal>
-    </div>
-  );
-}
+          {totalPages > 1 && (
+              <Pagination>
+                <Pagination.Prev
+                    disabled={currentPage === 1}
+                    onClick={() => handlePageChange(currentPage - 1)}
+                />
+                {paginationItems}
+                <Pagination.Next
+                    disabled={currentPage === totalPages}
+                    onClick={() => handlePageChange(currentPage + 1)}
+                />
 
-// ----------------------------------------------------------------------
+              </Pagination>
+          )}
 
-function applySortFilter({
-  tableData,
-  comparator,
-  filterName,
-  filterStatus,
-  filterRole,
-}) {
-  const stabilizedThis = tableData.map((el, index) => [el, index]);
-
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-
-  tableData = stabilizedThis.map((el) => el[0]);
-
-  if (filterName) {
-    tableData = tableData.filter(
-      (item) =>
-        item.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
-    );
-  }
-
-  return tableData;
+        </WizCard>
+        <ExpenseModal showModal={showModal}
+                      handelCloseModal={handleCloseModal}
+                      title={'Expense Details '}
+                      data={expense}
+                      currency={default_currency}
+        />
+      </div>
+  )
 }

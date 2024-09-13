@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import {Link} from "react-router-dom";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import { faFilter} from "@fortawesome/free-solid-svg-icons";
+import {faFilter} from "@fortawesome/free-solid-svg-icons";
 import TableContainer from "@mui/material/TableContainer";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -21,23 +21,26 @@ import ActionButtonHelpers from "./ActionButtonHelpers.jsx";
 import Stack from "@mui/material/Stack";
 import Pagination from "@mui/material/Pagination";
 import * as React from "react";
-import {memo} from "react";
+import {createElement, isValidElement, memo} from "react";
 import {makeStyles} from "@mui/styles";
+
 const useStyles = makeStyles(() => ({
     root: {
         width: '100%',
-        boxShadow:'none',
+        boxShadow: 'none',
     },
     column: {
         flexBasis: '50%',
     },
 }));
-function CommonTable(props){
-    const {cardTitle,addBTN,paginations,table,filter} = props;
+
+function CommonTable(props) {
+    const {cardTitle, addBTN, paginations, table, filter} = props;
     const classes = useStyles();
     const genRand = (len) => {
-        return Math.random().toString(36).substring(2,len+2);
+        return Math.random().toString(36).substring(2, len + 2);
     }
+
     return (
         <Card sx={{p: 5}} style={{padding: "0px"}}>
             <CardActionArea>
@@ -53,8 +56,8 @@ function CommonTable(props){
                             </div>
 
                             {addBTN.permission &&
-                                <div className={classes.column} >
-                                    <Link className="btn-add mr-3" to={addBTN.link} style={{float:"right"}}>
+                                <div className={classes.column}>
+                                    <Link className="btn-add mr-3" to={addBTN.link} style={{float: "right"}}>
                                         {addBTN.icon} {addBTN.txt}
                                     </Link>
                                 </div>
@@ -64,7 +67,7 @@ function CommonTable(props){
                             {filter.filterByText &&
                                 <TextField
                                     sx={{
-                                        maxWidth: { sm: 340 },
+                                        maxWidth: {sm: 340},
                                         textTransform: 'capitalize',
                                     }}
                                     size="small"
@@ -89,10 +92,10 @@ function CommonTable(props){
                                     <TableCell><b>ID</b></TableCell>
                                 }
                                 {
-                                    table.tableHead.columns.map(column=>{
-                                        return(
-                                            <TableCell align="center" key={column}>
-                                                <b>{column}</b>
+                                    table.tableColumns.map(column => {
+                                        return (
+                                            <TableCell align={column.align} key={column.id}>
+                                                <b>{column.label}</b>
                                             </TableCell>
                                         )
                                     })
@@ -121,15 +124,24 @@ function CommonTable(props){
                                                     <TableCell component="th" scope="row">{row.id}</TableCell>
                                                 }
                                                 {
-                                                    table.tableBody.columns.map(column=>(
-                                                        <TableCell align="center" key={genRand(8)}>{`${row?.[column]}`}</TableCell>
+                                                    table.tableColumns.map(column => (
+                                                        isValidElement(row?.[column.id]) ?
+                                                            <TableCell align={column.align}
+                                                                       key={genRand(8)}>{
+                                                                createElement(row?.[column.id].type,row?.[column.id].props,row?.[column.id].props.children)
+                                                            }</TableCell>
+                                                            :
+                                                            <TableCell align={column.align}
+                                                                       key={genRand(8)}>
+                                                                {`${row?.[column.id]}`}
+                                                            </TableCell>
                                                     ))
                                                 }
                                                 {
                                                     JSON.stringify(table.actionBtn) !== '{}' &&
                                                     <TableCell align="right">
                                                         <ActionButtonHelpers
-                                                            module={table.actionBtn.module}
+                                                            module={row}
                                                             showModule={table.actionBtn.showModule}
                                                             deleteFunc={table.actionBtn.deleteFunc}
                                                             params={table.actionBtn.params}
