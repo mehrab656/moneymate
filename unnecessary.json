@@ -1,143 +1,1594 @@
-[
-  {
-    "LandNo": "1963",
-    "LandSubNo": "0",
-    "UsageNameAr": "",
-    "UsageNameEn": "",
-    "LandDmNo": "681",
-    "LandDmSubNo": "7736",
-    "MakaniNumber": "19981 72802",
-    "Size": "35.13",
-    "Dewa": "681115220",
-    "Rank": "",
-    "UnitEjariPropertyId": "1397896557",
-    "VillaEjariPropertyId": "",
-    "BuildingEjariPropertyId": "",
-    "LandEjariPropertyId": "",
-    "ContractStartDate": "",
-    "TenantNameAr": "",
-    "TenantNameEn": "",
-    "ManagementCompanyId": "",
-    "Owners": [
-      {
-        "OwnerId": 0,
-        "OwnerNumber": 5167028,
-        "email": "s************@yahoo.com",
-        "OwnerNameEn": "HASNIAN QADIR JUNEJO",
-        "OwnerNameAr": "حسنين  قادر جونيجو",
-        "OwnerMobile": "+92 342 2000 666",
-        "OwnerEmiratesId": null,
-        "OwnerPartId": 33392811,
-        "OwnerPassportNumber": "AL8782061",
-        "OwnerCountryId": 22,
-        "Identity": 0
-      }
-    ],
-    "IsFreeHold": true,
-    "PropertyTypeId": 2,
-    "LandPropertyId": 12466310,
-    "LandPropertyIdKey": "NPkXi3q4nYNuGyfiMqqjmA==",
-    "BuildingPropertyId": 29398679,
-    "BuildingPropertyIdKey": "YLrCwnt2WyVuGyfiMqqjmA==",
-    "VillaPropertyId": null,
-    "VillaPropertyIdKey": null,
-    "UnitPropertyId": 29398773,
-    "UnitPropertyIdKey": "CVvKvlbyrAVuGyfiMqqjmA==",
-    "Units": null,
-    "IsRented": true,
-    "AssociatedContracts": [
-      {
-        "Identity": 0,
-        "PropertiesDataId": null,
-        "ContractId": 2110776046,
-        "ContractTypeId": 2,
-        "ContractNumber": "0220240328000426",
-        "ContractKey": null,
-        "ContractStartDate": "2024-04-01T00:00:00",
-        "ContractEndDate": "2025-03-31T00:00:00",
-        "GraceStartDate": null,
-        "GraceEndDate": null,
-        "ContractAmount": 45000,
-        "ContractRank": 5,
-        "ContractTenantNameEn": "EDEN SPRINGS HOMES RENTAL L.L.C",
-        "ContractTenantNameAr": "إيدن أسبرنقس لتاجير بيوت العطلات ذ.م.م ",
-        "ManagementCompanyId": null,
-        "TotalCount": null,
-        "ContractStatusId": null,
-        "ContractStatusNameEn": null,
-        "ContractStatusNameAr": null,
-        "ContractTenantEmail": null,
-        "ContractTenantMobile": "0551258910",
-        "ContractTenantUNumber": "0420230512000131",
-        "ContractTenantEmiratesId": null,
-        "ContractTenantId": 2078728536,
-        "IsSublease": null,
-        "Properties": [],
-        "PassportNo": null,
-        "PassportIssueDate": null,
-        "PassportExpiryDate": null,
-        "TenantParticipantId": null,
-        "LicenseStateId": null,
-        "LicenseTypeId": null,
-        "LicenseNumber": null,
-        "InitialApprovalNumber": null,
-        "LicenseIssueDate": null,
-        "LicenseExpiryDate": null,
-        "PaidSecurityDeposit": null
-      }
-    ],
-    "AssociatedManagementContract": null,
-    "AssociatedDewaAccounts": null,
-    "EjariPropertyUsageId": 1,
-    "EjariTypeId": 842,
-    "EjariSubTypeId": 11,
-    "EjariUsageId": null,
-    "LandTypeId": 4,
-    "PropertyNumber": "206",
-    "PropertyId": 29398773,
-    "EstimatedValue": null,
-    "GeneralFund": null,
-    "ReserveFund": null,
-    "ChargePrSqft": null,
-    "ChargePrSqm": null,
-    "TotalCharges": null,
-    "ApplicableArea": null,
-    "RentalIndexMin": null,
-    "RentalIndexMax": null,
-    "TabuPropertyId": 29398773,
-    "TabuPropertyTypeId": 3,
-    "TabuPropertySubTypeId": 60,
-    "UnitNo": "206",
-    "BuildingNameEn": "DEZIRE RESIDENCES",
-    "BuildingNameAr": "ديزاير ريسيدنسس",
-    "AreaEn": "Al Barsha South Fourth",
-    "AreaAr": "البرشاء جنوب الرابعة",
-    "LandTypeNameEn": null,
-    "LandTypeNameAr": null,
-    "EjariUsageNameEn": null,
-    "EjariUsageNameAr": null,
-    "EjariTypeNameEn": "Flat",
-    "EjariTypeNameAr": "شقه",
-    "EjariSubTypeNameEn": "Studio",
-    "EjariSubTypeNameAr": "أستوديو",
-    "Rooms": "26",
-    "Latitude": "25.0602015180032",
-    "Longitude": "55.2153586020002",
-    "MoreData": "False",
-    "IndexRoomType": "Studio",
-    "IndexAreaId": "3",
-    "IndexSubAreaId": "123",
-    "ContractEndDate": "",
-    "ContractAmount": "",
-    "ContractNumber": null,
-    "ContractTypeId": null,
-    "ContractId": null,
-    "LandAreaId": 441,
-    "Identity": 1
-  },
-  {
-    "My Ejari Registration Number":"0520240415001929 "
+{
+  "assets": [
+    {
+      "serviceId": "",
+      "productIntegrationId": "PRM.PLAN1",
+      "productName": "Home Starter - Light",
+      "accountCode": "1.55283982",
+      "prodPromId": "",
+      "prodPromInstanceId": "",
+      "prodPromName": "",
+      "prodPromRuleId": "",
+      "contractCode": "BUNDLE1546682",
+      "status": "Active",
+      "bundleFlavor": "",
+      "statusReason": "Activation",
+      "activationDate": "Mar 11, 2024 12:00:00 AM",
+      "contractTerm": "",
+      "billingStatus": "",
+      "auctionFlag": "",
+      "auctionSecurityCode": "",
+      "RRMCStatus": "",
+      "label": ""
+    },
+    {
+      "serviceId": "971888889200656122",
+      "productIntegrationId": "ISDNi.BB",
+      "productName": "Broadband Service",
+      "accountCode": "1.55283982",
+      "prodPromId": "1-QVM36C",
+      "prodPromInstanceId": "BUNDLE1546682",
+      "prodPromName": "PRM.PLAN1",
+      "prodPromRuleId": "1-173AGYAT",
+      "contractCode": "CONTR0137430326",
+      "status": "Active",
+      "bundleFlavor": "",
+      "statusReason": "Activation",
+      "activationDate": "Mar 11, 2024 12:00:00 AM",
+      "contractTerm": "",
+      "billingStatus": "",
+      "services": [
+        {
+          "serviceId": "",
+          "name": "Basic Router",
+          "integrationId": "SSIIDD8",
+          "activationDate": "Mar 11, 2024 12:00:00 AM",
+          "status": "Active",
+          "serviceType": "Equipment",
+          "serviceAttributes": [
+            {
+              "name": "MAC Address",
+              "value": ""
+            },
+            {
+              "name": "Charge Flag",
+              "value": "No MRC/OTC"
+            },
+            {
+              "name": "SN",
+              "value": ""
+            },
+            {
+              "name": "Manufacturer",
+              "value": ""
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "antispam",
+          "integrationId": "SSIIANS",
+          "activationDate": "Mar 11, 2024 12:00:00 AM",
+          "status": "Active",
+          "serviceType": "Service"
+        },
+        {
+          "serviceId": "",
+          "name": "antispyware",
+          "integrationId": "SSIIAP5",
+          "activationDate": "Mar 11, 2024 12:00:00 AM",
+          "status": "Active",
+          "serviceType": "Service"
+        },
+        {
+          "serviceId": "971888889200656122",
+          "name": "broadband service",
+          "integrationId": "SSIIIAC",
+          "activationDate": "Mar 11, 2024 12:00:00 AM",
+          "status": "Active",
+          "serviceType": "Service",
+          "serviceAttributes": [
+            {
+              "name": "Web Storage",
+              "value": "20MB"
+            },
+            {
+              "name": "Tech Ref Field 3",
+              "value": ""
+            },
+            {
+              "name": "Resource",
+              "value": "971888889200656122"
+            },
+            {
+              "name": "Per MailBox Size",
+              "value": "1GB"
+            },
+            {
+              "name": "Tech Ref Field 4",
+              "value": ""
+            },
+            {
+              "name": "Print on bill",
+              "value": "Y"
+            },
+            {
+              "name": "Charge Flag",
+              "value": "Normal MRC/OTC"
+            },
+            {
+              "name": "EITCCLMSChangeSpeed",
+              "value": ""
+            },
+            {
+              "name": "Tech Ref Field 5",
+              "value": ""
+            },
+            {
+              "name": "Speed",
+              "value": "12Mbps/3Mbps"
+            },
+            {
+              "name": "MailBox Address",
+              "value": "5"
+            },
+            {
+              "name": "Booking Id",
+              "value": ""
+            },
+            {
+              "name": "Tech Ref Field 1",
+              "value": ""
+            },
+            {
+              "name": "DN Id",
+              "value": ""
+            },
+            {
+              "name": "Tech Ref Field 2",
+              "value": ""
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Welcome Router",
+          "integrationId": "SSIIWLR",
+          "activationDate": "Mar 11, 2024 12:00:00 AM",
+          "status": "Active",
+          "serviceType": "Service",
+          "serviceAttributes": [
+            {
+              "name": "Router name",
+              "value": "S118"
+            },
+            {
+              "name": "Status",
+              "value": "Delivered"
+            },
+            {
+              "name": "Router MAC Address",
+              "value": "80691A807248"
+            },
+            {
+              "name": "Router Model",
+              "value": "Motorola"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "2Months Free Monthly Plan Fee",
+          "integrationId": "SSMLL01",
+          "activationDate": "Mar 11, 2024 12:00:00 AM",
+          "status": "Active",
+          "serviceType": "Service"
+        },
+        {
+          "serviceId": "",
+          "name": "Itemised Bill",
+          "integrationId": "SSIBCON",
+          "activationDate": "Mar 11, 2024 12:00:00 AM",
+          "status": "Active",
+          "serviceType": "Service"
+        },
+        {
+          "serviceId": "",
+          "name": "Router Return",
+          "integrationId": "SSIITRR",
+          "activationDate": "Mar 11, 2024 12:00:00 AM",
+          "status": "Active",
+          "serviceType": "Service",
+          "serviceAttributes": [
+            {
+              "name": "Router Return",
+              "value": "N"
+            },
+            {
+              "name": "IMEI",
+              "value": ""
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "broadband RP",
+          "integrationId": "RPIICSA",
+          "activationDate": "Mar 11, 2024 12:00:00 AM",
+          "status": "Active",
+          "serviceType": "Rateplan"
+        },
+        {
+          "serviceId": "",
+          "name": "antivirus",
+          "integrationId": "SSIIANV",
+          "activationDate": "Mar 11, 2024 12:00:00 AM",
+          "status": "Active",
+          "serviceType": "Service"
+        }
+      ],
+      "auctionFlag": "",
+      "auctionSecurityCode": "",
+      "RRMCStatus": "",
+      "label": ""
+    },
+    {
+      "serviceId": "97145796671",
+      "productIntegrationId": "ISDNi.LL",
+      "productName": "Landline Service",
+      "accountCode": "1.55283982",
+      "prodPromId": "1-QVM36C",
+      "prodPromInstanceId": "BUNDLE1546682",
+      "prodPromName": "PRM.PLAN1",
+      "prodPromRuleId": "1-173AGYAK",
+      "contractCode": "CONTR0137430309",
+      "status": "Active",
+      "bundleFlavor": "",
+      "statusReason": "Activation",
+      "activationDate": "Mar 11, 2024 12:00:00 AM",
+      "contractTerm": "",
+      "billingStatus": "",
+      "services": [
+        {
+          "serviceId": "",
+          "name": "landline homephone",
+          "integrationId": "RPIVCHP",
+          "activationDate": "Mar 11, 2024 12:00:00 AM",
+          "status": "Active",
+          "serviceType": "Rateplan"
+        },
+        {
+          "serviceId": "",
+          "name": "Itemised Bill",
+          "integrationId": "SSIBCON",
+          "activationDate": "Mar 11, 2024 12:00:00 AM",
+          "status": "Active",
+          "serviceType": "Service"
+        },
+        {
+          "serviceId": "97145796671",
+          "name": "landline service",
+          "integrationId": "SSIVTEL",
+          "activationDate": "Mar 11, 2024 12:00:00 AM",
+          "status": "Active",
+          "serviceType": "Service",
+          "serviceAttributes": [
+            {
+              "name": "Tech Ref Field 3",
+              "value": ""
+            },
+            {
+              "name": "Resource",
+              "value": "97145796671"
+            },
+            {
+              "name": "Tech Ref Field 4",
+              "value": ""
+            },
+            {
+              "name": "Print on bill",
+              "value": "Y"
+            },
+            {
+              "name": "Charge Flag",
+              "value": "Normal MRC/OTC"
+            },
+            {
+              "name": "Tech Ref Field 5",
+              "value": ""
+            },
+            {
+              "name": "Booking Id",
+              "value": "844698394"
+            },
+            {
+              "name": "Tech Ref Field 1",
+              "value": ""
+            },
+            {
+              "name": "EITCCLMSChangeType",
+              "value": ""
+            },
+            {
+              "name": "DN Id",
+              "value": "1023741823"
+            },
+            {
+              "name": "Tech Ref Field 2",
+              "value": ""
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Basic Phone",
+          "integrationId": "SSIVDD6",
+          "activationDate": "Mar 11, 2024 12:00:00 AM",
+          "status": "Active",
+          "serviceType": "Service",
+          "serviceAttributes": [
+            {
+              "name": "MAC Address",
+              "value": ""
+            },
+            {
+              "name": "Charge Flag",
+              "value": "No MRC/OTC"
+            },
+            {
+              "name": "SN",
+              "value": ""
+            },
+            {
+              "name": "Manufacturer",
+              "value": ""
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Fix Voice rating",
+          "integrationId": "SSIVRAT",
+          "activationDate": "Mar 11, 2024 12:00:00 AM",
+          "status": "Active",
+          "serviceType": "Service",
+          "serviceAttributes": [
+            {
+              "name": "Service Package",
+              "value": "Please Select"
+            }
+          ]
+        },
+        {
+          "serviceId": "971777774312468",
+          "name": "du TV Default",
+          "integrationId": "SSTVDFT",
+          "activationDate": "Mar 11, 2024 12:00:00 AM",
+          "status": "Active",
+          "serviceType": "Service",
+          "serviceAttributes": [
+            {
+              "name": "du view SIID",
+              "value": "971777774321927"
+            },
+            {
+              "name": "Resource",
+              "value": "971777774312468"
+            },
+            {
+              "name": "NoNCprovision",
+              "value": "Y"
+            },
+            {
+              "name": "STB GUI ID",
+              "value": ""
+            },
+            {
+              "name": "SIID",
+              "value": ""
+            },
+            {
+              "name": "DN Id",
+              "value": "1044464884"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Return Last Missed Call",
+          "integrationId": "SSIVRLI",
+          "activationDate": "Mar 11, 2024 12:00:00 AM",
+          "status": "Active",
+          "serviceType": "Service",
+          "serviceAttributes": [
+            {
+              "name": "Charge Flag",
+              "value": "Normal MRC/OTC"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Ring Back When Free",
+          "integrationId": "SSIVRBF",
+          "activationDate": "Mar 11, 2024 12:00:00 AM",
+          "status": "Active",
+          "serviceType": "Service",
+          "serviceAttributes": [
+            {
+              "name": "Charge Flag",
+              "value": "Normal MRC/OTC"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Do Not Disturb",
+          "integrationId": "SSIVDND",
+          "activationDate": "Mar 11, 2024 12:00:00 AM",
+          "status": "Active",
+          "serviceType": "Service",
+          "serviceAttributes": [
+            {
+              "name": "Charge Flag",
+              "value": "Normal MRC/OTC"
+            }
+          ]
+        }
+      ],
+      "auctionFlag": "",
+      "auctionSecurityCode": "",
+      "RRMCStatus": "",
+      "label": ""
+    },
+    {
+      "serviceId": "971582711850",
+      "productIntegrationId": "GSM",
+      "productName": "Mobile Service",
+      "accountCode": "1.55283982",
+      "prodPromId": "",
+      "prodPromInstanceId": "",
+      "prodPromName": "",
+      "prodPromRuleId": "",
+      "contractCode": "CONTR0130745448",
+      "status": "Active",
+      "bundleFlavor": "HW5GPLUS",
+      "statusReason": "Activation",
+      "activationDate": "Oct 2, 2023 4:23:16 PM",
+      "contractTerm": "",
+      "billingStatus": "",
+      "services": [
+        {
+          "serviceId": "",
+          "name": "GSM Call Conference/Multiparty",
+          "integrationId": "SSGCONF",
+          "activationDate": "Oct 2, 2023 4:23:16 PM",
+          "status": "Active",
+          "serviceType": "Telephone"
+        },
+        {
+          "serviceId": "",
+          "name": "mobile internet",
+          "integrationId": "SSGCWAP",
+          "activationDate": "Oct 2, 2023 4:23:16 PM",
+          "status": "Active",
+          "serviceType": "Telephone",
+          "serviceAttributes": [
+            {
+              "name": "PDP Type",
+              "value": "PDP Type2"
+            },
+            {
+              "name": "PDP Address",
+              "value": "PDP Address1"
+            },
+            {
+              "name": "APN",
+              "value": "PDP APN1"
+            },
+            {
+              "name": "QoS Profile",
+              "value": "PDP Qos Profile4"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "mobile browsing",
+          "integrationId": "SSGCCG2",
+          "activationDate": "Oct 2, 2023 4:23:16 PM",
+          "status": "Active",
+          "serviceType": "Telephone",
+          "serviceAttributes": [
+            {
+              "name": "PDP Type",
+              "value": "PDP Type2"
+            },
+            {
+              "name": "PDP Address",
+              "value": "PDP Address1"
+            },
+            {
+              "name": "APN",
+              "value": "PDP APN1"
+            },
+            {
+              "name": "QoS Profile",
+              "value": "PDP Qos Profile4"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "LTE Service",
+          "integrationId": "SSGLTE",
+          "activationDate": "Oct 2, 2023 4:23:16 PM",
+          "status": "Active",
+          "serviceType": "Telephone",
+          "serviceAttributes": [
+            {
+              "name": "PDP Type",
+              "value": "PDP Type2"
+            },
+            {
+              "name": "PDP Address",
+              "value": "PDP Address1"
+            },
+            {
+              "name": "QoS LTE",
+              "value": "PDP LTE Profile 100"
+            },
+            {
+              "name": "APN",
+              "value": "PDP APN1"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Dummy Prepaid account",
+          "integrationId": "SSDSSPR",
+          "activationDate": "Oct 2, 2023 4:23:16 PM",
+          "status": "Active",
+          "serviceType": "",
+          "serviceAttributes": [
+            {
+              "name": "Silver",
+              "value": "Hybrid"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Voice over LTE",
+          "integrationId": "SSVOLTE",
+          "activationDate": "Oct 2, 2023 4:23:16 PM",
+          "status": "Active",
+          "serviceType": ""
+        },
+        {
+          "serviceId": "",
+          "name": "Home LTE Data Bundle",
+          "integrationId": "SSHLTEB",
+          "activationDate": "Oct 2, 2023 4:25:33 PM",
+          "status": "Active",
+          "serviceType": "",
+          "serviceAttributes": [
+            {
+              "name": "Free Units Package",
+              "value": "Home LTE Advanced"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "MiFi Router",
+          "integrationId": "SSHLTEM",
+          "activationDate": "Oct 2, 2023 4:23:16 PM",
+          "status": "Active",
+          "serviceType": "",
+          "serviceAttributes": [
+            {
+              "name": "MiFi Router IMEI",
+              "value": "864542061291692"
+            }
+          ]
+        },
+        {
+          "serviceId": "8997103123068443006",
+          "name": "SIM Card",
+          "integrationId": "SIM",
+          "activationDate": "Oct 2, 2023 4:23:16 PM",
+          "status": "Active",
+          "serviceType": "Telephone",
+          "serviceAttributes": [
+            {
+              "name": "IMSI",
+              "value": "424030281515174"
+            },
+            {
+              "name": "PUK",
+              "value": "69609297"
+            },
+            {
+              "name": "PUK2",
+              "value": "10213456"
+            },
+            {
+              "name": "SIM Card Id",
+              "value": "113459375"
+            },
+            {
+              "name": "SIM Card Number",
+              "value": "8997103123068443006"
+            },
+            {
+              "name": "Port Number",
+              "value": "60"
+            },
+            {
+              "name": "SIM Card Type",
+              "value": "USIM"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Home Wireless 5G New",
+          "integrationId": "SSHLT19",
+          "activationDate": "Oct 2, 2023 12:00:00 AM",
+          "status": "Inactive",
+          "serviceType": "",
+          "serviceAttributes": [
+            {
+              "name": "Free Units Package",
+              "value": ""
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Internet Calling Pack for Postpaid Mobile",
+          "integrationId": "SSMAAPS",
+          "activationDate": "Oct 2, 2023 4:23:16 PM",
+          "deactivationDate": "Jan 3, 2024 12:00:00 AM",
+          "status": "Inactive",
+          "serviceType": "Service"
+        },
+        {
+          "serviceId": "",
+          "name": "Home Wiresless 5G Deposit",
+          "integrationId": "SSHLTD2",
+          "activationDate": "Oct 2, 2023 4:23:16 PM",
+          "status": "Active",
+          "serviceType": ""
+        },
+        {
+          "serviceId": "",
+          "name": "Home LTE Commissioning",
+          "integrationId": "SSHLTEC",
+          "activationDate": "Oct 2, 2023 4:23:16 PM",
+          "status": "Active",
+          "serviceType": "",
+          "serviceAttributes": [
+            {
+              "name": "Commission Concatenation",
+              "value": "HW5GPLUS"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Home LTE Data Only",
+          "integrationId": "RPHOLTE",
+          "activationDate": "Oct 2, 2023 4:23:16 PM",
+          "status": "Active",
+          "serviceType": "Rateplan",
+          "serviceAttributes": [
+            {
+              "name": "Free Units Package",
+              "value": ""
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Home LTE Charge",
+          "integrationId": "SSHLTE",
+          "activationDate": "Oct 2, 2023 4:23:16 PM",
+          "status": "Active",
+          "serviceType": "",
+          "serviceAttributes": [
+            {
+              "name": "Home LTE Connection Type",
+              "value": "Permanent"
+            },
+            {
+              "name": "Home LTE Bundle Type",
+              "value": "Home Wireless 5G New"
+            }
+          ]
+        },
+        {
+          "serviceId": "971582711850",
+          "name": "Monthly Plan Fee",
+          "integrationId": "SSGTEL",
+          "activationDate": "Oct 2, 2023 4:23:16 PM",
+          "status": "Active",
+          "serviceType": "Telephone",
+          "serviceAttributes": [
+            {
+              "name": "Resource",
+              "value": "971582711850"
+            },
+            {
+              "name": "Commitment Period",
+              "value": ""
+            },
+            {
+              "name": "Number Type",
+              "value": "Regular"
+            },
+            {
+              "name": "Booking Id",
+              "value": ""
+            },
+            {
+              "name": "Commitment Value",
+              "value": "0"
+            },
+            {
+              "name": "Free Units Package",
+              "value": ""
+            },
+            {
+              "name": "DN Id",
+              "value": "1015619004"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "5G Service",
+          "integrationId": "SS5GSRV",
+          "activationDate": "Oct 2, 2023 4:23:16 PM",
+          "status": "Active",
+          "serviceType": "",
+          "serviceAttributes": [
+            {
+              "name": "Free Units Package",
+              "value": ""
+            }
+          ]
+        }
+      ],
+      "auctionFlag": "",
+      "auctionSecurityCode": "",
+      "RRMCStatus": "Registered",
+      "label": ""
+    },
+    {
+      "serviceId": "971527892543",
+      "productIntegrationId": "GSM",
+      "productName": "Mobile Service",
+      "accountCode": "1.55283982",
+      "prodPromId": "",
+      "prodPromInstanceId": "",
+      "prodPromName": "",
+      "prodPromRuleId": "",
+      "contractCode": "CONTR0129778308",
+      "status": "Active",
+      "bundleFlavor": "HW5GPLUS",
+      "statusReason": "Activation",
+      "activationDate": "Sep 15, 2023 6:05:54 PM",
+      "contractTerm": "",
+      "billingStatus": "",
+      "services": [
+        {
+          "serviceId": "",
+          "name": "Home LTE Data Only",
+          "integrationId": "RPHOLTE",
+          "activationDate": "Sep 15, 2023 6:05:54 PM",
+          "status": "Active",
+          "serviceType": "Rateplan",
+          "serviceAttributes": [
+            {
+              "name": "Free Units Package",
+              "value": ""
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "GSM Call Conference/Multiparty",
+          "integrationId": "SSGCONF",
+          "activationDate": "Sep 15, 2023 6:05:54 PM",
+          "status": "Active",
+          "serviceType": "Telephone"
+        },
+        {
+          "serviceId": "",
+          "name": "mobile internet",
+          "integrationId": "SSGCWAP",
+          "activationDate": "Sep 15, 2023 6:05:54 PM",
+          "status": "Active",
+          "serviceType": "Telephone",
+          "serviceAttributes": [
+            {
+              "name": "PDP Type",
+              "value": "PDP Type2"
+            },
+            {
+              "name": "PDP Address",
+              "value": "PDP Address1"
+            },
+            {
+              "name": "APN",
+              "value": "PDP APN1"
+            },
+            {
+              "name": "QoS Profile",
+              "value": "PDP Qos Profile4"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "mobile browsing",
+          "integrationId": "SSGCCG2",
+          "activationDate": "Sep 15, 2023 6:05:54 PM",
+          "status": "Active",
+          "serviceType": "Telephone",
+          "serviceAttributes": [
+            {
+              "name": "PDP Type",
+              "value": "PDP Type2"
+            },
+            {
+              "name": "PDP Address",
+              "value": "PDP Address1"
+            },
+            {
+              "name": "APN",
+              "value": "PDP APN1"
+            },
+            {
+              "name": "QoS Profile",
+              "value": "PDP Qos Profile4"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "LTE Service",
+          "integrationId": "SSGLTE",
+          "activationDate": "Sep 15, 2023 6:05:54 PM",
+          "status": "Active",
+          "serviceType": "Telephone",
+          "serviceAttributes": [
+            {
+              "name": "PDP Type",
+              "value": "PDP Type2"
+            },
+            {
+              "name": "PDP Address",
+              "value": "PDP Address1"
+            },
+            {
+              "name": "QoS LTE",
+              "value": "PDP LTE Profile 100"
+            },
+            {
+              "name": "APN",
+              "value": "PDP APN1"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Dummy Prepaid account",
+          "integrationId": "SSDSSPR",
+          "activationDate": "Sep 15, 2023 6:05:54 PM",
+          "status": "Active",
+          "serviceType": "",
+          "serviceAttributes": [
+            {
+              "name": "Silver",
+              "value": "Hybrid"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Voice over LTE",
+          "integrationId": "SSVOLTE",
+          "activationDate": "Sep 15, 2023 6:05:54 PM",
+          "status": "Active",
+          "serviceType": ""
+        },
+        {
+          "serviceId": "",
+          "name": "Internet Calling Pack for Postpaid Mobile",
+          "integrationId": "SSMAAPS",
+          "activationDate": "Sep 15, 2023 6:05:54 PM",
+          "deactivationDate": "Dec 16, 2023 12:00:00 AM",
+          "status": "Inactive",
+          "serviceType": "Service"
+        },
+        {
+          "serviceId": "",
+          "name": "5G Service",
+          "integrationId": "SS5GSRV",
+          "activationDate": "Sep 15, 2023 6:05:54 PM",
+          "status": "Active",
+          "serviceType": "",
+          "serviceAttributes": [
+            {
+              "name": "Free Units Package",
+              "value": ""
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Home LTE Charge",
+          "integrationId": "SSHLTE",
+          "activationDate": "Sep 15, 2023 6:05:54 PM",
+          "status": "Active",
+          "serviceType": "",
+          "serviceAttributes": [
+            {
+              "name": "Home LTE Connection Type",
+              "value": "Permanent"
+            },
+            {
+              "name": "Home LTE Bundle Type",
+              "value": "Home Wireless 5G New"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "MiFi Router",
+          "integrationId": "SSHLTEM",
+          "activationDate": "Sep 15, 2023 6:05:54 PM",
+          "status": "Active",
+          "serviceType": "",
+          "serviceAttributes": [
+            {
+              "name": "MiFi Router IMEI",
+              "value": "864542061175903"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Home LTE Commissioning",
+          "integrationId": "SSHLTEC",
+          "activationDate": "Sep 15, 2023 6:05:54 PM",
+          "status": "Active",
+          "serviceType": "",
+          "serviceAttributes": [
+            {
+              "name": "Commission Concatenation",
+              "value": "HW5GPLUS"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Home Wiresless 5G Deposit",
+          "integrationId": "SSHLTD2",
+          "activationDate": "Sep 15, 2023 6:05:54 PM",
+          "status": "Active",
+          "serviceType": ""
+        },
+        {
+          "serviceId": "",
+          "name": "Home Wireless 5G New",
+          "integrationId": "SSHLT19",
+          "activationDate": "Sep 15, 2023 12:00:00 AM",
+          "status": "Inactive",
+          "serviceType": "",
+          "serviceAttributes": [
+            {
+              "name": "Free Units Package",
+              "value": ""
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Home LTE Data Bundle",
+          "integrationId": "SSHLTEB",
+          "activationDate": "Sep 15, 2023 6:07:47 PM",
+          "status": "Active",
+          "serviceType": "",
+          "serviceAttributes": [
+            {
+              "name": "Free Units Package",
+              "value": "Home LTE Advanced"
+            }
+          ]
+        },
+        {
+          "serviceId": "971527892543",
+          "name": "Monthly Plan Fee",
+          "integrationId": "SSGTEL",
+          "activationDate": "Sep 15, 2023 6:05:54 PM",
+          "status": "Active",
+          "serviceType": "Telephone",
+          "serviceAttributes": [
+            {
+              "name": "Free Units Package",
+              "value": ""
+            },
+            {
+              "name": "DN Id",
+              "value": "1009724663"
+            },
+            {
+              "name": "Commitment Period",
+              "value": ""
+            },
+            {
+              "name": "Commitment Value",
+              "value": "0"
+            },
+            {
+              "name": "Number Type",
+              "value": "Regular"
+            },
+            {
+              "name": "Booking Id",
+              "value": ""
+            },
+            {
+              "name": "Resource",
+              "value": "971527892543"
+            }
+          ]
+        },
+        {
+          "serviceId": "8997103123068274005",
+          "name": "SIM Card",
+          "integrationId": "SIM",
+          "activationDate": "Sep 15, 2023 6:05:54 PM",
+          "status": "Active",
+          "serviceType": "Telephone",
+          "serviceAttributes": [
+            {
+              "name": "IMSI",
+              "value": "424030281498274"
+            },
+            {
+              "name": "PUK",
+              "value": "34747452"
+            },
+            {
+              "name": "PUK2",
+              "value": "51300424"
+            },
+            {
+              "name": "SIM Card Id",
+              "value": "113442475"
+            },
+            {
+              "name": "SIM Card Number",
+              "value": "8997103123068274005"
+            },
+            {
+              "name": "Port Number",
+              "value": "60"
+            },
+            {
+              "name": "SIM Card Type",
+              "value": "USIM"
+            }
+          ]
+        }
+      ],
+      "auctionFlag": "",
+      "auctionSecurityCode": "",
+      "RRMCStatus": "Registered",
+      "label": ""
+    },
+    {
+      "serviceId": "971551258910",
+      "productIntegrationId": "GSM",
+      "productName": "Mobile Service",
+      "accountCode": "1.55283982",
+      "prodPromId": "",
+      "prodPromInstanceId": "",
+      "prodPromName": "",
+      "prodPromRuleId": "",
+      "contractCode": "CONTR0122360029",
+      "status": "Active",
+      "bundleFlavor": "Power 500 Data 12M",
+      "statusReason": "Activation",
+      "activationDate": "May 3, 2023 5:16:38 PM",
+      "contractTerm": "",
+      "billingStatus": "",
+      "services": [
+        {
+          "serviceId": "",
+          "name": "Retention International",
+          "integrationId": "SSGSR02",
+          "activationDate": "May 4, 2024 12:36:05 PM",
+          "status": "Active",
+          "serviceType": "Telephone",
+          "serviceAttributes": [
+            {
+              "name": "Free Units Package",
+              "value": "Retention Int. Bundle-200"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "International roaming no deposit",
+          "integrationId": "SSGRINTND",
+          "activationDate": "May 29, 2024 2:56:58 PM",
+          "status": "Active",
+          "serviceType": "Telephone"
+        },
+        {
+          "serviceId": "",
+          "name": "NAT Bundle - Recurring",
+          "integrationId": "SSIDEPN",
+          "activationDate": "May 3, 2023 5:36:27 PM",
+          "deactivationDate": "Sep 4, 2024 12:00:00 AM",
+          "status": "Inactive",
+          "serviceType": "Service",
+          "serviceAttributes": [
+            {
+              "name": "Free Units Package",
+              "value": "Promo National Minutes"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Power Plan",
+          "integrationId": "RPREFSH",
+          "activationDate": "May 3, 2023 5:16:38 PM",
+          "status": "Active",
+          "serviceType": "Rateplan"
+        },
+        {
+          "serviceId": "",
+          "name": "GSM Advanced Voice Mail",
+          "integrationId": "SSGAVMS",
+          "activationDate": "May 3, 2023 5:16:38 PM",
+          "status": "Active",
+          "serviceType": "Telephone",
+          "serviceAttributes": [
+            {
+              "name": "PIN",
+              "value": "0000"
+            },
+            {
+              "name": "Language",
+              "value": "English"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "MMS",
+          "integrationId": "SSGCMMS",
+          "activationDate": "May 3, 2023 5:16:38 PM",
+          "status": "Active",
+          "serviceType": "Telephone",
+          "serviceAttributes": [
+            {
+              "name": "PDP Type",
+              "value": "PDP Type2"
+            },
+            {
+              "name": "PDP Address",
+              "value": "PDP Address1"
+            },
+            {
+              "name": "APN",
+              "value": "PDP APN1"
+            },
+            {
+              "name": "QoS Profile",
+              "value": "PDP Qos Profile4"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "mobile internet",
+          "integrationId": "SSGCWAP",
+          "activationDate": "May 3, 2023 5:16:38 PM",
+          "status": "Active",
+          "serviceType": "Telephone",
+          "serviceAttributes": [
+            {
+              "name": "PDP Type",
+              "value": "PDP Type2"
+            },
+            {
+              "name": "PDP Address",
+              "value": "PDP Address1"
+            },
+            {
+              "name": "APN",
+              "value": "PDP APN1"
+            },
+            {
+              "name": "QoS Profile",
+              "value": "PDP Qos Profile4"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "mobile browsing",
+          "integrationId": "SSGCCG2",
+          "activationDate": "May 3, 2023 5:16:38 PM",
+          "status": "Active",
+          "serviceType": "Telephone",
+          "serviceAttributes": [
+            {
+              "name": "PDP Type",
+              "value": "PDP Type2"
+            },
+            {
+              "name": "PDP Address",
+              "value": "PDP Address1"
+            },
+            {
+              "name": "APN",
+              "value": "PDP APN1"
+            },
+            {
+              "name": "QoS Profile",
+              "value": "PDP Qos Profile4"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "itemised bill",
+          "integrationId": "SSITB",
+          "activationDate": "May 3, 2023 5:16:38 PM",
+          "status": "Active",
+          "serviceType": "Telephone"
+        },
+        {
+          "serviceId": "",
+          "name": "Usage Bonus",
+          "integrationId": "SSEslab",
+          "activationDate": "May 3, 2023 5:16:38 PM",
+          "status": "Active",
+          "serviceType": ""
+        },
+        {
+          "serviceId": "",
+          "name": "Number Portability",
+          "integrationId": "SSGSMNP",
+          "activationDate": "May 3, 2023 5:16:38 PM",
+          "status": "Active",
+          "serviceType": "Telephone",
+          "serviceAttributes": [
+            {
+              "name": "Number Portability",
+              "value": "NORMAL"
+            },
+            {
+              "name": "Routing Number",
+              "value": "971550000000"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "LTE Service",
+          "integrationId": "SSGLTE",
+          "activationDate": "May 3, 2023 5:16:38 PM",
+          "status": "Active",
+          "serviceType": "Telephone",
+          "serviceAttributes": [
+            {
+              "name": "PDP Type",
+              "value": "PDP Type2"
+            },
+            {
+              "name": "PDP Address",
+              "value": "PDP Address1"
+            },
+            {
+              "name": "QoS LTE",
+              "value": "PDP LTE Profile 100"
+            },
+            {
+              "name": "APN",
+              "value": "PDP APN1"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Calling Circle",
+          "integrationId": "SSUPCUG",
+          "activationDate": "May 3, 2023 5:16:38 PM",
+          "status": "Active",
+          "serviceType": "Service",
+          "serviceAttributes": [
+            {
+              "name": "NUP CUG",
+              "value": "NUPCU"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Dummy Prepaid account",
+          "integrationId": "SSDSSPR",
+          "activationDate": "May 3, 2023 5:16:38 PM",
+          "status": "Active",
+          "serviceType": "",
+          "serviceAttributes": [
+            {
+              "name": "Silver",
+              "value": "Hybrid"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Voice over LTE",
+          "integrationId": "SSVOLTE",
+          "activationDate": "May 3, 2023 5:16:38 PM",
+          "status": "Active",
+          "serviceType": ""
+        },
+        {
+          "serviceId": "",
+          "name": "Postpaid Plan MRC",
+          "integrationId": "SSRFHS0",
+          "activationDate": "May 3, 2023 5:16:38 PM",
+          "status": "Active",
+          "serviceType": "Service",
+          "serviceAttributes": [
+            {
+              "name": "Power Plan",
+              "value": "Power 500 Data 12M"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Plan discount",
+          "integrationId": "SSRFHS5",
+          "activationDate": "May 3, 2023 5:16:38 PM",
+          "status": "Active",
+          "serviceType": "Service",
+          "serviceAttributes": [
+            {
+              "name": "Power Plan",
+              "value": "Power 500 Data 12M"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Friends and Family number",
+          "integrationId": "SSRFHS9",
+          "activationDate": "May 3, 2023 5:16:38 PM",
+          "status": "Active",
+          "serviceType": "Service",
+          "serviceAttributes": [
+            {
+              "name": "National Number 1",
+              "value": "Null"
+            },
+            {
+              "name": "National Number 2",
+              "value": "Null"
+            },
+            {
+              "name": "National Number 3",
+              "value": "Null"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Cost control Services37 Nat",
+          "integrationId": "SSCOC37",
+          "activationDate": "May 3, 2023 5:16:38 PM",
+          "status": "Active",
+          "serviceType": "Service"
+        },
+        {
+          "serviceId": "971551258910",
+          "name": "Monthly Plan Fee",
+          "integrationId": "SSGTEL",
+          "activationDate": "May 3, 2023 5:16:38 PM",
+          "status": "Active",
+          "serviceType": "Telephone",
+          "serviceAttributes": [
+            {
+              "name": "DN Id",
+              "value": "21842063"
+            },
+            {
+              "name": "Commitment Period",
+              "value": ""
+            },
+            {
+              "name": "Commitment Value",
+              "value": "0"
+            },
+            {
+              "name": "Number Type",
+              "value": "Regular"
+            },
+            {
+              "name": "Booking Id",
+              "value": ""
+            },
+            {
+              "name": "Resource",
+              "value": "971551258910"
+            }
+          ]
+        },
+        {
+          "serviceId": "8997103523087045395",
+          "name": "SIM Card",
+          "integrationId": "SIM",
+          "activationDate": "May 3, 2023 5:16:38 PM",
+          "status": "Active",
+          "serviceType": "Telephone",
+          "serviceAttributes": [
+            {
+              "name": "IMSI",
+              "value": "424030282480433"
+            },
+            {
+              "name": "PUK",
+              "value": "88645361"
+            },
+            {
+              "name": "PUK2",
+              "value": "11934295"
+            },
+            {
+              "name": "SIM Card Id",
+              "value": "115587614"
+            },
+            {
+              "name": "SIM Card Number",
+              "value": "8997103523087045395"
+            },
+            {
+              "name": "Port Number",
+              "value": "60"
+            },
+            {
+              "name": "SIM Card Type",
+              "value": "USIM"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Postpaid Voice",
+          "integrationId": "SSRFHS1",
+          "activationDate": "May 3, 2023 5:27:23 PM",
+          "status": "Active",
+          "serviceType": "Service",
+          "serviceAttributes": [
+            {
+              "name": "Free Units Package",
+              "value": "600 Power Plans - National"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Postpaid Data",
+          "integrationId": "SSRFHS2",
+          "activationDate": "May 3, 2023 5:27:23 PM",
+          "status": "Active",
+          "serviceType": "Service",
+          "serviceAttributes": [
+            {
+              "name": "Free Units Package",
+              "value": "600 Power Plan Speed Data"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Postpaid WiFi",
+          "integrationId": "SSRFHS3",
+          "activationDate": "May 3, 2023 5:27:23 PM",
+          "status": "Active",
+          "serviceType": "Service",
+          "serviceAttributes": [
+            {
+              "name": "Free Units Package",
+              "value": "600 Power Plan WiFi UL Data"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "Postpaid Roaming",
+          "integrationId": "SSRFHS4",
+          "activationDate": "May 3, 2023 5:27:23 PM",
+          "status": "Active",
+          "serviceType": "Service",
+          "serviceAttributes": [
+            {
+              "name": "Free Units Package",
+              "value": "600 Power Plan Roaming data"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "PP Data speed Limit",
+          "integrationId": "SSODSPL",
+          "activationDate": "May 3, 2023 5:27:23 PM",
+          "status": "Active",
+          "serviceType": "",
+          "serviceAttributes": [
+            {
+              "name": "PP Data speed Limit",
+              "value": "12Mbps"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "National usage",
+          "integrationId": "SSNUSGE",
+          "activationDate": "May 3, 2023 12:00:00 AM",
+          "status": "Inactive",
+          "serviceType": "Service",
+          "serviceAttributes": [
+            {
+              "name": "National Counter",
+              "value": "Per Minute"
+            }
+          ]
+        },
+        {
+          "serviceId": "",
+          "name": "International roaming",
+          "integrationId": "SSGRINT",
+          "activationDate": "Jul 29, 2023 8:44:45 PM",
+          "deactivationDate": "May 29, 2024 12:00:00 AM",
+          "status": "Inactive",
+          "serviceType": "Telephone"
+        },
+        {
+          "serviceId": "",
+          "name": "GSM ODB - Outgoing",
+          "integrationId": "SSGBODB",
+          "activationDate": "May 29, 2024 1:11:57 PM",
+          "deactivationDate": "May 29, 2024 12:00:00 AM",
+          "status": "Inactive",
+          "serviceType": "Telephone"
+        }
+      ],
+      "auctionFlag": "",
+      "auctionSecurityCode": "",
+      "RRMCStatus": "Registered",
+      "label": ""
+    }
+  ],
+  "code": "200",
+  "statusCode": "OK",
+  "messageResource": {
+    "messageId": "GENERIC_OK"
   }
-
-
-]
+}

@@ -156,7 +156,6 @@ function CommonTable(props) {
                         </TableBody>
                     </Table>
                 </TableContainer>
-
             </CardContent>
 
             <CardActions>

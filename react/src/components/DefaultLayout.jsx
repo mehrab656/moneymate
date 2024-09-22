@@ -301,6 +301,17 @@ export default function DefaultLayout() {
                                                 <span className="aside-menu-text"> Sectors</span>
                                             </Link>
                                         </li>
+                                        {
+                                            checkPermission(userPermission.assets_view) &&
+                                            <li className="aside-menu-item">
+                                                <Link to="/assets"
+                                                      className={isActive('/assets') ? 'active' : ''}>
+                                                <span className="aside-menu-icon">
+                                                    <FontAwesomeIcon icon={faBuildingFlag}/></span>
+                                                    <span className="aside-menu-text"> Assets </span>
+                                                </Link>
+                                            </li>
+                                        }
                                         <li className="aside-menu-item">
                                             <Link
                                                 to="/categories"

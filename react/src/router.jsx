@@ -42,6 +42,8 @@ import RoleForms from "./views/Role/RoleForms.jsx";
 import Companies from "./views/Company/Companies.jsx";
 import CompanyCreate from "./views/Company/CompanyCreate.jsx";
 import CompanySignUp from "./views/Company/CompanySignUp.jsx";
+import AssetsList from "./views/Assets/AssetsList.jsx";
+import AddNewAssets from "./views/Assets/AddNewAssets.jsx";
 
 const router = createBrowserRouter([
 
@@ -64,6 +66,14 @@ const router = createBrowserRouter([
             {
                 path: '/sectors',
                 element: <Sectors/>
+            },
+            {
+                path: '/assets',
+                element: <AssetsList/>
+            },
+            {
+                path: '/asset/new',
+                element: <AddNewAssets key="AssetCreate"/>
             },
             {
                 path: '/sector/new',
