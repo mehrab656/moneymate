@@ -54,4 +54,5 @@ class Expense extends Model
         return $this->belongsTo(Budget::class);
     }
 
+
 }

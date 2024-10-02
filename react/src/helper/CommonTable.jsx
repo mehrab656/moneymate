@@ -82,8 +82,8 @@ function CommonTable(props) {
                 </div>
 
             </CardActionArea>
-            <CardContent>
-                <TableContainer component={Paper} style={{padding: "0px"}}>
+            <CardContent style={{minHeight: '750px'}}>
+                <TableContainer component={Paper} style={{padding: "0px", minHeight: "750px"}}>
                     <Table size={table.size} aria-label={table.ariaLabel}>
                         <TableHead>
                             <TableRow>
@@ -101,7 +101,7 @@ function CommonTable(props) {
                                     })
                                 }
                                 {
-                                    JSON.stringify(table.actionBtn) !== '{}' &&
+                                    // JSON.stringify(table.actionBtn) !== '{}' &&
                                     <TableCell align="center">
                                         <b>{"Action"}</b>
                                     </TableCell>
@@ -117,41 +117,48 @@ function CommonTable(props) {
                                                        colSpan={table.tableBody.loadingColSpan}>{"Loading..."}</TableCell>
                                         </TableRow>
                                     </> : (
-                                        table.tableBody.rows?.map((row) => (
-                                            <TableRow key={genRand(12)}>
-                                                {
-                                                    table.showIdColumn &&
-                                                    <TableCell component="th" scope="row">{row.id}</TableCell>
-                                                }
-                                                {
-                                                    table.tableColumns.map(column => (
-                                                        isValidElement(row?.[column.id]) ?
-                                                            <TableCell align={column.align}
-                                                                       key={genRand(8)}>{
-                                                                createElement(row?.[column.id].type,row?.[column.id].props,row?.[column.id].props.children)
-                                                            }</TableCell>
-                                                            :
-                                                            <TableCell align={column.align}
-                                                                       key={genRand(8)}>
-                                                                {`${row?.[column.id]}`}
-                                                            </TableCell>
-                                                    ))
-                                                }
-                                                {
-                                                    JSON.stringify(table.actionBtn) !== '{}' &&
-                                                    <TableCell align="right">
-                                                        <ActionButtonHelpers
-                                                            module={row}
-                                                            showModule={table.actionBtn.showModule}
-                                                            deleteFunc={table.actionBtn.deleteFunc}
-                                                            params={table.actionBtn.params}
-                                                            editDropdown={table.actionBtn.editDropdown}
-                                                            showPermission={table.actionBtn.showPermission}
-                                                            deletePermission={table.actionBtn.deletePermission}/>
-                                                    </TableCell>
-                                                }
+                                        table.tableBody.rows.length === 0 ? (
+                                            <TableRow>
+                                                <TableCell scope="row" style={{textAlign: "center"}}
+                                                           colSpan={table.tableBody.loadingColSpan}>{"No records found"}</TableCell>
                                             </TableRow>
-                                        )))
+                                        ) : (
+                                            table.tableBody.rows?.map((row) => (
+                                                <TableRow key={genRand(12)}>
+                                                    {
+                                                        table.showIdColumn &&
+                                                        <TableCell component="th" scope="row">{row.id}</TableCell>
+                                                    }
+                                                    {
+                                                        table.tableColumns.map(column => (
+                                                            isValidElement(row?.[column.id]) ?
+                                                                <TableCell align={column.align}
+                                                                           key={genRand(8)}>{
+                                                                    createElement(row?.[column.id].type, row?.[column.id].props, row?.[column.id].props.children)
+                                                                }</TableCell>
+                                                                :
+                                                                <TableCell align={column.align}
+                                                                           key={genRand(8)}>
+                                                                    {`${row?.[column.id]}`}
+                                                                </TableCell>
+                                                        ))
+                                                    }
+                                                    {
+                                                        // JSON.stringify(table.actionBtn) !== '{}' &&
+                                                        <TableCell align="right">
+                                                            <ActionButtonHelpers
+                                                                module={row}
+                                                                showModule={table.actionBtn.showModule}
+                                                                deleteFunc={table.actionBtn.deleteFunc}
+                                                                params={table.actionBtn.params}
+                                                                editDropdown={table.actionBtn.editDropdown}
+                                                                showPermission={table.actionBtn.showPermission}
+                                                                deletePermission={table.actionBtn.deletePermission}/>
+                                                        </TableCell>
+                                                    }
+                                                </TableRow>
+                                            ))
+                                        ))
                             }
                         </TableBody>
                     </Table>

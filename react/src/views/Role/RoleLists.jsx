@@ -61,7 +61,6 @@ function RoleLists({permissions, setPermissions}) {
         }));
     };
 
-//   console.log('permission', permissions)
 
     return (
         <TableContainer component={Paper}>

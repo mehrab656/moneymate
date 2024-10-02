@@ -189,7 +189,8 @@ class ExpenseController extends Controller {
 
 		$categories = DB::table( 'categories' )->select( 'categories.*' )
 		                ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
-		                ->where( 'sectors.company_id', '=', Auth::user()->primary_company );
+		                ->where( 'sectors.company_id', '=', Auth::user()->primary_company )
+		                ->where( 'type', '=', 'expense' );
 
 		if ( $sectorID ) {
 			$categories = $categories->where( 'sectors.id', '=', $sectorID );

@@ -55,7 +55,7 @@ class BudgetController extends Controller {
 		$newEndDate   = Carbon::parse( $validatedData['end_date'] );
 
 		// Check if the new budget overlaps with any existing budgets
-		$existingBudgets = Auth::user()->budgets()->get();
+		$existingBudgets = Auth::user()->budgets()->where('company_id',Auth::user()->primary_company)->get();
 		foreach ( $existingBudgets as $existingBudget ) {
 			$existingStartDate = Carbon::parse( $existingBudget->start_date );
 			$existingEndDate   = Carbon::parse( $existingBudget->end_date );

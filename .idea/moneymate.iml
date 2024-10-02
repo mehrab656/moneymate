@@ -5,8 +5,8 @@
       <sourceFolder url="file://$MODULE_DIR$/backendApi/app" isTestSource="false" packagePrefix="App\" />
       <sourceFolder url="file://$MODULE_DIR$/backendApi/database/factories" isTestSource="false" packagePrefix="Database\Factories\" />
       <sourceFolder url="file://$MODULE_DIR$/backendApi/database/seeders" isTestSource="false" packagePrefix="Database\Seeders\" />
-      <sourceFolder url="file://$MODULE_DIR$/backendApi/tests" isTestSource="true" packagePrefix="Tests\" />
       <sourceFolder url="file://$MODULE_DIR$/backendApi/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/backendApi/tests" isTestSource="true" packagePrefix="Tests\" />
       <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/barryvdh/laravel-ide-helper" />
       <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/barryvdh/reflection-docblock" />
       <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/brick/math" />

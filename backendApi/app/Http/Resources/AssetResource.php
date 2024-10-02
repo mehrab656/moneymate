@@ -12,8 +12,17 @@ class AssetResource extends JsonResource
      *
      * @return array<string, mixed>
      */
+
+    public static $wrap = false;
+
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'assets' => json_decode($this->assets, true),
+            'date' => $this->date,
+            'sector_name' => $this->name,
+            'status' => $this->status,
+        ];
     }
 }

@@ -76,6 +76,10 @@ const router = createBrowserRouter([
                 element: <AddNewAssets key="AssetCreate"/>
             },
             {
+                path: '/asset/update/:id',
+                element: <AddNewAssets key="AssetCreate"/>
+            },
+            {
                 path: '/sector/new',
                 element: <SectorCreate key="SectorCreate"/>
             },
@@ -107,7 +111,6 @@ const router = createBrowserRouter([
                 path: '/expenses',
                 element: <Expenses/>
             },
-
             {
                 path: '/expense/new',
                 element: <ExpenseForm key="expenseCreate"/>

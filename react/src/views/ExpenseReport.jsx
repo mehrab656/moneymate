@@ -19,21 +19,27 @@ import {Col, Container, Row} from "react-bootstrap";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import {Link} from "react-router-dom";
 import ExpenseFilter from "../helper/filter-icons/ExpenseFilter.jsx";
-import { Box, Button } from "@mui/material";
+import {Box, Button} from "@mui/material";
 import ReactToPrint from "react-to-print";
 
+
+const defaultParams = {
+    start_date: '',
+    end_date: '',
+    cat_id: '',
+    sec_id: '',
+    search_terms: '',
+    orderBy: 'date',
+    order: 'DESC',
+    limit: 10,
+}
 export default function ExpenseReport() {
-    const componentRef  = useRef()
+    const componentRef = useRef()
     const [loading, setLoading] = useState(false);
     const [expenseReport, setExpenseReport] = useState([]);
-    const [startDate, setStartDate] = useState(null);
-    const [endDate, setEndDate] = useState(null);
     const [expenseCategories, setExpenseCategories] = useState([]);
     const [sectors, setSectors] = useState([]);
-    const [selectedSectorId, setSelectedSectorId] = useState(null);
-    const [selectedCategoryId, setSelectedCategoryId] = useState(null);
     const [totalExpense, setTotalExpense] = useState(parseFloat(0).toFixed(2));
-    const [searchParoms, setSearchParoms] = useState(null);
     const [activeModal, setActiveModal] = useState('');
     const [modalData, setModalData] = useState({
         id: null,
@@ -49,10 +55,9 @@ export default function ExpenseReport() {
         note: '',
         attachment: ''
     });
+    const [params, setParam] = useState(defaultParams);
     const [hasFilter, setHasFilter] = useState(false);
-
     const [showModal, setShowModal] = useState(false);
-
     const {applicationSettings} = useContext(SettingsContext);
     let {
         default_currency
@@ -69,7 +74,7 @@ export default function ExpenseReport() {
     }
     useEffect(() => {
         axiosClient.get('/expense-categories', {
-            params: {sector_id: selectedSectorId ? selectedSectorId : null}
+            params: {sector_id: params.sec_id}
         })
             .then(({data}) => {
                 setExpenseCategories(data.categories);
@@ -77,7 +82,7 @@ export default function ExpenseReport() {
             .catch(error => {
                 console.error('Error loading expense categories:', error);
             });
-    }, [selectedSectorId]);
+    }, [params.sec_id]);
 
     useEffect(() => {
 
@@ -98,15 +103,7 @@ export default function ExpenseReport() {
         setLoading(true);
         setTotalExpense(0);
         axiosClient
-            .get("/report/expense", {
-                params: {
-                    start_date: startDate,
-                    end_date: endDate,
-                    cat_id: selectedCategoryId,
-                    sec_id: selectedSectorId,
-                    search_terms: searchParoms
-                },
-            })
+            .get("/report/expense", {params: params})
             .then(({data}) => {
                 setExpenseReport(data.expenses);
                 setTotalExpense(data.totalExpense);
@@ -115,7 +112,6 @@ export default function ExpenseReport() {
             setLoading(false);
         })
     };
-
     useEffect(() => {
         document.title = "Expenses Report";
         getExpenseReport();
@@ -128,11 +124,8 @@ export default function ExpenseReport() {
     };
 
     const resetFilterParameter = () => {
-        setStartDate(null);
-        setEndDate(null);
-        setSelectedCategoryId(null);
-        setSelectedSectorId(null);
         setHasFilter(false);
+        setParam(defaultParams);
         getExpenseReport();
     };
 
@@ -144,19 +137,11 @@ export default function ExpenseReport() {
                     <Container>
                         <Row>
                             <ExpenseFilter
+                                params={params}
+                                setParam={setParam}
                                 handleSubmit={handleSubmit}
-                                selectedSectorId={selectedSectorId}
-                                setSelectedSectorId={setSelectedSectorId}
                                 sectors={sectors}
-                                selectedCategoryId={selectedCategoryId}
-                                setSelectedCategoryId={setSelectedCategoryId}
                                 expenseCategories={expenseCategories}
-                                startDate={startDate}
-                                setStartDate={setStartDate}
-                                endDate={endDate}
-                                setEndDate={setEndDate}
-                                searchParoms={searchParoms}
-                                setSearchParoms={setSearchParoms}
                                 resetFilterParameter={resetFilterParameter}
                                 hasFilter={hasFilter}
                             />
@@ -234,11 +219,11 @@ export default function ExpenseReport() {
                                     </div>
                                 </div>
 
-                                <Box display={'flex'} justifyContent={'center'} alignItems={'center'} >
-                                <ReactToPrint
-                                    trigger={() => <Button sx={{ml:1}} variant="outlined">Print</Button>}
-                                    content={()=> componentRef.current}
-                                />
+                                <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
+                                    <ReactToPrint
+                                        trigger={() => <Button sx={{ml: 1}} variant="outlined">Print</Button>}
+                                        content={() => componentRef.current}
+                                    />
                                 </Box>
 
                             </Col>

@@ -213,12 +213,10 @@ export default function Categories() {
         createCategory({token,formData:category})
         .unwrap()
         .then((response) => {
-          console.log('response', response)
           setShowModal(false);
           notification("success", data?.message, data?.description);
         })
         .catch((err) => {
-          console.log('err', err)
           if (err.error) {
             const error = err.error;
             notification("error", error?.message, error.description);
@@ -253,7 +251,6 @@ export default function Categories() {
     setCurrentPage(newPage);
   };
 
-  console.log('category', category)
 
   return (
     <div>

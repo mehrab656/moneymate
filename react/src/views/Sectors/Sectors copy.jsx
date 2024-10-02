@@ -226,7 +226,6 @@ export default function Sectors() {
         setShowHelperModel(true);
     }
     const showTableColumns = (column) => {
-        console.log({column})
     }
     const remainingContract = ( end) => {
 

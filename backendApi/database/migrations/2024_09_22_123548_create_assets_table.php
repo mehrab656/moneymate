@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('assets', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger( 'sector_id' );
+            $table->unsignedBigInteger( 'expense_id' );
+            $table->date( 'date' );
+            $table->json('assets');
+            $table->boolean('status')->default(1);
             $table->timestamps();
         });
     }

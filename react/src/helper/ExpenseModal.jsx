@@ -1,8 +1,35 @@
 import {Col, Container, Modal, Row} from "react-bootstrap";
 import React, {memo} from "react";
+import {Box} from "@mui/material";
 
 
 const ExpenseModal = ({showModal, handelCloseModal, title, data, currency}) => {
+    var notes = data.note;
+    function isJSON(str) {
+        try {
+            return JSON.parse(str) && !!str;
+        } catch (e) {
+            return false;
+        }
+    }
+    // const createNoteRow = (entry)=>{
+    //     return (<Box>hi</Box>)
+    // }
+    // if (isJSON(notes)){
+    //     notes = JSON.parse(notes);
+    //
+    //     data.note = notes.map(note=>{
+    //         return <Box>{note}</Box>;
+    //         // const entries = Object.entries(note);
+    //         // entries.map((entry)=>{
+    //         //     createNoteRow(entry)
+    //         // })
+    //     })
+    // }else{
+    //     return data.note= <Box>{data.note}</Box>;
+    // }
+    //
+
     return (
         <>
             <Modal size={"md"} show={showModal} centered onHide={handelCloseModal} className="custom-modal modal-lg">

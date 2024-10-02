@@ -18,6 +18,7 @@ const ActionButtonHelpers = ({
                                  deletePermission
                              }) => {
     const {applicationSettings, userRole} = useContext(SettingsContext);
+    // console.log(module);
     const navigate = useNavigate()
     return (
         <Dropdown>

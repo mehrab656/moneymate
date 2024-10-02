@@ -228,11 +228,9 @@ class SectorModelController extends Controller
             'module' => 'Sector',
             'descriptions' => "",
             'data_records' => json_decode(json_encode($sector), true),
-
         ]);
 
-        return new SectorResource($sector);
-    }
+     }
 
     /**
      * Remove the specified resource from storage.

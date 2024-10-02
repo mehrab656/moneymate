@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AccountTransferController;
 use App\Http\Controllers\Api\ApplicationSettingsController;
+use App\Http\Controllers\Api\AssetController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BankAccountController;
 use App\Http\Controllers\Api\BankNameController;
@@ -24,7 +25,6 @@ use App\Http\Controllers\Api\SectorModelController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WalletController;
-use App\Http\Controllers\AssetController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -224,11 +224,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('permission', [RoleController::class, 'getPermission']);
 
     //Asset routs
-    Route::get('/asset', [AssetController::class, 'index']);
+    Route::get('/assets', [AssetController::class, 'index']);
     Route::post('/asset/add', [AssetController::class, 'add']);
     Route::delete('/asset/{asset}', [AssetController::class, 'delete']);
-    Route::get('asset/{asset}', [AssetController::class, 'show']);
-    Route::post('asset/{asset}', [AssetController::class, 'update']);
+    Route::get('asset/{id}', [AssetController::class, 'edit']);
+    Route::post('asset/{id}', [AssetController::class, 'update']);
     Route::get('/asset-list', [AssetController::class, 'sectorList']);
 });
 

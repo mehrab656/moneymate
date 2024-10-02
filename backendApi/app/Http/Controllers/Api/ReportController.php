@@ -87,6 +87,9 @@ class ReportController extends Controller {
 		$endDate   = $request->end_date;
 		$cat_id    = $request->cat_id;
 		$sec_id    = $request->sec_id;
+		$limit    = $request->limit;
+		$order    = $request->order;
+        $orderBy = $request->orderBy;
 
 		if ( $startDate ) {
 			$startDate = date( 'Y-m-d', strtotime( $startDate ) );
@@ -119,12 +122,10 @@ class ReportController extends Controller {
 		if ( $cat_id ) {
 			$query = $query->where( 'category_id', $cat_id );
 		}
-//		if ( ! $sec_id && ! $cat_id ) {
-//			$query = $query->limit( 50 );
-//		}
 
 
-		$expensesRes = ExpenseReportResource::collection( $query->orderBy( 'date', 'DESC' )->get() );
+
+		$expensesRes = ExpenseReportResource::collection( $query->orderBy( $orderBy??'date', $order??'DESC' )->limit($limit??10)->get() );
 
 		return response()->json( [
 			'totalExpense' => fix_number_format( $query->get()->sum( 'amount' ) ),
