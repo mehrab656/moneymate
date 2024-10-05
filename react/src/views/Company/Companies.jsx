@@ -128,7 +128,9 @@ export default function companies() {
                         permission: checkPermission(userPermission.company_create),
                         txt: "Create New",
                         icon:(<FontAwesomeIcon icon={faBuildingFlag}/>), //"faBuildingFlag",
-                        link:"/company/add"
+                        link:"/company/add",
+                        linkTo:'route'
+
                     }
                 }
                 paginations={{

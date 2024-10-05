@@ -70,7 +70,7 @@ export default function DefaultLayout() {
     })
     const [className, setClassName] = useState('');
     const [notifications, setNotifications] = useState([]);
-    const {applicationSettings, userRole, setUserRole,userPermission} = useContext(SettingsContext);
+    const {applicationSettings, userRole, setUserRole, userPermission} = useContext(SettingsContext);
     let {
         default_currency
     } = applicationSettings;
@@ -194,6 +194,7 @@ export default function DefaultLayout() {
     const [submenuReportVisible, setSubmenuReportVisible] = useState(false);
     const [submenuBankAccVisible, setSubmenuBankAccVisible] = useState(false);
     const [submenuSettingsVisible, setSubmenuSettingsVisible] = useState(false);
+    const [submenuHrModuleVisible, setSubmenuHrModuleVisible] = useState(false);
     const toggleSubmenu = (type) => {
         if (type === 'transaction') {
             setSubmenuTransactionVisible(!submenuTransactionVisible);
@@ -207,6 +208,9 @@ export default function DefaultLayout() {
         if (type === 'settings') {
             setSubmenuSettingsVisible(!submenuSettingsVisible);
         }
+        if (type === 'hr') {
+            setSubmenuHrModuleVisible(!submenuHrModuleVisible);
+        }
     };
 
     const switchCompany = (id) => {
@@ -214,7 +218,7 @@ export default function DefaultLayout() {
         axiosClient
             .post(`/switch-company/${id}`)
             .then(({data}) => {
-                if (data.status==="success"){
+                if (data.status === "success") {
                     setCurrentCompany(data.data);
                     localStorage.setItem('CURRENT_COMPANY', id);
                 }
@@ -261,9 +265,10 @@ export default function DefaultLayout() {
                                             {
                                                 companies.length > 0 &&
                                                 companies.map((company) => (
-                                                    <Dropdown.Item key={company.uid} active={ currentCompany?.name ===company.name?true:false}
-                                                        onClick={(ev) =>switchCompany(company.id)}
-                                                        className={"company-list-dropdown"}>{company.name}</Dropdown.Item>
+                                                    <Dropdown.Item key={company.uid}
+                                                                   active={currentCompany?.name === company.name ? true : false}
+                                                                   onClick={(ev) => switchCompany(company.id)}
+                                                                   className={"company-list-dropdown"}>{company.name}</Dropdown.Item>
                                                 ))
                                             }
                                         </Dropdown.Menu>
@@ -283,7 +288,7 @@ export default function DefaultLayout() {
                                             checkPermission(userPermission.company_view) &&
                                             <li className="aside-menu-item">
                                                 <Link to="/companies"
-                                                    className={isActive('/companies') ? 'active' : ''}>
+                                                      className={isActive('/companies') ? 'active' : ''}>
                                                 <span className="aside-menu-icon">
                                                     <FontAwesomeIcon icon={faBuildingFlag}/></span>
                                                     <span className="aside-menu-text"> Company </span>
@@ -304,8 +309,8 @@ export default function DefaultLayout() {
                                         {
                                             checkPermission(userPermission.assets_view) &&
                                             <li className="aside-menu-item">
-                                                <Link to="/assets"
-                                                      className={isActive('/assets') ? 'active' : ''}>
+                                                <Link to="/all-assets"
+                                                      className={isActive('/all-assets') ? 'active' : ''}>
                                                 <span className="aside-menu-icon">
                                                     <FontAwesomeIcon icon={faBuildingFlag}/></span>
                                                     <span className="aside-menu-text"> Assets </span>
@@ -478,6 +483,64 @@ export default function DefaultLayout() {
                                                 </ul>
                                             )}
                                         </li>
+
+                                        <li className="aside-menu-item">
+                                            <a onClick={(e) => toggleSubmenu('hr')}
+                                               className='dropdown-menu'>
+                                                <span className="aside-menu-icon"><FontAwesomeIcon
+                                                    icon={faSitemap}/></span>
+                                                <span className="aside-menu-text"
+                                                >HRMS</span>
+                                                <span
+                                                    className="submenu-toggle-icon">{submenuHrModuleVisible ? '▲' : '▼'}</span>
+
+                                            </a>
+                                            {submenuHrModuleVisible && (
+                                                <ul className="submenu">
+                                                    <li className="aside-menu-item">
+                                                        <Link to="/all-employee"
+                                                              className={isActive('/all-employee') ? 'active' : ''}>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                icon={faChartBar}/></span>
+                                                            <span className="aside-menu-text"> Employee</span>
+                                                        </Link>
+                                                    </li>
+                                                    <li className="aside-menu-item">
+                                                        <Link to="/payroll"
+                                                              className={isActive('/payroll') ? 'active' : ''}>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                icon={faChartPie}/></span>
+                                                            <span className="aside-menu-text"> Pay Rolls</span>
+                                                        </Link>
+                                                    </li>
+                                                    <li className="aside-menu-item">
+                                                        <Link to="/all-attendance"
+                                                              className={isActive('/all-attendance') ? 'active' : ''}>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                icon={faMoneyBillTrendUp}/></span>
+                                                            <span className="aside-menu-text"> Attendance</span>
+                                                        </Link>
+                                                    </li>
+                                                    <li className="aside-menu-item">
+                                                        <Link to="/all-tasks"
+                                                              className={isActive('/all-tasks') ? 'active' : ''}>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                icon={faChartLine}/></span>
+                                                            <span className="aside-menu-text"> Task List</span>
+                                                        </Link>
+                                                    </li>
+                                                    <li className="aside-menu-item">
+                                                        <Link to="/hrms-reports"
+                                                              className={isActive('/hrms-reports') ? 'active' : ''}>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                icon={faChartSimple}/></span>
+                                                            <span className="aside-menu-text"> Overall Report</span>
+                                                        </Link>
+                                                    </li>
+                                                </ul>
+                                            )}
+                                        </li>
+
                                         <li className="aside-menu-item">
                                             <Link to="/budgets" className={isActive('/budgets') ? 'active' : ''}>
                                                 <span className="aside-menu-icon"><FontAwesomeIcon
@@ -725,6 +788,17 @@ export default function DefaultLayout() {
                                                 <span className="aside-menu-text"> Sectors</span>
                                             </Link>
                                         </li>
+                                        {
+                                            checkPermission(userPermission.assets_view) &&
+                                            <li className="aside-menu-item">
+                                                <Link to="/all-assets"
+                                                      className={isActive('/all-assets') ? 'active' : ''}>
+                                                <span className="aside-menu-icon">
+                                                    <FontAwesomeIcon icon={faBuildingFlag}/></span>
+                                                    <span className="aside-menu-text"> Assets </span>
+                                                </Link>
+                                            </li>
+                                        }
                                         <li className="aside-menu-item">
                                             <Link
                                                 to="/categories"

@@ -22,5 +22,6 @@
     <inspection_tool class="PhpUndefinedFieldInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="PhpUndefinedMethodInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="UnknownColumnInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="UnknownTableOrViewInspection" enabled="false" level="WARNING" enabled_by_default="false" />
   </profile>
 </component>

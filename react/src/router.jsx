@@ -44,6 +44,10 @@ import CompanyCreate from "./views/Company/CompanyCreate.jsx";
 import CompanySignUp from "./views/Company/CompanySignUp.jsx";
 import AssetsList from "./views/Assets/AssetsList.jsx";
 import AddNewAssets from "./views/Assets/AddNewAssets.jsx";
+import Employee from "./views/HRMS/Employee/Employee.jsx";
+import Payrolls from "./views/HRMS/Payrolls/Payrolls.jsx";
+import Attendance from "./views/HRMS/Attandance/Attendance.jsx";
+import Task from "./views/HRMS/Task/Task.jsx";
 
 const router = createBrowserRouter([
 
@@ -68,7 +72,7 @@ const router = createBrowserRouter([
                 element: <Sectors/>
             },
             {
-                path: '/assets',
+                path: '/all-assets',
                 element: <AssetsList/>
             },
             {
@@ -252,6 +256,22 @@ const router = createBrowserRouter([
             {
                 path: '/company/:id',
                 element: <CompanyCreate key={"companyUpdate"}/>
+            },
+            {
+                path: '/all-employee',
+                element: <Employee />
+            },
+            {
+                path: '/all-payrolls',
+                element: <Payrolls />
+            },
+            {
+                path: '/all-tasks',
+                element: <Task />
+            },
+            {
+                path: '/all-attendance',
+                element: <Attendance />
             },
         ]
     },

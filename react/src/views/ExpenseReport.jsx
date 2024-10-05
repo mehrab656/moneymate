@@ -130,7 +130,7 @@ export default function ExpenseReport() {
     };
 
     return (
-        <>
+        <div>
             <MainLoader loaderVisible={loading}/>
             <WizCard className="animated fadeInDown wiz-card-mh expx">
                 <div className="row">
@@ -238,6 +238,6 @@ export default function ExpenseReport() {
                           data={modalData}
                           currency={default_currency}
             />
-        </>
+        </div>
     );
 }

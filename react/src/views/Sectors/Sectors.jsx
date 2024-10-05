@@ -311,6 +311,7 @@ export default function Sectors() {
               permission: checkPermission(userPermission.sector_create),
               txt: "Create New",
               icon:(<Iconify icon={"eva:plus-fill"} />), //"faBuildingFlag",
+              linkTo:'route',
               link:"/sector/new"
             }
           }

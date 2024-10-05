@@ -1,7 +1,7 @@
 import {
     Accordion,
     AccordionDetails,
-    AccordionSummary,
+    AccordionSummary, Box,
     Card,
     CardActionArea,
     CardActions,
@@ -40,7 +40,6 @@ function CommonTable(props) {
     const genRand = (len) => {
         return Math.random().toString(36).substring(2, len + 2);
     }
-
     return (
         <Card sx={{p: 5}} style={{padding: "0px"}}>
             <CardActionArea>
@@ -56,11 +55,19 @@ function CommonTable(props) {
                             </div>
 
                             {addBTN.permission &&
-                                <div className={classes.column}>
+                            addBTN.linkTo === 'route' ?
+                                (<div className={classes.column}>
                                     <Link className="btn-add mr-3" to={addBTN.link} style={{float: "right"}}>
                                         {addBTN.icon} {addBTN.txt}
                                     </Link>
-                                </div>
+                                </div>)
+                                :
+                                (<div className={classes.column}>
+                                    <a className="btn-add mr-3" onClick={() => addBTN.link()} style={{float: "right"}}>
+                                        {addBTN.icon} {addBTN.txt}
+                                    </a>
+
+                                </div>)
                             }
                         </AccordionSummary>
                         <AccordionDetails>

@@ -182,6 +182,7 @@ export default function Expenses() {
                         permission: checkPermission(userPermission.expense_create),
                         txt: "Create New",
                         icon:(<FontAwesomeIcon icon={faPlus}/>), //"faBuildingFlag",
+                        linkTo:'route',
                         link:"/expense/new"
                     }
                 }
