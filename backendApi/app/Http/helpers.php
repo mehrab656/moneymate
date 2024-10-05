@@ -67,7 +67,7 @@ function storeActivityLog(array $data): void
         'user_id' => Auth::user()->id,
         'company_id' => Auth::user()->primary_company,
         'object_id' => $data['object_id'],
-        'object' => $data['object'] ?? null,
+        'object' => $data['object'] ?? $data['log_type'],
         'log_type' => strtolower($data['log_type']),
         'uid' => random_string('alnum', 32),
         'data_records' => $data_records,

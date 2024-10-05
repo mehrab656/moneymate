@@ -179,7 +179,7 @@ class SectorModelController extends Controller
                 'object_id' => $sector['id'],
                 'log_type' => 'create',
                 'module' => 'sectors',
-                'descriptions' => '',
+                'descriptions' => 'Added new Sector',
                 'data_records' => $sectorData,
             ]);
         } catch (ValidationException $e) {

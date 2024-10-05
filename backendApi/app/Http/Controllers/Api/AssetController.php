@@ -154,6 +154,7 @@ class AssetController extends Controller
                 'expense_id' => $expense['id'],
                 'date' => $data['date'],
                 'assets' => $data['assets'],
+                'status'=>1
             ]);
             storeActivityLog([
                 'object_id' => $assets->id,

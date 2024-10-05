@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SectorModelController;
 use App\Http\Controllers\Api\SubscriptionController;
+use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WalletController;
 use Illuminate\Http\Request;
@@ -59,6 +60,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/category/{category}', [CategoryController::class, 'show']);
     Route::put('/category/{category}', [CategoryController::class, 'update']);
     Route::delete('/category/{category}', [CategoryController::class, 'destroy']);
+    Route::get('category', [CategoryController::class, 'categories']);
 
     //Bank name Api
 
@@ -224,12 +226,22 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('permission', [RoleController::class, 'getPermission']);
 
     //Asset routs
-    Route::get('/assets', [AssetController::class, 'index']);
+    Route::get('/all-assets', [AssetController::class, 'index']);
     Route::post('/asset/add', [AssetController::class, 'add']);
     Route::delete('/asset/{asset}', [AssetController::class, 'delete']);
     Route::get('asset/{id}', [AssetController::class, 'edit']);
     Route::post('asset/{id}', [AssetController::class, 'update']);
-    Route::get('/asset-list', [AssetController::class, 'sectorList']);
+    Route::get('/asset-list', [AssetController::class, 'assetLists']);
+
+
+    //TaskModel controller's routs
+    Route::get('/all-tasks', [TaskController::class, 'index']);
+    Route::post('/task/add', [TaskController::class, 'add']);
+    Route::delete('/task/{task}', [TaskController::class, 'delete']);
+    Route::get('task/{id}', [TaskController::class, 'edit']);
+    Route::post('task/{id}', [TaskController::class, 'update']);
+    Route::post('update-task-status',[TaskController::class,'updateStatus']);
+    Route::post('update-task-payment-status',[TaskController::class,'updatePaymentStatus']);
 });
 
 

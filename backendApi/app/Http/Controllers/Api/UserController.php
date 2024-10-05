@@ -54,14 +54,15 @@ class UserController extends Controller
     {
         $data = $request->validated();
         $data['password'] = bcrypt($data['password']);
-        $data['primary_company'] = Auth::user()->primary_comany;
+        $data['primary_company'] = auth()->user()->primary_company;
+
         try {
             DB::beginTransaction();
             $user = User::create($data);
             DB::table('company_user')->insert([
-                'company_id' => Auth::user()->primary_comany,
+                'company_id' =>auth()->user()->primary_company,
                 'user_id' => $user->id,
-                'role_id' => $data['role_id'],//admin role.
+                'role_id' => 2, //$data['role_id'],//admin role.
                 'status' => true,
                 'created_by' => Auth::user()->id,
                 'updated_by' => Auth::user()->id,
@@ -79,6 +80,7 @@ class UserController extends Controller
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
+            return response($e, 400);
 
         }
 

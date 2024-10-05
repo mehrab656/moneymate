@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Interfaces\CategoryRepositoryInterface;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Resources\BankAccountResource;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Support\Facades\DB;
@@ -129,5 +130,24 @@ class CategoryController extends Controller {
 			'description' => 'Category successfully deleted!.',
 		] );
 	}
+
+    /**
+     * Get the list of this company categories based on types.
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function categories(Request $request): JsonResponse
+    {
+
+        $type = $request->type;
+        $categories = DB::table( 'categories' )->select( 'categories.*' )
+            ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
+            ->where( 'sectors.company_id', '=', Auth::user()->primary_company )
+            ->where('type',$type)->get();
+
+        return response()->json([
+            'categories'=> $categories,
+        ]);
+    }
 
 }
