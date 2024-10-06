@@ -26,7 +26,7 @@ class TaskResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $slot = date("D j, Y",strtotime($this->date)).'('. date("g:i a",strtotime($this->start_time)).'-'.date("g:i a",strtotime($this->end_time)).')';
+        $slot = date("D j, F, Y",strtotime($this->date)).'('. date("g:i a",strtotime($this->start_time)).'-'.date("g:i a",strtotime($this->end_time)).')';
 
         return [
             'id' => $this->id,
@@ -42,7 +42,7 @@ class TaskResource extends JsonResource
             'amount' => $this->amount,
             'status' => $this->status,
             'payment_status' => $this->payment_status,
-            'workflow' => $this->workflow,
+            'workflow' => array_reverse(json_decode($this->workflow)),
         ];
     }
 }
