@@ -9,6 +9,7 @@ use App\Http\Requests\TaskRequest;
 use Carbon\Carbon;
 use DateTime;
 use Exception;
+use Illuminate\Console\View\Components\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\TaskResource;
@@ -217,5 +218,74 @@ class TaskController extends Controller
     public function destroy(TaskModel $task)
     {
         //
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function updatePaymentStatus(Request $request, $id)
+    {
+        $data = $request->input();
+        if (!$id){
+            return response()->json([
+                'message' => 'Missing',
+                'description' => 'Missing field!'
+            ],403);
+        }
+        $task = TaskModel::find($id);
+        if (!$task){
+            return response()->json([
+                'message' => 'Missing',
+                'description' => 'Task is not existing!'
+            ],403);
+        }
+        if ($task->company_id !== auth()->user()->primary_company){
+            return response()->json([
+                'message' => 'Not Allowed',
+                'description' => 'You can not update for other company\'s task.!'
+            ],403);
+        }
+
+
+        if (!$data['amount']){
+            return response()->json([
+                'message' => 'Amount',
+                'description' => 'Amount is required!'
+            ],403);
+        }
+        if (!$data['payment_status']){
+            return response()->json([
+                'message' => 'Payment Status',
+                'description' => 'Payment Status is required!'
+            ],403);
+        }
+
+        $task->paid = $data['amount'];
+        $task->payment_status =$data['payment_status'];
+        $workflow = json_decode($task->workflow);
+
+
+        $workflow[] = buildTimelineWorkflow($data['payment_status']);
+
+        if (isset($data['comment']) && $data['comment']) {
+            $workflow[] = buildTimelineWorkflow('comment',$data['comment']);
+        }
+
+        $task->workflow = json_encode($workflow);
+
+        $task->save();
+        storeActivityLog([
+            'user_id' => Auth::user()->id,
+            'object_id' => $task->id,
+            'object' => 'task',
+            'log_type' => 'update',
+            'module' => 'tasks',
+            'descriptions' => 'Update Task payment status',
+            'data_records' => $task,
+        ]);
+        return response()->json([
+            'message' => 'success',
+            'description' => 'Payment status has been updated.'
+        ]);
     }
 }

@@ -129,8 +129,10 @@ function CommonTable(props) {
                                             </TableRow>
                                         ) : (
                                             table.tableBody.rows?.map((row) => (
+
                                                 <TableRow key={genRand(12)}>
                                                     {
+
                                                         table.showIdColumn &&
                                                         <TableCell component="th" scope="row">{row.id}</TableCell>
                                                     }
@@ -151,9 +153,8 @@ function CommonTable(props) {
                                                     {
                                                         // JSON.stringify(table.actionBtn) !== '{}' &&
                                                         <TableCell align="right">
-                                                            <ActionButtonHelpers
-                                                                actionBtns={table.actionButtons}
-                                                                element={row}
+                                                            <ActionButtonHelpers actionBtn={table.actionButtons}
+                                                                                 element={row}
                                                             />
                                                         </TableCell>
                                                     }

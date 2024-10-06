@@ -214,4 +214,34 @@ function is_ip_address(string $ip): bool|string
             $checkoutDate,
         );
     }
+
+    function buildTimelineWorkflow($status,$description=''): array
+    {
+        $type = 'create';
+        if ($status==='paid'){
+            $description = 'Marked the payment as done.';
+            $type = 'payment_done';
+        }
+        if ($status==='partial_paid'){
+            $description = 'Mark the payment as partially paid';
+            $type = 'payment_status_change';
+        }
+        if ($status==='pending'){
+            $description = 'Mark the payment as pending';
+            $type = 'payment_status_change';
+        }
+        if ($status==='comment'){
+            $type = 'comment';
+        }
+
+
+
+        return [
+            'date_time' => date("Y-m-d H:i:s"),
+            'userID' => Auth::user()->id,
+            'userName' => Auth::user()->name,
+            'type' => $type,
+            'description' =>$description
+        ];
+    }
 }

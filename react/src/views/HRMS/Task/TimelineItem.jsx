@@ -22,10 +22,10 @@ const TimelineItem = ({data:{date_time,type,description,userName}}) => {
         <div className="timeline-item">
             <div className="timeline-item-content">
             <span className="tag" style={{background: bgColor(type)}}>
-                {type.replace('_', ' ')}
+                {(type).replaceAll('_', ' ')}
             </span>
                 <br/>
-                <p>{description}</p>
+                <p>{description.toUpperCase()}</p>
                 <b>{userName}</b>
                 <span className="circle"/>
                 <time>{date.toDateString() + ' ' + formattedTime}</time>

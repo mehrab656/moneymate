@@ -241,7 +241,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('task/{id}', [TaskController::class, 'edit']);
     Route::post('task/{id}', [TaskController::class, 'update']);
     Route::post('update-task-status',[TaskController::class,'updateStatus']);
-    Route::post('update-task-payment-status',[TaskController::class,'updatePaymentStatus']);
+    Route::post('update-task-payment-status/{id}',[TaskController::class,'updatePaymentStatus']);
 });
 
 

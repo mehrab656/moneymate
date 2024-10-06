@@ -7,10 +7,7 @@ import {useNavigate} from "react-router-dom";
 import {checkPermission} from "./HelperFunctions.js";
 
 
-const ActionButtonHelpers = (actions,element) => {
-    const {applicationSettings, userRole} = useContext(SettingsContext);
-   const items = Object.values(actions)
-
+const ActionButtonHelpers = ({actionBtn, element}) => {
     const navigate = useNavigate()
     return (
         <>
@@ -21,7 +18,7 @@ const ActionButtonHelpers = (actions,element) => {
 
             <Dropdown.Menu className="actionDropDownMenu">
                 {
-                    items[0].map(menu=>{
+                    actionBtn.map(menu=>{
                        return (
                             <Dropdown.Item className={menu.textClass} key={Math.random().toString(36).substring(2)}
                                 onClick={(e) => menu.type==='modal'?menu.actionFunction(element):navigate(`${menu.route}${element.id}`)}>

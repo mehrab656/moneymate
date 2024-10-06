@@ -17,6 +17,8 @@ import TaskFilters from "./TaskFilters.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
 import TaskHistoryModal from "./TaskHistoryModal.jsx";
+import ShowTaskModal from "./ShowTaskModal.jsx";
+import UpdatePaymentStatusModal from "./UpdatePaymentStatusModal.jsx";
 
 const defaultTaskData = {
     description: '',
@@ -55,6 +57,8 @@ export default function Task() {
     const [showTaskDetailsModal, setShowTaskDetailsModal] = useState(false);
     const [showHistoryModal, setShowHistoryModal] = useState(false);
     const [taskHistory, setTaskHistory] = useState([]);
+    const [showTaskStatusUpdateModal,setTaskStatusUpdateModal]=useState(false);
+    const [showTaskPaymentStatusModal,setTaskPaymentStatusModal]=useState(false);
 
     const [query, setQuery] = useState(defaultQuery)
     const {
@@ -86,14 +90,7 @@ export default function Task() {
         // task.employee.toLowerCase().includes(searchTerm.toLowerCase());
     );
 
-    const showTaskHistory = (task) => {
-        setShowHistoryModal(true);
-        setTaskHistory(task);
-    }
-    const handelCloseTaskHistoryModal = () => {
-        setShowHistoryModal(false);
-        setTaskHistory();
-    }
+
 
     const modifiedTaskData = filteredTasks.map(({
                                                     id,
@@ -159,16 +156,32 @@ export default function Task() {
             }
         });
     };
-
-    const handelCreateNewTaskModal = (task) => {
-        setTask(task);
+    const handelCreateNewTaskModal = () => {
+        // setTask(task);
         setCreateTaskModal(true);
     };
-    const handelCloseTaskModal = () => {
+    const handelCloseTaskCreateModal = () => {
         setCreateTaskModal(false);
     };
-    
+    const handelCloseShowTaskDetailsModal = () =>{
+        setShowTaskDetailsModal(false)
+    }
+    const showTaskHistory = (task) => {
+        setShowHistoryModal(true);
+        setTaskHistory(task);
+    }
+    const handelCloseTaskHistoryModal = () => {
+        setShowHistoryModal(false);
+        setTaskHistory();
+    }
+    const handelUpdatePaymentStatusModal = (task)=>{
+        setTaskPaymentStatusModal(true);
+        setTask(task)
+    }
 
+    const handelClosePaymentStatusModal = ()=>{
+        setTaskPaymentStatusModal(false);
+    }
     const getTasks = () => {
         setLoading(true);
         axiosClient
@@ -244,9 +257,25 @@ export default function Task() {
             actionFunction: onDelete,
             permission: 'task_delete',
             textClass:'text-danger'
-
+        },
+        {
+            actionName: 'Update Status',
+            type: "modal",
+            route: "",
+            actionFunction: onDelete,
+            permission: 'task_change_status',
+            textClass:'text-primary'
+        },
+        {
+            actionName: 'Update Payment',
+            type: "modal",
+            route: "",
+            actionFunction: handelUpdatePaymentStatusModal,
+            permission: 'task_change_payment_status',
+            textClass:'text-info'
         }];
-    
+
+
     return (
         <div>
             <MainLoader loaderVisible={loading}/>
@@ -293,7 +322,7 @@ export default function Task() {
             />
 
             <TaskAddModal showModal={createTaskModal}
-                          handelCloseModal={handelCloseTaskModal}
+                          handelCloseModal={handelCloseTaskCreateModal}
                           title={'Add a new Task'}
                           currentTaskList={tasks}
                           setTasks={setTasks}
@@ -302,6 +331,16 @@ export default function Task() {
                               handelCloseModal={handelCloseTaskHistoryModal}
                               workflow={taskHistory}
             />
+            <ShowTaskModal showModal={showTaskDetailsModal}
+                              handelCloseModal={handelCloseShowTaskDetailsModal}
+                              element={task}
+            />
+            <UpdatePaymentStatusModal showModal={showTaskPaymentStatusModal}
+                              handelCloseModal={handelClosePaymentStatusModal}
+                                      setTaskPaymentStatusModal={setTaskPaymentStatusModal}
+                              element={task}
+            />
+
         </div>
     );
 }
