@@ -1,0 +1,38 @@
+import TaskHistoryModal from "./TaskHistoryModal.jsx";
+
+const TimelineItem = ({data:{date_time,type,description,userName}}) => {
+    const date = new Date(date_time)
+    const formatter = new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const formattedTime = formatter.format(date);
+    const bgColor = (status)=>{
+        if (status==='create' || status==='done' || status==='payment_done'){
+            return '#198754';
+        }
+       else if (status==='comment'){
+            return '#0dcaf0';
+        }
+        else if (status==='status_change' || status==='payment_status_change'){
+            return '#ffc107';
+        }
+        else{
+            return '#bb2124'
+        }
+    }
+    return (
+        <div className="timeline-item">
+            <div className="timeline-item-content">
+            <span className="tag" style={{background: bgColor(type)}}>
+                {type.replace('_', ' ')}
+            </span>
+                <br/>
+                <p>{description}</p>
+                <b>{userName}</b>
+                <span className="circle"/>
+                <time>{date.toDateString() + ' ' + formattedTime}</time>
+            </div>
+        </div>
+    )
+};
+
+export default TimelineItem;
+

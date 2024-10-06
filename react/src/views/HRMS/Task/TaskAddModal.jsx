@@ -269,7 +269,7 @@ function TaskAddModal({showModal, handelCloseModal, title,currentTaskList,setTas
                                 </Col>
                                 <Col xs={12} md={4}>
                                     <Form.Group className="mb-3" controlId="payment_status">
-                                        <Form.Label>Task Status</Form.Label>
+                                        <Form.Label>Payment Status</Form.Label>
                                         <Form.Select aria-label="Payment Status" onChange={(e) => {
                                             setTaskData({...taskData, payment_status: e.target.value});
                                         }}>
@@ -301,10 +301,6 @@ function TaskAddModal({showModal, handelCloseModal, title,currentTaskList,setTas
                                                 (<option defaultValue>{"Task Assign to"}</option>)
                                             }
                                         </Form.Select>
-                                        {/*<Select options={EmployeeList}*/}
-                                        {/*        className="basic-multi-select"*/}
-                                        {/*        classNamePrefix="select"*/}
-                                        {/*></Select>*/}
                                         {errors.employee_id && (
                                             <p className='error-message mt-2'>{errors.employee_id[0]}</p>
                                         )}

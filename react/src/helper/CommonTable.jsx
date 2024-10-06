@@ -5,7 +5,7 @@ import {
     Card,
     CardActionArea,
     CardActions,
-    CardContent, TextField
+    CardContent, CardHeader, TextField
 } from "@mui/material";
 import {Link} from "react-router-dom";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -23,6 +23,11 @@ import Pagination from "@mui/material/Pagination";
 import * as React from "react";
 import {createElement, isValidElement, memo} from "react";
 import {makeStyles} from "@mui/styles";
+import {ExpandMore} from "@mui/icons-material";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Typography from "@mui/material/Typography";
+import Collapse from '@mui/material/Collapse';
+import {Col, Row} from "react-bootstrap";
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -34,61 +39,54 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
+
 function CommonTable(props) {
     const {cardTitle, addBTN, paginations, table, filter} = props;
+    const [expanded, setExpanded] = React.useState(false);
+
+
+    const handleExpandClick = () => {
+        setExpanded(!expanded);
+    };
+
+
     const classes = useStyles();
     const genRand = (len) => {
         return Math.random().toString(36).substring(2, len + 2);
     }
     return (
         <Card sx={{p: 5}} style={{padding: "0px"}}>
-            <CardActionArea>
-                <div className={classes.root}>
-                    <Accordion className={classes.boxShadow}>
-                        <AccordionSummary
-                            expandIcon={<FontAwesomeIcon icon={faFilter}/>}
-                            aria-controls="panel1a-content"
-                            id="panel1a-header"
+            <CardHeader
+                title={cardTitle}
+                className={'border'}
+                action={
+                    <>
+                        {addBTN.permission &&
+                        addBTN.linkTo === 'route' ?
+                            <Link className="btn-add mr-3" to={addBTN.link} style={{float: "right"}}>
+                                {addBTN.icon} {addBTN.txt}
+                            </Link> :
+                            <a className="btn-add " onClick={() => addBTN.link()} style={{boxShadow: "0px"}}>
+                                {addBTN.icon} {addBTN.txt}
+                            </a>
+                        }
+
+                        <ExpandMore
+                            expand={expanded.toString()}
+                            onClick={handleExpandClick}
+                            aria-expanded={expanded}
+                            aria-label="show more"
                         >
-                            <div className={classes.column}>
-                                <h1 className="title-text mb-0">{cardTitle}</h1>
-                            </div>
+                            <ExpandMoreIcon/>
+                        </ExpandMore>
+                    </>
+                }
+            />
 
-                            {addBTN.permission &&
-                            addBTN.linkTo === 'route' ?
-                                (<div className={classes.column}>
-                                    <Link className="btn-add mr-3" to={addBTN.link} style={{float: "right"}}>
-                                        {addBTN.icon} {addBTN.txt}
-                                    </Link>
-                                </div>)
-                                :
-                                (<div className={classes.column}>
-                                    <a className="btn-add mr-3" onClick={() => addBTN.link()} style={{float: "right"}}>
-                                        {addBTN.icon} {addBTN.txt}
-                                    </a>
+            <Collapse in={expanded} timeout="auto" unmountOnExit>
+                {filter()}
+            </Collapse>
 
-                                </div>)
-                            }
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            {filter.filterByText &&
-                                <TextField
-                                    sx={{
-                                        maxWidth: {sm: 340},
-                                        textTransform: 'capitalize',
-                                    }}
-                                    size="small"
-                                    fullWidth
-                                    value={filter.searchBoxValue}
-                                    onChange={(event) => filter.handelSearch(event.target.value)}
-                                    placeholder={filter.placeHolderTxt}
-                                />
-                            }
-                        </AccordionDetails>
-                    </Accordion>
-                </div>
-
-            </CardActionArea>
             <CardContent style={{minHeight: '750px'}}>
                 <TableContainer component={Paper} style={{padding: "0px", minHeight: "750px"}}>
                     <Table size={table.size} aria-label={table.ariaLabel}>
@@ -102,7 +100,7 @@ function CommonTable(props) {
                                     table.tableColumns.map(column => {
                                         return (
                                             <TableCell align={column.align} key={column.id}>
-                                                <b>{column.label}</b>
+                                            <b>{column.label}</b>
                                             </TableCell>
                                         )
                                     })
@@ -154,13 +152,9 @@ function CommonTable(props) {
                                                         // JSON.stringify(table.actionBtn) !== '{}' &&
                                                         <TableCell align="right">
                                                             <ActionButtonHelpers
-                                                                module={row}
-                                                                showModule={table.actionBtn.showModule}
-                                                                deleteFunc={table.actionBtn.deleteFunc}
-                                                                params={table.actionBtn.params}
-                                                                editDropdown={table.actionBtn.editDropdown}
-                                                                showPermission={table.actionBtn.showPermission}
-                                                                deletePermission={table.actionBtn.deletePermission}/>
+                                                                actionBtns={table.actionButtons}
+                                                                element={row}
+                                                            />
                                                         </TableCell>
                                                     }
                                                 </TableRow>
@@ -190,3 +184,10 @@ function CommonTable(props) {
 }
 
 export default memo(CommonTable)
+// module={row}
+// showModule={table.actionBtn.showModule}
+// deleteFunc={table.actionBtn.deleteFunc}
+// params={table.actionBtn.params}
+// editDropdown={table.actionBtn.editDropdown}
+// showPermission={table.actionBtn.showPermission}
+// deletePermission={table.actionBtn.deletePermission}
