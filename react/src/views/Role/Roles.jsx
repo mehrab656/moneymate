@@ -109,16 +109,40 @@ export default function Roles() {
             }
         });
     };
+    const filters=()=>{
+        return '';
+        // filterByText:true,
+        //     placeHolderTxt:'Search by Company Name,Activity etc...',
+        //     searchBoxValue:searchTerm,
+        //     handelSearch: setSearchTerm
 
-
-
-    const actionParams = {
-        route: {
-            editRoute: "/role/",
-            viewRoute: "",
-            deleteRoute: "",
+    }
+    const actionParams = [
+        {
+            actionName: 'Edit',
+            type: "route",
+            route: "/role/",
+            actionFunction: "editModal",
+            permission: 'role_edit',
+            textClass:'text-info',
         },
-    };
+        {
+            actionName: 'View',
+            type: "modal",
+            route: "",
+            actionFunction: showRole,
+            permission: 'role_view',
+            textClass:'text-warning'
+        },
+        {
+            actionName: 'Delete',
+            type: "modal",
+            route: "",
+            actionFunction: onDelete,
+            permission: 'role_delete',
+            textClass:'text-danger'
+        },
+    ];
     return (
         <Paper sx={{width: '100%', overflow: 'hidden'}} classes={"root"}>
             <div className="row p-3">
@@ -174,13 +198,9 @@ export default function Roles() {
                                 <TableCell >{(new Date(role.added_date)).toLocaleDateString("en-US", dateOptions)}</TableCell>
                                 <TableCell >
                                     <ActionButtonHelpers
-                                        module={role}
-                                        showModule={showRole}
-                                        deleteFunc={(e)=>{onDelete(role)}}
-                                        params={actionParams}
-                                        editDropdown={userPermission.role_edit}
-                                        showPermission={userPermission.role_view}
-                                        deletePermission={userPermission.role_delete}/>
+                                    actionBtn={actionParams}
+                                    element={role}
+                                />
                                 </TableCell>
                             </TableRow>
                         ))}

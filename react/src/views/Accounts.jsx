@@ -3,18 +3,16 @@ import React, {useContext, useEffect, useState} from "react";
 import axiosClient from "../axios-client.js";
 import WizCard from "../components/WizCard";
 import {Button, Modal} from "react-bootstrap";
-import {useStateContext} from "../contexts/ContextProvider";
 import Swal from "sweetalert2";
 import Pagination from "react-bootstrap/Pagination";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faBank, faEdit, faTrash} from "@fortawesome/free-solid-svg-icons";
+import {faBank} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
 import SummeryCard from "../components/SummeryCard.jsx";
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward';
 import AddCardTwoToneIcon from '@mui/icons-material/AddCardTwoTone';
-import RemoveTwoToneIcon from '@mui/icons-material/RemoveTwoTone';
 import MainLoader from "../components/MainLoader.jsx";
 import { notification } from "../components/ToastNotification.jsx";
 
@@ -252,13 +250,37 @@ export default function Accounts() {
             account.balance.toString().includes(searchText)
     );
 
-    const actionParams = {
-        route:{
-            viewRoute:'',
-            deleteRoute:''
-        },
-    }
 
+    const actionParams = [
+        {
+            actionName: 'Edit',
+            type: "route",
+            route: "/account/",
+            actionFunction: "editModal",
+            permission: 'account_edit',
+            textClass:'text-info',
+        },
+        {
+            actionName: 'View',
+            type: "modal",
+            route: "",
+            actionFunction: showModal,
+            permission: 'account_view',
+            textClass:'text-warning'
+        },
+        {
+            actionName: 'Delete',
+            type: "modal",
+            route: "",
+            actionFunction: onDelete,
+            permission: 'account_delete',
+            textClass:'text-danger'
+        },
+    ];
+
+    const filter = () =>{
+        return '';
+    }
 
 
     return (
@@ -374,11 +396,8 @@ export default function Accounts() {
                                         {userRole ==='admin' && 
                                          <td>
                                             <ActionButtonHelpers
-                                                module={account}
-                                                deleteFunc={onDelete}
-                                                showEditDropdown={edit}
-                                                editDropdown={true}
-                                                params={actionParams}
+                                                actionBtn={actionParams}
+                                                element={account}
                                             />
                                         </td>}
                                        
@@ -481,11 +500,8 @@ export default function Accounts() {
                                         {userRole ==='admin' && 
                                          <td>
                                             <ActionButtonHelpers
-                                                module={account}
-                                                deleteFunc={onDelete}
-                                                showEditDropdown={edit}
-                                                editDropdown={true}
-                                                params={actionParams}
+                                                actionBtn={actionParams}
+                                                element={account}
                                             />
                                         </td>}
                                        

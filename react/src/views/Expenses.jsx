@@ -165,12 +165,42 @@ export default function Expenses() {
 
     };
 
-    const actionParams = {
-        route: {
-            editRoute: "/expense/",
-            viewRoute: "",
-            deleteRoute: ""
+    const actionParams = [
+        {
+            actionName: 'Edit',
+            type: "route",
+            route: "/expense/",
+            actionFunction: "editModal",
+            permission: 'expense_edit',
+            textClass:'text-info',
         },
+        {
+            actionName: 'View',
+            type: "modal",
+            route: "",
+            actionFunction: showExpense,
+            permission: 'expense_view',
+            textClass:'text-warning'
+        },
+        {
+            actionName: 'Delete',
+            type: "modal",
+            route: "",
+            actionFunction: onDelete,
+            permission: 'expense_delete',
+            textClass:'text-danger'
+        },
+    ];
+
+    const filter=()=>{
+        //need to make a filter for expenses
+
+        // {
+        //     filterByText:true,
+        //         placeHolderTxt:'Search by column names...',
+        //     searchBoxValue:searchTerm,
+        //     handelSearch: setSearchTerm
+        // }
     }
     return (
         <div>
@@ -202,22 +232,9 @@ export default function Expenses() {
                         loadingColSpan: 6, //Table head length + 1
                         rows: modifiedFilteredExpenses,//rendering data
                     },
-                    actionBtn: {
-                        module: expense,
-                        showModule: showExpense,
-                        deleteFunc: onDelete,
-                        params: actionParams,
-                        editDropdown: userPermission.expense_edit,
-                        showPermission: userPermission.expense_view,
-                        deletePermission: userPermission.expense_delete
-                    }
+                    actionButtons: actionParams
                 }}
-                filter={{
-                    filterByText:true,
-                    placeHolderTxt:'Search by column names...',
-                    searchBoxValue:searchTerm,
-                    handelSearch: setSearchTerm
-                }}
+                filter={filter}
             />
 
             <ExpenseModal showModal={showModal}

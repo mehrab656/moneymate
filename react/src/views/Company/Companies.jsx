@@ -49,12 +49,17 @@ export default function companies() {
 
     const pageSize = num_data_per_page;
     const totalPages = Math.ceil(totalCount / pageSize);
-    const actionParams = {
-        route: {
-            editRoute: '/company/',
-            viewRoute: '',
-            deleteRoute: ''
-        },
+    
+
+
+
+    const filters=()=>{
+        return '';
+        // filterByText:true,
+        //     placeHolderTxt:'Search by Company Name,Activity etc...',
+        //     searchBoxValue:searchTerm,
+        //     handelSearch: setSearchTerm
+
     }
 
     const filteredCompanies = companies.filter(
@@ -117,7 +122,32 @@ export default function companies() {
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
     };
-
+    const actionParams = [
+        {
+            actionName: 'Edit',
+            type: "route",
+            route: "/company/",
+            actionFunction: "editModal",
+            permission: 'company_edit',
+            textClass:'text-info',
+        },
+        {
+            actionName: 'View',
+            type: "modal",
+            route: "",
+            actionFunction: showCompany,
+            permission: 'company_view',
+            textClass:'text-warning'
+        },
+        {
+            actionName: 'Delete',
+            type: "modal",
+            route: "",
+            actionFunction: onDelete,
+            permission: 'company_delete',
+            textClass:'text-danger'
+        },
+    ];
     return (
         <div>
             <MainLoader loaderVisible={loading}/>
@@ -149,22 +179,11 @@ export default function companies() {
                         loadingColSpan: 6, //Table head length + 1
                         rows: filteredCompanies,//rendering data
                     },
-                    actionBtn: {
-                        module: company,
-                        showModule: showCompany,
-                        deleteFunc: onDelete,
-                        params: actionParams,
-                        editDropdown: userPermission.company_edit,
-                        showPermission: userPermission.company_view,
-                        deletePermission: userPermission.company_delete
-                    }
+                    actionButtons: actionParams
+
                 }}
-                filter={{
-                    filterByText:true,
-                    placeHolderTxt:'Search by Company Name,Activity etc...',
-                    searchBoxValue:searchTerm,
-                    handelSearch: setSearchTerm
-                }}
+                filter={filters}
+
             />
             <CompanyViewModal
                 showModal={showModal}

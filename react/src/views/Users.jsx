@@ -96,14 +96,32 @@ export default function Users() {
         }
     }, [userRole, navigate]);
 
-    const actionParams = {
-        route: {
-            editRoute: '/users/',
-            viewRoute: '',
-            deleteRoute: ''
+    const actionParams = [
+        {
+            actionName: 'Edit',
+            type: "route",
+            route: "/users/",
+            actionFunction: "editModal",
+            permission: 'user_edit',
+            textClass:'text-info',
         },
-    }
-
+        {
+            actionName: 'View',
+            type: "modal",
+            route: "",
+            actionFunction: modalUser,
+            permission: 'user_view',
+            textClass:'text-warning'
+        },
+        {
+            actionName: 'Delete',
+            type: "modal",
+            route: "",
+            actionFunction: onDelete,
+            permission: 'user_delete',
+            textClass:'text-danger'
+        },
+    ];
     return (
         <div>
             <MainLoader loaderVisible={loading}/>
@@ -160,9 +178,8 @@ export default function Users() {
                                     {userRole === 'admin' &&
                                         <td>
                                             <ActionButtonHelpers
-                                                module={u}
-                                                deleteFunc={onDelete}
-                                                params={actionParams}
+                                                actionBtn={actionParams}
+                                                element={u}
                                             />
                                         </td>
                                     }

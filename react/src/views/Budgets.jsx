@@ -263,14 +263,34 @@ export default function Budgets() {
         });
     };
 
-    
 
-    const actionParams = {
-        route:{
-            viewRoute:'',
-            deleteRoute:''
+
+    const actionParams = [
+        {
+            actionName: 'Edit',
+            type: "route",
+            route: "/budget/",
+            actionFunction: "editModal",
+            permission: 'budget_edit',
+            textClass:'text-info',
         },
-    }
+        {
+            actionName: 'View',
+            type: "modal",
+            route: "",
+            actionFunction: showModal,
+            permission: 'budget_view',
+            textClass:'text-warning'
+        },
+        {
+            actionName: 'Delete',
+            type: "modal",
+            route: "",
+            actionFunction: onDelete,
+            permission: 'budget_delete',
+            textClass:'text-danger'
+        },
+    ];
     return (
         <>
         <MainLoader loaderVisible={loading} />
@@ -336,13 +356,10 @@ export default function Budgets() {
                                         <td>{budget.end_date}</td>
                                         {userRole ==='admin' && 
                                          <td>
-                                            <ActionButtonHelpers
-                                                module={budget}
-                                                deleteFunc={onDelete}
-                                                showEditDropdown={edit}
-                                                editDropdown={true}
-                                                params={actionParams}
-                                            />
+                                             <ActionButtonHelpers
+                                                 actionBtn={actionParams}
+                                                 element={budget}
+                                             />
                                         </td>}
                                        
                                     </tr>

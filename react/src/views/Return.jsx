@@ -133,13 +133,25 @@ export default function Return() {
         );
     }
 
-    const actionParams = {
-        route: {
-            viewRoute: '',
-            deleteRoute: ''
+ 
+    const actionParams = [
+        {
+            actionName: 'Edit',
+            type: "modal",
+            route: "",
+            actionFunction: edit,
+            permission: 'return_edit',
+            textClass:'text-info',
         },
-    }
-
+        {
+            actionName: 'View',
+            type: "modal",
+            route: "",
+            actionFunction: edit,
+            permission: 'return_view',
+            textClass:'text-warning'
+        }
+    ];
     return (
         <div>
             <MainLoader loaderVisible={loading}/>
@@ -220,11 +232,9 @@ export default function Return() {
                                                 {userRole === 'admin' &&
                                                     <td>
                                                         <ActionButtonHelpers
-                                                            module={marketReturn}
-                                                            // deleteFunc={onDelete}
-                                                            showEditDropdown={edit}
-                                                            editDropdown={true}
-                                                            params={actionParams}
+                                                            element={marketReturn}
+                                                            actionBtn={actionParams}
+
                                                         />
                                                     </td>}
                                             </tr>

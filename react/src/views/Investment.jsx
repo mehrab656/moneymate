@@ -98,13 +98,34 @@ export default function Investment() {
         });
     };
 
-    const actionParams = {
-        route: {
-            editRoute: '/investment/',
-            viewRoute: '',
-            deleteRoute: ''
+
+    const actionParams = [
+        {
+            actionName: 'Edit',
+            type: "route",
+            route: "/investment/",
+            actionFunction: "editModal",
+            permission: 'investment_edit',
+            textClass:'text-info',
         },
-    }
+        {
+            actionName: 'View',
+            type: "modal",
+            route: "",
+            actionFunction: showModal,
+            permission: 'investment_view',
+            textClass:'text-warning'
+        },
+        {
+            actionName: 'Delete',
+            type: "modal",
+            route: "",
+            actionFunction: onDelete,
+            permission: 'investment_delete',
+            textClass:'text-danger'
+        },
+    ];
+
 
     function initialName(words) {
         'use strict'
@@ -199,10 +220,8 @@ export default function Investment() {
 
                                         <td>
                                             <ActionButtonHelpers
-                                                module={investment}
-                                                showModule={showInvestment}
-                                                deleteFunc={onDelete}
-                                                params={actionParams}
+                                                actionBtn={actionParams}
+                                                element={investment}
                                             />
                                         </td>
                                     </tr>

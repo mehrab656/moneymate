@@ -178,13 +178,32 @@ export default function Banks() {
         });
     };
 
-    const actionParams = {
-        route:{
-            viewRoute:'',
-            deleteRoute:''
+    const actionParams = [
+        {
+            actionName: 'Edit',
+            type: "route",
+            route: "/bank/",
+            actionFunction: "editModal",
+            permission: 'bank_edit',
+            textClass:'text-info',
         },
-    }
-
+        {
+            actionName: 'View',
+            type: "modal",
+            route: "",
+            actionFunction: showModal,
+            permission: 'bank_view',
+            textClass:'text-warning'
+        },
+        {
+            actionName: 'Delete',
+            type: "modal",
+            route: "",
+            actionFunction: onDelete,
+            permission: 'bank_delete',
+            textClass:'text-danger'
+        },
+    ];
 
 
     return (
@@ -251,13 +270,10 @@ export default function Banks() {
                                         <td></td>
                                         {userRole ==='admin' && 
                                          <td>
-                                            <ActionButtonHelpers
-                                                module={bank}
-                                                deleteFunc={onDelete}
-                                                showEditDropdown={edit}
-                                                editDropdown={true}
-                                                params={actionParams}
-                                            />
+                                             <ActionButtonHelpers
+                                                 actionBtn={actionParams}
+                                                 element={bank}
+                                             />
                                         </td>}
                                        
                                     </tr>

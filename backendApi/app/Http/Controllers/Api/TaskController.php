@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\BankAccount;
 use App\Models\Category;
+use App\Models\Income;
 use App\Models\TaskModel;
 use App\Http\Requests\TaskRequest;
 use Carbon\Carbon;
 use DateTime;
 use Exception;
 use Illuminate\Console\View\Components\Task;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\TaskResource;
@@ -222,70 +225,92 @@ class TaskController extends Controller
 
     /**
      * @throws Exception
+     * @throws \Throwable
      */
-    public function updatePaymentStatus(Request $request, $id)
+    public function updatePaymentStatus(Request $request, $id): JsonResponse|array
     {
         $data = $request->input();
-        if (!$id){
+        if (!$id) {
             return response()->json([
                 'message' => 'Missing',
                 'description' => 'Missing field!'
-            ],403);
+            ], 403);
         }
         $task = TaskModel::find($id);
-        if (!$task){
+        if (!$task) {
             return response()->json([
                 'message' => 'Missing',
                 'description' => 'Task is not existing!'
-            ],403);
+            ], 403);
         }
-        if ($task->company_id !== auth()->user()->primary_company){
+        if ($task->company_id !== auth()->user()->primary_company) {
             return response()->json([
                 'message' => 'Not Allowed',
                 'description' => 'You can not update for other company\'s task.!'
-            ],403);
+            ], 403);
         }
 
-
-        if (!$data['amount']){
+        if (!$data['amount']) {
             return response()->json([
                 'message' => 'Amount',
                 'description' => 'Amount is required!'
-            ],403);
+            ], 403);
         }
-        if (!$data['payment_status']){
+        if (!$data['payment_status']) {
             return response()->json([
                 'message' => 'Payment Status',
                 'description' => 'Payment Status is required!'
-            ],403);
+            ], 403);
         }
 
         $task->paid = $data['amount'];
-        $task->payment_status =$data['payment_status'];
+        $task->payment_status = $data['payment_status'];
         $workflow = json_decode($task->workflow);
 
 
         $workflow[] = buildTimelineWorkflow($data['payment_status']);
 
         if (isset($data['comment']) && $data['comment']) {
-            $workflow[] = buildTimelineWorkflow('comment',$data['comment']);
+            $workflow[] = buildTimelineWorkflow('comment', $data['comment']);
         }
 
         $task->workflow = json_encode($workflow);
 
-        $task->save();
-        storeActivityLog([
-            'user_id' => Auth::user()->id,
-            'object_id' => $task->id,
-            'object' => 'task',
-            'log_type' => 'update',
-            'module' => 'tasks',
-            'descriptions' => 'Update Task payment status',
-            'data_records' => $task,
-        ]);
+        try {
+            DB::beginTransaction();
+
+            $task->save();
+             (new TaskModel)->handelPaymentStatusChange([
+                'id' => $id,
+                'amount' => $data['amount'],
+                'payment_status' => $data['payment_status']
+            ]);
+
+            storeActivityLog([
+                'user_id' => Auth::user()->id,
+                'object_id' => $task->id,
+                'object' => 'task',
+                'log_type' => 'update',
+                'module' => 'tasks',
+                'descriptions' => 'Update Task payment status',
+                'data_records' => $task,
+            ]);
+
+            DB::commit();
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
+                'status_code' => 400
+            ],400);
+        }
+
         return response()->json([
-            'message' => 'success',
-            'description' => 'Payment status has been updated.'
-        ]);
+            'message' => 'Updated',
+            'description' => 'Payment Status Updated',
+            'status_code' => 200
+        ],200);
+
     }
 }

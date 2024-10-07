@@ -32,6 +32,8 @@ class TaskResource extends JsonResource
             'id' => $this->id,
             'employee_id' => $this->employee_id,
             'employee_name' => $this->employee->user->name,
+            'category_name' => $this->category->name,
+            'bank_account' => $this->category->sector->account->id,
             'description' => $this->description,
             'category_id' => $this->category_id,
             'date' => $this->date,

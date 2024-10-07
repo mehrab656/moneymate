@@ -120,18 +120,37 @@ export default function Incomes() {
     const handleCloseModal = () => {
         setShowModal(false);
     };
-    const actionParams = {
-        route: {
-            editRoute: '/income/',
-            viewRoute: '',
-            deleteRoute: ''
+
+    const actionParams = [
+        {
+            actionName: 'Edit',
+            type: "route",
+            route: "/income/",
+            actionFunction: "editModal",
+            permission: 'income_edit',
+            textClass:'text-info',
         },
-    }
+        {
+            actionName: 'View',
+            type: "modal",
+            route: "",
+            actionFunction: showIncome,
+            permission: 'income_view',
+            textClass:'text-warning'
+        },
+        {
+            actionName: 'Delete',
+            type: "modal",
+            route: "",
+            actionFunction: onDelete,
+            permission: 'income_delete',
+            textClass:'text-danger'
+        },
+        ]
 
     return (
         <div>
             <MainLoader loaderVisible={loading}/>
-
 
             <WizCard className="animated fadeInDown">
                 <div className="row">
@@ -217,10 +236,8 @@ export default function Incomes() {
                                         {userRole === 'admin' &&
                                             <td>
                                                 <ActionButtonHelpers
-                                                    module={income}
-                                                    showModule={showIncome}
-                                                    deleteFunc={onDelete}
-                                                    params={actionParams}
+                                                    actionBtn={actionParams}
+                                                    element={income}
                                                 />
                                             </td>
                                         }

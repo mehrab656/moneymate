@@ -240,7 +240,7 @@ export default function Task() {
             route: "",
             actionFunction: "editModal",
             permission: 'edit_task',
-            textClass:'text-warning',
+            textClass:'text-info',
         },
         {
             actionName: 'View',
@@ -248,7 +248,7 @@ export default function Task() {
             route: "",
             actionFunction: handelShowTaskDetailsModal,
             permission: 'task_view',
-            textClass:'text-info'
+            textClass:'text-warning'
         },
         {
             actionName: 'Delete',
@@ -307,14 +307,6 @@ export default function Task() {
                         rows: modifiedTaskData,//rendering data
                     },
                     actionButtons: actionParams
-                    //     {
-                    //     showModule: handelCreateNewTaskModal,
-                    //     deleteFunc: onDelete,
-                    //     params: actionParams,
-                    //     editDropdown: 'task_edit',
-                    //     showPermission: 'task_view',
-                    //     deletePermission: 'task_delete'
-                    // }
                 }}
                 filter={filters}
 

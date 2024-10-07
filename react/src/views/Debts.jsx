@@ -220,15 +220,32 @@ export default function Debts() {
         );
     }
 
-
-
-    const actionParams = {
-        route:{
-            editRoute:'/manage-debt/',
-            viewRoute:'',
-            deleteRoute:''
+    const actionParams = [
+        {
+            actionName: 'Edit',
+            type: "route",
+            route: "/manage-debt/",
+            actionFunction: "editModal",
+            permission: 'debt_edit',
+            textClass:'text-info',
         },
-    }
+        {
+            actionName: 'View',
+            type: "modal",
+            route: "",
+            actionFunction: showModal,
+            permission: 'debt_view',
+            textClass:'text-warning'
+        },
+        {
+            actionName: 'Delete',
+            type: "modal",
+            route: "",
+            actionFunction: onDelete,
+            permission: 'debt_delete',
+            textClass:'text-danger'
+        },
+    ];
 
     return (
         <div>
@@ -309,11 +326,9 @@ export default function Debts() {
                                       
                                         {userRole ==='admin' && 
                                         <td>
-                                            <ActionButtonHelpers 
-                                              module={debt}
-                                              showModule={showDebt}
-                                              deleteFunc={onDelete}
-                                              params={actionParams}
+                                            <ActionButtonHelpers
+                                                actionBtn={actionParams}
+                                                element={debt}
                                             />
                                         </td>
                                         }
