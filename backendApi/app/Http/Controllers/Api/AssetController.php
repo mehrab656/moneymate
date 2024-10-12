@@ -316,7 +316,7 @@ class AssetController extends Controller
         }
         return response()->json([
             'message' => 'Success!',
-            'description' => 'Assets Updated!.',
+            'description' => 'CompanyAssets Updated!.',
         ]);
     }
 
