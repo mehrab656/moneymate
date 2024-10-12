@@ -27,7 +27,7 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-        $page = $request->query('page', 1);
+        $page = $request->query('currentPage', 1);
         $pageSize = $request->query('pageSize', 10);
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
@@ -85,6 +85,7 @@ class TaskController extends Controller
         return response()->json([
             'data' => TaskResource::collection($query),
             'total' => $totalCount,
+            'test'=>($page - 1) * $pageSize
         ]);
     }
 

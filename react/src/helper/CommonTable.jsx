@@ -65,7 +65,7 @@ function CommonTable(props) {
                             <Link className="btn-add mr-3" to={addBTN.link} style={{float: "right"}}>
                                 {addBTN.icon} {addBTN.txt}
                             </Link> :
-                            <a className="btn-add " onClick={() => addBTN.link()} style={{boxShadow: "0px"}} disabledEffect={true}>
+                            <a className="btn-add " onClick={() => addBTN.link()} style={{boxShadow: "0px"}}>
                                 {addBTN.icon} {addBTN.txt}
                             </a>
                         }

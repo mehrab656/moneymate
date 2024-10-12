@@ -1,12 +1,19 @@
-#--------------------------
-# CompanyAssets Files
----------------------------
-assets
+Api request Insomnia
+.htaccess
+test.sql
+config.js
+CSV Formates.txt
+custom.css
+moneymate.sql
+OneSignalSDKWorker.js
+unnecessary.json
+images
 
 #--------------------------
 # Backend Api Files
 ---------------------------
 backendApi/vendor
+backendApi/node_modules
 backendApi/tests
 backendApi/.env
 backendApi/_ide_helper.php
@@ -22,6 +29,7 @@ backendApi/storage
 react/node_modules
 react/package-lock.json
 react/yarn.lock
+react/vite.config.js
 
 
 #-------------------------
