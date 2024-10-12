@@ -217,6 +217,7 @@ function is_ip_address(string $ip): bool|string
 
     function buildTimelineWorkflow($status,$description=''): array
     {
+
         $type = 'create';
         if ($status==='paid'){
             $description = 'Marked the payment as done.';
@@ -233,6 +234,18 @@ function is_ip_address(string $ip): bool|string
         if ($status==='comment'){
             $type = 'comment';
         }
+        if ($status ==='pending'){
+            $description = 'Mark the task as pending';
+            $type = 'status_change';
+        }
+        if ($status ==='cancelled'){
+            $description = 'Cancelled the task.';
+            $type = 'cancelled';
+        }
+        if ($status ==='complete'){
+            $description = 'Mark the task as Complete';
+            $type = 'done';
+        }
 
 
 
@@ -240,6 +253,7 @@ function is_ip_address(string $ip): bool|string
             'date_time' => date("Y-m-d H:i:s"),
             'userID' => Auth::user()->id,
             'userName' => Auth::user()->name,
+            'avatar' => asset('avatars/'.Auth::user()->profile_picture),
             'type' => $type,
             'description' =>$description
         ];

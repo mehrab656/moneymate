@@ -27,15 +27,12 @@ class RoleController extends Controller
             ->take($pageSize)
             ->orderBy('id', 'desc')
             ->get();
-
         $totalCount = Role::where('company_id', Auth::user()->primary_company)->count();
 
         return response()->json([
             'data' => RoleResource::collection($roles),
             'total' => $totalCount,
         ]);
-
-
     }
 
     /**
@@ -47,8 +44,6 @@ class RoleController extends Controller
 
 
         $role = Role::where(['company_id' => Auth::user()->primary_company, 'id' => $id])->get()->first();
-
-
         if (!$role) {
             return response()->json([
                 'status' => 'error',
@@ -66,7 +61,7 @@ class RoleController extends Controller
 
     public function companyRoleList(Request $request): JsonResponse
     {
-        $companyID = abs(Session::get('company_id'));
+        $companyID = Auth::user()->primary_company;
         if (!$companyID) {
             return response()->json([
                 'message' => 'Missing Company id!',
@@ -88,7 +83,7 @@ class RoleController extends Controller
 
         return response()->json([
             'message' => 'Success!',
-            'description' => "Company id was not found for this user.",
+            'description' => "",
             'data' => $roles
         ]);
     }
@@ -96,62 +91,56 @@ class RoleController extends Controller
 
     /**
      * Show the form for creating a new resource.
+     * @throws \Throwable
      */
-    public function addRole(Request $request)
+    public function addRole(RoleRequest $request)
     {
 
-        $data = $request->all();
-
-        $roleName = strtolower($data['role']);
-        $roleStatus = abs($data['status']);
-        unset($data['role']);
-        unset($data['status']);
-
-        $roleData = [
-            'company_id' => Auth::user()->primary_company,
-            'role' => $roleName,
-            'status' => $roleStatus,
-            'permissions' => json_encode($data),
-            'created_by' => Auth::user()->id,
-            'updated_by' => Auth::user()->id,
-        ];
+        $data = $request->validated();
 
         try {
             DB::beginTransaction();
-            $addNewRole = Role::create($roleData);
+            $role = Role::create([
+                'company_id' => Auth::user()->primary_company,
+                'role' => strtolower($data['name']),
+                'status' => abs($data['status']),
+                'permissions' => json_encode($data['roles']),
+                'created_by' => Auth::user()->id,
+                'updated_by' => Auth::user()->id,
+            ]);
+
+            storeActivityLog([
+                'user_id' => Auth::user()->id,
+                'object_id' => $role['id'],
+                'object' => 'role',
+                'log_type' => 'create',
+                'module' => 'role',
+                'descriptions' => 'Added New Role',
+                'data_records' => $role,
+            ]);
             DB::commit();
 
         } catch (Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Role created successfully',
-                'description' => $e
-            ], 404);
-        }
-
-        if ($addNewRole) {
-            storeActivityLog([
-                'object_id' => $addNewRole['id'],
-                'log_type' => 'create',
-                'module' => 'roles',
-                'descriptions' => '',
-                'data_records' => $addNewRole,
-            ]);
+            return [
+                'message' => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
+                'status_code' => 400
+            ];
         }
 
         return response()->json([
             'status' => 'success',
             'message' => 'Role created successfully',
-            'data' => []
         ]);
     }
 
-
-    public function updateRole($id, Request $request)
+    /**
+     * @throws \Throwable
+     */
+    public function updateRole($id, RoleRequest $request)
     {
 
-        $data = $request->all();
+        $data = $request->validated();
 
         $role = Role::where(['id' => $id, 'company_id' => auth()->user()->primary_company])->get()->first();
 
@@ -163,14 +152,14 @@ class RoleController extends Controller
         }
 
 
-        $roleName = strtolower($data['role']);
+        $roleName = strtolower($data['name']);
         $roleStatus = abs($data['status']);
 //        unset($data['role']);
 //        unset($data['status']);
         $roleData = [
             'role' => $roleName,
             'status' => $roleStatus,
-            'permissions' => json_encode($data),
+            'permissions' => json_encode($data['roles']),
             'updated_by' => Auth::user()->id,
         ];
 

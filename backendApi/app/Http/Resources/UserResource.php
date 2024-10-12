@@ -19,26 +19,27 @@ class UserResource extends JsonResource
      */
     public function toArray($request): array
     {
-        $is_active_membership = 'no';
-        $registrationType = get_option('registration_type');
-
-        if ($registrationType === 'subscription') {
-            $subscription = Subscription::where('status', 'active')
-                ->where('current_period_end', '>', now())
-                ->first();
-            if ($subscription)
-            {
-                $is_active_membership = 'yes';
-            }
-        }
+//        $is_active_membership = 'no';
+//        $registrationType = get_option('registration_type');
+//
+//        if ($registrationType === 'subscription') {
+//            $subscription = Subscription::where('status', 'active')
+//                ->where('current_period_end', '>', now())
+//                ->first();
+//            if ($subscription)
+//            {
+//                $is_active_membership = 'yes';
+//            }
+//
+//    }
 
         return [
             'id' => $this->id,
             'primary_company' => $this->primary_company,
             'name' => $this->name,
             'email' => $this->email,
-            'is_active_membership' => $is_active_membership,
-            'created_at' => $this->created_at, //->format('Y-m-d H:i:s')
+            'is_active_membership' => 'yes',
+            'created_at' => $this->created_at,
         ];
     }
 }

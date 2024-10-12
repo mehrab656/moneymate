@@ -17,13 +17,12 @@ class RoleResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'role' => $this->role,
-            'status' => $this->status,
-            'permission' => json_decode($this->permissions,true),
-            'options' => $this->options,
-            'added_by' => $this->createdBy->name,
-            'added_date' => $this->created_at,
+            'role'=>$this->role,
+            'status'=>$this->status,
+            'permissions'=>json_decode($this->permissions,true),
+            'updated_by'=>$this->updated_by,
+            'options'=>$this->options,
+            'date'=>$this->created_at,
         ];
     }
 }

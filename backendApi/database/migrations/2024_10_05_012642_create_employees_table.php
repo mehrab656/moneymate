@@ -18,9 +18,10 @@ return new class extends Migration
             $table->double( 'basic_salary' );
             $table->double( 'accommodation_cost' );
             $table->date( 'joining_date' );
+            $table->string( 'phone' );
+            $table->string( 'emergency_contact' )->nullable(true);
             $table->string( 'position' )->nullable(true);
             $table->string( 'attachment' )->nullable(true);
-            $table->string( 'emergency_contract' )->nullable(true);
             $table->json('extras')->nullable(true);
             $table->timestamps();
         });

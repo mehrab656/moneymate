@@ -7,6 +7,7 @@ use Auth;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TaskModel extends Model
@@ -17,9 +18,9 @@ class TaskModel extends Model
     protected $primaryKey = 'id';
     protected $guarded = [];
 
-    public function employee(): HasOne
+    public function employee(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->hasOne(Employee::class, 'id', 'employee_id');
+        return $this->belongsToMany(Employee::class, 'task_employee','task_id','employee_id');
     }
 
     public function category(): HasOne
@@ -31,7 +32,7 @@ class TaskModel extends Model
     /**
      * @throws \Throwable
      */
-    public function handelPaymentStatusChange($data)
+    public function handelPaymentStatusChange($data): array
     {
         $task = TaskModel::find($data['id']);
 
@@ -59,19 +60,21 @@ class TaskModel extends Model
                 'date' => $task['date'],
                 'attachment' => null,
             ], $task->category);
+
             return [
                 'status_code' => $income['status_code'],
                 'message' => $income['message']
             ];
         }
         if ($task['type'] === 'expense'){
+
             $expense = (new Expense)->addExpense([
                 'account_id' => $accountID,
                 'amount' => $data['amount'],
                 'category_id' => $task['category_id'],
                 'description' => $task['description'],
                 'note' => 'This expense was recorded while ' . Auth::user()->name . ' marked the task as ' . strtoupper(str_replace('_', ' ', $data['payment_status'])),
-                'reference' => $task->employee->name,
+                'reference' => '',
                 'category_name'=>$task->category->name,
                 'date'=>$task['date'],
                 'attachment' => null,
@@ -89,6 +92,7 @@ class TaskModel extends Model
         ];
 
     }
+
 
 
 }

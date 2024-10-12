@@ -28,10 +28,19 @@ class TaskResource extends JsonResource
     {
         $slot = date("D j, F, Y",strtotime($this->date)).'('. date("g:i a",strtotime($this->start_time)).'-'.date("g:i a",strtotime($this->end_time)).')';
 
+        $employees = $this->employee;
+        $employeeList =[];
+
+        foreach ($employees as $employee){
+            $employeeList[] = [
+                'id'=>$employee->user->id,
+                'employee_name'=>$employee->user->name,
+            ];
+        }
         return [
             'id' => $this->id,
             'employee_id' => $this->employee_id,
-            'employee_name' => $this->employee->user->name,
+            'employee_list' => $employeeList,
             'category_name' => $this->category->name,
             'bank_account' => $this->category->sector->account->id,
             'description' => $this->description,

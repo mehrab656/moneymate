@@ -28,6 +28,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Typography from "@mui/material/Typography";
 import Collapse from '@mui/material/Collapse';
 import {Col, Row} from "react-bootstrap";
+import {checkPermission} from "./HelperFunctions.js";
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -49,7 +50,6 @@ function CommonTable(props) {
         setExpanded(!expanded);
     };
 
-
     const classes = useStyles();
     const genRand = (len) => {
         return Math.random().toString(36).substring(2, len + 2);
@@ -61,12 +61,11 @@ function CommonTable(props) {
                 className={'border'}
                 action={
                     <>
-                        {addBTN.permission &&
-                        addBTN.linkTo === 'route' ?
+                        {addBTN.linkTo === 'route' ?
                             <Link className="btn-add mr-3" to={addBTN.link} style={{float: "right"}}>
                                 {addBTN.icon} {addBTN.txt}
                             </Link> :
-                            <a className="btn-add " onClick={() => addBTN.link()} style={{boxShadow: "0px"}}>
+                            <a className="btn-add " onClick={() => addBTN.link()} style={{boxShadow: "0px"}} disabledEffect={true}>
                                 {addBTN.icon} {addBTN.txt}
                             </a>
                         }
@@ -185,10 +184,3 @@ function CommonTable(props) {
 }
 
 export default memo(CommonTable)
-// module={row}
-// showModule={table.actionBtn.showModule}
-// deleteFunc={table.actionBtn.deleteFunc}
-// params={table.actionBtn.params}
-// editDropdown={table.actionBtn.editDropdown}
-// showPermission={table.actionBtn.showPermission}
-// deletePermission={table.actionBtn.deletePermission}

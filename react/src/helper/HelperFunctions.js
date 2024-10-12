@@ -49,13 +49,13 @@ export function reservationValidationBuilder(check_in, check_out) {
 
 export const checkPermission = (_permission, _checkLimit = false)=>{
 //create_category
+
         const userRole = localStorage.getItem('ACCESS_ROLE');
         if (userRole === 'admin') {
             return true;
         }else if(userRole === 'baseUser'){
             return true; //@FIx Me for base user and subscriptions limit.
         } else { // sub-user
-
             return _permission;
         }
 }

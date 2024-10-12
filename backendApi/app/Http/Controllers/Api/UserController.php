@@ -56,6 +56,7 @@ class UserController extends Controller
         $data['password'] = bcrypt($data['password']);
         $data['primary_company'] = auth()->user()->primary_company;
 
+
         try {
             DB::beginTransaction();
             $user = User::create($data);
@@ -154,10 +155,19 @@ class UserController extends Controller
     public function getUsers(): JsonResponse
     {
 
-        $userList = DB::table('users')->select("users.*")
+//        $userList = DB::table('users')->select("users.*")
+//            ->join('company_user', 'users.id', '=', 'company_user.user_id')
+//            ->where('company_id', Auth::user()->primary_company)
+//            ->get();
+
+        $userList = User::select('users.*')
             ->join('company_user', 'users.id', '=', 'company_user.user_id')
             ->where('company_id', Auth::user()->primary_company)
             ->get();
+
+        foreach ($userList as $user){
+            dd($user->permissions);
+        }
 
         return response()->json([
             'data' => UserResource::collection($userList)

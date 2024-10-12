@@ -25,6 +25,8 @@ return new class extends Migration {
             $table->string('status')->default('pending')->comment('pending/hold/done/cancelled');
             $table->string('payment_status')->default('pending');
             $table->json('workflow')->nullable(true);
+            $table->time('started_at')->nullable()->default(null);
+            $table->time('ended_at')->nullable()->default(null);
             $table->timestamps();
         });
     }

@@ -9,6 +9,11 @@ import axiosClient from "../../../axios-client.js";
 import Select from "react-select";
 import {notification} from "../../../components/ToastNotification.jsx";
 import {Link, useNavigate, useParams} from "react-router-dom";
+import MainLoader from "../../../components/MainLoader.jsx";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import MenuItem from "@mui/material/MenuItem";
+import Checkbox from "@mui/material/Checkbox";
+import ListItemText from "@mui/material/ListItemText";
 
 const _initialTaskData = {
     description: '',
@@ -35,36 +40,34 @@ function TaskAddModal({showModal, handelCloseModal, title,currentTaskList,setTas
     const [categories, setCategories] = useState([]);
     const [showExistingTask, setShowExistingTask] = useState(false);
     const [existingTask, setExistingTask]=useState({});
-    const handelInputChange = (e, index) => {
-        const {name, value} = e.target;
-        const updateTask = [...taskData];
-        updateTask[index][name] = value;
-        setTaskData(updateTask);
-    };
-    const EmployeeList = [
-        {id: '1', name: 'Sarah'},
-        {id: '2', name: 'Mehrab'},
-        {id: '3', name: 'Devika'},
-        {id: '4', name: 'Shahariar'}
-    ];
-
+    const [employeeList, setEmployeeList]=useState([]);
+    const [userNames, setUserNames] = useState([]);
 
     useEffect(() => {
-        axiosClient.get('/category', {
-            params: {type: taskData.type}
-        }).then(({data}) => {
-            setCategories(data.categories);
-        }).catch(error => {
-            console.error('Error loading expense categories:', error);
-        });
+            axiosClient.get('/category', {
+                params: {type: taskData.type}
+            }).then(({data}) => {
+                setCategories(data.categories);
+            }).catch(error => {
+                console.error('Error loading categories:', error);
+            });
     }, [taskData.type]);
+
+    useEffect(() => {
+            axiosClient.get('/employees', {
+            }).then(({data}) => {
+                setEmployeeList(data.data);
+
+            }).catch(error => {
+                console.error('Error loading Employees:', error);
+            });
+
+    }, []);
 
     const submit = (e) => {
         e.preventDefault();
-        // console.log(taskData);
-
+        setLoading(true);
         let formData = new FormData();
-
         formData.append('employee_id', taskData.employee_id);
         formData.append('description', taskData.description);
         formData.append('categoryID', taskData.categoryID);
@@ -84,37 +87,31 @@ function TaskAddModal({showModal, handelCloseModal, title,currentTaskList,setTas
                 'Content-Type': 'multipart/form-data',
             },
         }).then(({data}) => {
-            // navigate('/all-tasks');
-
-            handelCloseModal();
             notification('success', data?.message, data?.description);
-            setTasks(...currentTaskList,...data.data);
-            setTaskData(_initialTaskData);
-
+            setLoading(false);
+            location.reload();
         }).catch((err) => {
             if (err.response) {
                 const error = err.response.data
                 notification('error', error?.message, error.description);
-
+                setErrors({});
                 if (err.response.status === 406){
                     setShowExistingTask(true);
                     setExistingTask(error.data);
-                }else{
+                }
+                if (err.response.status === 422){
                     setErrors(error.errors);
                 }
-                console.log(err.response);
-
+                setLoading(false);
             }
             setLoading(false)
         });
-
-
-
     }
 
 
     return (
         <>
+            <MainLoader loaderVisible={loading} />
             <Modal
                 show={showModal}
                 onHide={handelCloseModal}
@@ -137,8 +134,6 @@ function TaskAddModal({showModal, handelCloseModal, title,currentTaskList,setTas
                                 {'End Time: ' + existingTask.endTime}<br/>
                             </div>
                         }
-
-
                         <Form>
                             <Row>
                                 <Col xs={12} md={12}>
@@ -146,7 +141,7 @@ function TaskAddModal({showModal, handelCloseModal, title,currentTaskList,setTas
                                         className="mb-3"
                                         controlId="description">
                                         <Form.Label>Task Description</Form.Label>
-                                        <Form.Control as="textarea" rows={3} value={taskData.description}
+                                        <Form.Control as="textarea" autoFocus rows={3} value={taskData.description}
                                                       name={'description'}
                                                       onChange={(e) => {
                                                           setTaskData({...taskData, description: e.target.value});
@@ -201,7 +196,7 @@ function TaskAddModal({showModal, handelCloseModal, title,currentTaskList,setTas
                                         <Form.Select aria-label="Task Type" onChange={(e) => {
                                             setTaskData({...taskData, type: e.target.value});
                                         }}>
-                                            <option defaultValue >Select Task Type</option>
+                                            <option  disabled >Select Task Type</option>
                                             <option value="income">Income</option>
                                             <option value="expense">Expense</option>
                                         </Form.Select>
@@ -241,7 +236,6 @@ function TaskAddModal({showModal, handelCloseModal, title,currentTaskList,setTas
                                         <Form.Control
                                             type="number"
                                             placeholder="i.g: 50 AED"
-                                            autoFocus
                                             onChange={(e) => {
                                                 setTaskData({...taskData, amount: e.target.value});
                                             }}
@@ -262,9 +256,6 @@ function TaskAddModal({showModal, handelCloseModal, title,currentTaskList,setTas
                                             <option value="hold">Hold</option>
                                             <option value="complete">Complete</option>
                                         </Form.Select>
-                                        {errors.status && (
-                                            <p className='error-message mt-2'>{errors.status[0]}</p>
-                                        )}
                                     </Form.Group>
                                 </Col>
                                 <Col xs={12} md={4}>
@@ -275,12 +266,9 @@ function TaskAddModal({showModal, handelCloseModal, title,currentTaskList,setTas
                                         }}>
                                             <option defaultValue>Select Payment Status</option>
                                             <option value="pending">Pending</option>
-                                            <option value="partial_paid">Partially Paid</option>
+                                            {/*<option value="partial_paid">Partially Paid</option>*/}
                                             <option value="paid">Paid</option>
                                         </Form.Select>
-                                        {errors.payment_status && (
-                                            <p className='error-message mt-2'>{errors.payment_status[0]}</p>
-                                        )}
                                     </Form.Group>
                                 </Col>
                             </Row>
@@ -289,18 +277,19 @@ function TaskAddModal({showModal, handelCloseModal, title,currentTaskList,setTas
                                 <Col xs={12} md={12}>
                                     <Form.Group className="mb-3" controlId="employee_id">
                                         <Form.Label>Assign to</Form.Label>
-                                        <Form.Select aria-label="Assign to" onChange={(e) => {
+                                        <Form.Control as={"select"} aria-label="Assign to" onChange={(e) => {
                                             setTaskData({...taskData, employee_id: e.target.value});
                                         }}>
                                             <option defaultValue>{"Task Assign to"}</option>
-                                            {EmployeeList.length > 0 ? EmployeeList.map((employee) => (
+                                            {employeeList.length > 0 ? employeeList.map((employee) => (
                                                     <option key={employee.id} value={employee.id}>
                                                         {employee.name}
                                                     </option>
                                                 )) :
                                                 (<option defaultValue>{"Task Assign to"}</option>)
                                             }
-                                        </Form.Select>
+
+                                        </Form.Control>
                                         {errors.employee_id && (
                                             <p className='error-message mt-2'>{errors.employee_id[0]}</p>
                                         )}
@@ -315,7 +304,6 @@ function TaskAddModal({showModal, handelCloseModal, title,currentTaskList,setTas
                                         <Form.Control
                                             type="text"
                                             placeholder="if any comment, put here..."
-                                            autoFocus
                                             onChange={(e) => {
                                                 setTaskData({...taskData, comment: e.target.value});
                                             }}

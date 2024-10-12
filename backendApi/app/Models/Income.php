@@ -239,6 +239,7 @@ class Income extends Model
                     unset($income['account_id']);
                     unset($income['category_id']);
 
+
                     storeActivityLog([
                         'object_id' => $income['id'],
                         'log_type' => 'create',
@@ -279,6 +280,7 @@ class Income extends Model
                     unset($income_first['company_id']);
                     unset($income_first['account_id']);
                     unset($income_first['category_id']);
+
                     storeActivityLog([
                         'object_id' => $income_first['id'],
                         'log_type' => 'create',
@@ -368,6 +370,7 @@ class Income extends Model
                     'date' => $income['date'],
                     'attachment' => $income['attachment']
                 ]);
+
                 storeActivityLog([
                     'object_id' => $income['id'],
                     'object' => 'income',

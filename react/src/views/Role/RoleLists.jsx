@@ -67,7 +67,7 @@ function RoleLists({permissions, setPermissions}) {
             <Table sx={{minWidth: 650}} size="small" aria-label="a dense table">
                 <TableHead>
                     <TableRow>
-                        <TableCell colSpan={10}>Permissions</TableCell>
+                        <TableCell colSpan={11}>Permissions</TableCell>
                     </TableRow>
                 </TableHead>
                 {moduleArray &&
@@ -120,11 +120,12 @@ function RoleLists({permissions, setPermissions}) {
                                                     label = {name}
                                                 />
                                             </TableCell>
+                                            <TableCell></TableCell>
 
                                             {options.map((option, key) => {
                                                 const label = option[0].split("_").pop()
                                                 return (
-                                                    <TableCell align="right">
+                                                    <TableCell align="right" >
                                                         <FormControlLabel
                                                             key={option[0]}
                                                             control={
@@ -156,7 +157,6 @@ function RoleLists({permissions, setPermissions}) {
                     })}
             </Table>
         </TableContainer>
-
     );
 }
 

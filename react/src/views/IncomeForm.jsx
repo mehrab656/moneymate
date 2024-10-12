@@ -170,7 +170,6 @@ export default function IncomeForm() {
                 }
                 setLoading(false);
                 event.currentTarget.disabled = false;
-
             })
             .catch((err) => {
                 if (err.response) {

@@ -1,6 +1,8 @@
 import TaskHistoryModal from "./TaskHistoryModal.jsx";
+import Image from "react-bootstrap/Image";
+import React from "react";
 
-const TimelineItem = ({data:{date_time,type,description,userName}}) => {
+const TimelineItem = ({data:{date_time,type,description,userName,avatar}}) => {
     const date = new Date(date_time)
     const formatter = new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     const formattedTime = formatter.format(date);
@@ -23,7 +25,7 @@ const TimelineItem = ({data:{date_time,type,description,userName}}) => {
             <div className="timeline-item-content">
             <span className="tag" style={{background: bgColor(type)}}>
                 {(type).replaceAll('_', ' ')}
-            </span>
+            </span> <Image src={avatar} roundedCircle style={{height:'50px',width:'50px'}}/>
                 <br/>
                 <p>{description.toUpperCase()}</p>
                 <b>{userName}</b>

@@ -73,7 +73,8 @@ class AuthController extends Controller {
 
 
 	public function login( LoginRequest $request ): Response|Application|ResponseFactory {
-		$credentials = $request->validated();
+
+        $credentials = $request->validated();
 		if ( ! Auth::attempt( $credentials ) ) {
 			return response( [
 				'message' => 'Provided email or password is incorrect'
@@ -82,6 +83,7 @@ class AuthController extends Controller {
 
 		/** @var User $user */
 		$user = Auth::user();
+
 
 		$registrationType = get_option( 'registration_type' );
 

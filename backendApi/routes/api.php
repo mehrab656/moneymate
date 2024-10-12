@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DebtController;
+use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\ExpenseController;
 use App\Http\Controllers\Api\FileDownloadController;
 use App\Http\Controllers\Api\FinanceController;
@@ -222,7 +223,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/role/update/{id}', [RoleController::class, 'updateRole']);
     Route::delete('role/{id}', [RoleController::class, 'destroy']);
 
-
     Route::get('permission', [RoleController::class, 'getPermission']);
 
     //Asset routs
@@ -240,8 +240,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/task/{task}', [TaskController::class, 'delete']);
     Route::get('task/{id}', [TaskController::class, 'edit']);
     Route::post('task/{id}', [TaskController::class, 'update']);
-    Route::post('update-task-status',[TaskController::class,'updateStatus']);
-    Route::post('update-task-payment-status/{id}',[TaskController::class,'updatePaymentStatus']);
+    Route::post('update-task-status/{id}', [TaskController::class, 'updateStatus']);
+    Route::post('update-task-payment-status/{id}', [TaskController::class, 'updatePaymentStatus']);
+
+    //EmployeeRequest Controllers rote
+    Route::get('/all-employees', [EmployeeController::class, 'index']);
+    Route::post('/employee/add', [EmployeeController::class, 'add']);
+    Route::delete('/employee/{employee}', [EmployeeController::class, 'delete']);
+    Route::get('/employee/{id}', [EmployeeController::class, 'show']);
+    Route::post('/employee/{id}', [EmployeeController::class, 'update']);
+    Route::get('/employees', [EmployeeController::class, 'allEmployees']);
+
+
 });
 
 

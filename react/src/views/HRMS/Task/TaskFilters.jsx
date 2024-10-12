@@ -1,17 +1,23 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {Col, Form, Row} from "react-bootstrap";
 import {CardContent, TextField} from "@mui/material";
+import axiosClient from "../../../axios-client.js";
 
 export default function TaskFilters(props) {
     const {search, query, setQuery,resetFilterParameter,getTask,handelFilter} = props;
     const {placeHolderTxt, searchBoxValue, handelSearch} = search;
-    const EmployeeList = [
-        {id: '1', name: 'Sarah'},
-        {id: '2', name: 'Mehrab'},
-        {id: '3', name: 'Devika'},
-        {id: '4', name: 'Shahariar'}
-    ];
 
+    const [employeeList, setEmployeeList]=useState([]);
+    useEffect(() => {
+        axiosClient.get('/employees', {
+        }).then(({data}) => {
+            setEmployeeList(data.data);
+
+        }).catch(error => {
+            console.error('Error loading Employees:', error);
+        });
+
+    }, []);
     return (
         <>
             <CardContent style={{borderBottom: '1px solid'}}>
@@ -33,7 +39,7 @@ export default function TaskFilters(props) {
                             setQuery({...query, employee_id: e.target.value});
                         }}>
                             <option defaultValue>{"Task Assign to"}</option>
-                            {EmployeeList.length > 0 ? EmployeeList.map((employee) => (
+                            {employeeList.length > 0 ? employeeList.map((employee) => (
                                     <option key={employee.id} value={employee.id}>
                                         {employee.name}
                                     </option>

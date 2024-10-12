@@ -17,8 +17,9 @@ export default function RoleForms() {
     const navigate = useNavigate();
     let {id} = useParams();
     const [role, setRole] = useState({
-        role: '',
-        status: 1
+        name: '',
+        status: 1,
+        roles:{}
     });
     const [storePermission, setStorePermission] = useState({}) 
     const [errors, setErrors] = useState(null);
@@ -138,6 +139,31 @@ export default function RoleForms() {
             loans_edit: false,
             loans_delete: false,
         },
+        employee: {
+            employee_create: false,
+            employee_view: false,
+            employee_edit: false,
+            employee_delete: false,
+        },
+        task: {
+            task_create: false,
+            task_view: false,
+            task_edit: false,
+            task_delete: false,
+        },
+        attendance: {
+            attendance_create: false,
+            attendance_view: false,
+            attendance_edit: false,
+            attendance_delete: false,
+        },
+        asset: {
+            asset_create: false,
+            asset_view: false,
+            asset_edit: false,
+            asset_delete: false,
+        },
+
         budget: {
             budget_create: false,
             budget_view: false,
@@ -197,45 +223,48 @@ export default function RoleForms() {
             dashboard_exp_budget: false,
             dashboard_active_budget: false,
         },
+
         // Add other sections similarly
     });
 
-     // access rolse data by id
+     // access role data by id
      useEffect(() => {
-        document.title = 'Update Role';
-        setLoading(true);
-        axiosClient
-            .get(`/role/${id}`)
-            .then(({data}) => {
-                setLoading(false);
+        if (id){
+            document.title = 'Update Role';
+            setLoading(true);
+            axiosClient
+                .get(`/role/${id}`)
+                .then(({data}) => {
+                    setLoading(false);
 
-                // update role
-                setRole({...role, role: data?.data?.role})
-                
-                // store permissions 
-                const apiPermissionsdata = data?.data?.permissions
-                const updatedPermissions = { ...permissions };
+                    // update role
+                    setRole({...role, role: data?.data?.role})
 
-                Object.keys(apiPermissionsdata).forEach((key) => {
-                  var sectionName
-                  const getSectionName = key.split('_')
-                    if(getSectionName.length>2){
-                        sectionName =getSectionName[0]+'_'+getSectionName[1]
-                    }else{
-                        sectionName =getSectionName[0]
-                    }
+                    // store permissions
+                    const apiPermissionsdata = data?.data?.permissions
+                    const updatedPermissions = { ...permissions };
 
-                  if (updatedPermissions[sectionName]) {
-                    updatedPermissions[sectionName][key] = apiPermissionsdata[key];
-                  }
+                    Object.keys(apiPermissionsdata).forEach((key) => {
+                        var sectionName
+                        const getSectionName = key.split('_')
+                        if(getSectionName.length>2){
+                            sectionName =getSectionName[0]+'_'+getSectionName[1]
+                        }else{
+                            sectionName =getSectionName[0]
+                        }
+
+                        if (updatedPermissions[sectionName]) {
+                            updatedPermissions[sectionName][key] = apiPermissionsdata[key];
+                        }
+                    });
+
+                    setPermissions(updatedPermissions);
+
+                })
+                .catch(() => {
+                    setLoading(false);
                 });
-            
-                setPermissions(updatedPermissions);
-                
-            })
-            .catch(() => {
-                setLoading(false);
-            });
+        }
     }, [id]);
 
     
@@ -246,32 +275,34 @@ export default function RoleForms() {
 
         const mergedRoleData = {
             ...role,
-            ...permissions.company,
-            ...permissions.sector,
-            ...permissions.category,
-            ...permissions.investment,
-            ...permissions.expense,
-            ...permissions.income,
-            ...permissions.return,
-            ...permissions.income_report,
-            ...permissions.expense_report,
-            ...permissions.investment_report,
-            ...permissions.monthly_report,
-            ...permissions.overall_report,
-            ...permissions.bank,
-            ...permissions.account,
-            ...permissions.balance,
-            ...permissions.debt,
-            ...permissions.loans,
-            ...permissions.budget,
-            ...permissions.investment_plan,
-            ...permissions.calender,
-            ...permissions.activity_log,
-            ...permissions.settings,
-            ...permissions.user,
-            ...permissions.profile,
-            ...permissions.role,
-            ...permissions.dashboard
+            roles:{
+                ...permissions.company,
+                ...permissions.sector,
+                ...permissions.category,
+                ...permissions.investment,
+                ...permissions.expense,
+                ...permissions.income,
+                ...permissions.return,
+                ...permissions.income_report,
+                ...permissions.expense_report,
+                ...permissions.investment_report,
+                ...permissions.monthly_report,
+                ...permissions.overall_report,
+                ...permissions.bank,
+                ...permissions.account,
+                ...permissions.balance,
+                ...permissions.debt,
+                ...permissions.loans,
+                ...permissions.budget,
+                ...permissions.investment_plan,
+                ...permissions.calender,
+                ...permissions.activity_log,
+                ...permissions.settings,
+                ...permissions.user,
+                ...permissions.profile,
+                ...permissions.role,
+                ...permissions.dashboard
+            }
         };
 
         if (id) {
@@ -325,13 +356,14 @@ export default function RoleForms() {
                             </label>
                             <input
                                 className="custom-form-control"
-                                value={role.role}
+                                value={role.name}
                                 onChange={(ev) =>
-                                    setRole({...role, role: ev.target.value})
+                                    setRole({...role, name: ev.target.value})
                                 }
                                 placeholder="Name"
                             />
-
+                            {errors?.name &&
+                                <p className="error-message mt-2">{errors?.name[0]}</p>}
                         </div>
                         <RoleLists key={Math.random().toString(36).substring(2)} permissions={permissions}
                                    setPermissions={setPermissions}/>

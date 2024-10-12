@@ -26,7 +26,6 @@ const _initialTaskData = {
 }
 
 function ShowTaskModal({showModal, handelCloseModal, element}) {
-    // console.log(element);
     return (
         <>
             <Modal

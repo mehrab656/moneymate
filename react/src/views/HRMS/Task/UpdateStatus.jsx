@@ -9,25 +9,21 @@ import axiosClient from "../../../axios-client.js";
 import {notification} from "../../../components/ToastNotification.jsx";
 import MainLoader from "../../../components/MainLoader.jsx";
 
-function UpdatePaymentStatusModal({showModal, handelCloseModal, element}) {
+function UpdateStatus({showModal, handelCloseModal, element}) {
     const [loading, setLoading] = useState(false)
-
-    const [paymentData, setPaymentData] = useState({
-        amount: 0,
-        payment_status: '',
+    const [status, setStatus] = useState({
+        task_status: '',
         comment: ''
     });
-
     const submit = (e) => {
         e.preventDefault();
         setLoading(true);
 
         let formData = new FormData();
-        formData.append('amount', paymentData.amount);
-        formData.append('payment_status', paymentData.payment_status);
-        formData.append('comment', paymentData.comment);
+        formData.append('task_status', status.task_status);
+        formData.append('comment', status.comment);
 
-        axiosClient.post(`/update-task-payment-status/${element.id}`, formData, {
+        axiosClient.post(`/update-task-status/${element.id}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -63,32 +59,17 @@ function UpdatePaymentStatusModal({showModal, handelCloseModal, element}) {
 
                         <Form>
                             <Row>
-                                <Col xs={12} md={6}>
-                                    <Form.Group className="mb-3" controlId="amountUpdate">
-                                        <Form.Label> Amount</Form.Label>
-                                        <Form.Control
-                                            type="number"
-                                            placeholder="i.g: 50 AED"
-                                            autoFocus
-                                            onChange={(e) => {
-                                                setPaymentData({...paymentData, amount: e.target.value});
-                                            }}
-                                        />
-
-                                    </Form.Group>
-                                </Col>
-                                <Col xs={12} md={6}>
-                                    <Form.Group className="mb-3" controlId="payment_status">
+                                <Col xs={12} md={12}>
+                                    <Form.Group className="mb-3" controlId="task_status">
                                         <Form.Label>Payment Status</Form.Label>
                                         <Form.Select aria-label="Payment Status" onChange={(e) => {
-                                            setPaymentData({...paymentData, payment_status: e.target.value});
+                                            setStatus({...status, task_status: e.target.value});
                                         }}>
                                             <option defaultValue>Select Payment Status</option>
                                             <option value="pending">Pending</option>
-                                            {/*<option value="partial_paid">Partially Paid</option>*/}
-                                            <option value="paid">Paid</option>
+                                            <option value="complete">Complete</option>
+                                            <option value="cancelled">Cancel</option>
                                         </Form.Select>
-
                                     </Form.Group>
                                 </Col>
                             </Row>
@@ -102,7 +83,7 @@ function UpdatePaymentStatusModal({showModal, handelCloseModal, element}) {
                                             placeholder="if any comment, put here..."
                                             autoFocus
                                             onChange={(e) => {
-                                                setPaymentData({...paymentData, comment: e.target.value});
+                                                setStatus({...status, comment: e.target.value});
                                             }}
                                         />
                                     </Form.Group>
@@ -120,4 +101,4 @@ function UpdatePaymentStatusModal({showModal, handelCloseModal, element}) {
     );
 }
 
-export default UpdatePaymentStatusModal;
+export default UpdateStatus;

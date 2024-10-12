@@ -49,6 +49,7 @@ export default function Sectors() {
         num_data_per_page,
         default_currency
     } = applicationSettings;
+
     const TABLE_HEAD = [
         {id: "name", label: "Sector", align: "left"},
         {id: "rent", label: "Rent", align: "right"},
@@ -343,7 +344,7 @@ export default function Sectors() {
                         txt: "Create New",
                         icon: (<Iconify icon={"eva:plus-fill"}/>), //"faBuildingFlag",
                         linkTo: 'route',
-                        link: "/sector/new"
+                        link: '/sector/new'
                     }
                 }
                 paginations={{

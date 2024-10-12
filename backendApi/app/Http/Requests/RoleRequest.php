@@ -22,13 +22,18 @@ class RoleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'                  => 'required',
+            'id' => 'nullable',
+            'name' => 'required',
+            'status' => 'nullable',
+            'roles' => 'array'
         ];
     }
 
-    public function messages(): array {
+    public function messages(): array
+    {
         return [
-            'name.required'                => 'Role name is required.',
+            'name.required' => 'Role name is required.',
+            'roles.array' => 'Role fields can not be empty',
         ];
     }
 }

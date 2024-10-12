@@ -34,7 +34,6 @@ function TaskHistoryModal({showModal, handelCloseModal, workflow=[]}) {
                 backdrop="static"
                 keyboard={false}
                 size={'lg'}
-                // fullscreen={true}
             >
                 <Modal.Header closeButton>
                     <Modal.Title>{'Task History'}</Modal.Title>

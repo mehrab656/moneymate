@@ -29,8 +29,6 @@ class TaskRequest extends FormRequest
             'endTime' => 'required',
             'type' => 'required',
             'amount' => 'required',
-            'status' => 'required',
-            'payment_status' => 'required',
             'comment' => 'nullable',
             'employee_id' => 'required',
         ];
@@ -39,16 +37,14 @@ class TaskRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'description.required' => 'TaskModel description is required',
+            'description.required' => 'Task description is required',
             'categoryID.required' => 'Please select a category',
             'date.required' => 'Date is Required',
             'startTime.required' => 'Starting time is required',
             'endTime.required' => 'End time is required',
-            'type.required' => 'TaskModel Type is required',
+            'type.required' => 'Task Type is required',
             'amount.required' => 'Amount is required',
-            'status.required' => 'Status is required',
-            'payment_status.required' => 'Payment status is required',
-            'employee_id.required' => 'Employee is required',
+            'employee_id.required' => 'Assigned employee is required',
         ];
     }
 }

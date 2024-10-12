@@ -19,6 +19,7 @@ import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
 import TaskHistoryModal from "./TaskHistoryModal.jsx";
 import ShowTaskModal from "./ShowTaskModal.jsx";
 import UpdatePaymentStatusModal from "./UpdatePaymentStatusModal.jsx";
+import UpdateStatus from "./UpdateStatus.jsx";
 
 const defaultTaskData = {
     description: '',
@@ -53,24 +54,22 @@ export default function Task() {
     const [tasks, setTasks] = useState([]);
     const [task, setTask] = useState(defaultTaskData);
     const [loading, setLoading] = useState(true);
-    const [createTaskModal, setCreateTaskModal] = useState(false);
-    const [showTaskDetailsModal, setShowTaskDetailsModal] = useState(false);
-    const [showHistoryModal, setShowHistoryModal] = useState(false);
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [viewTaskModal, setViewTaskModal] = useState(false);
+    const [taskTimelineModal, setTaskTimelineModal] = useState(false);
     const [taskHistory, setTaskHistory] = useState([]);
-    const [showTaskStatusUpdateModal,setTaskStatusUpdateModal]=useState(false);
-    const [showTaskPaymentStatusModal,setTaskPaymentStatusModal]=useState(false);
+    const [showStatusModal, setShowStatusModal] = useState(false);
+    const [showPaymentStatusModal, setShowPaymentStatusModal] = useState(false);
 
     const [query, setQuery] = useState(defaultQuery)
     const {
         num_data_per_page,
-        default_currency
     } = applicationSettings;
 
 
     const [hasFilter, setHasFilter] = useState(false)
     const TABLE_HEAD = [
         {id: "description", label: "Description", align: "left"},
-        {id: "employee", label: "Assigned", align: "left"},
         {id: "amount", label: "Amount", align: "right"},
         {id: "slot", label: "Slot", align: "left"},
         {id: "status", label: "Status", align: "left"},
@@ -91,7 +90,6 @@ export default function Task() {
     );
 
 
-
     const modifiedTaskData = filteredTasks.map(({
                                                     id,
                                                     description,
@@ -108,13 +106,13 @@ export default function Task() {
         const PaymentStatusClass = (payment_status === 'pending' ? 'warning' : (payment_status === 'paid' ? 'success' : 'info'));
 
         // task.description=
-        task.employee = employee_name.charAt(0).toUpperCase() + employee_name.slice(1);
         task.amount = amount;
         task.slot = slot;
+        task.task_status = status;
         task.status = <span className={`text-${statusClass}`}>{status.charAt(0).toUpperCase() + status.slice(1)}</span>
         task.payment_status = <span
             className={`text-${PaymentStatusClass}`}>{(payment_status.charAt(0).toUpperCase() + payment_status.slice(1)).replace('_', ' ')}</span>
-        task.history = <a onClick={() => showTaskHistory(workflow)}
+        task.history = <a onClick={() => showTimelineModalFunc(workflow)}
                           style={{cursor: "pointer"}}
                           className={'text-primary'}
                           data-tooltip-id='internet-account'
@@ -156,32 +154,47 @@ export default function Task() {
             }
         });
     };
-    const handelCreateNewTaskModal = () => {
-        // setTask(task);
-        setCreateTaskModal(true);
+    const showCreateModalFunc = () => {
+        setShowCreateModal(true);
     };
-    const handelCloseTaskCreateModal = () => {
-        setCreateTaskModal(false);
+    const closeCreateModalFunc = () => {
+        setShowCreateModal(false);
     };
-    const handelCloseShowTaskDetailsModal = () =>{
-        setShowTaskDetailsModal(false)
-    }
-    const showTaskHistory = (task) => {
-        setShowHistoryModal(true);
+    const showTimelineModalFunc = (task) => {
+        setTaskTimelineModal(true);
         setTaskHistory(task);
     }
-    const handelCloseTaskHistoryModal = () => {
-        setShowHistoryModal(false);
-        setTaskHistory();
-    }
-    const handelUpdatePaymentStatusModal = (task)=>{
-        setTaskPaymentStatusModal(true);
-        setTask(task)
+    const closeTimelineModalFunc = () =>{
+        setTaskTimelineModal(false);
     }
 
-    const handelClosePaymentStatusModal = ()=>{
-        setTaskPaymentStatusModal(false);
+    const showPaymentModalFunc= (task) =>{
+        if (task.task_status==='cancelled')
+        {
+            notification('error', 'Error', "Payment can not be updated for cancelled task.");
+        }else{
+            setShowPaymentStatusModal(true);
+            setTask(task);
+        }
     }
+    const closePaymentModalFunc= (task) =>{
+        setShowPaymentStatusModal(false);
+    }
+    const showViewModalFunc = (task) => {
+        setViewTaskModal(true);
+        setTask(task);
+    }
+    const closeViewModalFunc = () => {
+        setViewTaskModal(false)
+    }
+    const showStatusModalFunc = (task) => {
+        setShowStatusModal(true);
+        setTask(task);
+    }
+    const closeStatusModalFunc = () => {
+        setShowStatusModal(false)
+    }
+    
     const getTasks = () => {
         setLoading(true);
         axiosClient
@@ -227,12 +240,6 @@ export default function Task() {
         />
     }
 
-    const handelShowTaskDetailsModal =(task)=>{
-        setShowTaskDetailsModal(true);
-        setTask(task);
-    }
-
-
     const actionParams = [
         {
             actionName: 'Edit',
@@ -240,15 +247,15 @@ export default function Task() {
             route: "",
             actionFunction: "editModal",
             permission: 'edit_task',
-            textClass:'text-info',
+            textClass: 'text-info',
         },
         {
             actionName: 'View',
             type: "modal",
             route: "",
-            actionFunction: handelShowTaskDetailsModal,
+            actionFunction: showViewModalFunc,
             permission: 'task_view',
-            textClass:'text-warning'
+            textClass: 'text-warning'
         },
         {
             actionName: 'Delete',
@@ -256,25 +263,24 @@ export default function Task() {
             route: "",
             actionFunction: onDelete,
             permission: 'task_delete',
-            textClass:'text-danger'
+            textClass: 'text-danger'
         },
         {
             actionName: 'Update Status',
             type: "modal",
             route: "",
-            actionFunction: onDelete,
+            actionFunction: showStatusModalFunc,
             permission: 'task_change_status',
-            textClass:'text-primary'
+            textClass: 'text-primary'
         },
         {
             actionName: 'Update Payment',
             type: "modal",
             route: "",
-            actionFunction: handelUpdatePaymentStatusModal,
+            actionFunction: showPaymentModalFunc,
             permission: 'task_change_payment_status',
-            textClass:'text-info'
+            textClass: 'text-info'
         }];
-
 
     return (
         <div>
@@ -287,7 +293,7 @@ export default function Task() {
                         txt: "Add New Task",
                         icon: (<Iconify icon={"eva:plus-fill"}/>), //"faBuildingFlag",
                         linkTo: 'modal',
-                        link: handelCreateNewTaskModal
+                        link: showCreateModalFunc
                     }
                 }
                 paginations={{
@@ -303,7 +309,7 @@ export default function Task() {
                     tableColumns: TABLE_HEAD,
                     tableBody: {
                         loading: loading,
-                        loadingColSpan: 10,
+                        loadingColSpan: 9,
                         rows: modifiedTaskData,//rendering data
                     },
                     actionButtons: actionParams
@@ -313,24 +319,28 @@ export default function Task() {
 
             />
 
-            <TaskAddModal showModal={createTaskModal}
-                          handelCloseModal={handelCloseTaskCreateModal}
+            <TaskAddModal showModal={showCreateModal}
+                          handelCloseModal={closeCreateModalFunc}
                           title={'Add a new Task'}
                           currentTaskList={tasks}
                           setTasks={setTasks}
             />
-            <TaskHistoryModal showModal={showHistoryModal}
-                              handelCloseModal={handelCloseTaskHistoryModal}
+            <TaskHistoryModal showModal={taskTimelineModal}
+                              handelCloseModal={closeTimelineModalFunc}
                               workflow={taskHistory}
             />
-            <ShowTaskModal showModal={showTaskDetailsModal}
-                              handelCloseModal={handelCloseShowTaskDetailsModal}
-                              element={task}
+            <ShowTaskModal showModal={viewTaskModal}
+                           handelCloseModal={closeViewModalFunc}
+                           element={task}
             />
-            <UpdatePaymentStatusModal showModal={showTaskPaymentStatusModal}
-                              handelCloseModal={handelClosePaymentStatusModal}
-                                      setTaskPaymentStatusModal={setTaskPaymentStatusModal}
-                              element={task}
+
+            <UpdatePaymentStatusModal showModal={showPaymentStatusModal}
+                                      handelCloseModal={closePaymentModalFunc}
+                                      element={task}
+            />
+            <UpdateStatus showModal={showStatusModal}
+                          handelCloseModal={closeStatusModalFunc}
+                          element={task}
             />
 
         </div>
