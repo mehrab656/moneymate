@@ -17,6 +17,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Ramsey\Uuid\Uuid;
 
 class UserController extends Controller
 {
@@ -28,16 +30,36 @@ class UserController extends Controller
     {
         $page = $request->query('page', 1);
         $pageSize = $request->query('pageSize', 10);
+        $email = $request->query('email');
+        $role = $request->query('role');
+        $order = $request->query('order', 'desc');
+        $orderBy = $request->query('orderBy', 'id');
+        $limit = $request->query('limit');
 
-        $users = Company::with(['users'])->find(Auth::user()->primary_company)->users()->skip(($page - 1) * $pageSize)
-            ->take($pageSize)
-            ->orderBy('id', 'desc')
-            ->get();;
+        $query = DB::table('users')->select(['users.*', 'roles.role'])
+            ->join('company_user', 'users.id', '=', 'company_user.user_id')
+            ->join('roles', 'company_user.role_id', '=', 'roles.id')
+            ->where('company_user.company_id', '=', Auth::user()->primary_company);
 
-        $totalCount = User::count();
+        if ($email) {
+            $query = $query->where('users.email', $email);
+        }
+        if ($role) {
+            $query = $query->where('roles.id', $role);
+        }
+        if ($orderBy || $order) {
+            $query = $query->orderBy($orderBy, $order);
+        }
+        if ($limit) {
+            $query = $query->limit($limit);
+        }
+        $query = $query->skip(($page - 1) * $pageSize)->take($pageSize)
+            ->get();
+
+        $totalCount = Company::with(['users'])->find(Auth::user()->primary_company)->users()->count();
 
         return response()->json([
-            'data' => UserResource::collection($users),
+            'data' => UserResource::collection($query),
             'total' => $totalCount,
         ]);
     }
@@ -61,7 +83,7 @@ class UserController extends Controller
             DB::beginTransaction();
             $user = User::create($data);
             DB::table('company_user')->insert([
-                'company_id' =>auth()->user()->primary_company,
+                'company_id' => auth()->user()->primary_company,
                 'user_id' => $user->id,
                 'role_id' => 2, //$data['role_id'],//admin role.
                 'status' => true,
@@ -102,26 +124,6 @@ class UserController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param UpdateUserRequest $request
-     * @param User $user
-     *
-     * @return UserResource
-     */
-    public function update(UpdateUserRequest $request, User $user): UserResource
-    {
-        $data = $request->validated();
-        if (isset($data['password'])) {
-            $data['password'] = bcrypt($data['password']);
-        }
-        $user->update($data);
-
-        return new UserResource($user);
-    }
-
-
-    /**
      * @return JsonResponse
      */
 
@@ -135,8 +137,8 @@ class UserController extends Controller
             ->get()->first();
 
         $permission_array = [];
-        if ($permissions){
-            $permission_array = json_decode($permissions->permissions,true);
+        if ($permissions) {
+            $permission_array = json_decode($permissions->permissions, true);
         }
 
 
@@ -165,7 +167,7 @@ class UserController extends Controller
             ->where('company_id', Auth::user()->primary_company)
             ->get();
 
-        foreach ($userList as $user){
+        foreach ($userList as $user) {
             dd($user->permissions);
         }
 
@@ -173,7 +175,6 @@ class UserController extends Controller
             'data' => UserResource::collection($userList)
         ]);
     }
-
 
     /**
      * Remove the specified resource from storage.
@@ -195,7 +196,7 @@ class UserController extends Controller
         $pageSize = $request->query('pageSize', 1000);
 
         $logs = ActivityLogModel::skip(($page - 1) * $pageSize)
-            ->where('company_id',auth()->user()->primary_company)
+            ->where('company_id', auth()->user()->primary_company)
             ->take($pageSize)
             ->orderBy('id', 'desc')
             ->get();
@@ -248,6 +249,60 @@ class UserController extends Controller
             'message' => $status ? 'Success!' : "Failed!",
             'description' => $status ? "Data Updated!" : "Error while updating the data!",
         ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param UpdateUserRequest $request
+     * @param User $user
+     *
+     * @return UserResource
+     */
+    public function update(UpdateUserRequest $request, User $user): UserResource
+    {
+        $data = $request->validated();
+        if (isset($data['password'])) {
+            $data['password'] = bcrypt($data['password']);
+        }
+        $user->update($data);
+
+        return new UserResource($user);
+    }
+
+    public function updateProfile(Request $request, $slug)
+    {
+
+        $data = $request->input();
+
+
+        $validator = Validator::make($data, [
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'phone' => 'required',
+            'dob' => 'required',
+            'gender' => 'required'
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'error' => true,
+                'message' => $validator->errors()
+            ]);
+        }
+
+        if ($request->hasFile('attachment')) {
+            $attachment = $request->file('attachment');
+            $filename = $data['first_name'] . '_' . 'profile_picture_' . time() . '.' . $attachment->getClientOriginalExtension();
+            $attachment->move('avatars', $filename);
+            $data['profile_picture'] = $filename; // Store only the filename
+        }
+
+        $update = (new User())->updateUser($data, $slug);
+
+
+        return response()->json($update,$update['status_code']);
+
     }
 
 

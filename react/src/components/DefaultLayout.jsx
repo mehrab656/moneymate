@@ -42,7 +42,7 @@ import {
     faBuildingNgo,
     faBuildingUn,
     faBuildingCircleArrowRight,
-    faBuildingLock, faBuildingFlag, faHomeUser, faTasksAlt
+    faBuildingLock, faBuildingFlag, faHomeUser, faTasksAlt, faUserSlash, faUser
 } from '@fortawesome/free-solid-svg-icons';
 import {SettingsContext, SettingsProvider} from "../contexts/SettingsContext.jsx";
 import Footer from "./Footer.jsx";
@@ -610,21 +610,12 @@ export default function DefaultLayout() {
                                                                     to="/users"
                                                                     className={isActive('/users') ? 'active' : ''}>
                                                     <span className="aside-menu-icon"><FontAwesomeIcon
-                                                        icon={faEdit}/></span>
+                                                        icon={faUser}/></span>
                                                                     <span
-                                                                        className="aside-menu-text"> Manage Users </span>
+                                                                        className="aside-menu-text"> All Users </span>
                                                                 </Link>
                                                             </li>
-                                                            <li className="aside-menu-item">
-                                                                <Link
-                                                                    to={'/users/' + user.id}
-                                                                    className={isActive('/users') ? 'active' : ''}>
-                                                    <span className="aside-menu-icon"><FontAwesomeIcon
-                                                        icon={faEdit}/></span>
-                                                                    <span
-                                                                        className="aside-menu-text"> Manage Profile </span>
-                                                                </Link>
-                                                            </li>
+
                                                             <li className="aside-menu-item">
                                                                 <Link
                                                                     to="/roles"

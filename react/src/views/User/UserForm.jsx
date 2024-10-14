@@ -1,11 +1,11 @@
 import {Link, useNavigate, useParams} from "react-router-dom";
 import React, {useContext, useEffect, useState} from "react";
-import axiosClient from "../axios-client.js";
-import {useStateContext} from "../contexts/ContextProvider.jsx";
-import WizCard from "../components/WizCard";
-import {SettingsContext} from "../contexts/SettingsContext";
+import axiosClient from "../../axios-client.js";
+import {useStateContext} from "../../contexts/ContextProvider.jsx";
+import WizCard from "../../components/WizCard.jsx";
+import {SettingsContext} from "../../contexts/SettingsContext.jsx";
 import Badge from "react-bootstrap/Badge";
-import MainLoader from "../components/MainLoader.jsx";
+import MainLoader from "../../components/MainLoader.jsx";
 
 export default function UserForm() {
     const navigate = useNavigate();

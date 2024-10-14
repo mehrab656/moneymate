@@ -53,6 +53,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('/users', UserController::class);
     Route::get('/get-all-users', [UserController::class, 'getUsers']);
     Route::get('/dashboard-data', [DashboardController::class, 'dashboardData']);
+    Route::post('/update-profile/{slug}',[UserController::class,'updateProfile']);
 
 
     // Category Api

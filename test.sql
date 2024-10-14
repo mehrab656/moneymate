@@ -1,31 +1,59 @@
-INSERT INTO `task_employee` (`task_id`, `employee_id`, `started_at`, `ended_at`, `status`, `created_at`, `updated_at`) VALUES
-                                                                                                                           (6, 3, NULL, NULL, 'complete', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (7, 3, NULL, NULL, 'complete', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (8, 3, NULL, NULL, 'complete', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (9, 3, NULL, NULL, 'complete', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (10, 3, NULL, NULL, 'complete', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (11, 3, NULL, NULL, 'complete', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (12, 3, NULL, NULL, 'complete', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (13, 3, NULL, NULL, 'complete', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (14, 3, NULL, NULL, 'complete', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (15, 3, NULL, NULL, 'complete', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (16, 3, NULL, NULL, 'complete', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (17, 3, NULL, NULL, 'complete', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (18, 3, NULL, NULL, 'complete', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (19, 3, NULL, NULL, 'complete', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (20, 3, NULL, NULL, 'complete', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (21, 3, NULL, NULL, 'pending', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (22, 3, NULL, NULL, 'pending', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (23, 3, NULL, NULL, 'pending', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (24, 3, NULL, NULL, 'pending', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (25, 3, NULL, NULL, 'pending', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (26, 3, NULL, NULL, 'pending', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (27, 3, NULL, NULL, 'pending', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (28, 3, NULL, NULL, 'pending', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (29, 3, NULL, NULL, 'pending', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (30, 3, NULL, NULL, 'pending', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (31, 3, NULL, NULL, 'complete', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (32, 3, NULL, NULL, 'complete', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (33, 3, NULL, NULL, 'complete', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (34, 3, NULL, NULL, 'complete', '2024-10-11 14:36:29', '2024-10-11 14:36:29'),
-                                                                                                                           (35, 3, NULL, NULL, 'complete', '2024-10-11 14:36:29', '2024-10-11 14:36:29');
+{
+	"data": [
+		{
+			"id": 23,
+			"avatar": "http:\/\/moneymate.com\/backendApi\/public\/avatars",
+			"primary_company": 4,
+			"name": "Devika",
+			"email": "devika@gmail",
+			"is_active_membership": "yes",
+			"created_at": "2024-10-12 06:40:39"
+		},
+		{
+			"id": 22,
+			"avatar": "http:\/\/moneymate.com\/backendApi\/public\/avatars",
+			"primary_company": 4,
+			"name": "Shahariar",
+			"email": "shahariar@gmail.com",
+			"is_active_membership": "yes",
+			"created_at": "2024-10-12 05:28:51"
+		},
+		{
+			"id": 21,
+			"avatar": "http:\/\/moneymate.com\/backendApi\/public\/avatars",
+			"primary_company": 4,
+			"name": "Marshia Binth E Sarah",
+			"email": "marshiasarah@gmail.com",
+			"is_active_membership": "yes",
+			"created_at": "2024-10-12 04:21:54"
+		},
+		{
+			"id": 17,
+			"avatar": "http:\/\/moneymate.com\/backendApi\/public\/avatars",
+			"primary_company": 4,
+			"name": "Malinstay Homes Rental LLC",
+			"email": "admin@malinstay.com",
+			"is_active_membership": "yes",
+			"created_at": "2024-07-30 09:14:07"
+		},
+		{
+			"id": 16,
+			"avatar": "http:\/\/moneymate.com\/backendApi\/public\/avatars",
+			"primary_company": 4,
+			"name": "Moahammad Samad",
+			"email": "samad@gmail.com",
+			"is_active_membership": "yes",
+			"created_at": "2024-07-30 09:13:38"
+		},
+		{
+			"id": 15,
+			"avatar": "http:\/\/moneymate.com\/backendApi\/public\/avatars",
+			"primary_company": 4,
+			"name": "Rana Sarker",
+			"email": "kamrulislamrana1234@gmail.com",
+			"is_active_membership": "yes",
+			"created_at": "2024-07-30 09:13:02"
+		}
+	],
+	"total": 7
+}

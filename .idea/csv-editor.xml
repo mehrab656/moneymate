@@ -10,6 +10,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\backendApi\public\expense_20230818170307.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\backendApi\public\expense_20230823202243.csv">
           <value>
             <Attribute>

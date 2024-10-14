@@ -30,12 +30,26 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'username',
         'primary_company',
         'profile_picture',
         'email',
         'password',
         'role_as',
+        'first_name',
+        'last_name',
+        'phone',
+        'emergency_contract',
+        'dob',
+        'last_ip_address',
+        'ip_address',
+        'activation_code',
+        'forgotten_password_code',
+        'forgotten_password_time',
+        'remember_code',
+        'active',
+        'gender',
+        'options',
     ];
 
     /**
@@ -138,9 +152,10 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Company::class, 'primary_company', 'id');
     }
+
     public function permissions(): HasOneThrough
     {
-        return $this->belongsTo(Role::class,'company_user','role_id','id');
+        return $this->belongsTo(Role::class, 'company_user', 'role_id', 'id');
     }
 
     /**
@@ -177,7 +192,7 @@ class User extends Authenticatable
                 'data_records' => json_encode($user),
             ]);
             DB::table('company_user')->insert([
-                'company_id' =>$data['primary_company'],
+                'company_id' => $data['primary_company'],
                 'user_id' => $user['id'],
                 'role_id' => $data['role_id'],
                 'role_as' => $data['role_as'],
@@ -191,7 +206,7 @@ class User extends Authenticatable
             return [
                 'message' => 'User Added',
                 'status_code' => 200,
-                'user'=>$user
+                'user' => $user
             ];
         } catch (Exception $e) {
             DB::rollBack();
@@ -202,5 +217,62 @@ class User extends Authenticatable
             ];
         }
 
+    }
+
+    /**
+     * @throws \Throwable
+     */
+    public function updateUser($data, $slug): array
+    {
+        $user = (new User())->where('slug', $slug)->first();
+        if (!$user) {
+            return [
+                'status_code' => 404,
+                'message' => 'User not found!',
+                'data' => []
+            ];
+        }
+
+
+        try {
+            DB::beginTransaction();
+
+            $CompanyUSerRelation = DB::table('company_user')
+                ->where('user_id', $user['id'])
+                ->where('company_id', Auth::user()->primary_company)
+                ->update([
+                    'role_id' => $data['role']
+                ]);
+            $updateColumnsArray = [
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
+                'phone' => $data['phone'],
+                'dob' => $data['dob'],
+                'gender' => $data['gender'],
+            ];
+
+            if (isset($data['profile_picture'])) {
+                $updateColumnsArray['profile_picture'] = $data['profile_picture'];
+            }
+            if (isset($data['profile_picture'])) {
+                $updateColumnsArray['emergency_contract'] = $data['emergency_contract'];
+            }
+            $user->update($updateColumnsArray);
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return [
+                'message' => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
+                'status_code' => 400
+            ];
+        }
+
+        return
+            [
+                'status_code' => 200,
+                'message' => 'User updated!',
+                'data' => $data
+            ];
     }
 }
