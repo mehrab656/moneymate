@@ -18,6 +18,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Throwable;
 
@@ -160,6 +161,7 @@ class IncomeController extends Controller {
 					);
 
 					$income_first = Income::create( [
+                        'slug'=>Uuid::uuid4(),
 						'user_id'       => Auth::user()->id,
 						'company_id'    => Auth::user()->primary_company,
 						'account_id'    => $accountID,
@@ -196,6 +198,7 @@ class IncomeController extends Controller {
 						$second_month_amount = $daily_rent * $second_month_days;
 
 						$income_sec = Income::create( [
+                            'slug'=>Uuid::uuid4(),
 							'user_id'       => Auth::user()->id,
 							'company_id'    => Auth::user()->primary_company,
 							'account_id'    => $accountID,
@@ -246,6 +249,7 @@ class IncomeController extends Controller {
 				}
 
 				$income = Income::create( [
+                    'slug'=>Uuid::uuid4(),
 					'user_id'     => Auth::user()->id,
 					'company_id'  => Auth::user()->primary_company,
 					'account_id'  => $income['account_id'],

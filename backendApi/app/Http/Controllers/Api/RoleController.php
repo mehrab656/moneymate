@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Js;
 use PHPUnit\Exception;
+use Ramsey\Uuid\Uuid;
 
 class RoleController extends Controller
 {
@@ -100,6 +101,7 @@ class RoleController extends Controller
         try {
             DB::beginTransaction();
             $role = Role::create([
+                'slug'=>Uuid::uuid4(),
                 'company_id' => Auth::user()->primary_company,
                 'role' => strtolower($data['name']),
                 'status' => abs($data['status']),

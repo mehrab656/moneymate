@@ -20,6 +20,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Nette\Schema\ValidationException;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
@@ -57,6 +58,7 @@ class InvestmentController extends Controller {
 
 		$investDate = Carbon::parse( $invest['investment_date'] )->format( 'Y-m-d' );
 		$invest     = Investment::create( [
+            'slug'=>Uuid::uuid4(),
 			'investor_id'     => $invest['investor_id'],
 			'company_id'      => $user->primary_company,
 			'added_by'        => $user->id, //current user

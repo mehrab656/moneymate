@@ -69,9 +69,7 @@ export default function Incomes() {
 
     const filteredIncomes = incomes.filter((income) => {
         return income.user_name.toLowerCase().includes(searchTerm.toLowerCase())
-            || income.account_number.toLowerCase().includes(searchTerm.toLowerCase())
             || income.category_name.toLowerCase().includes(searchTerm.toLowerCase())
-            || income.amount.toLowerCase().includes(searchTerm.toLowerCase())
             || income.description.toLowerCase().includes(searchTerm.toLowerCase())
             || income.bank_name.toLowerCase().includes(searchTerm.toLowerCase())
     });

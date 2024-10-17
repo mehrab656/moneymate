@@ -219,7 +219,7 @@ function is_ip_address(string $ip): bool|string
     {
 
         $type = 'create';
-        if ($status==='paid'){
+        if ($status==='paid' || $status === 'done'){
             $description = 'Marked the payment as done.';
             $type = 'payment_done';
         }

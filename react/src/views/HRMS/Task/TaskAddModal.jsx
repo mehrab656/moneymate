@@ -30,7 +30,7 @@ const _initialTaskData = {
     comment: '',
 }
 
-function TaskAddModal({showModal, handelCloseModal, title,currentTaskList,setTasks}) {
+function TaskAddModal({showModal, handelCloseModal, title,getFunc}) {
     let {id} = useParams();
     const navigate = useNavigate();
     const [errors, setErrors] = useState({});
@@ -88,8 +88,17 @@ function TaskAddModal({showModal, handelCloseModal, title,currentTaskList,setTas
             },
         }).then(({data}) => {
             notification('success', data?.message, data?.description);
+
             setLoading(false);
-            location.reload();
+            setErrors({});
+            setCategories([]);
+            setShowExistingTask(false);
+            setExistingTask({});
+            setTaskData(_initialTaskData);
+            getFunc();
+            handelCloseModal();
+
+
         }).catch((err) => {
             if (err.response) {
                 const error = err.response.data

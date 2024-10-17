@@ -19,6 +19,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use PHPUnit\Exception;
+use Ramsey\Uuid\Uuid;
 use Throwable;
 
 class AssetController extends Controller
@@ -100,6 +101,7 @@ class AssetController extends Controller
             $oldAccountBalance = $bankAccount->balance;
             $expenseDate = Carbon::parse($data['date'])->format('Y-m-d');
             $expense = Expense::create([
+                'slug'=>Uuid::uuid4(),
                 'user_id' => Auth::user()->id,
                 'company_id' => Auth::user()->primary_company,
                 'account_id' => $data['account_id'],
@@ -150,6 +152,7 @@ class AssetController extends Controller
             ]);
 
             $assets = Asset::create([
+                'slug'=>Uuid::uuid4(),
                 'sector_id' => $data['sector_id'],
                 'expense_id' => $expense['id'],
                 'date' => $data['date'],

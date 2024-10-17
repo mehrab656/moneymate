@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Ramsey\Uuid\Uuid;
 use Stripe\Exception\ApiErrorException;
 use Illuminate\Support\Facades\Hash;
 
@@ -31,6 +32,7 @@ class AuthController extends Controller {
 		$data = $request->validated();
 			// Create the user
 			$user = User::create( [
+                'slug'=>Uuid::uuid4(),
 				'name'     => $data['name'],
 				'email'    => $data['email'],
 				'password' => Hash::make( $data['password'] ),
@@ -38,6 +40,7 @@ class AuthController extends Controller {
 			] );
         //add a default company
         $company = Company::create( [
+            'slug'=>Uuid::uuid4(),
             'name'                => $data['name'] . ' company',
             'phone'               => '+0000000',
             'email'               => $data['email'],

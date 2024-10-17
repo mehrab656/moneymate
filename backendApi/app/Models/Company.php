@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Ramsey\Uuid\Uuid;
 
 class Company extends Model {
 	use HasFactory;
@@ -36,6 +37,7 @@ class Company extends Model {
 		try {
 			DB::beginTransaction();
 			$company = Company::create( [
+                'slug'=>Uuid::uuid4(),
 				'name'                => $data['name'],
 				'phone'               => $data['phone'],
 				'email'               => $data['email'],

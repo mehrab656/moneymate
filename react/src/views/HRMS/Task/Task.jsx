@@ -321,9 +321,8 @@ export default function Task() {
 
             <TaskAddModal showModal={showCreateModal}
                           handelCloseModal={closeCreateModalFunc}
-                          title={'Add a new Task'}
-                          currentTaskList={tasks}
-                          setTasks={setTasks}
+                          title={'Add new Task'}
+                          getFunc={getTasks}
             />
             <TaskHistoryModal showModal={taskTimelineModal}
                               handelCloseModal={closeTimelineModalFunc}

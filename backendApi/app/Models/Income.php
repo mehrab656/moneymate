@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use Ramsey\Uuid\Uuid;
 use Throwable;
 
 /**
@@ -220,6 +221,7 @@ class Income extends Model
                         $checkinDate->format('Y-m-d'),
                         $checkoutDate->format('Y-m-d'));
                     $income = Income::create([
+                        'slug'=>Uuid::uuid4(),
                         'user_id' => $income['user_id'],
                         'company_id' => Auth::user()->primary_company,
                         'account_id' => $income['account_id'],
@@ -262,6 +264,7 @@ class Income extends Model
                     );
 
                     $income_first = Income::create([
+                        'slug'=>Uuid::uuid4(),
                         'user_id' => Auth::user()->id,
                         'company_id' => Auth::user()->primary_company,
                         'account_id' => $income['account_id'],
@@ -303,6 +306,7 @@ class Income extends Model
                         $second_month_amount = $daily_rent * $second_month_days;
 
                         $income_sec = Income::create([
+                            'slug'=>Uuid::uuid4(),
                             'user_id' => Auth::user()->id,
                             'company_id' => Auth::user()->primary_company,
                             'account_id' => $income['account_id'],
@@ -358,6 +362,7 @@ class Income extends Model
                 }
 
                 $income = Income::create([
+                    'slug'=>Uuid::uuid4(),
                     'user_id' => Auth::user()->id,
                     'company_id' => Auth::user()->primary_company,
                     'account_id' => $income['account_id'],

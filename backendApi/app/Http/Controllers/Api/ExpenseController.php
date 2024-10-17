@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Nette\Schema\ValidationException;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Throwable;
@@ -108,6 +109,7 @@ class ExpenseController extends Controller {
 			DB::beginTransaction();
 			$expenseDate = Carbon::parse( $expense['date'] )->format( 'Y-m-d' );
 			$expense     = Expense::create( [
+                'slug'=>Uuid::uuid4(),
 				'user_id'           => $expense['user_id'],
 				'company_id'        => Auth::user()->primary_company,
 				'account_id'        => $expense['account_id'],
