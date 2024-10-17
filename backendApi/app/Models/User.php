@@ -233,16 +233,13 @@ class User extends Authenticatable
             ];
         }
 
-
         try {
             DB::beginTransaction();
-
-            $CompanyUSerRelation = DB::table('company_user')
+            DB::table('company_user')
                 ->where('user_id', $user['id'])
                 ->where('company_id', Auth::user()->primary_company)
-                ->update([
-                    'role_id' => $data['role']
-                ]);
+                ->update(['role_id' => $data['role']]);
+
             $updateColumnsArray = [
                 'first_name' => $data['first_name'],
                 'last_name' => $data['last_name'],
@@ -254,7 +251,7 @@ class User extends Authenticatable
             if (isset($data['profile_picture'])) {
                 $updateColumnsArray['profile_picture'] = $data['profile_picture'];
             }
-            if (isset($data['profile_picture'])) {
+            if (isset($data['emergency_contract'])) {
                 $updateColumnsArray['emergency_contract'] = $data['emergency_contract'];
             }
             $user->update($updateColumnsArray);
