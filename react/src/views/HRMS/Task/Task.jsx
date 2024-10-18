@@ -25,6 +25,7 @@ const defaultTaskData = {
     description: '',
     employee: '',
     categoryID: '',
+    employee_list:[],
     date: '',
     startTime: '',
     endTime: '',
@@ -66,7 +67,6 @@ export default function Task() {
         num_data_per_page,
     } = applicationSettings;
 
-
     const [hasFilter, setHasFilter] = useState(false)
     const TABLE_HEAD = [
         {id: "description", label: "Description", align: "left"},
@@ -95,11 +95,16 @@ export default function Task() {
                                                     description,
                                                     slot,
                                                     employee_name,
+                                                    employee_list,
                                                     amount,
                                                     status,
                                                     payment_status,
                                                     workflow,
-                                                    type
+                                                    type,
+                                                    date,
+                                                    startTime,
+                                                    endTime,
+                                                    category_id
                                                 }, index) => {
         const task = {};
         const statusClass = (status === 'pending' ? 'warning' : (status === 'complete' ? 'success' : 'danger'));
@@ -107,8 +112,14 @@ export default function Task() {
 
         // task.description=
         task.amount = amount;
+        task.employee_list = employee_list;
         task.slot = slot;
+        task.date = date;
+        task.categoryID = category_id;
+        task.startTime = startTime;
+        task.endTime = endTime;
         task.task_status = status;
+        task.payment = payment_status;
         task.status = <span className={`text-${statusClass}`}>{status.charAt(0).toUpperCase() + status.slice(1)}</span>
         task.payment_status = <span
             className={`text-${PaymentStatusClass}`}>{(payment_status.charAt(0).toUpperCase() + payment_status.slice(1)).replace('_', ' ')}</span>
@@ -159,6 +170,10 @@ export default function Task() {
     };
     const closeCreateModalFunc = () => {
         setShowCreateModal(false);
+    };
+    const showEditModalFunc = (task) => {
+        setShowCreateModal(true);
+        setTask(task);
     };
     const showTimelineModalFunc = (task) => {
         setTaskTimelineModal(true);
@@ -245,7 +260,7 @@ export default function Task() {
             actionName: 'Edit',
             type: "modal",
             route: "",
-            actionFunction: "editModal",
+            actionFunction: showEditModalFunc,
             permission: 'edit_task',
             textClass: 'text-info',
         },
@@ -319,11 +334,16 @@ export default function Task() {
 
             />
 
-            <TaskAddModal showModal={showCreateModal}
-                          handelCloseModal={closeCreateModalFunc}
-                          title={'Add new Task'}
-                          getFunc={getTasks}
-            />
+            {
+                showCreateModal &&
+                <TaskAddModal showModal={showCreateModal}
+                              handelCloseModal={closeCreateModalFunc}
+                              title={'Add new Task'}
+                              getFunc={getTasks}
+                              element={task}
+                />
+            }
+
             <TaskHistoryModal showModal={taskTimelineModal}
                               handelCloseModal={closeTimelineModalFunc}
                               workflow={taskHistory}
@@ -336,10 +356,12 @@ export default function Task() {
             <UpdatePaymentStatusModal showModal={showPaymentStatusModal}
                                       handelCloseModal={closePaymentModalFunc}
                                       element={task}
+                                      getFunc={getTasks}
             />
             <UpdateStatus showModal={showStatusModal}
                           handelCloseModal={closeStatusModalFunc}
                           element={task}
+                          getFunc={getTasks}
             />
 
         </div>

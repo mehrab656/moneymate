@@ -34,19 +34,20 @@ class TaskModel extends Model
      */
     public function handelPaymentStatusChange($data): array
     {
-        $task = TaskModel::find($data['id']);
+        $task = TaskModel::where('slug', $data['id'])->first();
 
         if (!$task) {
             return [
-                'data' => null,
                 'status_code' => 403,
-                'message' => 'No task was found'
+                'message' => 'error',
+                'description' => 'No task was found'
             ];
         }
 
         if ($task->company_id !== auth()->user()->primary_company) {
             return [
                 'status_code' => 403,
+                'message' => 'error',
                 'description' => 'You can not update for other company\'s task.!'
             ];
         }
@@ -98,7 +99,7 @@ class TaskModel extends Model
 
             return [
                 'status_code' => $income['status_code'],
-                'message' => $income['message']
+                'message' => $task,
             ];
         }
         if ($task['type'] === 'expense') {
@@ -126,6 +127,74 @@ class TaskModel extends Model
             'message' => 'Undefined Task Type :' . $task['type']
         ];
 
+    }
+
+    public function taskCustomValidation($data,$tag='add')
+    {
+
+        $category = Category::select('categories.*')
+            ->join('sectors', 'categories.sector_id', '=', 'sectors.id')
+            ->where(['sectors.company_id' => \Illuminate\Support\Facades\Auth::user()->primary_company, 'categories.id' => $data['categoryID']])
+            ->first();
+
+        if (!$category) {
+            return [
+                'status_code' => 400,
+                'message' => 'error!',
+                'description' => 'You can not add task for other company.',
+            ];
+        }
+
+        if (strtotime($data['startTime']) > strtotime($data['endTime'])) {
+            return [
+                'status_code' => 400,
+                'message' => 'error!',
+                'description' => 'End Time cannot be before start time',
+            ];
+        }
+        if (strtotime($data['startTime']) === strtotime($data['endTime'])) {
+            return [
+                'status_code' => 400,
+                'message' => 'error!',
+                'description' => 'Task Start time and End time cannot be same.',
+            ];
+        }
+        $employees = json_decode($data['employee_list'],true);
+        if (empty($employees)) {
+            return [
+                'status_code' => 400,
+                'message' => 'error!',
+                'description' => 'Task Employee is required',
+            ];
+        }
+        if ($tag==='add'){
+
+            foreach ($employees as $employee){
+                $existenceTask = TaskModel::join('task_employee', 'tasks.id', '=', 'task_employee.task_id')
+                    ->join('users','task_employee.employee_id','=','users.slug')
+                    ->select(['users.username','date','description','end_time','start_time'])
+                    ->where('date', date('Y-m-d', strtotime($data['date'])))
+                    ->where('employee_id', $employee['value'])
+                    ->where('type', strtolower($data['type']))
+                    ->where('start_time', '<=', date('H:i', strtotime($data['startTime'])))
+                    ->where('end_time', '>=', date('H:i', strtotime($data['startTime'])))
+                    ->first();
+
+                if ($existenceTask) {
+                    return [
+                        'status_code' => 406,
+                        'message' => 'Time conflicted',
+                        'description' => sprintf("%s has an assigned task on %s(%s, From %s To %s)",$existenceTask->username,$existenceTask->description,$existenceTask->date,date("g:i a",strtotime($existenceTask->start_time)),date("g:i a",strtotime($existenceTask->end_time))),
+                    ];
+                }
+            }
+        }
+
+        return [
+            'status_code' => 200,
+            'message' => 'success',
+            'description' => 'Validation is ok',
+        ];
     }
 
 

@@ -17,7 +17,7 @@ class EmployeeResource extends JsonResource
     {
         $user = $this->user;
         return [
-            'id' => $this->id,
+            'id' => $user->slug,
             'company_id' => $this->company_id,
             'avatar' => asset('avatars/'.$this->user->profile_picture),
             'user_id' => $this->user_id,

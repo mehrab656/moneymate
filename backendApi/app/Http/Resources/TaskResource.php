@@ -33,13 +33,12 @@ class TaskResource extends JsonResource
 
         foreach ($employees as $employee){
             $employeeList[] = [
-                'id'=>$employee->user->id,
-                'employee_name'=>$employee->user->name,
+                'value'=>$employee->user->slug,
+                'label'=>$employee->user->username,
             ];
         }
         return [
             'id' => $this->slug,
-            'employee_id' => $this->employee_id,
             'employee_list' => $employeeList,
             'category_name' => $this->category->name,
             'bank_account' => $this->category->sector->account->id,

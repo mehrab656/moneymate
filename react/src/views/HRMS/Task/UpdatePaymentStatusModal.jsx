@@ -9,15 +9,16 @@ import axiosClient from "../../../axios-client.js";
 import {notification} from "../../../components/ToastNotification.jsx";
 import MainLoader from "../../../components/MainLoader.jsx";
 
-function UpdatePaymentStatusModal({showModal, handelCloseModal, element}) {
+
+const _initialPaymentData = {
+    amount: 0,
+    payment_status: '',
+    comment: ''
+}
+function UpdatePaymentStatusModal({showModal, handelCloseModal, element,getFunc}) {
     const [loading, setLoading] = useState(false)
 
-    const [paymentData, setPaymentData] = useState({
-        amount: 0,
-        payment_status: '',
-        comment: ''
-    });
-
+    const [paymentData, setPaymentData] = useState(_initialPaymentData);
     const submit = (e) => {
         e.preventDefault();
         setLoading(true);
@@ -34,7 +35,9 @@ function UpdatePaymentStatusModal({showModal, handelCloseModal, element}) {
         }).then(({data}) => {
             setLoading(false);
             notification('success', data?.message, data?.description);
-            location.reload();
+            setPaymentData(_initialPaymentData);
+            getFunc();
+            handelCloseModal();
         }).catch((err) => {
             if (err.response) {
                 const error = err.response.data

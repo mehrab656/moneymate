@@ -9,12 +9,13 @@ import axiosClient from "../../../axios-client.js";
 import {notification} from "../../../components/ToastNotification.jsx";
 import MainLoader from "../../../components/MainLoader.jsx";
 
-function UpdateStatus({showModal, handelCloseModal, element}) {
+const _initial = {
+    task_status: '',
+    comment: ''
+};
+function UpdateStatus({showModal, handelCloseModal, element,getFunc}) {
     const [loading, setLoading] = useState(false)
-    const [status, setStatus] = useState({
-        task_status: '',
-        comment: ''
-    });
+    const [status, setStatus] = useState(_initial);
     const submit = (e) => {
         e.preventDefault();
         setLoading(true);
@@ -30,7 +31,9 @@ function UpdateStatus({showModal, handelCloseModal, element}) {
         }).then(({data}) => {
             setLoading(false);
             notification('success', data?.message, data?.description);
-            location.reload();
+            setStatus(_initial);
+            getFunc();
+            handelCloseModal();
         }).catch((err) => {
             if (err.response) {
                 const error = err.response.data

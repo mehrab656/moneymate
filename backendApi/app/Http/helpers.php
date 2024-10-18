@@ -246,13 +246,17 @@ function is_ip_address(string $ip): bool|string
             $description = 'Mark the task as Complete';
             $type = 'done';
         }
+        if ($status ==='update'){
+            $description = 'Updated the task';
+            $type = 'update';
+        }
 
 
 
         return [
             'date_time' => date("Y-m-d H:i:s"),
             'userID' => Auth::user()->id,
-            'userName' => Auth::user()->name,
+            'userName' => Auth::user()->username,
             'avatar' => asset('avatars/'.Auth::user()->profile_picture),
             'type' => $type,
             'description' =>$description
