@@ -250,6 +250,14 @@ function is_ip_address(string $ip): bool|string
             $description = 'Updated the task';
             $type = 'update';
         }
+        if ($status ==='started'){
+            $description = 'Started the task';
+            $type = 'started';
+        }
+        if ($status ==='ended'){
+            $description = 'Closed the task';
+            $type = 'ended';
+        }
 
 
 

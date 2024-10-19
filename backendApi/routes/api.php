@@ -237,12 +237,15 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //TaskModel controller's routs
     Route::get('/all-tasks', [TaskController::class, 'index']);
+    Route::get('/my-tasks', [TaskController::class, 'assignedTasks']);
     Route::post('/task/add', [TaskController::class, 'add']);
-    Route::delete('/task/{task}', [TaskController::class, 'delete']);
+    Route::delete('/delete-task/{id}', [TaskController::class, 'delete']);
     Route::get('task/{id}', [TaskController::class, 'edit']);
     Route::post('task/{id}', [TaskController::class, 'update']);
     Route::post('update-task-status/{id}', [TaskController::class, 'updateStatus']);
     Route::post('update-task-payment-status/{id}', [TaskController::class, 'updatePaymentStatus']);
+    Route::post('task-has-started/{id}', [TaskController::class, 'taskStarted']);
+    Route::post('task-has-ended/{id}', [TaskController::class, 'taskEnded']);
 
     //EmployeeRequest Controllers rote
     Route::get('/all-employees', [EmployeeController::class, 'index']);

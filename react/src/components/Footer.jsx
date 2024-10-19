@@ -1,6 +1,7 @@
 import React, {useContext} from 'react';
 import {SettingsContext} from '../contexts/SettingsContext.jsx';
-
+import Col from 'react-bootstrap/Col'
+import Row from 'react-bootstrap/Row'
 const Footer = () => {
     const {applicationSettings} = useContext(SettingsContext);
 
@@ -8,16 +9,13 @@ const Footer = () => {
 
     return (
         <footer style={{backgroundColor: "#f2f2f2", height: "50px"}}>
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "100%",
-                }}>
-                <p>{company_name} | <a target="_blank" href={`${web_site}`}>{web_site}</a> |
-                    {phone} | {address} | Version: 1.10.11 </p>
-            </div>
+            <Row>
+                <Col md={4} sm={6}>{company_name}</Col>
+                <Col md={2} sm={6}><a target="_blank" href={`${web_site}`}>{"Website"}</a></Col>
+                <Col md={4} sm={6}>{address}</Col>
+                <Col md={2} sm={6}>Version: 1.10.11</Col>
+            </Row>
+
         </footer>
     );
 };

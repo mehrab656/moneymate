@@ -69,7 +69,6 @@ function TaskAddModal({showModal, handelCloseModal, title, getFunc, element}) {
 
     const submit = (e) => {
         e.preventDefault();
-        console.log(taskData.employee_list)
         setLoading(true);
         let formData = new FormData();
         formData.append('employee_list', JSON.stringify(taskData.employee_list));
@@ -130,7 +129,10 @@ function TaskAddModal({showModal, handelCloseModal, title, getFunc, element}) {
                 </Modal.Header>
                 <Modal.Body>
                     <Container>
-
+                        <div className="alert alert-warning" role="alert">
+                            If you make the payment status as "Paid/Done" from here, it has to be added the income separately.
+                            <br/>
+                        </div>
                         <Form>
                             <Row>
                                 <Col xs={12} md={12}>
@@ -210,6 +212,7 @@ function TaskAddModal({showModal, handelCloseModal, title, getFunc, element}) {
                                                      value={taskData.categoryID} onChange={(e) => {
                                             setTaskData({...taskData, categoryID: e.target.value});
                                         }}>
+                                            <option defaultValue>{"Select task type First"}</option>
                                             {categories.length > 0 ? categories.map((category) => (
                                                     <option key={category.id} value={category.id}>
                                                         {category.name}
@@ -280,13 +283,13 @@ function TaskAddModal({showModal, handelCloseModal, title, getFunc, element}) {
                                         <Select isMulti
                                                 className="basic-single"
                                                 classNamePrefix="select"
-                                            defaultValue={taskData.employee_list}
+                                                defaultValue={taskData.employee_list}
                                                 isSearchable={true}
                                                 name="employee_id"
                                                 isClearable={true}
                                                 isLoading={isSearchableEmployee}
                                                 options={modifiedEmployeeList}
-                                                onChange={(e)=>{
+                                                onChange={(e) => {
                                                     setTaskData({...taskData, employee_list: e})
                                                 }}
                                         />

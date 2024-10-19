@@ -49,6 +49,7 @@ import Payrolls from "./views/HRMS/Payrolls/Payrolls.jsx";
 import Attendance from "./views/HRMS/Attandance/Attendance.jsx";
 import Task from "./views/HRMS/Task/Task.jsx";
 import UserList from "./views/User/UserList.jsx";
+import MyTasks from "./views/HRMS/Task/MyTasks.jsx";
 
 const router = createBrowserRouter([
 
@@ -269,6 +270,10 @@ const router = createBrowserRouter([
             {
                 path: '/all-tasks',
                 element: <Task />
+            },
+            {
+                path: '/my-tasks',
+                element: <MyTasks />
             },
             {
                 path: '/all-attendance',

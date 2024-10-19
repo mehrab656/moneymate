@@ -151,8 +151,8 @@ export default function Task() {
         }).then((result) => {
             if (result.isConfirmed) {
                 axiosClient
-                    .delete(`task/${task.id}`)
-                    .then((data) => {
+                    .delete(`delete-task/${task.id}`)
+                    .then(({data}) => {
                         getTasks();
                         notification("success", data?.message, data?.description);
                     })
@@ -170,6 +170,7 @@ export default function Task() {
     };
     const closeCreateModalFunc = () => {
         setShowCreateModal(false);
+        setTask(defaultTaskData)
     };
     const showEditModalFunc = (task) => {
         setShowCreateModal(true);

@@ -424,31 +424,17 @@ class IncomeController extends Controller {
 	/**
 	 * @param Income $income
 	 *
-	 * @return Response
-	 * @throws Exception
+	 * @return JsonResponse
+     * @throws Exception
 	 */
-	public function destroy( Income $income ): Response {
-		$income->delete();
+	public function destroy( Income $income ): JsonResponse
+    {
+		$status =(new Income())->deleteIncome($income->slug);
 
-		/**
-		 * Adjust bank account
-		 */
-
-		$bankAccount = BankAccount::find( $income->account_id );
-		if ( $income->amount > 0 ) {
-			$bankAccount->balance -= $income->amount;
-			$bankAccount->save();
-		}
-
-		storeActivityLog( [
-			'object_id'    => $income->id,
-			'log_type'     => 'delete',
-			'module'       => 'income',
-			'descriptions' => "",
-			'data_records' => array_merge( json_decode( json_encode( $income ), true ), [ 'account_balance' => $bankAccount->balance ] ),
-		] );
-
-		return response()->noContent();
+		return response()->json([
+            'message'=>$status['message'],
+            'description'=>$status['description'],
+        ],$status['status']);
 	}
 
 

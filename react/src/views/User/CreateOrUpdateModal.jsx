@@ -65,7 +65,6 @@ export default function CreateOrUpdateModal({handelCloseModal, element, setEleme
         const file = e.target.files[0];
         setElement({...element, avatar: URL.createObjectURL(file),attachment:  e.target.files[0]});
     }
-    console.log(element)
     return (
         <>
             <MainLoader loaderVisible={loading}/>

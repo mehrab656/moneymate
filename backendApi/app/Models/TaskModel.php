@@ -95,14 +95,14 @@ class TaskModel extends Model
                 'income_type' => 'others',
                 'date' => $task['date'],
                 'attachment' => null,
-            ], $task->category);
+            ], $task->category,$task->slug);
 
             return [
                 'status_code' => $income['status_code'],
-                'message' => $task,
+                'message' => $income['message'],
             ];
         }
-        if ($task['type'] === 'expense') {
+        if (strtolower($task['type']) === 'expense') {
 
             $expense = (new Expense)->addExpense([
                 'account_id' => $accountID,
@@ -114,7 +114,7 @@ class TaskModel extends Model
                 'category_name' => $task->category->name,
                 'date' => $task['date'],
                 'attachment' => null,
-            ]);
+            ],$task->slug);
 
             return [
                 'status_code' => $expense['status_code'],
