@@ -143,7 +143,7 @@ class RoleController extends Controller
 
         $data = $request->validated();
 
-        $role = Role::where(['id' => $id, 'company_id' => auth()->user()->primary_company])->get()->first();
+        $role = Role::where(['slug' => $id, 'company_id' => auth()->user()->primary_company])->get()->first();
 
         if (!$role) {
             return response()->json([
@@ -181,7 +181,8 @@ class RoleController extends Controller
 
         if ($updatedRole) {
             storeActivityLog([
-                'object_id' => $id,
+                'object_id' => $role['id'],
+                'object'=>'role',
                 'log_type' => 'update',
                 'module' => 'roles',
                 'descriptions' => 'Role Updated',

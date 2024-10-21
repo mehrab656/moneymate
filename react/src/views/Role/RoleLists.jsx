@@ -30,6 +30,15 @@ function RoleLists({permissions, setPermissions}) {
     // Function to handle checkbox change
     const handleChange = (event, section) => {
         const {name, checked} = event.target;
+
+        if ((section==='investment'||section==='expense'||section==='income'|| section==='return') && checked===true){
+            setPermissions((prevState) => ({
+                ...prevState,
+                submenuTransactionVisible:true,
+            }));
+        }
+        console.log(section);
+
         if (name === "selectAll") {
             setPermissions((prevState) => ({
                 ...prevState,

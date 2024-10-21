@@ -163,7 +163,6 @@ export default function RoleForms() {
             asset_edit: false,
             asset_delete: false,
         },
-
         budget: {
             budget_create: false,
             budget_view: false,
@@ -293,6 +292,10 @@ export default function RoleForms() {
                 ...permissions.balance,
                 ...permissions.debt,
                 ...permissions.loans,
+                ...permissions.employee,
+                ...permissions.task,
+                ...permissions.attendance,
+                ...permissions.asset,
                 ...permissions.budget,
                 ...permissions.investment_plan,
                 ...permissions.calender,

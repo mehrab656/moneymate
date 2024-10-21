@@ -154,32 +154,20 @@ export default function MyTasks() {
     return (
         <div>
             <MainLoader loaderVisible={loading}/>
-            <Card>
-                <Row style={{padding:'10px'}}>
                     {
-                        tasks.length > 0 && tasks.map((task) => {
+                        tasks.length > 0 && tasks.map((task,index) => {
                             return <>
-
-                                <Col md={3} sm={12}>
-                                    <Card className={'border-primary'} key={task.slug} sx={{p: 5}} style={{padding: "0px", marginBottom:"20px"}}>
-                                        <div class="my-task-header">
+                                <Col md={3} sm={12} key={task.slug+index}>
+                                    <Card className={'border-primary'} sx={{p: 5}} style={{padding: "0px", marginBottom:"20px"}} key={task.slug}>
+                                        <div className="my-task-header">
                                             <span>{task.date}</span>
                                             <span>{task.startTime +' to '+task.endTime}</span>
                                         </div>
-                                        {/*<CardHeader title={<><small>{task.slot}</small></>}*/}
-                                        {/*/>*/}
-                                        <CardContent style={{minHeight: '100px'}}>
-                                            {/*{*/}
-                                            {/*    task.started_at &&*/}
-                                            {/*    <div className="alert alert-warning " role="alert" style={{width: '100%'}}>*/}
-                                            {/*        {task.started_at}*/}
-                                            {/*    </div>*/}
-                                            {/*}*/}
 
+                                        <CardContent style={{minHeight: '100px'}}>
                                             {task.description}
                                         </CardContent>
                                         <CardActions className={'my-task-card-footer'}>
-
                                             <Button variant="success" onClick={() => startTask(task)}
                                                     disabled={!!task.started_at}>{
                                                 task.started_at ? 'Started..' : 'Start'
@@ -190,10 +178,7 @@ export default function MyTasks() {
                                                 className={'text-primary'}
                                                 data-tooltip-id='internet-account'
                                                 data-tooltip-content={"Show this internet details"}>
-                                                    <span className="aside-menu-icon">
-                                                        <FontAwesomeIcon
-                                                            icon={faEye}/>
-                                                    </span>
+                                                    <span className="aside-menu-icon"><FontAwesomeIcon icon={faEye}/></span>
                                             </a>
                                             <Button variant="danger" onClick={() => endTask(task)}
                                                     disabled={!!task.ended_at}>End</Button>
@@ -203,9 +188,7 @@ export default function MyTasks() {
                             </>
                         })
                     }
-                </Row>
 
-            </Card>
 
             <TaskHistoryModal showModal={taskTimelineModal}
                               handelCloseModal={closeTimelineModalFunc}

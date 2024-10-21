@@ -163,7 +163,7 @@ export default function Roles() {
                     </div>
                 </div>
                 <div className="col-2">
-                    { checkPermission(userPermission.role_create) &&
+                    { checkPermission('role_create') &&
                         <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                             <Link className="btn-add align-right mr-3"
                                   to="/roles/new"
@@ -195,7 +195,7 @@ export default function Roles() {
                                 <TableCell>{role.role}</TableCell>
                                 <TableCell >{role.status===1?'Active':'Inactive'}</TableCell>
                                 <TableCell >{role.added_by}</TableCell>
-                                <TableCell >{(new Date(role.added_date)).toLocaleDateString("en-US", dateOptions)}</TableCell>
+                                <TableCell >{(new Date(role.date)).toLocaleDateString("en-US", dateOptions)}</TableCell>
                                 <TableCell >
                                     <ActionButtonHelpers
                                     actionBtn={actionParams}

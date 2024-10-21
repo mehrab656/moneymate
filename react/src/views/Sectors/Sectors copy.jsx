@@ -270,7 +270,7 @@ export default function Sectors() {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
-                    {checkPermission(userPermission.sector_create) &&
+                    {checkPermission('sector_create') &&
                         <div className="col-md-2">
                             <Link className='btn-add align-right mr-3' to='/sector/new'>
                                 <FontAwesomeIcon icon={faPlus}/> Add New

@@ -177,7 +177,7 @@ export default function Expenses() {
             cardTitle={"Expense Histories"}
             addBTN={
               {
-                permission: checkPermission(userPermission.expense_create),
+                permission: checkPermission('expense_create'),
                 txt: "Create New",
                 icon:(<FontAwesomeIcon icon={faPlus}/>), //"faBuildingFlag",
                 link:"/expense/new"

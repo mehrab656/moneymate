@@ -178,7 +178,7 @@ export default function AssetsList() {
                 cardTitle={"List of CompanyAssets"}
                 addBTN={
                     {
-                        permission: checkPermission(userPermission.asset_create),
+                        permission: checkPermission('asset_create'),
                         txt: "Create New",
                         icon:(<Iconify icon={"eva:plus-fill"} />), //"faBuildingFlag",
                         linkTo:'route',

@@ -155,7 +155,7 @@ export default function companies() {
                 cardTitle={"List of Companies"}
                 addBTN={
                     {
-                        permission: checkPermission(userPermission.company_create),
+                        permission: checkPermission('company_create'),
                         txt: "Create New",
                         icon:(<FontAwesomeIcon icon={faBuildingFlag}/>), //"faBuildingFlag",
                         link:"/company/add",

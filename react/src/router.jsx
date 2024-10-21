@@ -50,6 +50,7 @@ import Attendance from "./views/HRMS/Attandance/Attendance.jsx";
 import Task from "./views/HRMS/Task/Task.jsx";
 import UserList from "./views/User/UserList.jsx";
 import MyTasks from "./views/HRMS/Task/MyTasks.jsx";
+import EmployeeDashboard from "./components/EmployeeDashboard.jsx";
 
 const router = createBrowserRouter([
 
@@ -64,6 +65,10 @@ const router = createBrowserRouter([
             {
                 path: '/dashboard',
                 element: <Dashboard/>
+            },
+            {
+                path: '/employee-dashboard',
+                element: <EmployeeDashboard/>
             },
             {
                 path: '/users',

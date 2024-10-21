@@ -1,6 +1,12 @@
 import Swal from "sweetalert2";
 import axiosClient from "../axios-client.js";
 import {Box, Button, Tooltip} from "@mui/material";
+import {useContext} from "react";
+import {SettingsContext} from "../contexts/SettingsContext.jsx";
+
+
+
+
 
 export function compareDates(billDate) {
     const currentDate = new Date().getTime();  //19 May
@@ -46,16 +52,24 @@ export function reservationValidationBuilder(check_in, check_out) {
         class: _class
     }
 }
+export const checkPermission = (permission, _checkLimit = false)=>{
+    const { userRole,userPermission} = useContext(SettingsContext);
+    if (userRole === 'admin') {
+        return true;
+    }
+    else if(userRole === 'baseUser'){
+        return true; //@FIx Me for base user and subscriptions limit.
+    }
+    else { // sub-user
 
-export const checkPermission = (_permission, _checkLimit = false)=>{
-//create_category
-
-        const userRole = localStorage.getItem('ACCESS_ROLE');
-        if (userRole === 'admin') {
-            return true;
-        }else if(userRole === 'baseUser'){
-            return true; //@FIx Me for base user and subscriptions limit.
-        } else { // sub-user
-            return _permission;
-        }
+        return userPermission[permission];
+    }
 }
+
+
+// export const checkPermission = (permission, _checkLimit = false)=>{
+//
+//     // const { userRole,userPermission} = useContext(SettingsContext);
+//     console.log(userPermission())
+//
+// }

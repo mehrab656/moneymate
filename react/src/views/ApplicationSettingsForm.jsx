@@ -26,8 +26,6 @@ export default function ApplicationSettingsForm() {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const [saving, setSaving] = useState(false);
-    const [userRole, setUserRole] = useState([]);
-    const [registrationType, setRegistrationType] = useState("");
 
     const handleChange = (e) => {
         const {name, value} = e.target;
@@ -43,7 +41,6 @@ export default function ApplicationSettingsForm() {
     useEffect(() => {
        
         document.title = "Application Setting";
-        getUserRole();
         axiosClient
             .get("/get-application-settings")
             .then(({data}) => {
@@ -61,30 +58,15 @@ export default function ApplicationSettingsForm() {
                 });
 
                 setApplicationSettings(storeStting);
-                setRegistrationType(storeStting.registration_type);
                 setSettingsContext(storeStting); // Update settings in the context
-              
+
             })
             .catch(() => {
                 setLoading(false);
             });
     }, []);
 
- 
 
-    const getUserRole = () => {
-        axiosClient
-            .get("/get-user-role")
-            .then(({data}) => {
-                setUserRole(data.role);
-            })
-            .catch((error) => {
-            });
-    };
-
-    if (userRole === "user") {
-        navigate("/dashboard");
-    }
 
     const applicationSettingsSubmit = async (e) => {
         e.preventDefault();

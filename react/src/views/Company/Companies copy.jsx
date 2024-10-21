@@ -108,7 +108,7 @@ export default function companies() {
             <MainLoader loaderVisible={loading}/>
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">List of Companes</h1>
-                {checkPermission(userPermission.company_create) &&
+                {checkPermission('company_create') &&
                     <div>
                         <Link className="custom-btn btn-add" to="/company/add">
                             <FontAwesomeIcon icon={faBuildingFlag}/> Add New

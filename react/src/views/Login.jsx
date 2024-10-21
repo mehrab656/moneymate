@@ -71,8 +71,13 @@ export default function Login() {
                     localStorage.setItem('ACCESS_ROLE', data.user.role_as);
                     localStorage.setItem('CURRENT_COMPANY',data.user.primary_company)
 
-                    setLoading(false)
-                    naviagte('/dashboard')
+                    setLoading(false);
+                    if (data.user.role_as==='employee'){
+                        naviagte('/employee-dashboard');
+                    }else{
+                        naviagte('/dashboard');
+                    }
+
                 })
                 .catch((err) => {
                     const response = err.response;

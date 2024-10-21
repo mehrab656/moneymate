@@ -340,7 +340,7 @@ export default function Sectors() {
                 cardTitle={"List of Sectors"}
                 addBTN={
                     {
-                        permission: checkPermission(userPermission.sector_create),
+                        permission: checkPermission('sector_create'),
                         txt: "Create New",
                         icon: (<Iconify icon={"eva:plus-fill"}/>), //"faBuildingFlag",
                         linkTo: 'route',

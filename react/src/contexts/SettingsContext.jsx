@@ -50,8 +50,21 @@ const SettingsProvider = ({children}) => {
 
     }, []);
 
+    const checkPermission = (permission, limit=0)=>{
+        if (userRole === 'admin') {
+            return true;
+        }
+        else if(userRole === 'baseUser'){
+            return true; //@FIx Me for base user and subscriptions limit.
+        }
+        else { // sub-user
+
+            return userPermission[permission];
+        }
+    }
+
     return (
-        <SettingsContext.Provider value={{applicationSettings, setApplicationSettings, userRole, setUserRole,userPermission, setUserPermission}}>
+        <SettingsContext.Provider value={{applicationSettings, setApplicationSettings, userRole, setUserRole,userPermission, setUserPermission, checkPermission}}>
             {children}
         </SettingsContext.Provider>
     );

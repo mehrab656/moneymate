@@ -351,7 +351,7 @@ export default function Categories() {
                         <div className="col-3">
                             <button className={'btn-add right'} type="submit">Filter</button>
                             <button className={"btn btn-warning ml-2"} onClick={resetFilterParameter}>Reset</button>
-                            {checkPermission(userPermission.category_create) &&
+                            {checkPermission('category_create') &&
                                 <button className="btn-add ml-2" onClick={showCreateModal}>Add New</button>
                             }
                         </div>
