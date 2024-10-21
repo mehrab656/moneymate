@@ -368,7 +368,7 @@ export default function Task() {
           showModal={showCreateModal}
           handelCloseModal={closeCreateModalFunc}
           title={"Add new Task"}
-          element={task}
+          id={task}
         />
       )}
 

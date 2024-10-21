@@ -215,9 +215,26 @@ class TaskController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(TaskModel $task)
+    public function edit(Request $request, $id)
     {
-        //
+        if (!$id) {
+            return response()->json([
+                'message' => 'Missing Id',
+                'description' => 'Missing Id!'
+            ], 403);
+        }
+
+        $task = TaskModel::where(['slug'=> $id, 'company_id'=> Auth::user()->primary_company])->first();
+        if (!$task) {
+            return response()->json([
+                'message' => 'Not Found',
+                'description' => 'Task not found!'
+            ], 404);
+        }
+
+        return response()->json([
+            'data' => TaskResource::collection($task),
+        ]);
     }
 
     /**

@@ -27,6 +27,18 @@ export const taskSlice = createApi({
       },
       providesTags: ["task"],
     }),
+    getSingleTaskData: builder.query({
+      query: ({id}) => {
+        return {
+          url: `task/${id}`,
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${globalToken}`,
+          },
+        };
+      },
+      providesTags: ["task"],
+    }),
 
     createTask: builder.mutation({
       queryFn: async ({ url, formData }) => {
@@ -125,5 +137,6 @@ export const {
   useCreateTaskMutation,
   useDeleteTaskMutation,
   useUpdateTaskPaymentMutation,
-  useUpdateTaskStatusMutation
+  useUpdateTaskStatusMutation,
+  useGetSingleTaskDataQuery
 } = taskSlice;

@@ -21,7 +21,7 @@ const ActionButtonHelpers = ({actionBtn, element}) => {
                     actionBtn.map(menu=>{
                        return (
                             <Dropdown.Item className={menu.textClass} key={Math.random().toString(36).substring(2)}
-                                onClick={(e) => menu.type==='modal'?menu.actionFunction(element):navigate(`${menu.route}${element.id}`)}>
+                                onClick={(e) => menu.type==='modal'?menu.actionFunction(element?.id):navigate(`${menu.route}${element?.id}`)}>
                                 <FontAwesomeIcon icon={faEdit}/> {menu.actionName}
                             </Dropdown.Item>
                         )

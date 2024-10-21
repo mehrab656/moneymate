@@ -19,11 +19,12 @@ import { useGetCategoryDataQuery } from "../../../api/slices/categorySlice.js";
 import { useGetAllEmployeeDataQuery } from "../../../api/slices/employeeSlice.js";
 import { useCreateTaskMutation } from "../../../api/slices/taskSlice.js";
 
-const _initialTaskData = {
+
+const defaultTaskData = {
   description: "",
-  employee_id: "",
+  employee: "",
   categoryID: "",
-  selectedSectorId:"",
+  employee_list: [],
   date: "",
   startTime: "",
   endTime: "",
@@ -35,30 +36,69 @@ const _initialTaskData = {
   comment: "",
 };
 
-function TaskAddModal({ handelCloseModal, title, currentTaskList, setTasks }) {
-  let { id } = useParams();
+function TaskAddModal({ handelCloseModal, title, id }) {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-
-  const [taskData, setTaskData] = useState(_initialTaskData);
+  const [taskData, setTaskData] = useState(defaultTaskData);
   const [showExistingTask, setShowExistingTask] = useState(false);
   const [existingTask, setExistingTask] = useState({});
-  const { data: getCategoryData,isFetching: categoryDataFetching, isError: categoryDataError,} = useGetCategoryDataQuery({
+
+
+  console.log('id', id);
+  const categoryQuery = {
+    selectedSectorId:'',
+    type: taskData?.type,
+  }
+
+  const {
+    data: getCategoryData,
+    isFetching: categoryDataFetching,
+    isError: categoryDataError,
+  } = useGetCategoryDataQuery({
     currentPage: "",
     pageSize: 100,
-    query: taskData
+    query: categoryQuery,
   });
-  const { data: getAllEmployeeData,isFetching: allEmployeeDataFetching, isError: allEmployeeDataDataError,} = useGetAllEmployeeDataQuery({
+  
+  const {
+    data: getAllEmployeeData,
+    isFetching: allEmployeeDataFetching,
+    isError: allEmployeeDataDataError,
+  } = useGetAllEmployeeDataQuery({
     currentPage: "",
     pageSize: 100,
   });
 
+
+  const {
+    data: getSingleTaskData,
+    isFetching: singleTaskFetching,
+    isError: singleTaskDataError,
+  } = useGetCategoryDataQuery({
+    query: {id:id},
+  });
+
+  useEffect(()=>{
+    if(id &&  getSingleTaskData?.data){
+      setTaskData(getSingleTaskData?.data);
+    }
+  },[id])
+
+
+
+  const modifiedEmployeeList = getAllEmployeeData?.data.map(({id, name}) => {
+    return {
+        value: id,
+        label: name
+    }
+});
+
   const [createTask] = useCreateTaskMutation();
- 
+
   const submit = async (e) => {
     e.preventDefault();
     let formData = new FormData();
-    formData.append("employee_id", taskData.employee_id);
+    formData.append("employee_list", JSON.stringify(taskData.employee_list));
     formData.append("description", taskData.description);
     formData.append("categoryID", taskData.categoryID);
     formData.append("date", taskData.date);
@@ -66,14 +106,14 @@ function TaskAddModal({ handelCloseModal, title, currentTaskList, setTasks }) {
     formData.append("endTime", taskData.endTime);
     formData.append("type", taskData.type);
     formData.append("amount", taskData.amount);
-    formData.append("status", taskData.status);
-    formData.append("payment_status", taskData.payment_status);
+    formData.append("status", taskData.task_status);
+    formData.append("payment_status", taskData.payment);
     formData.append("comment", taskData.comment);
-  
+
     const url = id ? `/task/${id}` : `/task/add`;
 
     try {
-      const  data  = await createTask({ url: url, formData }).unwrap(); 
+      const data = await createTask({ url: url, formData }).unwrap();
       notification("success", data?.message, data?.description);
       handelCloseModal();
     } catch (err) {
@@ -84,13 +124,15 @@ function TaskAddModal({ handelCloseModal, title, currentTaskList, setTasks }) {
         setErrors(err.errorData?.errors);
         notification("error", err?.message);
       } else {
-        notification("error", err?.message || "An error occurred", err?.description || "Please try again later.");
+        notification(
+          "error",
+          err?.message || "An error occurred",
+          err?.description || "Please try again later."
+        );
         setErrors({});
       }
     }
   };
-
-  console.log('getAllEmployeeData', getAllEmployeeData);
 
   return (
     <>
@@ -108,17 +150,11 @@ function TaskAddModal({ handelCloseModal, title, currentTaskList, setTasks }) {
         </Modal.Header>
         <Modal.Body>
           <Container>
-            {showExistingTask && (
-              <div className="alert alert-warning" role="alert">
-                {existingTask.description} <br />
-                {"Date: " + existingTask.date}
-                <br />
-                {"Start Time: " + existingTask.startTime}
-                <br />
-                {"End Time: " + existingTask.endTime}
-                <br />
-              </div>
-            )}
+            <div className="alert alert-warning" role="alert">
+              If you make the payment status as "Paid/Done" from here, it has to
+              be added the income separately.
+              <br />
+            </div>
             <Form>
               <Row>
                 <Col xs={12} md={12}>
@@ -201,6 +237,7 @@ function TaskAddModal({ handelCloseModal, title, currentTaskList, setTasks }) {
                     <Form.Label>Task Type</Form.Label>
                     <Form.Select
                       aria-label="Task Type"
+                      value={taskData.type}
                       onChange={(e) => {
                         setTaskData({ ...taskData, type: e.target.value });
                       }}
@@ -219,6 +256,7 @@ function TaskAddModal({ handelCloseModal, title, currentTaskList, setTasks }) {
                     <Form.Label>Task Category</Form.Label>
                     <Form.Select
                       aria-label="Task Categories"
+                      value={taskData.categoryID}
                       onChange={(e) => {
                         setTaskData({
                           ...taskData,
@@ -226,9 +264,9 @@ function TaskAddModal({ handelCloseModal, title, currentTaskList, setTasks }) {
                         });
                       }}
                     >
-                      (<option defaultValue>{"Select task type"}</option>
+                      <option defaultValue>{"Select task type First"}</option>
                       {getCategoryData?.data?.length > 0 ? (
-                        getCategoryData?.data.map((category) => (
+                        getCategoryData?.data?.map((category) => (
                           <option key={category.id} value={category.id}>
                             {category.name}
                           </option>
@@ -253,6 +291,7 @@ function TaskAddModal({ handelCloseModal, title, currentTaskList, setTasks }) {
                     <Form.Control
                       type="number"
                       placeholder="i.g: 50 AED"
+                      value={taskData.amount}
                       onChange={(e) => {
                         setTaskData({ ...taskData, amount: e.target.value });
                       }}
@@ -267,13 +306,17 @@ function TaskAddModal({ handelCloseModal, title, currentTaskList, setTasks }) {
                     <Form.Label>Task Status</Form.Label>
                     <Form.Select
                       aria-label="Task Status"
+                      value={taskData.task_status}
                       onChange={(e) => {
-                        setTaskData({ ...taskData, status: e.target.value });
+                        setTaskData({
+                          ...taskData,
+                          task_status: e.target.value,
+                        });
                       }}
                     >
                       <option defaultValue>Select Task Status</option>
                       <option value="pending">Pending</option>
-                      <option value="hold">Hold</option>
+                      <option value="cancelled">Cancelled</option>
                       <option value="complete">Complete</option>
                     </Form.Select>
                   </Form.Group>
@@ -283,11 +326,9 @@ function TaskAddModal({ handelCloseModal, title, currentTaskList, setTasks }) {
                     <Form.Label>Payment Status</Form.Label>
                     <Form.Select
                       aria-label="Payment Status"
+                      value={taskData.payment}
                       onChange={(e) => {
-                        setTaskData({
-                          ...taskData,
-                          payment_status: e.target.value,
-                        });
+                        setTaskData({ ...taskData, payment: e.target.value });
                       }}
                     >
                       <option defaultValue>Select Payment Status</option>
@@ -303,32 +344,20 @@ function TaskAddModal({ handelCloseModal, title, currentTaskList, setTasks }) {
                 <Col xs={12} md={12}>
                   <Form.Group className="mb-3" controlId="employee_id">
                     <Form.Label>Assign to</Form.Label>
-                    <Form.Control
-                      as={"select"}
-                      aria-label="Assign to"
+                    <Select
+                      isMulti
+                      className="basic-single"
+                      classNamePrefix="select"
+                      defaultValue={taskData.employee_list}
+                      isSearchable={true}
+                      name="employee_id"
+                      isClearable={true}
+                      isLoading={allEmployeeDataFetching}
+                      options={modifiedEmployeeList}
                       onChange={(e) => {
-                        setTaskData({
-                          ...taskData,
-                          employee_id: e.target.value,
-                        });
+                        setTaskData({ ...taskData, employee_list: e });
                       }}
-                    >
-                      <option defaultValue>{"Task Assign to"}</option>
-                      {getAllEmployeeData?.data?.length > 0 ? (
-                        getAllEmployeeData?.data?.map((employee) => (
-                          <option key={employee.id} value={employee.id}>
-                            {employee.name}
-                          </option>
-                        ))
-                      ) : (
-                        <option defaultValue>{"Task Assign to"}</option>
-                      )}
-                    </Form.Control>
-                    {errors.employee_id && (
-                      <p className="error-message mt-2">
-                        {errors.employee_id[0]}
-                      </p>
-                    )}
+                    />
                   </Form.Group>
                 </Col>
               </Row>
@@ -340,6 +369,7 @@ function TaskAddModal({ handelCloseModal, title, currentTaskList, setTasks }) {
                     <Form.Control
                       type="text"
                       placeholder="if any comment, put here..."
+                      value={taskData.comment}
                       onChange={(e) => {
                         setTaskData({ ...taskData, comment: e.target.value });
                       }}
