@@ -219,7 +219,7 @@ function is_ip_address(string $ip): bool|string
     {
 
         $type = 'create';
-        if ($status==='paid'){
+        if ($status==='paid' || $status === 'done'){
             $description = 'Marked the payment as done.';
             $type = 'payment_done';
         }
@@ -246,13 +246,25 @@ function is_ip_address(string $ip): bool|string
             $description = 'Mark the task as Complete';
             $type = 'done';
         }
+        if ($status ==='update'){
+            $description = 'Updated the task';
+            $type = 'update';
+        }
+        if ($status ==='started'){
+            $description = 'Started the task';
+            $type = 'started';
+        }
+        if ($status ==='ended'){
+            $description = 'Closed the task';
+            $type = 'ended';
+        }
 
 
 
         return [
             'date_time' => date("Y-m-d H:i:s"),
             'userID' => Auth::user()->id,
-            'userName' => Auth::user()->name,
+            'userName' => Auth::user()->username,
             'avatar' => asset('avatars/'.Auth::user()->profile_picture),
             'type' => $type,
             'description' =>$description

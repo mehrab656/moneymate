@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Ramsey\Uuid\Uuid;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -21,8 +22,9 @@ class RoleSeeder extends Seeder
 
         // Assign role to a user
         $user = User::create([
-            'name' => 'Mahmudur Rahman',
-            'email' => 'shibly.phy@gmail.com',
+            'slug'=>Uuid::uuid4(),
+            'name' => 'Mehrab Hossain',
+            'email' => 'hossainmehraab@gmail.com',
             'password' => bcrypt('12345678'),
         ]);
 

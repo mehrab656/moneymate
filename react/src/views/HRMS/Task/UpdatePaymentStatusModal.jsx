@@ -10,7 +10,13 @@ import {notification} from "../../../components/ToastNotification.jsx";
 import MainLoader from "../../../components/MainLoader.jsx";
 import { useCreateTaskMutation, useUpdateTaskPaymentMutation } from '../../../api/slices/taskSlice.js';
 
-function UpdatePaymentStatusModal({showModal, handelCloseModal, element}) {
+
+const _initialPaymentData = {
+    amount: 0,
+    payment_status: '',
+    comment: ''
+}
+function UpdatePaymentStatusModal({showModal, handelCloseModal, element,getFunc}) {
     const [loading, setLoading] = useState(false)
 
     const [paymentData, setPaymentData] = useState({

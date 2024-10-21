@@ -33,7 +33,7 @@ class ExpenseResource extends JsonResource {
 	public function toArray( Request $request ): array {
 		return [
 			'id'                => $this->id,
-			'user_name'         => $this->person->name,
+			'user_name'         => $this->person->username,
 			'user_id'           => $this->user_id,
 			'account_number'    => $this->bankAccount->account_number,
 			'account_id'        => $this->bankAccount->id,

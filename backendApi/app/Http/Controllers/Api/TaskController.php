@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\BankAccount;
 use App\Models\Category;
+use App\Models\Expense;
 use App\Models\Income;
 use App\Models\TaskModel;
 use App\Http\Requests\TaskRequest;
@@ -17,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\TaskResource;
 use Illuminate\Support\Facades\DB;
+use Ramsey\Uuid\Uuid;
 use Storage;
 
 class TaskController extends Controller
@@ -76,7 +78,7 @@ class TaskController extends Controller
             $query = $query->where('tasks.status', $status);
         }
         if ($employee) {
-            $query = $query->join('task_employee','tasks.id','=','task_employee.task_id')->where('employee_id', $employee);
+            $query = $query->join('task_employee', 'tasks.id', '=', 'task_employee.task_id')->where('employee_id', $employee);
         }
 
         $query = $query->select('tasks.*')->skip(($page - 1) * $pageSize)->take($pageSize)->get();
@@ -90,6 +92,24 @@ class TaskController extends Controller
         ]);
     }
 
+    public function assignedTasks()
+    {
+
+        $tasks = TaskModel::where('company_id', Auth::user()->primary_company)
+            ->join('task_employee', 'tasks.id', '=', 'task_employee.task_id')
+            ->where('employee_id', Auth::user()->slug)
+            ->where('task_employee.status','pending')
+            ->orWhere('task_employee.status','ongoing')
+            ->orderBy('date','ASC')
+            ->orderBy('start_time','ASC')
+            ->get();
+        return response()->json([
+            'data' => TaskResource::collection($tasks),
+            'total' => 1000,
+            'test'=>Auth::user()->slug
+        ]);
+    }
+
     /**
      * Store a newly created resource in storage.
      * @throws \Throwable
@@ -97,70 +117,29 @@ class TaskController extends Controller
     public function add(TaskRequest $task)
     {
         $data = $task->validated();
-        //first check category id if it represents this company
-        $category = Category::select('categories.*')
-            ->join('sectors', 'categories.sector_id', '=', 'sectors.id')
-            ->where(['sectors.company_id' => Auth::user()->primary_company, 'categories.id' => $data['categoryID']])
-            ->first();
+        $customValidation = (new TaskModel())->taskCustomValidation([
+            'categoryID' => $data['categoryID'],
+            'startTime' => $data['startTime'],
+            'endTime' => $data['endTime'],
+            'employee_list' => $data['employee_list'],
+            'date' => $data['date'],
+            'type' => $data['type'],
+        ]);
 
-        if (strtotime($data['startTime'])>strtotime($data['endTime'])){
-            return response()->json([
-                'message' => 'error!',
-                'description' => 'End Time cannot be before start time',
-            ], 400);
-        }
-        if (strtotime($data['startTime'])===strtotime($data['endTime'])){
-            return response()->json([
-                'message' => 'error!',
-                'description' => 'Task Start time and End time cannot be same.',
-            ], 400);
-        }
-        if (!$category) {
-            return response()->json([
-                'message' => 'error!',
-                'description' => 'You can not add task for other company.',
-            ], 400);
+        if ($customValidation['status_code'] !== 200) {
+            return response()->json($customValidation, $customValidation['status_code']);
         }
 
-        //check if any task exists in between start and end time on the particular date
-        $existenceTask = TaskModel::join('task_employee','tasks.id','=','task_employee.task_id')
-            ->where('date', date('Y-m-d', strtotime($data['date'])))
-            ->where('employee_id', $data['employee_id'])
-            ->where('type', $data['type'])
-            ->where('start_time', '<=', date('H:i', strtotime($data['startTime'])))
-            ->where('end_time', '>=', date('H:i', strtotime($data['startTime'])))
-            ->first();
+        $workflow[] = buildTimelineWorkflow('create', 'Created a new task');
 
-        if ($existenceTask) {
-            return response()->json([
-                'message' => 'Duplicate Task Schedule',
-                'description' => 'This employee has an assigned task on this slot.',
-                'data' => TaskResource::make($existenceTask)
-            ], 406);
-        }
-
-        $workflow = [
-            ['date_time' => date("Y-m-d H:i:s"),
-                'userID' => Auth::user()->id,
-                'userName' => Auth::user()->name,
-                'avatar' => "http://moneymate.com/backendApi/storage/app/files/".Auth::user()->profile_picture,
-                'type' => 'create',
-                'description' => Auth::user()->name . ' ' . 'created a new task.'
-            ]
-        ];
         if (isset($data['comment']) && $data['comment']) {
-            $workflow[] = [
-                'date_time' => date("Y-m-d H:i:s"),
-                'userID' => Auth::user()->id,
-                'userName' => Auth::user()->name,
-                'avatar' => "http://moneymate.com/backendApi/storage/app/files/".Auth::user()->profile_picture,
-                'type' => 'comment',
-                'description' => $data['comment']
-            ];
+            $workflow[] = buildTimelineWorkflow('comment', $data['comment']);
         }
-        DB::beginTransaction();
         try {
+            DB::beginTransaction();
+
             $task = TaskModel::create([
+                'slug' => Uuid::uuid4(),
                 'company_id' => Auth::user()->primary_company,
                 'description' => $data['description'],
                 'category_id' => $data['categoryID'],
@@ -169,16 +148,27 @@ class TaskController extends Controller
                 'end_time' => date('H:i', strtotime($data['endTime'])),
                 'type' => $data['type'],
                 'amount' => $data['amount'],
-                'status' => $data['status']??'pending',
-                'payment_status' => $data['payment_status']??'pending',
+                'status' => $data['status'] ?? 'pending',
+                'payment_status' => $data['payment_status'] ?? 'pending',
                 'workflow' => json_encode($workflow),
             ]);
+            $employees = json_decode($data['employee_list'], true);
 
-            $taskHasEmployee = DB::table('task_employee')->insert([
-                'task_id'=>$task['id'],
-                'employee_id'=>$data['employee_id'],
-                'status' => $data['status']??'pending',
-            ]);
+            foreach ($employees as $employee) {
+                DB::table('task_employee')->insert([
+                    'task_id' => $task['id'],
+                    'employee_id' => $employee['value'],
+                    'status' => $data['status'] ?? 'pending',
+                ]);
+            }
+
+            if ($data['payment_status'] === 'done') {
+                (new TaskModel)->handelPaymentStatusChange([
+                    'id' => $task['id'],
+                    'amount' => $data['amount'],
+                    'payment_status' => $data['payment_status'],
+                ]);
+            }
 
             storeActivityLog([
                 'user_id' => Auth::user()->id,
@@ -187,25 +177,22 @@ class TaskController extends Controller
                 'log_type' => 'create',
                 'module' => 'tasks',
                 'descriptions' => 'Added New Task',
-                'data_records' => $taskHasEmployee,
+                'data_records' => $task,
             ]);
 
             DB::commit();
 
         } catch (Exception $e) {
             DB::rollBack();
-
-
             return response()->json([
                 'message' => 'Error',
                 'description' => 'Line Number:' . __LINE__ . ', ' . $e->getMessage()
-            ],400);
+            ], 400);
         }
-        DB::commit();
 
         return response()->json([
             'message' => 'Success',
-            'description' => 'New task has been added.'
+            'description' => 'New task has been added.',
         ]);
     }
 
@@ -234,22 +221,6 @@ class TaskController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, TaskModel $task)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(TaskModel $task)
-    {
-        //
-    }
-
-    /**
      * @throws Exception
      * @throws \Throwable
      */
@@ -262,19 +233,7 @@ class TaskController extends Controller
                 'description' => 'Missing field!'
             ], 403);
         }
-        $task = TaskModel::find($id);
-        if (!$task) {
-            return response()->json([
-                'message' => 'Missing',
-                'description' => 'Task is not existing!'
-            ], 403);
-        }
-        if ($task->company_id !== auth()->user()->primary_company) {
-            return response()->json([
-                'message' => 'Not Allowed',
-                'description' => 'You can not update for other company\'s task.!'
-            ], 403);
-        }
+
 
         if (!$data['amount']) {
             return response()->json([
@@ -289,38 +248,14 @@ class TaskController extends Controller
             ], 403);
         }
 
-        $task->paid = $data['amount'];
-        $task->payment_status = $data['payment_status'];
-        $workflow = json_decode($task->workflow);
-
-
-        $workflow[] = buildTimelineWorkflow($data['payment_status']);
-
-        if (isset($data['comment']) && $data['comment']) {
-            $workflow[] = buildTimelineWorkflow('comment', $data['comment']);
-        }
-
-        $task->workflow = json_encode($workflow);
 
         try {
             DB::beginTransaction();
 
-            $task->save();
-             (new TaskModel)->handelPaymentStatusChange([
+            $data = (new TaskModel)->handelPaymentStatusChange([
                 'id' => $id,
                 'amount' => $data['amount'],
                 'payment_status' => $data['payment_status']
-            ]);
-
-
-            storeActivityLog([
-                'user_id' => Auth::user()->id,
-                'object_id' => $task->id,
-                'object' => 'task',
-                'log_type' => 'update',
-                'module' => 'tasks',
-                'descriptions' => 'Update Task payment status',
-                'data_records' => $task,
             ]);
 
             DB::commit();
@@ -330,15 +265,13 @@ class TaskController extends Controller
             return response()->json([
                 'message' => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
                 'status_code' => 400
-            ],400);
+            ], 400);
         }
 
         return response()->json([
-            'message' => 'Updated',
-            'description' => 'Payment Status Updated',
-            'status_code' => 200
-        ],200);
-
+            'message' => $data['message'],
+            'status_code' => $data['status_code'],
+        ], $data['status_code']);
     }
 
     /**
@@ -353,7 +286,7 @@ class TaskController extends Controller
                 'description' => 'Missing field!'
             ], 403);
         }
-        $task = TaskModel::find($id);
+        $task = TaskModel::where('slug', $id)->first();
         if (!$task) {
             return response()->json([
                 'message' => 'Missing',
@@ -383,18 +316,17 @@ class TaskController extends Controller
 
         $task->workflow = json_encode($workflow);
 
-        $taskEmployees = DB::table('task_employee')->where('task_id',$id)->get();
-
+        $taskEmployees = DB::table('task_employee')->where('task_id', $task->id)->get();
 
 
         try {
             DB::beginTransaction();
             $task->save();
-            foreach ( $taskEmployees as $item){
+            foreach ($taskEmployees as $item) {
                 $item->status = $data['task_status'];
                 DB::table('task_employee')
-                    ->where('id',$item->id)
-                    ->update(['status'=>$data['task_status']]);
+                    ->where('id', $item->id)
+                    ->update(['status' => $data['task_status']]);
             }
             DB::commit();
         } catch (Exception $e) {
@@ -402,14 +334,266 @@ class TaskController extends Controller
             return response()->json([
                 'message' => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
                 'status_code' => 400
-            ],400);
+            ], 400);
         }
 
         return response()->json([
             'message' => 'Updated',
             'description' => 'Payment Status Updated',
             'status_code' => 200
-        ],200);
+        ], 200);
+
+    }
+
+    /**
+     * Update the specified resource in storage.
+     * @throws \Throwable
+     */
+    public function update(TaskRequest $task, $id)
+    {
+
+        $data = $task->validated();
+
+        $customValidation = (new TaskModel())->taskCustomValidation([
+            'categoryID' => $data['categoryID'],
+            'startTime' => $data['startTime'],
+            'endTime' => $data['endTime'],
+            'type' => $data['type'],
+            'employee_list' => $data['employee_list'],
+            'date' => $data['date'],
+        ], 'update');
+
+        if ($customValidation['status_code'] !== 200) {
+            return response()->json($customValidation, $customValidation['status_code']);
+        }
+
+        $task = TaskModel::where('slug', $id)->first();
+        $workflow = json_decode($task->workflow);
+        $workflow[] = buildTimelineWorkflow('update');
+
+        if (isset($data['comment']) && $data['comment']) {
+            $workflow[] = buildTimelineWorkflow('comment', $data['comment']);
+        }
+        try {
+            DB::beginTransaction();
+            $task->update([
+                'description' => $data['description'],
+                'category_id' => $data['categoryID'],
+                'date' => date('Y-m-d', strtotime($data['date'])),
+                'start_time' => date('H:i', strtotime($data['startTime'])),
+                'end_time' => date('H:i', strtotime($data['endTime'])),
+                'type' => $data['type'],
+                'amount' => $data['amount'],
+                'status' => $data['status'] ?? 'pending',
+                'payment_status' => $data['payment_status'] ?? 'pending',
+                'workflow' => json_encode($workflow),
+            ]);
+
+            $employees = json_decode($data['employee_list'], true);
+            DB::table('task_employee')->where('task_id', '=', $task->id)->delete();
+
+            foreach ($employees as $employee) {
+                DB::table('task_employee')->insert([
+                    'task_id' => $task['id'],
+                    'employee_id' => $employee['value'],
+                    'status' => $data['status'] ?? 'pending',
+                ]);
+            }
+
+            storeActivityLog([
+                'user_id' => Auth::user()->id,
+                'object_id' => $task['id'],
+                'object' => 'task',
+                'log_type' => 'update',
+                'module' => 'tasks',
+                'descriptions' => 'Updated Task',
+                'data_records' => $task,
+            ]);
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Error',
+                'description' => 'Line Number:' . __LINE__ . ', ' . $e->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'message' => 'Updated',
+            'description' => 'Task has been updated',
+        ]);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     * @throws Exception
+     */
+    public function delete($slug)
+    {
+        $task = TaskModel::where('slug', $slug)->first();
+
+        if (!$task) {
+            return response()->json([
+                'message' => 'Deleted!',
+                'description' => 'Task was not found'
+            ], 404);
+        }
+        DB::table('task_employee')->where('task_id', '=', $task->id)->delete();
+        DB::table('tasks')->where('slug', $slug)->delete();
+        DB::table('incomes')->where('slug', $slug)->delete();
+        (new Expense())->deleteExpense($slug);
+        (new Income())->deleteIncome($slug);
+        storeActivityLog([
+            'object_id' => $task->id,
+            'log_type' => 'delete',
+            'module' => 'task',
+            'descriptions' => "Task Delete",
+            'data_records' => $task,
+        ]);
+
+        return response()->json([
+            'message' => 'Success!',
+            'description' => 'Task deleted.',
+        ]);
+    }
+
+    /**
+     * @throws \Throwable
+     */
+    public function taskStarted(Request $request, $id): JsonResponse
+    {
+        $data = $request->input();
+        if (!$id) {
+            return response()->json([
+                'message' => 'Missing',
+                'description' => 'Missing field!'
+            ], 403);
+        }
+        $task = TaskModel::where('slug', $id)->first();
+        if (!$task) {
+            return response()->json([
+                'message' => 'Missing',
+                'description' => 'Task is not existing!'
+            ], 403);
+        }
+        if ($task->company_id !== auth()->user()->primary_company) {
+            return response()->json([
+                'message' => 'Not Allowed',
+                'description' => 'You can not start task for other company / user.!'
+            ], 403);
+        }
+        $hasOngoingTask = DB::table('task_employee')
+            ->where('status', '=','ongoing')
+            ->where('employee_id', Auth::user()->slug)->first();
+
+        if ($hasOngoingTask){
+            return response()->json([
+                'message' => 'Not Allowed',
+                'description' => 'You can\'t start multiple task at same time.'
+            ], 403);
+        }
+        $workflow = json_decode($task->workflow);
+        if (isset($data['comment']) && $data['comment']) {
+            $workflow[] = buildTimelineWorkflow('comment', $data['comment']);
+        }
+        $workflow[] = buildTimelineWorkflow('started');
+
+        $task->workflow = json_encode($workflow);
+        $task->status="ongoing";
+
+        try {
+            DB::beginTransaction();
+            $task->save();
+            DB::table('task_employee')
+                ->where('task_id', $task->id)
+                ->where('employee_id', Auth::user()->slug)
+                ->update(['started_at' => date('H:i'),'status'=>'ongoing']);
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
+                'status_code' => 400
+            ], 400);
+        }
+
+        return response()->json([
+            'message' => 'Started',
+            'description' => 'Task has been started',
+            'status_code' => 200
+        ], 200);
+
+    }
+
+    /**
+     * @throws \Throwable
+     */
+    public function taskEnded(Request $request, $id): JsonResponse
+    {
+        $data = $request->input();
+        if (!$id) {
+            return response()->json([
+                'message' => 'Missing',
+                'description' => 'Missing field!'
+            ], 403);
+        }
+        $task = TaskModel::where('slug', $id)->first();
+        if (!$task) {
+            return response()->json([
+                'message' => 'Missing',
+                'description' => 'Task is not existing!'
+            ], 403);
+        }
+        if ($task->company_id !== auth()->user()->primary_company) {
+            return response()->json([
+                'message' => 'Not Allowed',
+                'description' => 'You can not start task for other company / user.!'
+            ], 403);
+        }
+        $hasStartedBefore = DB::table('task_employee')
+            ->where('task_id', $task->id)
+            ->where('employee_id', Auth::user()->slug)->first();
+
+        if ($hasStartedBefore->started_at === null){
+            return response()->json([
+                'message' => 'Not Allowed',
+                'description' => 'Tas has not started yet'
+            ], 403);
+        }
+
+
+
+
+
+        $workflow = json_decode($task->workflow);
+        if (isset($data['comment']) && $data['comment']) {
+            $workflow[] = buildTimelineWorkflow('comment', $data['comment']);
+        }
+        $workflow[] = buildTimelineWorkflow('complete');
+
+        $task->workflow = json_encode($workflow);
+        $task->status="complete";
+
+        try {
+            DB::beginTransaction();
+            $task->save();
+            DB::table('task_employee')
+                ->where('task_id', $task->id)
+                ->where('employee_id', Auth::user()->slug)
+                ->update(['ended_at' => date('H:i'),'status'=>'complete']);
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
+                'status_code' => 400
+            ], 400);
+        }
+
+        return response()->json([
+            'message' => 'Completed',
+            'description' => 'Task has been completed',
+        ], 200);
 
     }
 }

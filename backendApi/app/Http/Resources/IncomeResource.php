@@ -33,7 +33,7 @@ class IncomeResource extends JsonResource {
 	public function toArray( Request $request ): array {
 		return [
 			'id'             => $this->id,
-			'user_name'      => $this->person->name,
+			'user_name'      => $this->person->username,
 			'account_number' => $this->bankAccount->account_number,
 			'account_id'     => $this->bankAccount->id,
 			'category_name'  => $this->category->name,

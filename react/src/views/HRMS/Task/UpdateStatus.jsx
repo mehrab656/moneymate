@@ -10,7 +10,11 @@ import {notification} from "../../../components/ToastNotification.jsx";
 import MainLoader from "../../../components/MainLoader.jsx";
 import { useUpdateTaskStatusMutation } from '../../../api/slices/taskSlice.js';
 
-function UpdateStatus({showModal, handelCloseModal, element}) {
+const _initial = {
+    task_status: '',
+    comment: ''
+};
+function UpdateStatus({showModal, handelCloseModal, element,getFunc}) {
     const [loading, setLoading] = useState(false)
     const [status, setStatus] = useState({
         task_status: '',
@@ -56,11 +60,11 @@ function UpdateStatus({showModal, handelCloseModal, element}) {
                             <Row>
                                 <Col xs={12} md={12}>
                                     <Form.Group className="mb-3" controlId="task_status">
-                                        <Form.Label>Payment Status</Form.Label>
+                                        <Form.Label>Task Status</Form.Label>
                                         <Form.Select aria-label="Payment Status" onChange={(e) => {
                                             setStatus({...status, task_status: e.target.value});
                                         }}>
-                                            <option defaultValue>Select Payment Status</option>
+                                            <option defaultValue>Select Task Status</option>
                                             <option value="pending">Pending</option>
                                             <option value="complete">Complete</option>
                                             <option value="cancelled">Cancel</option>

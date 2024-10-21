@@ -935,6 +935,26 @@
       10 => 'Spatie\\Backtrace\\Arguments\\Reducers\\StringableArgumentReducer',
     ),
   ),
+  'options' => 
+  array (
+    'company_name' => 'EDEN SPRINGS HOMES RENTAL L.L.C',
+    'web_site' => 'https://esholiday.com',
+    'default_currency' => 'AED',
+    'phone' => '0551258910',
+    'address' => '118 Naif Street - Deira - Dubai',
+    'num_data_per_page' => '10',
+    'public_key' => NULL,
+    'secret_key' => NULL,
+    'registration_type' => NULL,
+    'subscription_price' => NULL,
+    'product_api_id' => NULL,
+    'product_price' => '30',
+    'product_id' => '',
+    'last_expense_cat_id' => '38',
+    'last_expense_account_id' => '9',
+    'last_expense_date' => '2024-05-08',
+    'associative_categories' => '["Electricity","Gas","Internet"]',
+  ),
   'ide-helper' => 
   array (
     'filename' => '_ide_helper.php',

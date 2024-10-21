@@ -22,6 +22,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Nette\Schema\ValidationException;
+use Ramsey\Uuid\Uuid;
 use Throwable;
 
 class SectorModelController extends Controller
@@ -75,6 +76,7 @@ class SectorModelController extends Controller
         }
 
         $sectorData = [
+            'slug'=>Uuid::uuid4(),
             'company_id' => Auth::user()->primary_company,
             'name' => $sector['name'],
             'payment_account_id' => $sector['payment_account_id'],
@@ -154,6 +156,7 @@ class SectorModelController extends Controller
             //first add a default category according the sector for income
             {
                 Category::create([
+                    'slug'=>Uuid::uuid4(),
                     'sector_id' => $sector['id'],
                     'user_id' => auth()->user()->id,
                     'name' => $sector['name'],
@@ -165,6 +168,7 @@ class SectorModelController extends Controller
             if (!empty($associativeCategories)) {
                 foreach ($associativeCategories as $category) {
                     Category::create([
+                        'slug'=>Uuid::uuid4(),
                         'sector_id' => $sector['id'],
                         'user_id' => auth()->user()->id,
                         'name' => $sector['name'] . '-' . $category,
@@ -375,6 +379,7 @@ class SectorModelController extends Controller
         }
 
         $expense = [
+            'slug'=>Uuid::uuid4(),
             'user_id' => Auth::user()->id,
             'account_id' => $sector->payment_account_id,
             'amount' => $paymentDetails->amount,
@@ -488,6 +493,7 @@ class SectorModelController extends Controller
         DB::beginTransaction();
         try {
             $expense = Expense::create([
+                'slug'=>Uuid::uuid4(),
                 'user_id' => Auth::user()->id,
                 'account_id' => $sector->payment_account_id,
                 'amount' => $request->amount,

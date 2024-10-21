@@ -1,14 +1,14 @@
 import React, {useContext, useEffect, useState} from "react";
-import axiosClient from "../axios-client.js";
+import axiosClient from "../../axios-client.js";
 import {Link, useNavigate} from "react-router-dom";
 import Swal from 'sweetalert2';
-import WizCard from "../components/WizCard";
+import WizCard from "../../components/WizCard.jsx";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faEdit, faTrash, faUser} from "@fortawesome/free-solid-svg-icons";
-import {SettingsContext} from "../contexts/SettingsContext";
+import {SettingsContext} from "../../contexts/SettingsContext.jsx";
 import Pagination from "react-bootstrap/Pagination";
-import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
-import MainLoader from "../components/MainLoader.jsx";
+import ActionButtonHelpers from "../../helper/ActionButtonHelpers.jsx";
+import MainLoader from "../../components/MainLoader.jsx";
 
 export default function Users() {
     const [users, setUsers] = useState([]);

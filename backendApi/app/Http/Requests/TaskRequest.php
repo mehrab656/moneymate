@@ -30,7 +30,9 @@ class TaskRequest extends FormRequest
             'type' => 'required',
             'amount' => 'required',
             'comment' => 'nullable',
-            'employee_id' => 'required',
+            'employee_list' => 'required',
+            'payment_status' => 'nullable',
+            'status' => 'nullable',
         ];
     }
 

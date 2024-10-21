@@ -1,12 +1,12 @@
 import {createBrowserRouter, Navigate} from "react-router-dom";
 import Login from "./views/Login.jsx";
 import Signup from "./views/Signup.jsx";
-import Users from "./views/Users.jsx";
+import Users from "./views/User/Users.jsx";
 import NotFound from "./views/NotFound.jsx";
 import DefaultLayout from "./components/DefaultLayout.jsx";
 import GuestLayout from "./components/GuestLayout.jsx";
 import Dashboard from "./views/Dashboard.jsx";
-import UserForm from "./views/UserForm.jsx";
+import UserForm from "./views/User/UserForm.jsx";
 import Accounts from "./views/Accounts.jsx";
 import Categories from "./views/Categories.jsx";
 import Incomes from "./views/Incomes.jsx";
@@ -48,6 +48,8 @@ import Employee from "./views/HRMS/Employee/Employee.jsx";
 import Payrolls from "./views/HRMS/Payrolls/Payrolls.jsx";
 import Attendance from "./views/HRMS/Attandance/Attendance.jsx";
 import Task from "./views/HRMS/Task/Task.jsx";
+import UserList from "./views/User/UserList.jsx";
+import MyTasks from "./views/HRMS/Task/MyTasks.jsx";
 
 const router = createBrowserRouter([
 
@@ -65,7 +67,7 @@ const router = createBrowserRouter([
             },
             {
                 path: '/users',
-                element: <Users/>
+                element: <UserList/>
             },
             {
                 path: '/sectors',
@@ -268,6 +270,10 @@ const router = createBrowserRouter([
             {
                 path: '/all-tasks',
                 element: <Task />
+            },
+            {
+                path: '/my-tasks',
+                element: <MyTasks />
             },
             {
                 path: '/all-attendance',

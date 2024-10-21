@@ -28,6 +28,7 @@ const defaultTaskData = {
   description: "",
   employee: "",
   categoryID: "",
+  employee_list: [],
   date: "",
   startTime: "",
   endTime: "",
@@ -67,7 +68,7 @@ export default function Task() {
   const [showMainLoader, setShowMainLoader] = useState(false);
   const [query, setQuery] = useState(defaultQuery);
   const { num_data_per_page } = applicationSettings;
-  const [isPaginate, setIsPaginate] = useState(false)
+  const [isPaginate, setIsPaginate] = useState(false);
 
   const [hasFilter, setHasFilter] = useState(false);
   const TABLE_HEAD = [
@@ -99,7 +100,6 @@ export default function Task() {
   );
   const [deleteTask] = useDeleteTaskMutation();
 
-
   const onDelete = (task) => {
     Swal.fire({
       title: "Are you sure?",
@@ -128,6 +128,11 @@ export default function Task() {
   };
   const closeCreateModalFunc = () => {
     setShowCreateModal(false);
+    setTask(defaultTaskData);
+  };
+  const showEditModalFunc = (task) => {
+    setShowCreateModal(true);
+    setTask(task);
   };
   const showTimelineModalFunc = (task) => {
     setTaskTimelineModal(true);
@@ -169,7 +174,7 @@ export default function Task() {
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
-    setIsPaginate(true)
+    setIsPaginate(true);
   };
   const resetFilterParameter = () => {
     setQuery(defaultQuery);
@@ -188,9 +193,8 @@ export default function Task() {
     } else {
       setShowMainLoader(true);
     }
-    setIsPaginate(false)
+    setIsPaginate(false);
   }, [getTaskData, currentPage]);
-
 
   const filteredTasks = tasks.filter(
     (task) => task.description.toLowerCase().includes(searchTerm.toLowerCase())
@@ -283,9 +287,9 @@ export default function Task() {
   const actionParams = [
     {
       actionName: "Edit",
-      type: "modal", // route
+      type: "modal",
       route: "",
-      actionFunction: "editModal",
+      actionFunction: showEditModalFunc,
       permission: "edit_task",
       textClass: "text-info",
     },
@@ -361,10 +365,10 @@ export default function Task() {
 
       {showCreateModal && (
         <TaskAddModal
+          showModal={showCreateModal}
           handelCloseModal={closeCreateModalFunc}
-          title={"Add a new Task"}
-          currentTaskList={tasks}
-          setTasks={setTasks}
+          title={"Add new Task"}
+          element={task}
         />
       )}
 
@@ -387,10 +391,7 @@ export default function Task() {
       )}
 
       {showStatusModal && (
-        <UpdateStatus
-          handelCloseModal={closeStatusModalFunc}
-          element={task}
-        />
+        <UpdateStatus handelCloseModal={closeStatusModalFunc} element={task} />
       )}
     </div>
   );

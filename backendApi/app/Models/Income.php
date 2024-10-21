@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use Ramsey\Uuid\Uuid;
 use Throwable;
 
 /**
@@ -191,7 +192,7 @@ class Income extends Model
     /**
      * @throws Throwable
      */
-    public function incomeAdd($income, $category): array
+    public function incomeAdd($income, $category, $slug = ''): array
     {
 
         if ($income['income_type'] === 'reservation') {
@@ -220,6 +221,7 @@ class Income extends Model
                         $checkinDate->format('Y-m-d'),
                         $checkoutDate->format('Y-m-d'));
                     $income = Income::create([
+                        'slug' => $slug ?: Uuid::uuid4(),
                         'user_id' => $income['user_id'],
                         'company_id' => Auth::user()->primary_company,
                         'account_id' => $income['account_id'],
@@ -262,6 +264,7 @@ class Income extends Model
                     );
 
                     $income_first = Income::create([
+                        'slug' => $slug ?: Uuid::uuid4(),
                         'user_id' => Auth::user()->id,
                         'company_id' => Auth::user()->primary_company,
                         'account_id' => $income['account_id'],
@@ -303,6 +306,7 @@ class Income extends Model
                         $second_month_amount = $daily_rent * $second_month_days;
 
                         $income_sec = Income::create([
+                            'slug' => $slug ?: Uuid::uuid4(),
                             'user_id' => Auth::user()->id,
                             'company_id' => Auth::user()->primary_company,
                             'account_id' => $income['account_id'],
@@ -358,6 +362,7 @@ class Income extends Model
                 }
 
                 $income = Income::create([
+                    'slug' => $slug ?: Uuid::uuid4(),
                     'user_id' => Auth::user()->id,
                     'company_id' => Auth::user()->primary_company,
                     'account_id' => $income['account_id'],
@@ -394,6 +399,42 @@ class Income extends Model
 
         return [
             'message' => 'Income Added',
+            'status_code' => 200
+        ];
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function deleteIncome($slug): array
+    {
+
+        $income = Expense::where('slug', $slug)->first();
+        if (!$income) {
+            return [
+                'message' => 'Not Found',
+                'description' => 'Income not found',
+                'status_code' => 404
+            ];
+        }
+        $income->delete();
+        $bankAccount = BankAccount::find( $income->account_id );
+        if ( $income->amount > 0 ) {
+            $bankAccount->balance -= $income->amount;
+            $bankAccount->save();
+        }
+
+        storeActivityLog( [
+            'object_id'    => $income->id,
+            'log_type'     => 'delete',
+            'module'       => 'income',
+            'descriptions' => "",
+            'data_records' => array_merge( json_decode( json_encode( $income ), true ), [ 'account_balance' => $bankAccount->balance ] ),
+        ] );
+
+        return [
+            'message' => 'success',
+            'description' => 'Income Deleted',
             'status_code' => 200
         ];
     }

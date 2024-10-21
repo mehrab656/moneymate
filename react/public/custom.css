@@ -426,3 +426,15 @@ footer {
 .simplebar-placeholder{
     display: none !important;
 }
+.my-task-card-footer{
+    display: flex;
+    justify-content: space-between;
+}
+.my-task-header{
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background: floralwhite;
+    font-size: 12px;
+    font-weight: 500;
+}

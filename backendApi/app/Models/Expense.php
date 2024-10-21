@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Ramsey\Uuid\Uuid;
 use Throwable;
 
 /**
@@ -63,7 +64,7 @@ class Expense extends Model
      * @throws \Exception
      * @throws Throwable
      */
-    public function addExpense($expense)
+    public function addExpense($expense,$slug='')
     {
         $bankAccount = BankAccount::find($expense['account_id']);
 
@@ -92,6 +93,7 @@ class Expense extends Model
         try {
             DB::beginTransaction();
             $expense = $this->create([
+                'slug' => $slug?: Uuid::uuid4(),
                 'user_id' => Auth::user()->id,
                 'company_id' => Auth::user()->primary_company,
                 'account_id' => $expense['account_id'],
@@ -134,6 +136,38 @@ class Expense extends Model
             'status_code' => 200
         ];
 
+    }
+
+    public function deleteExpense($slug)
+    {
+
+        $expense = Expense::where('slug', $slug)->first();
+        if (!$expense) {
+            return [
+                'message' => 'Not Found',
+                'description' => 'Expense not found',
+                'status_code' => 404
+            ];
+        }
+        $expense->delete();
+        $bankAccount = BankAccount::find($expense->account_id);
+        if ($expense->amount > 0) {
+            $bankAccount->balance += $expense->amount;
+            $bankAccount->save();
+        }
+        storeActivityLog([
+            'object_id' => $expense->id,
+            'log_type' => 'delete',
+            'module' => 'expense',
+            'descriptions' => "",
+            'data_records' => array_merge(json_decode(json_encode($expense), true), ['account_balance' => $bankAccount->balance]),
+        ]);
+
+        return [
+            'message' => 'success',
+            'description' => 'Expense Deleted',
+            'status_code' => 200
+        ];
     }
 
 }

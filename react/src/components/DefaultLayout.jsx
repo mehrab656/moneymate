@@ -42,7 +42,16 @@ import {
     faBuildingNgo,
     faBuildingUn,
     faBuildingCircleArrowRight,
-    faBuildingLock, faBuildingFlag, faHomeUser, faTasksAlt
+    faBuildingLock,
+    faBuildingFlag,
+    faHomeUser,
+    faTasksAlt,
+    faUserSlash,
+    faUser,
+    faUsers,
+    faReceipt,
+    faCalendarCheck,
+    faListUl, faMoneyBill1Wave, faSunPlantWilt, faList, faCog, faTools
 } from '@fortawesome/free-solid-svg-icons';
 import {SettingsContext, SettingsProvider} from "../contexts/SettingsContext.jsx";
 import Footer from "./Footer.jsx";
@@ -312,7 +321,7 @@ export default function DefaultLayout() {
                                                 <Link to="/all-assets"
                                                       className={isActive('/all-assets') ? 'active' : ''}>
                                                 <span className="aside-menu-icon">
-                                                    <FontAwesomeIcon icon={faBuildingFlag}/></span>
+                                                    <FontAwesomeIcon icon={faTools}/></span>
                                                     <span className="aside-menu-text"> Assets </span>
                                                 </Link>
                                             </li>
@@ -323,7 +332,7 @@ export default function DefaultLayout() {
                                                 className={isActive('/categories') ? 'active' : ''}>
                                                 <span className="aside-menu-icon"><FontAwesomeIcon
                                                     icon={faListAlt}/></span>
-                                                <span className="aside-menu-text"> Categories</span>
+                                                <span className="aside-menu-text">Categories</span>
                                             </Link>
                                         </li>
 
@@ -501,7 +510,7 @@ export default function DefaultLayout() {
                                                         <Link to="/all-employee"
                                                               className={isActive('/all-employee') ? 'active' : ''}>
                                                             <span className="aside-menu-icon"><FontAwesomeIcon
-                                                                icon={faChartBar}/></span>
+                                                                icon={faUsers}/></span>
                                                             <span className="aside-menu-text"> Employee</span>
                                                         </Link>
                                                     </li>
@@ -509,7 +518,7 @@ export default function DefaultLayout() {
                                                         <Link to="/payroll"
                                                               className={isActive('/payroll') ? 'active' : ''}>
                                                             <span className="aside-menu-icon"><FontAwesomeIcon
-                                                                icon={faChartPie}/></span>
+                                                                icon={faReceipt}/></span>
                                                             <span className="aside-menu-text"> Pay Rolls</span>
                                                         </Link>
                                                     </li>
@@ -517,7 +526,7 @@ export default function DefaultLayout() {
                                                         <Link to="/all-attendance"
                                                               className={isActive('/all-attendance') ? 'active' : ''}>
                                                             <span className="aside-menu-icon"><FontAwesomeIcon
-                                                                icon={faMoneyBillTrendUp}/></span>
+                                                                icon={faCalendarCheck}/></span>
                                                             <span className="aside-menu-text"> Attendance</span>
                                                         </Link>
                                                     </li>
@@ -525,8 +534,16 @@ export default function DefaultLayout() {
                                                         <Link to="/all-tasks"
                                                               className={isActive('/all-tasks') ? 'active' : ''}>
                                                             <span className="aside-menu-icon"><FontAwesomeIcon
-                                                                icon={faChartLine}/></span>
+                                                                icon={faListAlt}/></span>
                                                             <span className="aside-menu-text"> Task List</span>
+                                                        </Link>
+                                                    </li>
+                                                    <li className="aside-menu-item">
+                                                        <Link to="/my-tasks"
+                                                              className={isActive('/my-tasks') ? 'active' : ''}>
+                                                            <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                icon={faListUl}/></span>
+                                                            <span className="aside-menu-text"> My Task</span>
                                                         </Link>
                                                     </li>
                                                     <li className="aside-menu-item">
@@ -544,7 +561,7 @@ export default function DefaultLayout() {
                                         <li className="aside-menu-item">
                                             <Link to="/budgets" className={isActive('/budgets') ? 'active' : ''}>
                                                 <span className="aside-menu-icon"><FontAwesomeIcon
-                                                    icon={faWallet}/></span>
+                                                    icon={faMoneyBill1Wave}/></span>
                                                 <span className="aside-menu-text"> Budgets</span>
                                             </Link>
                                         </li>
@@ -552,7 +569,7 @@ export default function DefaultLayout() {
                                             <Link to="/investment-plan"
                                                   className={isActive('/investment-plan') ? 'active' : ''}>
                                                   <span className="aside-menu-icon"><FontAwesomeIcon
-                                                      icon={faExchange}/></span>
+                                                      icon={faSunPlantWilt}/></span>
                                                 <span className="aside-menu-text">Investment Plan</span>
                                             </Link>
                                         </li>
@@ -579,7 +596,7 @@ export default function DefaultLayout() {
                                                     <Link to="/activity-logs"
                                                           className={isActive('/activity-logs') ? 'active' : ''}>
                                                   <span className="aside-menu-icon"><FontAwesomeIcon
-                                                      icon={faFontAwesomeLogoFull}/></span>
+                                                      icon={faList}/></span>
                                                         <span className="aside-menu-text">Activity Logs</span>
                                                     </Link>
                                                 </li>
@@ -599,32 +616,20 @@ export default function DefaultLayout() {
                                                             <li className="aside-menu-item">
                                                                 <Link to="/application-settings"
                                                                       className={isActive('/application-settings') ? 'active' : ''}>
-                                                                <span className="aside-menu-icon"><FontAwesomeIcon
-                                                                    icon={faCogs}/></span>
-                                                                    <span
-                                                                        className="aside-menu-text"> Application Settings </span>
+                                                                    <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                        icon={faCog}/></span>
+                                                                    <span className="aside-menu-text">Application Settings </span>
                                                                 </Link>
                                                             </li>
                                                             <li className="aside-menu-item">
-                                                                <Link
-                                                                    to="/users"
-                                                                    className={isActive('/users') ? 'active' : ''}>
-                                                    <span className="aside-menu-icon"><FontAwesomeIcon
-                                                        icon={faEdit}/></span>
-                                                                    <span
-                                                                        className="aside-menu-text"> Manage Users </span>
+                                                                <Link to="/users"
+                                                                      className={isActive('/users') ? 'active' : ''}>
+                                                                    <span className="aside-menu-icon"><FontAwesomeIcon
+                                                                        icon={faUser}/></span>
+                                                                    <span className="aside-menu-text"> All Users </span>
                                                                 </Link>
                                                             </li>
-                                                            <li className="aside-menu-item">
-                                                                <Link
-                                                                    to={'/users/' + user.id}
-                                                                    className={isActive('/users') ? 'active' : ''}>
-                                                    <span className="aside-menu-icon"><FontAwesomeIcon
-                                                        icon={faEdit}/></span>
-                                                                    <span
-                                                                        className="aside-menu-text"> Manage Profile </span>
-                                                                </Link>
-                                                            </li>
+
                                                             <li className="aside-menu-item">
                                                                 <Link
                                                                     to="/roles"
@@ -692,7 +697,7 @@ export default function DefaultLayout() {
                                         </NavDropdown>
 
                                         {/*user Sections */}
-                                        <NavDropdown title={user?.name ?? 'User'} id="basic-nav-dropdown">
+                                        <NavDropdown title={user?.username ?? 'User'} id="basic-nav-dropdown">
                                             <NavDropdown.Item href="#action/3.1">Profile</NavDropdown.Item>
                                             <NavDropdown.Item href="application-settings">Activity
                                                 Log</NavDropdown.Item>
@@ -723,8 +728,9 @@ export default function DefaultLayout() {
                                         {/*}*/}
                                     </main>
                                     <SettingsProvider>
-                                        <Footer/>
+
                                     </SettingsProvider>
+                                    <Footer/>
                                 </div>
                             </div>
 

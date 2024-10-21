@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Js;
 use PHPUnit\Exception;
+use Ramsey\Uuid\Uuid;
 
 class RoleController extends Controller
 {
@@ -74,7 +75,7 @@ class RoleController extends Controller
         $orderBy = $request->query('order_by', 'id');
         $order = $request->query('order', 'desc');
 
-        $roles = DB::table('roles')
+        $roles = DB::table('roles')->select(['id','role','status'])
             ->where('company_id', '=', $companyID)
             ->skip(($page - 1) * $pageSize)
             ->take($pageSize)
@@ -83,7 +84,6 @@ class RoleController extends Controller
 
         return response()->json([
             'message' => 'Success!',
-            'description' => "",
             'data' => $roles
         ]);
     }
@@ -101,6 +101,7 @@ class RoleController extends Controller
         try {
             DB::beginTransaction();
             $role = Role::create([
+                'slug'=>Uuid::uuid4(),
                 'company_id' => Auth::user()->primary_company,
                 'role' => strtolower($data['name']),
                 'status' => abs($data['status']),

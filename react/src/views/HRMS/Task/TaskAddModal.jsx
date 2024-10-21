@@ -74,7 +74,6 @@ function TaskAddModal({ handelCloseModal, title, currentTaskList, setTasks }) {
 
     try {
       const  data  = await createTask({ url: url, formData }).unwrap(); 
-      console.log('responseasssssss', data);
       notification("success", data?.message, data?.description);
       handelCloseModal();
     } catch (err) {
@@ -90,6 +89,8 @@ function TaskAddModal({ handelCloseModal, title, currentTaskList, setTasks }) {
       }
     }
   };
+
+  console.log('getAllEmployeeData', getAllEmployeeData);
 
   return (
     <>

@@ -150,7 +150,7 @@ export default function Expenses() {
             }).then((result) => {
                 if (result.isConfirmed) {
                     axiosClient.delete(`expense/${expense.id}`).then((data) => {
-                        getExpenses();
+                        getExpenses(currentPage,pageSize);
                         notification('success',data?.message,data?.description)
                     }).catch(err => {
                         if (err.response) { 
