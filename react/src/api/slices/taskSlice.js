@@ -1,5 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseUrl } from "../baseUrl";
+import { globalToken } from "../globalToken"
+import axiosClient from "../../axios-client";
 
 
 export const taskSlice = createApi({
@@ -11,7 +13,6 @@ export const taskSlice = createApi({
   endpoints: (builder) => ({
     getTaskData: builder.query({
       query: ({
-        token,
         currentPage,
         pageSize,
         query
@@ -20,43 +21,98 @@ export const taskSlice = createApi({
           url: `all-tasks?currentPage=${currentPage}&pageSize=${pageSize}&employee_id=${query?.employee_id}&status=${query?.status}&payment_status=${query?.payment_status}&orderBy=${query?.orderBy}&order=${query?.order}&limit=${query?.limit}&category_id=${query?.category_id}&end_date=${query?.end_date}&start_date=${query?.start_date}`,
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        };
-      },
-      providesTags: ["task"],
-    }),
-    getCategorySectorListData: builder.query({
-      query: ({ token }) => {
-        return {
-          url: `/sectors-list`,
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${globalToken}`,
           },
         };
       },
       providesTags: ["task"],
     }),
 
-    createCategory: builder.mutation({
-      query: ({ token, formData }) => ({
-        url: `category/add`,
-        method: "POST",
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }),
+    createTask: builder.mutation({
+      queryFn: async ({ url, formData }) => {
+        try {
+          const response = await axiosClient.post(url, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          const { message, description, data } = response.data;
+          return { data: { message, description, data } }; 
+        }catch (error) {
+          const status = error?.response?.status || 500;
+          const message = error?.response?.data?.message || "An unexpected error occurred.";
+          const description = error?.response?.data?.description || "";
+          const errorData = error?.response?.data || {}; 
+          return {
+            error: {
+              status,
+              message,
+              description,
+              errorData: errorData,
+            },
+          };
+        }
+      },
+      
+      invalidatesTags: ["task"],
+    }),
+    updateTaskPayment: builder.mutation({
+      queryFn: async ({ url, formData }) => {
+        try {
+          const response = await axiosClient.post(url, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          const { message, description, data } = response.data;
+          return { data: { message, description, data } }; 
+        }catch (error) {
+          const status = error?.response?.status || 500;
+          const message = error?.response?.data?.message || "An unexpected error occurred.";
+          const description = error?.response?.data?.description || "";
+          const errorData = error?.response?.data || {}; 
+          return {
+            error: {
+              status,
+              message,
+              description,
+              errorData: errorData,
+            },
+          };
+        }
+      },
+      
+      invalidatesTags: ["task"],
+    }),
+    updateTaskStatus: builder.mutation({
+      queryFn: async ({ url, formData }) => {
+        try {
+          const response = await axiosClient.post(url, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          const { message, description, data } = response.data;
+          return { data: { message, description, data } }; 
+        }catch (error) {
+          const status = error?.response?.status || 500;
+          const message = error?.response?.data?.message || "An unexpected error occurred.";
+          const description = error?.response?.data?.description || "";
+          const errorData = error?.response?.data || {}; 
+          return {
+            error: {
+              status,
+              message,
+              description,
+              errorData: errorData,
+            },
+          };
+        }
+      },
+      
       invalidatesTags: ["task"],
     }),
 
-    deleteCategory: builder.mutation({
-      query: ({ token, id }) => ({
-        url: `category/${id}`,
+    deleteTask: builder.mutation({
+      query: ({ id }) => ({
+        url: `task/${id}`,
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${globalToken}`,
         },
       }),
       invalidatesTags: ["task"],
@@ -66,9 +122,8 @@ export const taskSlice = createApi({
 
 export const {
   useGetTaskDataQuery,
-  useGetCategorySectorListDataQuery,
-
-  useCreateCategoryMutation,
-
-  useDeleteCategoryMutation,
+  useCreateTaskMutation,
+  useDeleteTaskMutation,
+  useUpdateTaskPaymentMutation,
+  useUpdateTaskStatusMutation
 } = taskSlice;

@@ -3,7 +3,7 @@ import axiosClient from "../../../axios-client.js";
 import Swal from "sweetalert2";
 import { SettingsContext } from "../../../contexts/SettingsContext.jsx";
 import MainLoader from "../../../components/MainLoader.jsx";
-import {checkPermission} from "../../../helper/HelperFunctions.js";
+import { checkPermission } from "../../../helper/HelperFunctions.js";
 import { notification } from "../../../components/ToastNotification.jsx";
 
 import Iconify from "../../../components/Iconify.jsx";
@@ -17,7 +17,11 @@ import ShowTaskModal from "./ShowTaskModal.jsx";
 import UpdatePaymentStatusModal from "./UpdatePaymentStatusModal.jsx";
 import UpdateStatus from "./UpdateStatus.jsx";
 import { useStateContext } from "../../../contexts/ContextProvider.jsx";
-import { useGetTaskDataQuery } from "../../../api/slices/taskSlice.js";
+import {
+  useCreateTaskMutation,
+  useDeleteTaskMutation,
+  useGetTaskDataQuery,
+} from "../../../api/slices/taskSlice.js";
 import { TableLoader } from "../../../components/SkeletonLoader/TableLoader.jsx";
 
 const defaultTaskData = {
@@ -40,7 +44,7 @@ const defaultQuery = {
   payment_status: "",
   orderBy: "",
   order: "",
-  limit: "",
+  limit: 10,
   category_id: "",
   end_date: "",
   start_date: "",
@@ -49,7 +53,8 @@ export default function Task() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const { applicationSettings, userRole, userPermission } = useContext(SettingsContext);
+  const { applicationSettings, userRole, userPermission } =
+    useContext(SettingsContext);
   const [tasks, setTasks] = useState([]);
   const [task, setTask] = useState(defaultTaskData);
   const [loading, setLoading] = useState(true);
@@ -59,9 +64,10 @@ export default function Task() {
   const [taskHistory, setTaskHistory] = useState([]);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showPaymentStatusModal, setShowPaymentStatusModal] = useState(false);
-  const [showMainLoader, setShowMainLoader] = useState(false)
+  const [showMainLoader, setShowMainLoader] = useState(false);
   const [query, setQuery] = useState(defaultQuery);
   const { num_data_per_page } = applicationSettings;
+  const [isPaginate, setIsPaginate] = useState(false)
 
   const [hasFilter, setHasFilter] = useState(false);
   const TABLE_HEAD = [
@@ -74,42 +80,46 @@ export default function Task() {
     { id: "type", label: "Type", align: "left" },
   ];
 
-  const pageSize = Number(query.limit) > 0 ? Number(query.limit) : num_data_per_page ? num_data_per_page : 10;
+  const pageSize =
+    Number(query.limit) > 0
+      ? Number(query.limit)
+      : num_data_per_page
+      ? num_data_per_page
+      : 10;
   const totalPages = Math.ceil(totalCount / pageSize);
 
   // api call
-  const {user, token} = useStateContext();
-  const {data: getTaskData, isFetching: taskDataFetching, isError:taskDataError} = useGetTaskDataQuery(
-    {token,currentPage,pageSize,query:query},
-    { refetchOnMountOrArgChange: true }
-);
-
-  console.log('getTaskData', getTaskData);
-
+  const {
+    data: getTaskData,
+    isFetching: taskDataFetching,
+    isError: taskDataError,
+  } = useGetTaskDataQuery(
+    { currentPage, pageSize, query: query },
+    { refetchOnMountOrArgChange: isPaginate ? true : false }
+  );
+  const [deleteTask] = useDeleteTaskMutation();
 
 
   const onDelete = (task) => {
     Swal.fire({
       title: "Are you sure?",
-      text: `You will not be able to recover the task !`,
+      text: "You will not be able to recover the task!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes, remove it!",
       cancelButtonText: "Cancel",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        axiosClient
-          .delete(`task/${task.id}`)
-          .then((data) => {
-            getTasks();
-            notification("success", data?.message, data?.description);
-          })
-          .catch((err) => {
-            if (err.response) {
-              const error = err.response.data;
-              notification("error", error?.message, error.description);
-            }
-          });
+        try {
+          const response = await deleteTask({ id: task.id }).unwrap(); // Using unwrap for error handling
+          notification("success", response.message, response.description); // Display success message
+        } catch (error) {
+          notification(
+            "error",
+            error.message,
+            error.description || "An error occurred."
+          ); // Display error message
+        }
       }
     });
   };
@@ -157,10 +167,9 @@ export default function Task() {
     setShowStatusModal(false);
   };
 
-
-
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
+    setIsPaginate(true)
   };
   const resetFilterParameter = () => {
     setQuery(defaultQuery);
@@ -172,17 +181,15 @@ export default function Task() {
 
   useEffect(() => {
     document.title = "Manage Tasks";
-    if(getTaskData?.data){
-        setTasks(getTaskData.data);
-        setTotalCount(getTaskData.total);
-        setShowMainLoader(false)
-      }else{
-        setShowMainLoader(true)
-      }
-  }, [getTaskData,currentPage]);
-
-  console.log('currentPage', currentPage)
-
+    if (getTaskData?.data) {
+      setTasks(getTaskData.data);
+      setTotalCount(getTaskData.total);
+      setShowMainLoader(false);
+    } else {
+      setShowMainLoader(true);
+    }
+    setIsPaginate(false)
+  }, [getTaskData, currentPage]);
 
 
   const filteredTasks = tasks.filter(
@@ -255,15 +262,6 @@ export default function Task() {
       return task;
     }
   );
-
-
-
-
-
-
-
-
-
 
   const filters = () => {
     return (
@@ -370,27 +368,30 @@ export default function Task() {
         />
       )}
 
-      <TaskHistoryModal
-        showModal={taskTimelineModal}
-        handelCloseModal={closeTimelineModalFunc}
-        workflow={taskHistory}
-      />
-      <ShowTaskModal
-        showModal={viewTaskModal}
-        handelCloseModal={closeViewModalFunc}
-        element={task}
-      />
+      {taskTimelineModal && (
+        <TaskHistoryModal
+          handelCloseModal={closeTimelineModalFunc}
+          workflow={taskHistory}
+        />
+      )}
 
-      <UpdatePaymentStatusModal
-        showModal={showPaymentStatusModal}
-        handelCloseModal={closePaymentModalFunc}
-        element={task}
-      />
-      <UpdateStatus
-        showModal={showStatusModal}
-        handelCloseModal={closeStatusModalFunc}
-        element={task}
-      />
+      {viewTaskModal && (
+        <ShowTaskModal handelCloseModal={closeViewModalFunc} element={task} />
+      )}
+
+      {showPaymentStatusModal && (
+        <UpdatePaymentStatusModal
+          handelCloseModal={closePaymentModalFunc}
+          element={task}
+        />
+      )}
+
+      {showStatusModal && (
+        <UpdateStatus
+          handelCloseModal={closeStatusModalFunc}
+          element={task}
+        />
+      )}
     </div>
   );
 }

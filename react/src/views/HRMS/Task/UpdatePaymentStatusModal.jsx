@@ -8,6 +8,7 @@ import Col from 'react-bootstrap/Col'
 import axiosClient from "../../../axios-client.js";
 import {notification} from "../../../components/ToastNotification.jsx";
 import MainLoader from "../../../components/MainLoader.jsx";
+import { useCreateTaskMutation, useUpdateTaskPaymentMutation } from '../../../api/slices/taskSlice.js';
 
 function UpdatePaymentStatusModal({showModal, handelCloseModal, element}) {
     const [loading, setLoading] = useState(false)
@@ -18,37 +19,31 @@ function UpdatePaymentStatusModal({showModal, handelCloseModal, element}) {
         comment: ''
     });
 
-    const submit = (e) => {
-        e.preventDefault();
-        setLoading(true);
+    const [updateTaskPayment] = useUpdateTaskPaymentMutation();
 
+
+    const submit = async(e) => {
+        e.preventDefault();
         let formData = new FormData();
         formData.append('amount', paymentData.amount);
         formData.append('payment_status', paymentData.payment_status);
         formData.append('comment', paymentData.comment);
 
-        axiosClient.post(`/update-task-payment-status/${element.id}`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        }).then(({data}) => {
-            setLoading(false);
-            notification('success', data?.message, data?.description);
-            location.reload();
-        }).catch((err) => {
-            if (err.response) {
-                const error = err.response.data
-                notification('error', error?.message, error.description);
-                setLoading(false);
-            }
-            setLoading(false);
-        });
+        const url = `/update-task-payment-status/${element.id}`;
+
+        try {
+          const  data  = await updateTaskPayment({ url: url, formData }).unwrap(); 
+          notification("success", data?.message, data?.description);
+          handelCloseModal()
+        } catch (err) {
+            notification("error", err?.message || "An error occurred", err?.description || "Please try again later.");
+        }
     }
     return (
         <>
             <MainLoader loaderVisible={loading} />
             <Modal
-                show={showModal}
+                show={true}
                 onHide={handelCloseModal}
                 backdrop="static"
                 keyboard={false}

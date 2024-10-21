@@ -6,10 +6,10 @@ export const TableLoader = ({ row, col }) => {
     <Table>
       <TableBody>
         {Array.from({ length: row }).map((_, rowIndex) => (
-          <TableRow key={rowIndex}>
+          <TableRow key={rowIndex} >
             {Array.from({ length: col }).map((_, colIndex) => (
               <TableCell key={colIndex}>
-                <Skeleton animation="wave" height={30} />
+                <Skeleton animation="wave" height={22} />
               </TableCell>
             ))}
           </TableRow>

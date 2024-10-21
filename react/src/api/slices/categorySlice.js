@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import { baseUrl } from "../baseUrl";
+import { globalToken } from "../globalToken"
 
 
 export const categorySlice = createApi({
@@ -11,12 +12,12 @@ export const categorySlice = createApi({
   tagTypes: ["category"],
   endpoints: (builder) => ({
     getCategoryData: builder.query({
-      query: ({token,searchValue,currentPage,pageSize,selectedSectorId,categoryType}) => {
+      query: ({currentPage,pageSize,query}) => {
         return {
-          url: `/categories?keyword=${searchValue}&page=${currentPage}&pageSize=${pageSize}&selectedSectorId=${selectedSectorId}&categoryType=${categoryType}`,
+          url: `/categories?page=${currentPage}&pageSize=${pageSize}&selectedSectorId=${query?.selectedSectorId}&categoryType=${query?.type}`,
           method: "GET",
           headers:{
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${globalToken}`
           }
         };
       },

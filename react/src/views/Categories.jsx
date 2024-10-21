@@ -96,9 +96,14 @@ export default function Categories() {
   const denseHeight = dense ? 52 : 72;
   const isNotFound =(!dataFiltered.length && !!filterName) 
 
+  const defaultQuery = {
+    selectedSectorId : filterSecterValue,
+
+  }
+
   // api call
   const {user, token} = useStateContext();
-  const {data: getCategoryData, isFetching: getCategoryDataFetching, isError:getCategoryDataError} = useGetCategoryDataQuery({token,searchValue:filterName,currentPage,pageSize,selectedSectorId:filterSecterValue, categoryType:filterTypeValue});
+  const {data: getCategoryData, isFetching: getCategoryDataFetching, isError:getCategoryDataError} = useGetCategoryDataQuery({currentPage,pageSize,selectedSectorId:filterSecterValue, categoryType:filterTypeValue});
   const {data: getCategorySectorListData, isFetching: getCategorySectorListDataFetching, isError:getCategorySectorListDataError} = useGetCategorySectorListDataQuery({token});
 
   const [createCategory] = useCreateCategoryMutation()

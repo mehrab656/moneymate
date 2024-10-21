@@ -60,9 +60,6 @@ function CommonTable(props) {
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
-
-  console.log('loading', loading)
-
   const classes = useStyles();
   const genRand = (len) => {
     return Math.random()

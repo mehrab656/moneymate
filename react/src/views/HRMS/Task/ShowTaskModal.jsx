@@ -29,7 +29,7 @@ function ShowTaskModal({showModal, handelCloseModal, element}) {
     return (
         <>
             <Modal
-                show={showModal}
+                show={true}
                 onHide={handelCloseModal}
                 backdrop="static"
                 keyboard={false}

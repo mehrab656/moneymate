@@ -7,6 +7,7 @@ import { accountSlice } from "../api/slices/accountSlice";
 import { companySlice } from "../api/slices/companySlice";
 import { categorySlice } from "../api/slices/categorySlice";
 import { taskSlice } from "../api/slices/taskSlice";
+import { employeeSlice } from "../api/slices/employeeSlice";
 
 
 export const store = configureStore({
@@ -17,6 +18,7 @@ export const store = configureStore({
     [companySlice.reducerPath]: companySlice.reducer,
     [categorySlice.reducerPath]: categorySlice.reducer,
     [taskSlice.reducerPath]: taskSlice.reducer,
+    [employeeSlice.reducerPath]: employeeSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -24,7 +26,9 @@ export const store = configureStore({
       sectorSlice.middleware,
       accountSlice.middleware,
       companySlice.middleware,
+      categorySlice.middleware,
       taskSlice.middleware,
+      employeeSlice.middleware,
     ),
 });
 
