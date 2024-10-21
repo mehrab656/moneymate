@@ -30,7 +30,7 @@ const _initialTaskData = {
     comment: '',
 }
 
-function TaskAddModal({showModal, handelCloseModal, title,currentTaskList,setTasks}) {
+function TaskAddModal({handelCloseModal, title,currentTaskList,setTasks}) {
     let {id} = useParams();
     const navigate = useNavigate();
     const [errors, setErrors] = useState({});
@@ -63,6 +63,8 @@ function TaskAddModal({showModal, handelCloseModal, title,currentTaskList,setTas
             });
 
     }, []);
+
+    console.log('dfdfdf')
 
     const submit = (e) => {
         e.preventDefault();
@@ -113,7 +115,7 @@ function TaskAddModal({showModal, handelCloseModal, title,currentTaskList,setTas
         <>
             <MainLoader loaderVisible={loading} />
             <Modal
-                show={showModal}
+                show={true}
                 onHide={handelCloseModal}
                 backdrop="static"
                 keyboard={false}

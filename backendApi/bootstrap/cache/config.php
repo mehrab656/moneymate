@@ -198,7 +198,7 @@
       'file' => 
       array (
         'driver' => 'file',
-        'path' => 'D:\\xampp\\htdocs\\moneymate\\backendApi\\storage\\framework/cache/data',
+        'path' => 'C:\\xampp\\htdocs\\moneymate\\backendApi\\storage\\framework/cache/data',
       ),
       'memcached' => 
       array (
@@ -293,7 +293,7 @@
         'port' => '3306',
         'database' => 'moneymate',
         'username' => 'root',
-        'password' => 'root',
+        'password' => '',
         'unix_socket' => '',
         'charset' => 'utf8mb4',
         'collation' => 'utf8mb4_unicode_ci',
@@ -403,7 +403,7 @@
         'port' => '3306',
         'database' => 'moneymate',
         'username' => 'root',
-        'password' => 'root',
+        'password' => '',
         'charset' => 'utf8',
         'prefix' => '',
         'prefix_indexes' => true,
@@ -418,7 +418,7 @@
         'port' => '3306',
         'database' => 'moneymate',
         'username' => 'root',
-        'password' => 'root',
+        'password' => '',
         'charset' => 'utf8',
         'prefix' => '',
         'prefix_indexes' => true,
@@ -461,13 +461,13 @@
       'local' => 
       array (
         'driver' => 'local',
-        'root' => 'D:\\xampp\\htdocs\\moneymate\\backendApi\\storage\\app',
+        'root' => 'C:\\xampp\\htdocs\\moneymate\\backendApi\\storage\\app',
         'throw' => false,
       ),
       'public' => 
       array (
         'driver' => 'local',
-        'root' => 'D:\\xampp\\htdocs\\moneymate\\backendApi\\storage\\app/public',
+        'root' => 'C:\\xampp\\htdocs\\moneymate\\backendApi\\storage\\app/public',
         'url' => 'http://moneymate.com/storage',
         'visibility' => 'public',
         'throw' => false,
@@ -487,7 +487,7 @@
     ),
     'links' => 
     array (
-      'D:\\xampp\\htdocs\\moneymate\\backendApi\\public\\storage' => 'D:\\xampp\\htdocs\\moneymate\\backendApi\\storage\\app/public',
+      'C:\\xampp\\htdocs\\moneymate\\backendApi\\public\\storage' => 'C:\\xampp\\htdocs\\moneymate\\backendApi\\storage\\app/public',
     ),
   ),
   'hashing' => 
@@ -526,13 +526,13 @@
       'single' => 
       array (
         'driver' => 'single',
-        'path' => 'D:\\xampp\\htdocs\\moneymate\\backendApi\\storage\\logs/laravel.log',
+        'path' => 'C:\\xampp\\htdocs\\moneymate\\backendApi\\storage\\logs/laravel.log',
         'level' => 'debug',
       ),
       'daily' => 
       array (
         'driver' => 'daily',
-        'path' => 'D:\\xampp\\htdocs\\moneymate\\backendApi\\storage\\logs/laravel.log',
+        'path' => 'C:\\xampp\\htdocs\\moneymate\\backendApi\\storage\\logs/laravel.log',
         'level' => 'debug',
         'days' => 14,
       ),
@@ -584,7 +584,7 @@
       ),
       'emergency' => 
       array (
-        'path' => 'D:\\xampp\\htdocs\\moneymate\\backendApi\\storage\\logs/laravel.log',
+        'path' => 'C:\\xampp\\htdocs\\moneymate\\backendApi\\storage\\logs/laravel.log',
       ),
       'deprecations' => 
       array (
@@ -655,7 +655,7 @@
       'theme' => 'default',
       'paths' => 
       array (
-        0 => 'D:\\xampp\\htdocs\\moneymate\\backendApi\\resources\\views/vendor/mail',
+        0 => 'C:\\xampp\\htdocs\\moneymate\\backendApi\\resources\\views/vendor/mail',
       ),
     ),
   ),
@@ -689,23 +689,9 @@
     'cache' => 
     array (
       'expiration_time' => 
-      DateInterval::__set_state(array(
-         'y' => 0,
-         'm' => 0,
-         'd' => 0,
-         'h' => 24,
-         'i' => 0,
-         's' => 0,
-         'f' => 0.0,
-         'weekday' => 0,
-         'weekday_behavior' => 0,
-         'first_last_day_of' => 0,
-         'invert' => 0,
-         'days' => false,
-         'special_type' => 0,
-         'special_amount' => 0,
-         'have_weekday_relative' => 0,
-         'have_special_relative' => 0,
+      \DateInterval::__set_state(array(
+         'from_string' => true,
+         'date_string' => '24 hours',
       )),
       'key' => 'spatie.permission.cache',
       'store' => 'default',
@@ -814,7 +800,7 @@
     'lifetime' => '120',
     'expire_on_close' => false,
     'encrypt' => false,
-    'files' => 'D:\\xampp\\htdocs\\moneymate\\backendApi\\storage\\framework/sessions',
+    'files' => 'C:\\xampp\\htdocs\\moneymate\\backendApi\\storage\\framework/sessions',
     'connection' => NULL,
     'table' => 'sessions',
     'store' => NULL,
@@ -834,9 +820,9 @@
   array (
     'paths' => 
     array (
-      0 => 'D:\\xampp\\htdocs\\moneymate\\backendApi\\resources\\views',
+      0 => 'C:\\xampp\\htdocs\\moneymate\\backendApi\\resources\\views',
     ),
-    'compiled' => 'D:\\xampp\\htdocs\\moneymate\\backendApi\\storage\\framework\\views',
+    'compiled' => 'C:\\xampp\\htdocs\\moneymate\\backendApi\\storage\\framework\\views',
   ),
   'flare' => 
   array (
@@ -921,7 +907,7 @@
     array (
     ),
     'enable_runnable_solutions' => NULL,
-    'remote_sites_path' => 'D:\\xampp\\htdocs\\moneymate\\backendApi',
+    'remote_sites_path' => 'C:\\xampp\\htdocs\\moneymate\\backendApi',
     'local_sites_path' => '',
     'housekeeping_endpoint_prefix' => '_ignition',
     'settings_file_path' => '',
@@ -949,26 +935,6 @@
       10 => 'Spatie\\Backtrace\\Arguments\\Reducers\\StringableArgumentReducer',
     ),
   ),
-  'options' => 
-  array (
-    'company_name' => 'EDEN SPRINGS HOMES RENTAL L.L.C',
-    'web_site' => 'https://esholiday.com',
-    'default_currency' => 'AED',
-    'phone' => '0551258910',
-    'address' => '118 Naif Street - Deira - Dubai',
-    'num_data_per_page' => '10',
-    'public_key' => NULL,
-    'secret_key' => NULL,
-    'registration_type' => NULL,
-    'subscription_price' => NULL,
-    'product_api_id' => NULL,
-    'product_price' => '30',
-    'product_id' => '',
-    'last_expense_cat_id' => '38',
-    'last_expense_account_id' => '9',
-    'last_expense_date' => '2024-05-08',
-    'associative_categories' => '["Electricity","Gas","Internet"]',
-  ),
   'ide-helper' => 
   array (
     'filename' => '_ide_helper.php',
@@ -983,7 +949,7 @@
     'include_helpers' => false,
     'helper_files' => 
     array (
-      0 => 'D:\\xampp\\htdocs\\moneymate\\backendApi/vendor/laravel/framework/src/Illuminate/Support/helpers.php',
+      0 => 'C:\\xampp\\htdocs\\moneymate\\backendApi/vendor/laravel/framework/src/Illuminate/Support/helpers.php',
     ),
     'model_locations' => 
     array (
