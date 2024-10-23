@@ -217,10 +217,10 @@ export default function InvestmentForm() {
                                             const value = event.target.value || '';
                                             setSelectedInvestorId(value);
                                         }}>
-                                        <option defaultValue value={user.id}>{user.name}</option>
+                                        <option defaultValue value={user.id}>{user.username}</option>
                                         {users.map(singleUser => (
                                             <option key={singleUser.id} value={singleUser.id}>
-                                                {singleUser.name}
+                                                {singleUser.username}
                                             </option>
                                         ))}
                                     </select>

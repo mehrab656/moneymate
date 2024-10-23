@@ -20,7 +20,7 @@ class TaskModel extends Model
 
     public function employee(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(Employee::class, 'task_employee', 'task_id', 'employee_id');
+        return $this->belongsToMany(Employee::class, 'task_employee', 'task_id', 'employee_id','','slug');
     }
 
     public function category(): HasOne
@@ -83,7 +83,7 @@ class TaskModel extends Model
             'data_records' => $task,
         ]);
         //now check if the task was income or expense sections
-        if ($task['type'] === 'income') {
+        if (strtolower($task['type']) === 'income') {
 
             $income = (new Income)->incomeAdd([
                 'account_id' => $accountID,
@@ -129,7 +129,7 @@ class TaskModel extends Model
 
     }
 
-    public function taskCustomValidation($data,$tag='add')
+    public function taskCustomValidation($data,$tag='add'): array
     {
 
         $category = Category::select('categories.*')

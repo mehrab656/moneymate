@@ -505,7 +505,7 @@ class ExpenseController extends Controller
     {
         //user
         $companyID = Auth::user()->primary_company;
-        $users = DB::table('users')->select(['users.name', 'users.id', 'users.email'])
+        $users = DB::table('users')->select(['users.username', 'users.id', 'users.email'])
             ->join('company_user', 'users.id', '=', 'company_user.user_id')
             ->where('company_id', $companyID)
             ->get();
@@ -525,10 +525,6 @@ class ExpenseController extends Controller
             'banks' => BankAccountResource::collection($bankAccounts),
             'categories' => $categories,
         ]);
-
-        //expense categories
-
-
     }
 
 }

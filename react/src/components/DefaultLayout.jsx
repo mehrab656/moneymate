@@ -619,12 +619,12 @@ export default function DefaultLayout() {
                                         </Dropdown>
                                     }
                                     <hr/>
-                                    <ul className="aside-menu">
+                                    <ul className="aside-menu" key={Math.random().toString(36).slice(2)}>
                                         {sideMenus.map((menu,index) => {
                                             if (menu.hasMultiMenu !== true) {
                                                 return <>
                                                     {checkPermission(menu.permission) &&
-                                                        <li className="aside-menu-item" key={index+menu.permission}>
+                                                        <li className="aside-menu-item" key={Math.random().toString(36).slice(2)}>
                                                             <Link
                                                                 to={menu.link.to}
                                                                 className={menu.link.className}>
@@ -637,7 +637,7 @@ export default function DefaultLayout() {
                                                 </>
                                             } else {
                                                 return <>
-                                                    <li className="aside-menu-item">
+                                                    <li className="aside-menu-item" key={Math.random().toString(36).slice(2)}>
                                                         <a onClick={() => toggleSubmenu(menu.mainMenu.onClickToggleType)}
                                                            className='dropdown-menu'>
                                                                 <span className="aside-menu-icon"><FontAwesomeIcon
@@ -677,7 +677,7 @@ export default function DefaultLayout() {
 
                                         {userRole === 'admin' &&
                                             <>
-                                                <li className="aside-menu-item">
+                                                <li className="aside-menu-item" key={Math.random().toString(36).slice(2)}>
                                                     <Link to="/activity-logs"
                                                           className={isActive('/activity-logs') ? 'active' : ''}>
                                                   <span className="aside-menu-icon"><FontAwesomeIcon
@@ -768,13 +768,11 @@ export default function DefaultLayout() {
                                                                 </li>
                                                             )
                                                         } else {
-                                                            return (
-                                                                <li key={'electricity-' + item.id}>
+                                                            return (<li key={'electricity-' + item.id}>
                                                                     <NavDropdown.Item href="#action/3.1">
                                                                         {item.name + ' ' + item.type + ' bill date ' + item.el_billing_date}</NavDropdown.Item>
                                                                     <NavDropdown.Divider/>
-                                                                </li>
-                                                            )
+                                                                </li>)
                                                         }
                                                     })
                                                 }

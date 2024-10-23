@@ -29,7 +29,7 @@ function TaskHistoryModal({showModal, handelCloseModal, workflow=[]}) {
     return (
         <>
             <Modal
-                show={showModal}
+                show={true}
                 onHide={handelCloseModal}
                 backdrop="static"
                 keyboard={false}

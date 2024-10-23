@@ -86,7 +86,7 @@ export default function UserForm() {
     return (
         <>
           <MainLoader loaderVisible={loading} />
-            {user.id && <h1 className="title-text">Update User: {user.name}</h1>}
+            {user.id && <h1 className="title-text">Update User: {user.username}</h1>}
             {!user.id && <h1 className="title-text">New User</h1>}
             <WizCard className="animated fadeInDown wiz-card-mh">
                 {loading && <div className="text-center">Loading...</div>}
@@ -98,7 +98,7 @@ export default function UserForm() {
                             </label>
                             <input
                                 className="custom-form-control"
-                                value={user.name}
+                                value={user.username}
                                 onChange={(ev) =>
                                     setUser({...user, name: ev.target.value})
                                 }

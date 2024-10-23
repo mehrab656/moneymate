@@ -20,6 +20,7 @@ use App\Http\Resources\TaskResource;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
 use Storage;
+use Throwable;
 
 class TaskController extends Controller
 {
@@ -87,6 +88,8 @@ class TaskController extends Controller
         return response()->json([
             'data' => TaskResource::collection($query),
             'total' => $totalCount,
+            'page'=>$page,
+            'pageSize'=>$pageSize,
         ]);
     }
 
@@ -110,7 +113,7 @@ class TaskController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function add(TaskRequest $task)
     {
@@ -213,14 +216,32 @@ class TaskController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(TaskModel $task)
+    public function edit(Request $request, $id)
     {
-        //
+        if (!$id) {
+            return response()->json([
+                'message' => 'Missing Id',
+                'description' => 'Missing Id!'
+            ], 403);
+        }
+
+        $task = TaskModel::where(['slug'=> $id, 'company_id'=> Auth::user()->primary_company])->first();
+        if (!$task) {
+            return response()->json([
+                'message' => 'Not Found',
+                'description' => 'Task not found!'
+            ], 404);
+        }
+
+        return response()->json([
+            'data' => TaskResource::make($task),
+            'id'=>$id
+        ]);
     }
 
     /**
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function updatePaymentStatus(Request $request, $id): JsonResponse|array
     {
@@ -273,9 +294,9 @@ class TaskController extends Controller
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
-    public function updateStatus(Request $request, $id)
+    public function updateStatus(Request $request, $id): JsonResponse
     {
         $data = $request->input();
         if (!$id) {
@@ -345,9 +366,9 @@ class TaskController extends Controller
 
     /**
      * Update the specified resource in storage.
-     * @throws \Throwable
+     * @throws Throwable
      */
-    public function update(TaskRequest $task, $id)
+    public function update(TaskRequest $task, $id): JsonResponse
     {
 
         $data = $task->validated();
@@ -426,7 +447,7 @@ class TaskController extends Controller
      * Remove the specified resource from storage.
      * @throws Exception
      */
-    public function delete($slug)
+    public function delete($slug): JsonResponse
     {
         $task = TaskModel::where('slug', $slug)->first();
 
@@ -456,7 +477,7 @@ class TaskController extends Controller
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function taskStarted(Request $request, $id): JsonResponse
     {
@@ -524,7 +545,7 @@ class TaskController extends Controller
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function taskEnded(Request $request, $id): JsonResponse
     {
@@ -558,10 +579,6 @@ class TaskController extends Controller
                 'description' => 'Tas has not started yet'
             ], 403);
         }
-
-
-
-
 
         $workflow = json_decode($task->workflow);
         if (isset($data['comment']) && $data['comment']) {

@@ -32,16 +32,20 @@ class CategoryController extends Controller {
 		$type   = $request->query( 'categoryType', null );
 		$categories = DB::table( 'categories' )->select( 'categories.*' )
 		                ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
-		                ->where( 'sectors.company_id', '=', Auth::user()->primary_company )
-		                ->skip( ( $page - 1 ) * $pageSize )
-		                ->take( $pageSize );
+		                ->where( 'sectors.company_id', '=', Auth::user()->primary_company );
         if ($sectorID){
-            $categories = $categories->where('sectors.id',$sectorID);
+            $categories = $categories->where('sectors.id','=',$sectorID);
         }
         if ($type){
-            $categories = $categories->where('type',$type);
+            $categories = $categories->where('type','=',$type);
         }
-        $categories = $categories->get();
+//        if ($page){
+//            $categories = $categories->skip( ( $page - 1 ) * $pageSize );
+//        }
+//        if ($pageSize){
+//            $categories = $categories->take( $pageSize );
+//        }
+        $categories = $categories->skip( ( $page - 1 ) * $pageSize )->take( $pageSize )->get();
 
 		return response()->json( [
 			'data'  => CategoryResource::collection( $categories ),

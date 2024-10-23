@@ -19,8 +19,6 @@ export default function EmptyContent({ title, description, img, ...other }) {
   return (
     <RootStyle {...other}>
       <img
-        // disabledEffect
-        // visibleByDefault
         alt="empty content"
         src={img || "https://cdn-icons-png.flaticon.com/128/7486/7486744.png"}
       />
