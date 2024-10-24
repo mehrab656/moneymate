@@ -153,7 +153,7 @@ class User extends Authenticatable
         return $this->belongsTo(Company::class, 'primary_company', 'id');
     }
 
-    public function permissions(): HasOneThrough
+    public function permissions(): BelongsTo
     {
         return $this->belongsTo(Role::class, 'company_user', 'role_id', 'id');
     }

@@ -88,7 +88,6 @@ function TaskAddModal({ handelCloseModal, title, id }) {
         label: name
     }
 });
-
   const [createTask] = useCreateTaskMutation();
 
   const submit = async (e) => {

@@ -52,6 +52,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/users/delete/{id}', [UserController::class, 'delete']);
     Route::apiResource('/users', UserController::class);
     Route::get('/get-all-users', [UserController::class, 'getUsers']);
+    Route::get('/get-investors', [UserController::class, 'getInvestors']);
     Route::get('/dashboard-data', [DashboardController::class, 'dashboardData']);
     Route::post('/update-profile/{slug}',[UserController::class,'updateProfile']);
 
@@ -175,7 +176,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Investment Api
     Route::get('/investments', [InvestmentController::class, 'index']);
     Route::post('/investment/add', [InvestmentController::class, 'add']);
-    Route::delete('/investment/{investment}', [InvestmentController::class, 'destroy']);
+    Route::delete('/investment/{id}', [InvestmentController::class, 'destroy']);
     Route::get('investment/{investment}', [InvestmentController::class, 'show']);
     Route::post('/investment/{investment}', [InvestmentController::class, 'update']);
     Route::get('/export-investment-csv', [InvestmentController::class, 'exportInvestmentCsv']);

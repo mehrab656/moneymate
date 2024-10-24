@@ -26,8 +26,6 @@ import Transfers from "./views/Transfers.jsx";
 import Calendar from "./views/Calendar.jsx";
 import SubscriptionHistory from "./views/SubscriptionHistory.jsx";
 import WarningMessage from "./views/WarningMessage.jsx";
-import InvestmentForm from "./views/InvestmentForm.jsx";
-import Investment from "./views/Investment.jsx";
 import InvestmentReport from "./views/InvestmentReport";
 import Return from "./views/Return";
 import InvestmentPlan from "./views/InvestmentPlan.jsx";
@@ -51,6 +49,7 @@ import Task from "./views/HRMS/Task/Task.jsx";
 import UserList from "./views/User/UserList.jsx";
 import MyTasks from "./views/HRMS/Task/MyTasks.jsx";
 import EmployeeDashboard from "./components/EmployeeDashboard.jsx";
+import InvestmentList from "./views/Investment/InvestmentList.jsx";
 
 const router = createBrowserRouter([
 
@@ -146,15 +145,7 @@ const router = createBrowserRouter([
             },
             {
                 path: '/investments',
-                element: <Investment/>
-            },
-            {
-                path: '/investments/new',
-                element: <InvestmentForm key="investmentCreate"/>
-            },
-            {
-                path: '/investment/:id',
-                element: <InvestmentForm key="investmentUpdate"/>
+                element: <InvestmentList />
             },
             {
                 path: '/investment-plan',

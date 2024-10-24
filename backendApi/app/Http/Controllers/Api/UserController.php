@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Http\Resources\InvestorResource;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\UserRolePermissionResource;
 use App\Models\ActivityLogModel;
@@ -156,23 +157,29 @@ class UserController extends Controller
 
     public function getUsers(): JsonResponse
     {
-
-//        $userList = DB::table('users')->select("users.*")
-//            ->join('company_user', 'users.id', '=', 'company_user.user_id')
-//            ->where('company_id', Auth::user()->primary_company)
-//            ->get();
-
         $userList = User::select('users.*')
             ->join('company_user', 'users.id', '=', 'company_user.user_id')
             ->where('company_id', Auth::user()->primary_company)
+            ->where('role_as','!=','employee')
             ->get();
-
-        foreach ($userList as $user) {
-            dd($user->permissions);
-        }
-
         return response()->json([
             'data' => UserResource::collection($userList)
+        ]);
+    }
+
+    /**
+     * This function will help to get the investors only,for the current company.
+     * @return JsonResponse
+     */
+    public function getInvestors(): JsonResponse
+    {
+        $userList = User::select('users.*')
+            ->join('company_user', 'users.id', '=', 'company_user.user_id')
+            ->where('company_id', Auth::user()->primary_company)
+            ->where('role_as','!=','employee')
+            ->get();
+        return response()->json([
+            'data' => InvestorResource::collection($userList)
         ]);
     }
 
@@ -284,7 +291,7 @@ class UserController extends Controller
             'gender' => 'required'
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json([
                 'error' => true,
                 'message' => $validator->errors()
@@ -301,7 +308,7 @@ class UserController extends Controller
         $update = (new User())->updateUser($data, $slug);
 
 
-        return response()->json($update,$update['status_code']);
+        return response()->json($update, $update['status_code']);
 
     }
 

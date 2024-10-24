@@ -66,9 +66,6 @@ class TaskController extends Controller
         if ($cat_id) {
             $query = $query->where('category_id', $cat_id);
         }
-        if ($limit) {
-            $query = $query->limit($limit);
-        }
         if ($orderBy && $order) {
             $query = $query->orderBy($orderBy, $order);
         }
@@ -81,15 +78,15 @@ class TaskController extends Controller
         if ($employee) {
             $query = $query->join('task_employee', 'tasks.id', '=', 'task_employee.task_id')->where('employee_id', $employee);
         }
-
+        if ($limit) {
+            $query = $query->limit($limit);
+        }
         $query = $query->select('tasks.*')->skip(($page - 1) * $pageSize)->take($pageSize)->get();
-        $totalCount = TaskModel::count();
+        $totalCount = TaskModel::where('company_id',Auth::user()->primary_company)->count();
 
         return response()->json([
             'data' => TaskResource::collection($query),
             'total' => $totalCount,
-            'page'=>$page,
-            'pageSize'=>$pageSize,
         ]);
     }
 

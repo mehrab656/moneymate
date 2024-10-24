@@ -189,11 +189,13 @@ export default function MyTasks() {
                         })
                     }
 
+            {
+                taskTimelineModal &&
+                <TaskHistoryModal handelCloseModal={closeTimelineModalFunc}
+                                  workflow={taskHistory}
+                />
+            }
 
-            <TaskHistoryModal showModal={taskTimelineModal}
-                              handelCloseModal={closeTimelineModalFunc}
-                              workflow={taskHistory}
-            />
         </div>
     );
 }

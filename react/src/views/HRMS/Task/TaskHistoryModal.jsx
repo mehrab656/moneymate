@@ -25,7 +25,7 @@ const _initialTaskData = {
     comment: '',
 }
 
-function TaskHistoryModal({showModal, handelCloseModal, workflow=[]}) {
+function TaskHistoryModal({ handelCloseModal, workflow=[]}) {
     return (
         <>
             <Modal
