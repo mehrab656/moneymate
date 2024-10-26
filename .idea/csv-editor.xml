@@ -38,7 +38,21 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\backendApi\public\expense_20240209154003.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\backendApi\public\expense_20240213004609.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\backendApi\public\incomes_20230823132336.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -53,6 +67,20 @@
           </value>
         </entry>
         <entry key="\backendApi\public\incomes_20240612010145.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\backendApi\storage\app\files\June 6, 2024 booking.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\backendApi\storage\app\files\May 16, 2024 booking.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

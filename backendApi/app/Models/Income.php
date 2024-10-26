@@ -62,10 +62,6 @@ class Income extends Model
 
             $income = explode(',', $file[2]);
 
-            echo '<pre>';
-            print_r($income);
-            echo '</pre>';
-            exit();
             if ($income[2] == 'Reservation') {
 
                 if ($income[12] === 'USD') {

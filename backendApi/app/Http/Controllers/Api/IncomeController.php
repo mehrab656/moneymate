@@ -109,21 +109,19 @@ class IncomeController extends Controller
     {
         $income = $request->validated();
 
-        $accountID = $income['account_id'];
-        $catID = $income['category_id'];
-        $bankAccount = BankAccount::find($accountID);
-        if (!$bankAccount) {
-            DB::rollBack();
+        $accountSlug = $income['account'];
+        $categorySlug = $income['category'];
 
+        $account = BankAccount::where('slug',$accountSlug)->get()->first();
+
+        if (!$account) {
             return response()->json([
                 'message' => 'Not Found!',
                 'description' => "Bank account was not found!",
             ], 400);
         }
-        $category = Category::where('id', $catID)->where('type', '=', 'income')->get()->first();
+        $category = Category::where('slug', $categorySlug)->where('type', '=', 'income')->get()->first();
         if (!$category) {
-            DB::rollBack();
-
             return response()->json([
                 'message' => 'Not Found!',
                 'description' => "Category was not Found!",
@@ -138,9 +136,11 @@ class IncomeController extends Controller
             $income['attachment'] = $filename; // Store only the filename
         }
 
-        $incomeDate = Carbon::parse($income['date'])->format('Y-m-d');
+        $incomeDate = $income['date'];
+        $incomeType = $income['income_type'];
+        $incomeReference = $income['reference'];
 
-        if ($income['income_type'] === 'reservation') {
+        if (strtolower($incomeType) === 'reservation') {
             $checkinDate = new DateTime($income['checkin_date']);
             $checkoutDate = new DateTime($income['checkout_date']);
 
@@ -150,10 +150,9 @@ class IncomeController extends Controller
 
             try {
                 DB::beginTransaction();
-                $account = (new BankAccount)->updateBalance($income['account_id'], $income['amount']);
-                if (!$account['status']) {
+                $updateBalance = (new BankAccount)->updateBalance($account->id, $income['amount']);
+                if (!$updateBalance['status']) {
                     DB::rollBack();
-
                     return response()->json([
                         'message' => 'Failed!',
                         'description' => "Failed to update Bank Account!",
@@ -171,14 +170,14 @@ class IncomeController extends Controller
                         'slug' => Uuid::uuid4(),
                         'user_id' => Auth::user()->id,
                         'company_id' => Auth::user()->primary_company,
-                        'account_id' => $accountID,
+                        'account_id' => $account->id,
                         'amount' => $income['amount'],
-                        'category_id' => $catID,
+                        'category_id' => $category->id,
                         'description' => $description,
                         'note' => $income['note'],
-                        'reference' => $income['reference'],
+                        'reference' => strtolower($incomeReference),
                         'date' => $incomeDate,
-                        'income_type' => $income['income_type'],
+                        'income_type' => strtolower($incomeType),
                         'checkin_date' => $checkinDate->format('Y-m-d'),
                         'checkout_date' => $checkoutDate->format('Y-m-d'),
                         'attachment' => $income['attachment']
@@ -189,7 +188,7 @@ class IncomeController extends Controller
                         'log_type' => 'create',
                         'module' => 'income',
                         'descriptions' => "added income.",
-                        'data_records' => array_merge(json_decode(json_encode($income), true), ['Sector Name' => $category->sector->name], $account),
+                        'data_records' => json_encode(array_merge(['income'=>$income], ['Sector Name' => $category->sector->name], ['account'=>$account])),
                     ]);
                 } else {
 
@@ -209,14 +208,14 @@ class IncomeController extends Controller
                         'slug' => Uuid::uuid4(),
                         'user_id' => Auth::user()->id,
                         'company_id' => Auth::user()->primary_company,
-                        'account_id' => $accountID,
+                        'account_id' => $account->id,
                         'amount' => $first_month_amount,
-                        'category_id' => $catID,
+                        'category_id' => $category->id,
                         'description' => $description_1,
                         'note' => $income['note'],
-                        'reference' => $income['reference'],
+                        'reference' => $incomeReference,
                         'date' => $end_date,
-                        'income_type' => $income['income_type'],
+                        'income_type' => $incomeType,
                         'checkin_date' => $checkinDate->format('Y-m-d'),
                         'checkout_date' => $second_month_startingDate,
                         'attachment' => $income['attachment']
@@ -226,7 +225,7 @@ class IncomeController extends Controller
                         'log_type' => 'create',
                         'module' => 'income',
                         'descriptions' => "  added income.",
-                        'data_records' => array_merge(json_decode(json_encode($income_first), true), $account),
+                        'data_records' => json_encode(array_merge(['income'=>$income_first], ['Sector Name' => $category->sector->name], ['account'=>$account])),
                     ]);
 
                     $second_month_startingDate = $checkoutDate->format('Y-m-01'); //next month starting date;
@@ -246,14 +245,14 @@ class IncomeController extends Controller
                             'slug' => Uuid::uuid4(),
                             'user_id' => Auth::user()->id,
                             'company_id' => Auth::user()->primary_company,
-                            'account_id' => $accountID,
+                            'account_id' => $account->id,
                             'amount' => $second_month_amount,
-                            'category_id' => $catID,
+                            'category_id' => $category->id,
                             'description' => $description_2,
                             'note' => $income['note'],
-                            'reference' => $income['reference'],
+                            'reference' => $incomeReference,
                             'date' => $second_month_startingDate,
-                            'income_type' => $income['income_type'],
+                            'income_type' => $incomeType,
                             'checkin_date' => $second_month_startingDate,
                             'checkout_date' => $checkoutDate->format('Y-m-d'),
                             'attachment' => $income['attachment']
@@ -263,19 +262,19 @@ class IncomeController extends Controller
                             'log_type' => 'create',
                             'module' => 'income',
                             'descriptions' => "added new income.",
-                            'data_records' => array_merge(json_decode(json_encode($income_sec), true), $account),
+                            'data_records' => json_encode(array_merge(['income'=>$income_sec], ['Sector Name' => $category->sector->name], ['account'=>$account])),
                         ]);
                     }
                 }
                 DB::commit();
 
-            } catch (Throwable $e) {
+            } catch (Exception $e) {
                 DB::rollBack();
 
                 return response()->json([
-                    'message' => 'Something provided wrong data!',
-                    'error' => $e
-                ]);
+                    'message' => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
+                    'error' => 'error'
+                ],400);
             }
         } else {
 
@@ -297,13 +296,13 @@ class IncomeController extends Controller
                     'slug' => Uuid::uuid4(),
                     'user_id' => Auth::user()->id,
                     'company_id' => Auth::user()->primary_company,
-                    'account_id' => $income['account_id'],
+                    'account_id' => $account->id,
                     'amount' => $income['amount'],
-                    'category_id' => $income['category_id'],
+                    'category_id' => $category->id,
                     'description' => $income['description'],
                     'note' => $income['note'],
-                    'reference' => $income['reference'],
-                    'income_type' => $income['income_type'],
+                    'reference' => $incomeReference,
+                    'income_type' => $incomeType,
                     'date' => $incomeDate,
                     'attachment' => $income['attachment'],
 

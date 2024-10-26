@@ -42,7 +42,7 @@ input {
     box-sizing: border-box;
     font-size: 14px;
     transition: all 0.3s;
-    height: 40px;
+    /*height: 40px;*/
 }
 
 input:focus {
