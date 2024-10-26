@@ -7,6 +7,7 @@ use App\Http\Requests\SectorRequest;
 use App\Http\Requests\SectorUpdateRequest;
 use App\Http\Resources\IncomeResource;
 use App\Http\Resources\InvestmentResource;
+use App\Http\Resources\SectorForFilterResource;
 use App\Http\Resources\SectorResource;
 use App\Models\BankAccount;
 use App\Models\Category;
@@ -53,7 +54,7 @@ class SectorModelController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * IncomeShow the form for creating a new resource.
      * @throws Throwable
      */
     public function add(SectorRequest $request): JsonResponse|RedirectResponse
@@ -208,7 +209,7 @@ class SectorModelController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * IncomeShow the form for editing the specified resource.
      */
     public function edit(SectorModel $sectorModel)
     {
@@ -551,7 +552,7 @@ class SectorModelController extends Controller
     {
         $sectors = SectorModel::where('company_id', Auth::user()->primary_company)->get();
 
-        return response()->json(['sectors' => $sectors]);
+        return response()->json(['data' => SectorForFilterResource::collection($sectors)]);
     }
 }
 

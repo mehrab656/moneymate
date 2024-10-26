@@ -122,7 +122,7 @@ class CompanyController extends Controller {
 	}
 
 	/**
-	 * Show the form for editing the specified resource.
+	 * IncomeShow the form for editing the specified resource.
 	 */
 	public function edit( Company $company ) {
 		//

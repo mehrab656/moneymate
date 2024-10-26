@@ -31,27 +31,27 @@ export default function TableToolbar({
   return (
     <Stack spacing={2} direction={{ xs: 'column', sm: 'row' }} sx={{ py: 2.5}}>
 
-      {/* Filter by sector */}
+      {/* IncomeFilter by sector */}
       {filterBySectowShow &&
       <FilterBy
-        title={'Filter By Sector'}
+        title={'IncomeFilter By Sector'}
         filterValue={filterSecterValue}
         onChangeFilter={onChangeSectorFilter}
         filterOption={filterSectorOption}
        />
       }
 
-      {/* Filter by type */}
+      {/* IncomeFilter by type */}
       {filterBytypeShow && 
       <FilterBy
-        title={'Filter By Type'}
+        title={'IncomeFilter By Type'}
         filterValue={filterTypeValue}
         onChangeFilter={onChangeTypeFilter}
         filterOption={filterTypeOption}
        />
       }
 
-      {/* Filter by text */}
+      {/* IncomeFilter by text */}
       {filterByText && 
       <TextField
         sx={{
@@ -68,7 +68,7 @@ export default function TableToolbar({
 
       <Box display={'flex'} alignItems={'center'}>
        {/* <Button disabled={filterDisabled} onClick={handleSubmitFilter} variant="contained" size="small"  startIcon={<FilterAltIcon />}>
-          Filter
+          IncomeFilter
         </Button> */}
         <Button disabled={filterDisabled} onClick={handleResetFilter} sx={{ml:2}} variant="outlined" size="small" startIcon={<RotateLeftIcon />}>
           Reset

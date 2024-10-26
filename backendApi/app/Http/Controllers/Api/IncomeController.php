@@ -29,29 +29,70 @@ class IncomeController extends Controller
      * @param IncomeRequest $request
      *
      * @return JsonResponse
+     * @throws Exception
      */
 
     public function index(Request $request): JsonResponse
     {
         $page = $request->query('page', 1);
         $pageSize = $request->query('pageSize', 1000);
+        $sector = $request->query('sector');
+        $category = $request->query('category');
+        $order = $request->query('order','DESC');
+        $orderBy = $request->query('orderBy','id');
+        $from_date = $request->query('from_date');
+        $to_date = $request->query('to_date');
+        $type = $request->query('type');
+        $account_id = $request->query('account_id');
+        $limit = $request->query('limit');
 
-        $incomes = Income::where('company_id', Auth::user()->primary_company)
-            ->whereHas('category', function ($query) {
-                $query->where('type', 'income');
-            })->skip(($page - 1) * $pageSize)
-            ->take($pageSize)
-            ->orderBy('date', 'desc')
-            ->get();
+
+        if ($from_date) {
+            $from_date = date('Y-m-d', strtotime($from_date));
+        }
+        if ($to_date) {
+            $to_date = date('Y-m-d', strtotime($to_date));
+        }
+
+        if ($from_date && empty($to_date)) {
+            $to_date = Carbon::now()->toDateString();
+        }
+
+        if ($to_date && empty($from_date)) {
+            $from_date = (new DateTime($to_date))->format('Y-m-01');
+        }
+
+        $query = Income::where('company_id', Auth::user()->primary_company);
 
 
-        $totalCount = Income::where('company_id', Auth::user()->primary_company)
-            ->whereHas('category', function ($query) {
-                $query->where('type', 'income');
-            })->count();
+
+        if ($category){
+            $query = $query->where('category_id',$category);
+        }
+        if ($account_id){
+            $query = $query->where('account_id',$category);
+        }
+        if ($type){
+            $query = $query->where('income_type',$type);
+        }
+        if ($orderBy && $order) {
+            $query = $query->orderBy($orderBy, $order);
+        }
+        if ($limit) {
+            $query = $query->limit($limit);
+        }
+//        $incomes = Income::where('company_id', Auth::user()->primary_company)
+//            ->whereHas('category', function ($query) {
+//                $query->where('type', 'income');
+//            })->skip(($page - 1) * $pageSize)
+//            ->take($pageSize)
+//            ->orderBy('date', 'desc')
+//            ->get();
+        $query = $query->skip(($page - 1) * $pageSize)->take($pageSize)->get();
+        $totalCount = Income::where('company_id',Auth::user()->primary_company)->count();
 
         return response()->json([
-            'data' => IncomeResource::collection($incomes),
+            'data' => IncomeResource::collection($query),
             'total' => $totalCount,
         ]);
     }
@@ -586,4 +627,16 @@ class IncomeController extends Controller
             'description' => "CSV has been Imported Successfully",
         ]);
     }
+
+    public function incomeTypes()
+    {
+
+        $query  = Income::select('income_type')
+//            ->where('company_id',Auth::user()->primary_company)
+            ->GroupBy('income_type')->get();
+        return response()->json([
+            'data' => $query,
+        ]);
+    }
+
 }

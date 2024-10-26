@@ -38,7 +38,7 @@ class InvestmentController extends Controller
         $page = $request->query('page', 1); //this is current page
         $pageSize = $request->query('pageSize', 10);
         $investor_id = $request->query('investor_id');
-        $orderBy = $request->query('orderBy', 'investment_date');
+        $orderBy = $request->query('orderBy', 'id');
         $order = $request->query('order', "DESC");
         $limit = $request->query('limit');
         $to_date = $request->query('to_date');
@@ -89,7 +89,7 @@ class InvestmentController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * IncomeShow the form for creating a new resource.
      * @throws Exception
      */
     public function add(InvestmentRequest $request): JsonResponse
@@ -157,7 +157,7 @@ class InvestmentController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * IncomeShow the form for editing the specified resource.
      */
     public function edit(Investment $investor)
     {

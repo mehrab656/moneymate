@@ -252,7 +252,7 @@ export default function Task() {
           style={{ cursor: "pointer" }}
           className={"text-primary"}
           data-tooltip-id="internet-account"
-          data-tooltip-content={"Show this internet details"}
+          data-tooltip-content={"IncomeShow this internet details"}
         >
           <span className="aside-menu-icon">
             <FontAwesomeIcon icon={faEye} />

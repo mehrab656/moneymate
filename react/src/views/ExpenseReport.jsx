@@ -88,7 +88,7 @@ export default function ExpenseReport() {
 
         axiosClient.get('/sectors-list')
             .then(({data}) => {
-                setSectors(data.sectors);
+                setSectors(data.data);
             }).catch(error => {
             console.warn('Error Loading sectors: ', error);
         });

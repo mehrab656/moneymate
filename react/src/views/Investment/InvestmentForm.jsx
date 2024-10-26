@@ -61,11 +61,6 @@ function InvestmentForm({handelCloseModal, title, id}) {
     } = useGetSingleInvestmentDataQuery({
         id: id,
     });
-    useEffect(() => {
-        if (id && getSingleInvestmentData?.data) {
-            setInvestmentData(getSingleInvestmentData?.data);
-        }
-    }, [id])
 
     const modifiedUserData = getInvestorData?.data.map(({slug, full_name}) => {
         return {
@@ -114,7 +109,12 @@ function InvestmentForm({handelCloseModal, title, id}) {
             }
         }
     };
-
+    useEffect(() => {
+        if (id && getSingleInvestmentData?.data) {
+            setInvestmentData(getSingleInvestmentData?.data);
+        }
+    }, [getSingleInvestmentData?.data]);
+    console.log(id);
     return (
         <>
             <MainLoader loaderVisible={loading}/>

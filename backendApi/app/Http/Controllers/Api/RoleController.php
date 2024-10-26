@@ -90,7 +90,7 @@ class RoleController extends Controller
 
 
     /**
-     * Show the form for creating a new resource.
+     * IncomeShow the form for creating a new resource.
      * @throws \Throwable
      */
     public function addRole(RoleRequest $request)
@@ -206,7 +206,7 @@ class RoleController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * IncomeShow the form for editing the specified resource.
      */
     public function edit(Role $role)
     {

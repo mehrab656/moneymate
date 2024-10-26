@@ -46,7 +46,7 @@ export default function SectorTableRow({
         <Box display={'flex'}>
           <Box sx={{ml:2}}>{checkPayments(row.payments, 'electricity')}</Box>
           <Box sx={{ml:2}} onClick={() => showHelperModels(row, index)}>
-            <Tooltip title="Show this electricity details"  placement="top" arrow>
+            <Tooltip title="IncomeShow this electricity details"  placement="top" arrow>
               {index === activeElectricityModal 
                 ?<VisibilityIcon />
                 :<VisibilityOffIcon />
@@ -59,7 +59,7 @@ export default function SectorTableRow({
         <Box display={'flex'}>
           <Box sx={{ml:2}}>{checkPayments(row.payments, 'internet')}</Box>
           <Box sx={{ml:2}} onClick={() => showHelperModels(row, index, 'internet')}>
-            <Tooltip title="Show this internet details"  placement="top" arrow>
+            <Tooltip title="IncomeShow this internet details"  placement="top" arrow>
               {index === activeElectricityModal 
                 ?<VisibilityIcon />
                 :<VisibilityOffIcon />

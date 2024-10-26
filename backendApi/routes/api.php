@@ -54,7 +54,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/get-all-users', [UserController::class, 'getUsers']);
     Route::get('/get-investors', [UserController::class, 'getInvestors']);
     Route::get('/dashboard-data', [DashboardController::class, 'dashboardData']);
-    Route::post('/update-profile/{slug}',[UserController::class,'updateProfile']);
+    Route::post('/update-profile/{slug}', [UserController::class, 'updateProfile']);
 
 
     // Category Api
@@ -95,6 +95,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/export-income-csv', [IncomeController::class, 'exportIncomeCsv']);
     Route::post('/income/upload-attachment', [IncomeController::class, 'uploadAttachment']);
     Route::get('/total-income', [IncomeController::class, 'totalIncome']);
+    Route::get('/income-types', [IncomeController::class, 'incomeTypes']);
 
     // File download API
 

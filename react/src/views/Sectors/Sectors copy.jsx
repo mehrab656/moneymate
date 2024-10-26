@@ -358,7 +358,7 @@ export default function Sectors() {
                                                            style={{cursor: "pointer"}}
                                                            className={index === activeElectricityModal ? 'text-primary fa-pull-right ' : 'text-muted fa-pull-right'}
                                                            data-tooltip-id='dewa-account'
-                                                           data-tooltip-content={"Show this electricity details"}>
+                                                           data-tooltip-content={"IncomeShow this electricity details"}>
                                                             <span className="aside-menu-icon">
                                                                 <FontAwesomeIcon
                                                                     icon={index === activeElectricityModal ? faEye : faEyeSlash}/>
@@ -372,7 +372,7 @@ export default function Sectors() {
                                                            style={{cursor: "pointer"}}
                                                            className={index === activeElectricityModal ? 'text-primary fa-pull-right ' : 'text-muted fa-pull-right'}
                                                            data-tooltip-id='internet-account'
-                                                           data-tooltip-content={"Show this internet details"}>
+                                                           data-tooltip-content={"IncomeShow this internet details"}>
                                                     <span className="aside-menu-icon">
                                                         <FontAwesomeIcon
                                                             icon={index === activeElectricityModal ? faEye : faEyeSlash}/>

@@ -50,6 +50,7 @@ import UserList from "./views/User/UserList.jsx";
 import MyTasks from "./views/HRMS/Task/MyTasks.jsx";
 import EmployeeDashboard from "./components/EmployeeDashboard.jsx";
 import InvestmentList from "./views/Investment/InvestmentList.jsx";
+import IncomeList from "./views/Income/IncomeList.jsx";
 
 const router = createBrowserRouter([
 
@@ -106,8 +107,12 @@ const router = createBrowserRouter([
                 element: <Return/>
             },
             {
-                path: '/incomes',
+                path: '/incomes-test',
                 element: <Incomes/>
+            },
+            {
+                path:'/incomes',
+                element: <IncomeList />
             },
             {
                 path: '/income/new',
