@@ -38,8 +38,8 @@ class IncomeController extends Controller
         $pageSize = $request->query('pageSize', 1000);
         $sector = $request->query('sector');
         $category = $request->query('category');
-        $order = $request->query('order');
-        $orderBy = $request->query('order');
+        $order = $request->query('order','DESC');
+        $orderBy = $request->query('orderBy','id');
         $from_date = $request->query('from_date');
         $to_date = $request->query('to_date');
         $type = $request->query('type');

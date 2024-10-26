@@ -15,7 +15,7 @@ export const incomeSlice = createApi({
         getIncomeData: builder.query({
             query: ({currentPage,pageSize,query}) => {
                 return {
-                    url: `/incomes?page=${currentPage}&pageSize=${pageSize}&sector=${query?.sector}&category=${query?.category}&order=${query?.order}&limit=${query?.limit}&to_date=${query?.to_date}&from_date=${query?.from_date}&type=${query?.type}&account_id=${query?.account_id}`,
+                    url: `/incomes?page=${currentPage}&pageSize=${pageSize}&category=${query?.category}&order=${query?.order}&limit=${query?.limit}&to_date=${query?.to_date}&from_date=${query?.from_date}&type=${query?.type}&account_id=${query?.account_id}`,
                     method: "GET",
                     headers:{
                         Authorization: `Bearer ${globalToken}`
