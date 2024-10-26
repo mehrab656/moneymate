@@ -35,7 +35,7 @@ export default function Signup() {
 
     const formSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true); // Show loading effect
+        setLoading(true); // IncomeShow loading effect
 
         const payLoad = {
             name: nameRef.current.value,

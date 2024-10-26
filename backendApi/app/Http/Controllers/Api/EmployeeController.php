@@ -82,7 +82,7 @@ class EmployeeController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * IncomeShow the form for creating a new resource.
      */
     public function create()
     {
@@ -157,7 +157,7 @@ class EmployeeController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * IncomeShow the form for editing the specified resource.
      */
     public function edit(Employee $employee)
     {

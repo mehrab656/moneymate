@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Http\Resources\BankAccountResource;
+use App\Http\Resources\CategoryFilterResource;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Support\Facades\DB;
@@ -144,13 +145,16 @@ class CategoryController extends Controller {
     {
 
         $type = $request->type;
-        $categories = DB::table( 'categories' )->select( 'categories.*' )
+        $query = DB::table( 'categories' )->select( 'categories.*' )
             ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
-            ->where( 'sectors.company_id', '=', Auth::user()->primary_company )
-            ->where('type',$type)->get();
+            ->where( 'sectors.company_id', '=', Auth::user()->primary_company );
+
+        if ($type){
+            $query= $query->where('type',$type);
+        }
 
         return response()->json([
-            'categories'=> $categories,
+            'data'=> CategoryFilterResource::collection($query->get()),
         ]);
     }
 

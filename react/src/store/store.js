@@ -10,6 +10,7 @@ import {taskSlice} from "../api/slices/taskSlice";
 import {employeeSlice} from "../api/slices/employeeSlice";
 import {investmentSlice} from "../api/slices/investmentSlice.js";
 import {bankSlice} from "../api/slices/bankSlice.js";
+import {incomeSlice} from "../api/slices/incomeSlice.js";
 
 
 export const store = configureStore({
@@ -23,6 +24,7 @@ export const store = configureStore({
         [employeeSlice.reducerPath]: employeeSlice.reducer,
         [investmentSlice.reducerPath]: investmentSlice.reducer,
         [bankSlice.reducerPath]: bankSlice.reducer,
+        [incomeSlice.reducerPath]: incomeSlice.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(
@@ -35,6 +37,7 @@ export const store = configureStore({
             employeeSlice.middleware,
             investmentSlice.middleware,
             bankSlice.middleware,
+            incomeSlice.middleware,
         ),
 });
 

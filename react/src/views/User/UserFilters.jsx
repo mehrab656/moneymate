@@ -32,13 +32,13 @@ export default function UserFilters(props) {
                         <Form.Select size={"sm"} value={query.role} aria-label="Roles" onChange={(e) => {
                             setQuery({...query, role: e.target.value});
                         }}>
-                            <option defaultValue>{"Filter by Roles"}</option>
+                            <option defaultValue>{"IncomeFilter by Roles"}</option>
                             {roleLists.length > 0 ? roleLists.map((role) => (
                                     <option key={role.id} value={role.id}>
                                         {role.role.toUpperCase()}
                                     </option>
                                 )) :
-                                (<option defaultValue>{"Filter by Roles"}</option>)
+                                (<option defaultValue>{"IncomeFilter by Roles"}</option>)
                             }
                         </Form.Select>
                     </Col>

@@ -75,7 +75,7 @@ export default function Login() {
                     if (data.user.role_as==='employee'){
                         naviagte('/employee-dashboard');
                     }else{
-                        naviagte('/dashboard');
+                        naviagte('/dashboard'); //backend user dashboard
                     }
 
                 })
@@ -105,7 +105,7 @@ export default function Login() {
 
     const payNow = async (e) => {
         e.preventDefault();
-        setLoading(true); // Show loading effect
+        setLoading(true); // IncomeShow loading effect
 
         const payLoad = {
             email: emailRef.current.value,

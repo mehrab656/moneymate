@@ -33,6 +33,7 @@ import Collapse from "@mui/material/Collapse";
 import { Col, Row } from "react-bootstrap";
 import { checkPermission } from "./HelperFunctions.js";
 import { TableLoader } from "../components/SkeletonLoader/TableLoader.jsx";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -90,14 +91,13 @@ function CommonTable(props) {
                 {addBTN.icon} {addBTN.txt}
               </a>
             )}
-
             <ExpandMore
-              expand={expanded.toString()}
-              onClick={handleExpandClick}
-              aria-expanded={expanded}
-              aria-label="show more"
+                expand={expanded.toString()}
+                onClick={handleExpandClick}
+                aria-expanded={expanded}
+                aria-label="show more"
             >
-              <ExpandMoreIcon />
+              <ArrowDropDownIcon />
             </ExpandMore>
           </>
         }
@@ -107,7 +107,7 @@ function CommonTable(props) {
         {filter()}
       </Collapse>
 
-      {loading && <TableLoader row={loaderRow} col={loaderCol} />}
+      {loading && <TableLoader row={loaderRow} col={loaderCol}/>}
 
       {!loading && (
         <CardContent>

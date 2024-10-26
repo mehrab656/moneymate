@@ -60,7 +60,7 @@ export default function AddNewAssets() {
 
     useEffect(() => {
         axiosClient.get('/sectors-list').then(({data}) => {
-            setSectors(data.sectors);
+            setSectors(data.data);
         }).catch(error => {
             console.warn('Error fetching Sector list:', error)
         });

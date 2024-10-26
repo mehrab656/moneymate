@@ -82,7 +82,7 @@ export default function Categories() {
   const pageSize = num_data_per_page;
   const totalPages = Math.floor(totalCount / pageSize);
 
-  //Filter By
+  //IncomeFilter By
   const [filterName, setFilterName] = useState("");
   const [filterSecterValue, setFilterSeacterValue] = useState('')
   const [filterTypeValue, setFilterTypeValue] = useState('')
@@ -131,8 +131,8 @@ export default function Categories() {
       setTableData(getCategoryData.data);
       setTotalCount(getCategoryData.total);
     }
-    if(getCategorySectorListData?.sectors){
-      setSector(getCategorySectorListData.sectors);
+    if(getCategorySectorListData?.data){
+      setSector(getCategorySectorListData.data);
     }
 
     // if(sectors && sectors?.length ===1){

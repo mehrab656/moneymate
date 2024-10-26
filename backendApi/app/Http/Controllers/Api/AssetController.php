@@ -51,7 +51,7 @@ class AssetController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * IncomeShow the form for creating a new resource.
      * @throws Throwable
      */
     public function add(AssetRequest $request): JsonResponse
@@ -181,7 +181,7 @@ class AssetController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * IncomeShow the form for editing the specified resource.
      */
     public function edit($id): JsonResponse
     {
