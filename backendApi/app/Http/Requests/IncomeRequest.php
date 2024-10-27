@@ -26,9 +26,9 @@ class IncomeRequest extends FormRequest {
 		return [
 //            'user_id' => 'required',
             'description'   => 'required|string',
-            'account_id'    => 'required',
+            'account'    => 'required',
             'amount'        => 'required|numeric',
-            'category_id'   => 'required',
+            'category'   => 'required',
 			'attachment'    => 'nullable|file',
 			'note'          => 'nullable',
 			'reference'     => 'required',
@@ -36,6 +36,7 @@ class IncomeRequest extends FormRequest {
 			'checkin_date'  => 'nullable',
 			'checkout_date' => 'nullable',
 			'income_type'   => 'required',
+			'deposit'   => 'nullable',
 		];
 	}
 

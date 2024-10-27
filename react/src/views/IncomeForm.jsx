@@ -9,7 +9,7 @@ import {TextField, Autocomplete, Box, FormControl, InputLabel, Select, MenuItem}
 import {makeStyles} from "@mui/styles";
 import MainLoader from "../components/MainLoader.jsx";
 import {Button, Modal, Row} from "react-bootstrap";
-import { CAlert } from '@coreui/react';
+import {CAlert} from '@coreui/react';
 
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
@@ -134,11 +134,11 @@ export default function IncomeForm() {
 
     const incomeSubmit = (event, stay) => {
         event.preventDefault();
-         event.currentTarget.disabled = true;
+        event.currentTarget.disabled = true;
         setLoading(true);
 
         let _url = '/income/add';
-        if(income.id){
+        if (income.id) {
             _url = `/income/${income.id}`;
         }
 
@@ -514,8 +514,7 @@ export default function IncomeForm() {
                                         {errors.date && (
                                             <p className='error-message mt-2'>{errors.date[0]}</p>
                                         )}
-                                        <span
-                                            className={'text-' + reservationValidationClass}>
+                                        <span className={'text-' + reservationValidationClass}>
                                                 <small>{reservationValidation}</small>
                                             </span>
                                     </div>
