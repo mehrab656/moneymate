@@ -37,7 +37,7 @@ export const expenseSlice = createApi({
             providesTags: ["expense"],
         }),
         getSingleExpenseData: builder.query({
-            query: (id) => {
+            query: ({id}) => {
               if (typeof id !== "undefined"){
                 return {
                   url: `/expense/${id}`,
