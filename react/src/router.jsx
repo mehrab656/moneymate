@@ -10,14 +10,13 @@ import UserForm from "./views/User/UserForm.jsx";
 import Accounts from "./views/Accounts.jsx";
 import Categories from "./views/Categories.jsx";
 import Incomes from "./views/Incomes.jsx";
-import Expenses from "./views/Expenses.jsx";
 import IncomeForm from "./views/IncomeForm.jsx";
-import ExpenseForm from "./views/ExpenseForm.jsx";
+import ExpenseForm from "./views/Expense/ExpenseForm.jsx";
 import ApplicationSettingsForm from "./views/ApplicationSettingsForm.jsx";
 import Banks from "./views/Banks.jsx";
 import Budgets from "./views/Budgets.jsx";
 import BudgetForm from "./views/BudgetForm.jsx";
-import ExpenseReport from "./views/ExpenseReport.jsx";
+import ExpenseReport from "./views/Expense/ExpenseReport.jsx";
 import IncomeReport from "./views/IncomeReport.jsx";
 import WalletForm from "./views/WalletForm.jsx";
 import Debts from "./views/Debts.jsx";
@@ -51,6 +50,7 @@ import MyTasks from "./views/HRMS/Task/MyTasks.jsx";
 import EmployeeDashboard from "./components/EmployeeDashboard.jsx";
 import InvestmentList from "./views/Investment/InvestmentList.jsx";
 import IncomeList from "./views/Income/IncomeList.jsx";
+import ExpenseList from "./views/Expense/ExpenseList.jsx";
 
 const router = createBrowserRouter([
 
@@ -124,7 +124,7 @@ const router = createBrowserRouter([
             },
             {
                 path: '/expenses',
-                element: <Expenses/>
+                element: <ExpenseList/>
             },
             {
                 path: '/expense/new',
