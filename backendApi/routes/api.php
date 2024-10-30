@@ -90,7 +90,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/income/add-csv', [IncomeController::class, 'addIncomeFromCSV']);
     Route::get('/income-categories', [IncomeController::class, 'categories']);
     Route::delete('/income/{income}', [IncomeController::class, 'destroy']);
-    Route::get('income/{income}', [IncomeController::class, 'show']);
+    Route::get('income/{income}', [IncomeController::class, 'edit']);
     Route::post('/income/{income}', [IncomeController::class, 'update']);
     Route::get('/export-income-csv', [IncomeController::class, 'exportIncomeCsv']);
     Route::post('/income/upload-attachment', [IncomeController::class, 'uploadAttachment']);

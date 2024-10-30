@@ -38,8 +38,8 @@ class IncomeController extends Controller
         $pageSize = $request->query('pageSize', 1000);
         $sector = $request->query('sector');
         $category = $request->query('category');
-        $order = $request->query('order','DESC');
-        $orderBy = $request->query('orderBy','id');
+        $order = $request->query('order', 'DESC');
+        $orderBy = $request->query('orderBy', 'id');
         $from_date = $request->query('from_date');
         $to_date = $request->query('to_date');
         $type = $request->query('type');
@@ -65,15 +65,14 @@ class IncomeController extends Controller
         $query = Income::where('company_id', Auth::user()->primary_company);
 
 
-
-        if ($category){
-            $query = $query->where('category_id',$category);
+        if ($category) {
+            $query = $query->where('category_id', $category);
         }
-        if ($account_id){
-            $query = $query->where('account_id',$category);
+        if ($account_id) {
+            $query = $query->where('account_id', $category);
         }
-        if ($type){
-            $query = $query->where('income_type',$type);
+        if ($type) {
+            $query = $query->where('income_type', $type);
         }
         if ($orderBy && $order) {
             $query = $query->orderBy($orderBy, $order);
@@ -89,7 +88,7 @@ class IncomeController extends Controller
 //            ->orderBy('date', 'desc')
 //            ->get();
         $query = $query->skip(($page - 1) * $pageSize)->take($pageSize)->get();
-        $totalCount = Income::where('company_id',Auth::user()->primary_company)->count();
+        $totalCount = Income::where('company_id', Auth::user()->primary_company)->count();
 
         return response()->json([
             'data' => IncomeResource::collection($query),
@@ -109,10 +108,11 @@ class IncomeController extends Controller
     {
         $income = $request->validated();
 
+
         $accountSlug = $income['account'];
         $categorySlug = $income['category'];
 
-        $account = BankAccount::where('slug',$accountSlug)->get()->first();
+        $account = BankAccount::where('slug', $accountSlug)->get()->first();
 
         if (!$account) {
             return response()->json([
@@ -180,7 +180,7 @@ class IncomeController extends Controller
                         'income_type' => strtolower($incomeType),
                         'checkin_date' => $checkinDate->format('Y-m-d'),
                         'checkout_date' => $checkoutDate->format('Y-m-d'),
-                        'attachment' => $income['attachment']
+                        'attachment' => $income['attachment']??""
                     ]);
 
                     storeActivityLog([
@@ -188,9 +188,10 @@ class IncomeController extends Controller
                         'log_type' => 'create',
                         'module' => 'income',
                         'descriptions' => "added income.",
-                        'data_records' => json_encode(array_merge(['income'=>$income], ['Sector Name' => $category->sector->name], ['account'=>$account])),
+                        'data_records' => json_encode(array_merge(['income' => $income], ['Sector Name' => $category->sector->name], ['account' => $account])),
                     ]);
-                } else {
+                }
+                else {
 
                     $end_date = $checkinDate->format('Y-m-t'); //end date from check in date. Format: "YYYY-mm-dd"
                     $first_month_days = (int)((new DateTime($end_date))->diff($checkinDate)->format("%a")) + 1;
@@ -218,14 +219,14 @@ class IncomeController extends Controller
                         'income_type' => $incomeType,
                         'checkin_date' => $checkinDate->format('Y-m-d'),
                         'checkout_date' => $second_month_startingDate,
-                        'attachment' => $income['attachment']
+                        'attachment' => $income['attachment']??""
                     ]);
                     storeActivityLog([
                         'object_id' => $income_first['id'],
                         'log_type' => 'create',
                         'module' => 'income',
                         'descriptions' => "  added income.",
-                        'data_records' => json_encode(array_merge(['income'=>$income_first], ['Sector Name' => $category->sector->name], ['account'=>$account])),
+                        'data_records' => json_encode(array_merge(['income' => $income_first], ['Sector Name' => $category->sector->name], ['account' => $account])),
                     ]);
 
                     $second_month_startingDate = $checkoutDate->format('Y-m-01'); //next month starting date;
@@ -255,14 +256,14 @@ class IncomeController extends Controller
                             'income_type' => $incomeType,
                             'checkin_date' => $second_month_startingDate,
                             'checkout_date' => $checkoutDate->format('Y-m-d'),
-                            'attachment' => $income['attachment']
+                            'attachment' => $income['attachment']??""
                         ]);
                         storeActivityLog([
                             'object_id' => $income_sec['id'],
                             'log_type' => 'create',
                             'module' => 'income',
                             'descriptions' => "added new income.",
-                            'data_records' => json_encode(array_merge(['income'=>$income_sec], ['Sector Name' => $category->sector->name], ['account'=>$account])),
+                            'data_records' => json_encode(array_merge(['income' => $income_sec], ['Sector Name' => $category->sector->name], ['account' => $account])),
                         ]);
                     }
                 }
@@ -274,18 +275,27 @@ class IncomeController extends Controller
                 return response()->json([
                     'message' => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
                     'error' => 'error'
-                ],400);
+                ], 400);
             }
-        } else {
-
+        }
+        else {
             try {
                 DB::beginTransaction();
                 // Update the balance of the bank account
 
-                $account = (new BankAccount)->updateBalance($income['account_id'], $income['amount']);
-                if (!$account['status']) {
-                    DB::rollBack();
+                $accountInfo = [
+                    'Previous Balance'=>$account->balance,
+                    'Account Name'=>sprintf("%s- %s (%s)",$account->bankName->bank_name,$account->account_name,$account->account_number)
+                ];
 
+
+                $account->balance += $income['amount'];
+                $isUpdated = $account->save();
+
+                $accountInfo['New Account Balance'] = $account->balance;
+
+                if (!$isUpdated) {
+                    DB::rollBack();
                     return response()->json([
                         'message' => 'Failed!',
                         'description' => "Failed to update Bank Account!",
@@ -303,22 +313,21 @@ class IncomeController extends Controller
                     'note' => $income['note'],
                     'reference' => $incomeReference,
                     'income_type' => $incomeType,
-                    'date' => $incomeDate,
-                    'attachment' => $income['attachment'],
-
-
+                    'date' => date('Y-m-d',strtotime($income['date'])),
+                    'attachment' => $income['attachment']??"",
                 ]);
+
                 storeActivityLog([
                     'object_id' => $income['id'],
                     'log_type' => 'create',
                     'module' => 'income',
                     'descriptions' => "added income.",
-                    'data_records' => array_merge(json_decode(json_encode($income), true), $account),
+                    'data_records' => array_merge(json_decode(json_encode($income), true) ,$accountInfo),
                 ]);
 
                 DB::commit();
 
-            } catch (Throwable $e) {
+            } catch (Exception $e) {
                 DB::rollBack();
 
                 return response()->json([
@@ -340,58 +349,90 @@ class IncomeController extends Controller
      * @param IncomeUpdateRequest $request
      * @param Income $income
      *
-     * @return IncomeResource
+     * @return JsonResponse
      * @throws Exception
      */
 
-    public function update(IncomeUpdateRequest $request, Income $income): IncomeResource
+    public function update(IncomeRequest $request, $id): JsonResponse
     {
-        $data = $request->validated();
+        $newIncomeData = $request->validated();
 
+        $oldIncomeData = Income::where('slug',$id)->get()->first();
+        if (!$oldIncomeData){
+            return response()->json([
+                'message' => 'Not Found!',
+                'description' => "Associative income data was not found!",
+            ], 400);
+        }
+        $oldBankAccount = BankAccount::find($oldIncomeData->account_id);
+        if (!$oldBankAccount){
+            return response()->json([
+                'message' => 'Not Found!',
+                'description' => "Associated bank account was not found",
+            ], 400);
+        }
+        $newBankAccount = BankAccount::where('slug',$newIncomeData['account'])->first();
+        if (!$newBankAccount){
+            return response()->json([
+                'message' => 'Not Found!',
+                'description' => "Bank account was not found!",
+            ], 400);
+        }
+        $category = Category::where('slug',$newIncomeData['category'])->first();
+        if (!$category){
+            return response()->json([
+                'message' => 'Not Found!',
+                'description' => "Category was not found!",
+            ], 400);
+        }
 
         if ($request->hasFile('attachment')) {
             $attachmentFile = $request->file('attachment');
-            $this->deleteAttachmentFile($income);
-
+            $this->deleteAttachmentFile($oldIncomeData);
             $filename = time() . '.' . $attachmentFile->getClientOriginalExtension(); // Specify the new filename
             $attachmentFile->storeAs('files', $filename); // Upload the file with the new filename
-            $data['attachment'] = $filename;
+            $newIncomeData['attachment'] = $filename;
         }
 
         // Retrieve the original amount from the database
-        $originalAmount = $income->amount; //100
-        $originalBankAccountNo = $income->account_id;
+        $previousAmount = $oldIncomeData->amount; //100
+        $previousBankAccountNo = $oldIncomeData->account_id;
+        $newIncomeData['account_id'] = $newBankAccount->id;
+        $newIncomeData['category_id'] = $category->id;
+        $newIncomeData['user_id'] = Auth::user()->id;
 
-        $income->fill($data);
-        $income->save();
 
-        if ($income->account_id != $originalBankAccountNo) {
-            $oldBankAccount = BankAccount::find($originalBankAccountNo);
-            $newBankAccount = BankAccount::find($income->account_id);
+        unset($newIncomeData['account']);
+        unset($newIncomeData['category']);
 
-            $oldBankAccount->balance -= $originalAmount;
+        $oldIncomeData->fill($newIncomeData);
+        $oldIncomeData->save(); //now this is new incomeData
+        if ($newBankAccount->id != $previousBankAccountNo) {
+
+            $oldBankAccount->balance -= $previousAmount;
             $oldBankAccount->save();
-
-            $newBankAccount->balance += $income->amount;
+            $newBankAccount->balance += $newIncomeData['amount'];
             $newBankAccount->save();
             $accountBalance = $newBankAccount->balance;
-
         } else {
-            $bankAccount = BankAccount::find($income->account_id);
-            $bankAccount->balance += ($income->amount - $originalAmount);
-            $bankAccount->save();
-            $accountBalance = $bankAccount->balance;
+            $newBankAccount->balance -= $previousAmount;
+            $newBankAccount->balance += $newIncomeData['amount'];
+            $newBankAccount->save();
+            $accountBalance = $newBankAccount->balance;
         }
 
         storeActivityLog([
-            'object_id' => $income->id,
+            'object_id' => $oldIncomeData->id,
             'log_type' => 'edit',
             'module' => 'income',
             'descriptions' => "",
-            'data_records' => array_merge(json_decode(json_encode($income), true), ['account_balance' => $accountBalance]),
+            'data_records' => array_merge(json_decode(json_encode($newIncomeData), true), ['account_balance' => $accountBalance]),
         ]);
 
-        return new IncomeResource($income);
+        return response()->json([
+            'message' => 'updated',
+            'description' => "Income has been updated!",
+        ]);
     }
 
     /**
@@ -440,14 +481,29 @@ class IncomeController extends Controller
     }
 
     /**
-     * @param Income $income
-     *
-     * @return IncomeResource
+     * @param $id
+     * @return JsonResponse
      */
 
-    public function show(Income $income): IncomeResource
+    public function edit($id): JsonResponse
     {
-        return new IncomeResource($income);
+        if (!$id) {
+            return response()->json([
+                'message' => 'Missing Id',
+                'description' => 'Missing Id!'
+            ], 403);
+        }
+        $income = Income::where(['slug' => $id, 'company_id' => Auth::user()->primary_company])->first();
+        if (!$income) {
+            return response()->json([
+                'message' => 'Not Found',
+                'description' => 'Income not found!'
+            ], 404);
+        }
+
+        return response()->json([
+            'data' => IncomeResource::make($income),
+        ]);
     }
 
 
@@ -630,7 +686,7 @@ class IncomeController extends Controller
     public function incomeTypes()
     {
 
-        $query  = Income::select('income_type')
+        $query = Income::select('income_type')
 //            ->where('company_id',Auth::user()->primary_company)
             ->GroupBy('income_type')->get();
         return response()->json([

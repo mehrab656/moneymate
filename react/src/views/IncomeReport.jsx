@@ -6,7 +6,6 @@ import {SettingsContext} from "../contexts/SettingsContext";
 import MainLoader from "../components/MainLoader.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
-import ExpenseModal from "../helper/ExpenseModal.jsx";
 import IncomeModal from "../helper/IncomeModal.jsx";
 import { Button } from "@mui/material";
 import ReactToPrint from 'react-to-print'

@@ -26,14 +26,18 @@ class IncomeUpdateRequest extends FormRequest {
 	 */
 	public function rules(): array {
 		$rules = [
-			'account_id'  => 'required',
+			'account'  => 'required',
+			'income_type'  => 'required',
 			'amount'      => 'required|numeric',
-			'category_id' => 'required',
+			'category' => 'required',
 			'description' => 'nullable|string',
 			'note'        => 'nullable|string',
-			'reference'   => 'nullable|string',
-			'date'        => 'nullable|date_format:Y-m-d',
-		];
+			'checkin_date'        => 'nullable|date_format:Y-m-d',
+			'checkout_date'        => 'nullable|date_format:Y-m-d',
+			'reference'   => 'required|string',
+			'date'        => 'required|date_format:Y-m-d',
+            'attachment'    => 'nullable|file',
+        ];
 
 		if ( $this->hasFile( 'attachment' ) ) {
 			$rules['attachment'] = 'file';

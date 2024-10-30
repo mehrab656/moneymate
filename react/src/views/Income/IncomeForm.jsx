@@ -7,7 +7,7 @@ import Select from "react-select";
 import {reservationValidationBuilder} from "../../helper/HelperFunctions.js";
 import Button from "react-bootstrap/Button";
 import {notification} from "../../components/ToastNotification.jsx";
-import {useCreateIncomeMutation} from "../../api/slices/incomeSlice.js";
+import {useCreateIncomeMutation, useGetSingleIncomeDataQuery} from "../../api/slices/incomeSlice.js";
 import {Autocomplete, Box, FormControl, TextField} from "@mui/material";
 import FormLabel from "@mui/material/FormLabel";
 import RadioGroup from "@mui/material/RadioGroup";
@@ -23,19 +23,18 @@ const useStyles = makeStyles({
 });
 const defaultData = {
     id: null,
-    user_id: null,
-    income_type: "reservation",
-    account: "", // Set default value to an empty string
+    account: [],
+    category: [],
+    income_type: [],
+    reference: [],
     amount: "", // Set default value to an empty string
     description: "",
-    reference: "",
     date: null,
     checkin_date: null,
     checkout_date: null,
     deposit: null,
     note: "",
     attachment: "",
-    category: {}
 
 }
 const defaultReference = [
@@ -73,13 +72,13 @@ export default function IncomeForm({handelCloseModal, title, id}) {
     const [channel, setChannel] = useState('airbnb')
     const [csvFile, setCSVFile] = useState({})
 
-    // const {  need for update
-    //     data: getSingleTaskData,
-    //     isFetching: singleTaskFetching,
-    //     isError: singleTaskDataError,
-    // } = useGetSingleTaskDataQuery({
-    //     id:id,
-    // });
+    const {
+        data: getSingleIncomeData,
+        isFetching: singleIncomeFetching,
+        isError: singleIncomeDataError,
+    } = useGetSingleIncomeDataQuery({
+        id: id,
+    });
     const [createIncome] = useCreateIncomeMutation();
 
     const submit = async (e) => {
@@ -151,12 +150,14 @@ export default function IncomeForm({handelCloseModal, title, id}) {
             });
             setAccounts(modifiedAccounts);
         }
-
         if (getCategoryListData?.data.length > 0) {
             setCategories(getCategoryListData?.data);
         }
 
-    }, [getBankData, getCategoryListData]);
+        if (id && getSingleIncomeData?.data) {
+            setIncome(getSingleIncomeData?.data);
+        }
+    }, [id, getBankData, getCategoryListData, getSingleIncomeData]);
     const handelCSVFileInputChange = (event) => {
         const file = event.target.files[0];
         setCSVFile({file: file})
@@ -168,7 +169,9 @@ export default function IncomeForm({handelCloseModal, title, id}) {
     const handelCSVModal = (event) => {
         setShowCSVModal(!showCSVModal);
     }
-    console.log(id);
+
+    console.log(income)
+
     return (<>
             <Modal show={true} centered onHide={handelCloseModal} backdrop="static"
                    keyboard={false}
@@ -185,12 +188,12 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                 {!income.id &&
                                     <Row>
                                         <div className={"text-end"}>
-                                            <i><u><a onClick={handelCSVModal} className={"text-primary"}>add by manually?</a></u></i>
+                                            <i><u><a onClick={handelCSVModal} className={"text-primary"}>add by
+                                                manually?</a></u></i>
                                         </div>
                                     </Row>
                                 }
                                 <form className="custom-form">
-
                                     <div className="form-group">
                                         <label className='custom-form-label' htmlFor='csv_file'>
                                             Upload CSV file
@@ -203,7 +206,6 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                             placeholder='Attach CSV file here'
                                         />
                                     </div>
-
                                     <div className={"form-control"}>
                                         <FormControl>
                                             <FormLabel id="demo-controlled-radio-buttons-group">Channels</FormLabel>
@@ -264,7 +266,8 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                     {!income.id &&
                                         <Row>
                                             <div className={"text-end"}>
-                                                <i><u><a onClick={handelCSVModal} className={"text-primary"}>add income by CSV file?</a></u></i>
+                                                <i><u><a onClick={handelCSVModal} className={"text-primary"}>add income
+                                                    by CSV file?</a></u></i>
                                             </div>
                                         </Row>
                                     }
@@ -311,7 +314,7 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                                 <Select
                                                     className="basic-single"
                                                     classNamePrefix="select"
-                                                    defaultValue={income.account}
+                                                    value={income.account}
                                                     isSearchable={true}
                                                     name="account"
                                                     isLoading={false}
@@ -331,7 +334,7 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                                 <Select
                                                     className="basic-single"
                                                     classNamePrefix="select"
-                                                    defaultValue={income.category}
+                                                    value={income.category}
                                                     isSearchable={true}
                                                     name="category_id"
                                                     isLoading={categoryIsFetching}
@@ -349,7 +352,7 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                                 <Select
                                                     className="basic-single"
                                                     classNamePrefix="select"
-                                                    defaultValue={income.reference}
+                                                    value={income.reference}
                                                     isSearchable={true}
                                                     name="reference"
                                                     isLoading={false}
@@ -367,7 +370,7 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                                 <Select
                                                     className="basic-single"
                                                     classNamePrefix="select"
-                                                    defaultValue={income.income_type}
+                                                    value={income.income_type}
                                                     isSearchable={true}
                                                     name="income_type"
                                                     isLoading={false}
