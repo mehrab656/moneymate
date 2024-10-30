@@ -405,7 +405,7 @@ class Income extends Model
     public function deleteIncome($slug): array
     {
 
-        $income = Expense::where('slug', $slug)->first();
+        $income = Income::where('slug', $slug)->first();
         if (!$income) {
             return [
                 'message' => 'Not Found',

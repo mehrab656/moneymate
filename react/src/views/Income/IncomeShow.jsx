@@ -3,7 +3,6 @@ import React, {memo} from "react";
 
 
 const IncomeShow = ({ handleCloseModal, data, currency})=>{
-
     return (
         <>
             <Modal show={true} centered onHide={handleCloseModal} className="custom-modal modal-lg">
@@ -29,11 +28,8 @@ const IncomeShow = ({ handleCloseModal, data, currency})=>{
                         </Row>
                         <Row className={'border p-2'}>
                             <strong className={'text-primary'}>Bank Details</strong>
-                            <Col xs={6} md={6}>
-                                <strong>Bank Name: </strong>{data.bank_name}
-                            </Col>
-                            <Col xs={12} md={6}>
-                                <strong>Account Number: </strong>{data.account_number}
+                            <Col xs={12} md={12}>
+                                <strong>Bank Name: </strong>{data.account.label}
                             </Col>
                         </Row>
                         <Row className={'border p-2'}>
@@ -44,7 +40,7 @@ const IncomeShow = ({ handleCloseModal, data, currency})=>{
                         <Row className={'border p-2'}>
                             <strong className={'text-primary'}>Others</strong>
                             <Col xs={6} md={6}><strong>Note: </strong>{data.note}</Col>
-                            <Col xs={6} md={6}><strong>Reference: </strong>{data.reference}</Col>
+                            <Col xs={6} md={6}><strong>Reference: </strong>{data.reference.label}</Col>
                         </Row>
                     </Container>
                 </Modal.Body>

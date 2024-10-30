@@ -62,7 +62,7 @@ export const incomeSlice = createApi({
 
             invalidatesTags: ["income"],
         }),
-        updateTaskPayment: builder.mutation({
+        uploadCsv: builder.mutation({
             queryFn: async ({ url, formData }) => {
                 try {
                     const response = await axiosClient.post(url, formData, {
@@ -86,7 +86,7 @@ export const incomeSlice = createApi({
                 }
             },
 
-            invalidatesTags: ["task"],
+            invalidatesTags: ["income"],
         }),
         deleteIncome: builder.mutation({
             query: ({id}) => ({
@@ -120,6 +120,7 @@ export const {
     useGetIncomeDataQuery,
     useGetIncomeTypesDataQuery,
     useCreateIncomeMutation,
+    useUploadCsvMutation,
     useUpdateIncomeMutation,
     useDeleteIncomeMutation,
     useGetSingleIncomeDataQuery

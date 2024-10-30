@@ -9,8 +9,6 @@ import Dashboard from "./views/Dashboard.jsx";
 import UserForm from "./views/User/UserForm.jsx";
 import Accounts from "./views/Accounts.jsx";
 import Categories from "./views/Categories.jsx";
-import Incomes from "./views/Incomes.jsx";
-import IncomeForm from "./views/IncomeForm.jsx";
 import ExpenseForm from "./views/Expense/ExpenseForm.jsx";
 import ApplicationSettingsForm from "./views/ApplicationSettingsForm.jsx";
 import Banks from "./views/Banks.jsx";
@@ -107,20 +105,8 @@ const router = createBrowserRouter([
                 element: <Return/>
             },
             {
-                path: '/incomes-test',
-                element: <Incomes/>
-            },
-            {
                 path:'/incomes',
                 element: <IncomeList />
-            },
-            {
-                path: '/income/new',
-                element: <IncomeForm key="incomeCreate"/>
-            },
-            {
-                path: '/income/:id',
-                element: <IncomeForm key="incomeUpdate"/>
             },
             {
                 path: '/expenses',

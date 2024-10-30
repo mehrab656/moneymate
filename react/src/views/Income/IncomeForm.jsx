@@ -7,8 +7,12 @@ import Select from "react-select";
 import {reservationValidationBuilder} from "../../helper/HelperFunctions.js";
 import Button from "react-bootstrap/Button";
 import {notification} from "../../components/ToastNotification.jsx";
-import {useCreateIncomeMutation, useGetSingleIncomeDataQuery} from "../../api/slices/incomeSlice.js";
-import {Autocomplete, Box, FormControl, TextField} from "@mui/material";
+import {
+    useCreateIncomeMutation,
+    useGetSingleIncomeDataQuery,
+    useUploadCsvMutation
+} from "../../api/slices/incomeSlice.js";
+import { Box, FormControl, TextField} from "@mui/material";
 import FormLabel from "@mui/material/FormLabel";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -60,22 +64,19 @@ export default function IncomeForm({handelCloseModal, title, id}) {
 
     const [income, setIncome] = useState(defaultData);
     const [incomeType, setIncomeType] = useState(defaultIncomeType);
-    const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false);
     const [categories, setCategories] = useState([]);
     const [references, setReferences] = useState(defaultReference);
     const [accounts, setAccounts] = useState([]);
     const [reservationValidation, setReservationValidation] = useState('Select check in and check out dates.');
     const [reservationValidationClass, setReservationValidationClass] = useState('primary');
-    const [csvCategoryValue, setCsvCategoryValue] = useState(null);
+    const [csvCategoryValue, setCsvCategoryValue] = useState("");
     const [showCSVModal, setShowCSVModal] = useState(false)
     const [channel, setChannel] = useState('airbnb')
-    const [csvFile, setCSVFile] = useState({})
+    const [csvFile, setCSVFile] = useState({});
+    const [csvBtnTxt, setCsvBtnText] = useState("Upload");
 
     const {
         data: getSingleIncomeData,
-        isFetching: singleIncomeFetching,
-        isError: singleIncomeDataError,
     } = useGetSingleIncomeDataQuery({
         id: id,
     });
@@ -122,8 +123,6 @@ export default function IncomeForm({handelCloseModal, title, id}) {
 
     const {
         data: getBankData,
-        isFetching: bankIsFetching,
-        isError: bankFetchingDataError,
     } = useGetBankDataQuery({
         currentPage: "",
         pageSize: 100,
@@ -132,7 +131,6 @@ export default function IncomeForm({handelCloseModal, title, id}) {
     const {
         data: getCategoryListData,
         isFetching: categoryIsFetching,
-        isError: categoryFetchingDataError,
     } = useGetCategoryListDataQuery({
         categoryType: 'income'
     });
@@ -170,7 +168,44 @@ export default function IncomeForm({handelCloseModal, title, id}) {
         setShowCSVModal(!showCSVModal);
     }
 
-    console.log(income)
+    const [uploadCSV] = useUploadCsvMutation();
+    const submitCSVFile = async (e) => {
+        e.preventDefault();
+        // e.currentTarget.disabled = true;
+        setCsvBtnText("Uploading...")
+        setLoading(true);
+        let csvFormData = new FormData();
+        csvFormData.append("channel", channel);
+        csvFormData.append("csvFile", csvFile);
+        csvFormData.append("category_id", channel === 'booking' ? csvCategoryValue.id : 0);
+
+        try {
+            const data = await uploadCSV({
+                url: '/income/add-csv', formData: {
+                    channel: channel,
+                    csvFile: csvFile,
+                    category_id: channel === 'booking' ? csvCategoryValue.value : 0
+                }
+            }).unwrap();
+            notification("success", data?.message, data?.description);
+            handelCloseModal();
+        } catch (err) {
+            if (err.status === 406) {
+                setShowExistingTask(true);
+                setExistingTask(err?.errorData?.data);
+            } else if (err.status === 422) {
+                setErrors(err.errorData?.errors);
+                notification("error", err?.message);
+            } else {
+                notification(
+                    "error",
+                    err?.message || "An error occurred",
+                    err?.description || "Please try again later."
+                );
+                setErrors({});
+            }
+        }
+    }
 
     return (<>
             <Modal show={true} centered onHide={handelCloseModal} backdrop="static"
@@ -229,36 +264,31 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                     {
                                         channel === 'booking' &&
                                         <div className=''>
-                                            <Autocomplete
-                                                // value={expenseCategories[0]}
-                                                classes={{option: classes.option}}
-                                                options={incomeCategories}
-                                                getOptionLabel={(option) => option.name}
-                                                id='parentCategory'
-                                                isOptionEqualToValue={(option, categoryValue) => option.id === categoryValue.id}
-                                                value={csvCategoryValue}
-                                                onChange={(ev, newValue) => {
-                                                    if (newValue) {
-                                                        setCsvCategoryValue(newValue)
-                                                    }
-                                                }}
-
-                                                renderInput={(params) => (
-                                                    <TextField
-                                                        style={{backgroundColor: "#eeeeee"}}
-                                                        {...params}
-                                                        label='Income Category'
-                                                        margin='normal'
-                                                        placeholder='Income Category'
-                                                    />
-                                                )}
-                                            />
+                                            <Form.Group className="mb-3" controlId="category_id">
+                                                <Form.Label style={{marginBottom: '0px'}}
+                                                            className="custom-form-label">Category</Form.Label>
+                                                <Select
+                                                    className="basic-single"
+                                                    classNamePrefix="select"
+                                                    value={csvCategoryValue}
+                                                    isSearchable={true}
+                                                    name="category_id"
+                                                    isLoading={categoryIsFetching}
+                                                    options={categories}
+                                                    onChange={(event) => {
+                                                        setCsvCategoryValue(event)
+                                                    }}
+                                                />
+                                            </Form.Group>
                                         </div>
-
                                     }
-
                                 </form>
                             </Modal.Body>
+                            <Modal.Footer>
+                                <Button loading className="btn-sm load" variant="primary" onClick={submitCSVFile}>
+                                    {csvBtnTxt}
+                                </Button>
+                            </Modal.Footer>
                         </> :
                         <>
                             <Modal.Body className={"add-or-update"}>
@@ -425,9 +455,7 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                                                 setReservationValidationClass(validation.class);
                                                             }}
                                                         />
-                                                        <span className={'text-' + reservationValidationClass}>
-                                                <small>{reservationValidation}</small>
-                                            </span>
+                                                        <span className={'text-' + reservationValidationClass}><small>{reservationValidation}</small></span>
                                                     </Form.Group>
                                                 </Col>
                                             </>
@@ -467,20 +495,17 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                     </Row>
                                 </Container>
                             </Modal.Body>
+                            <Modal.Footer>
+                                <Button variant="danger" onClick={handelCloseModal}>
+                                    Close
+                                </Button>
+                                <Button variant="primary" onClick={(e) => submit(e)}>
+                                    Add Task
+                                </Button>
+                            </Modal.Footer>
                         </>
-
                 }
-
-                <Modal.Footer>
-                    <Button variant="danger" onClick={handelCloseModal}>
-                        Close
-                    </Button>
-                    <Button variant="primary" onClick={(e) => submit(e)}>
-                        Add Task
-                    </Button>
-                </Modal.Footer>
             </Modal>
-
         </>
     )
 }

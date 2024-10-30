@@ -530,14 +530,14 @@ class IncomeController extends Controller
      * @return JsonResponse
      * @throws Exception
      */
-    public function destroy(Income $income): JsonResponse
+    public function destroy($id): JsonResponse
     {
-        $status = (new Income())->deleteIncome($income->slug);
-
+//        $income = Income::where('slug',$id)->get()->first();
+        $status = (new Income())->deleteIncome($id);
         return response()->json([
             'message' => $status['message'],
             'description' => $status['description'],
-        ], $status['status']);
+        ], $status['status_code']);
     }
 
 
@@ -608,7 +608,6 @@ class IncomeController extends Controller
      */
     public function addIncomeFromCSV(Request $request): JsonResponse
     {
-
         $files = $request->file('csvFile');
         if (!$files) {
             return response()->json([
@@ -617,6 +616,7 @@ class IncomeController extends Controller
             ], 400);
         }
         $file = $files['file'];
+
 
         //Fixme Sometimes it becomes confused and shows a csv file as a text file.
 //		if ( $file['file']->extension() !== 'csv' ) {
@@ -653,10 +653,9 @@ class IncomeController extends Controller
                 ], 400);
             }
 
-            $category = Category::where('id', $category_id)->where('type', '=', 'income')->get()->first();
+            $category = Category::where('slug', $category_id)->where('type', '=', 'income')->get()->first();
             if (!$category) {
                 DB::rollBack();
-
                 return response()->json([
                     'message' => 'Not Found!',
                     'description' => "Category was not Found!",
@@ -671,12 +670,8 @@ class IncomeController extends Controller
                 'message' => $status['message'],
             ], $status['status_code']);
         }
-
         $filename = date("F j, Y", strtotime($status['payment_date'])) . ' ' . $channel . '.' . 'csv';
-
         $file->storeAs('files', $filename);
-
-
         return response()->json([
             'message' => "Imported!",
             'description' => "CSV has been Imported Successfully",
