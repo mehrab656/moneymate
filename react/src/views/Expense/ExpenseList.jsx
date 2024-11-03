@@ -100,13 +100,6 @@ export default function ExpenseList() {
     setCurrentPage(value);
     setIsPaginate(true);
   };
-  const resetFilterParameter = () => {
-    setQuery(defaultQuery);
-    setHasFilter(!hasFilter);
-  };
-  const handelFilter = () => {
-    setHasFilter(!hasFilter);
-  };
   const showExpenseFormFunc = () => {
     setShowExpenseForm(true);
   };
@@ -228,6 +221,13 @@ export default function ExpenseList() {
     },
   ];
 
+  const resetFilterParameter = () => {
+    setQuery(defaultQuery);
+    setHasFilter(!hasFilter);
+  };
+  const handelFilter = () => {
+    setHasFilter(!hasFilter);
+  };
   const filter = () => {
     return (
       <ExpenseFilter
