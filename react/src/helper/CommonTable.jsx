@@ -1,14 +1,8 @@
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
   Card,
-  CardActionArea,
   CardActions,
   CardContent,
   CardHeader,
-  TextField,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -34,7 +28,7 @@ import { Col, Row } from "react-bootstrap";
 import { checkPermission } from "./HelperFunctions.js";
 import { TableLoader } from "../components/SkeletonLoader/TableLoader.jsx";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-
+import Accordion from 'react-bootstrap/Accordion'
 const useStyles = makeStyles(() => ({
   root: {
     width: "100%",
@@ -69,6 +63,33 @@ function CommonTable(props) {
   };
   return (
     <Card sx={{ p: 5 }} style={{ padding: "0px" }}>
+      {/*Need to work on here.*/}
+    {/*  <Accordion>*/}
+    {/*  <Accordion.Item eventKey="0">*/}
+    {/*    <Accordion.Header><b>{cardTitle}</b> {addBTN.linkTo === "route" ? (*/}
+    {/*        <Link*/}
+    {/*            className="btn-add mr-3"*/}
+    {/*            to={addBTN.link}*/}
+    {/*            style={{ float: "right" }}*/}
+    {/*        >*/}
+    {/*          {addBTN.icon} {addBTN.txt}*/}
+    {/*        </Link>*/}
+    {/*    ) : (*/}
+    {/*        <button*/}
+    {/*            className="btn-sm btn btn-primary"*/}
+    {/*            onClick={() => addBTN.link()}*/}
+    {/*            style={{ boxShadow: "0px" }}*/}
+    {/*        >*/}
+    {/*          {addBTN.icon} {addBTN.txt}*/}
+    {/*        </button>*/}
+    {/*    )}</Accordion.Header>*/}
+    {/*    <Accordion.Body>*/}
+    {/*      {filter()}*/}
+    {/*    </Accordion.Body>*/}
+    {/*  </Accordion.Item>*/}
+    {/*</Accordion>*/}
+
+
       <CardHeader
         title={cardTitle}
         className={"border"}

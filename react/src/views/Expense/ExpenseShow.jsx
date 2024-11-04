@@ -26,11 +26,8 @@ const ExpenseShow = ({ handelCloseModal, title, data, currency}) => {
                         </Row>
                         <Row className={'border p-2'}>
                             <strong className={'text-primary'}>Bank Details</strong>
-                            <Col xs={6} md={6}>
-                                <strong>Bank Name: </strong>{data.bank_name}
-                            </Col>
-                            <Col xs={12} md={6}>
-                                <strong>Account Number: </strong>{data.account_number}
+                            <Col xs={12} md={12}>
+                                <strong>Bank Name: </strong>{data.account.label}
                             </Col>
                         </Row>
                         <Row className={'border p-2'}>

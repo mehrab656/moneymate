@@ -95,7 +95,7 @@ function TaskAddModal({ handelCloseModal, title, id }) {
     let formData = new FormData();
     formData.append("employee_list", JSON.stringify(taskData.employee_list));
     formData.append("description", taskData.description);
-    formData.append("categoryID", taskData.category_id);
+    formData.append("categoryID", taskData.categoryID);
     formData.append("date", taskData.date);
     formData.append("startTime", taskData.startTime);
     formData.append("endTime", taskData.endTime);

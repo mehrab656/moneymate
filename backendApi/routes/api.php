@@ -107,7 +107,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/expense/add', [ExpenseController::class, 'add']);
     Route::get('/expense-categories', [ExpenseController::class, 'categories']);
     Route::delete('/expense/{expense}', [ExpenseController::class, 'destroy']);
-    Route::get('expense/{expense}', [ExpenseController::class, 'show']);
+    Route::get('expense/{expense}', [ExpenseController::class, 'edit']);
     Route::post('/expense/{expense}', [ExpenseController::class, 'update']);
     Route::get('/export-expense-csv', [ExpenseController::class, 'exportExpenseCsv']);
     Route::get('/expenses/graph', [ExpenseController::class, 'getCategoryExpensesGraphForCurrentMonth']);

@@ -13,21 +13,11 @@ export const expenseSlice = createApi({
     tagTypes: ["expense"],
     endpoints: (builder) => ({
         getExpenseData: builder.query({
+
             query: ({currentPage,pageSize,query}) => {
+
                 return {
-                    url: `/expenses?page=${currentPage}&pageSize=${pageSize}&limit=${query?.limit}`,
-                    method: "GET",
-                    headers:{
-                        Authorization: `Bearer ${globalToken}`
-                    }
-                };
-            },
-            providesTags: ["expense"],
-        }),
-        getExpensElementeData: builder.query({
-            query: () => {
-                return {
-                    url: `/expense-elements`,
+                    url: `/expenses?page=${currentPage}&pageSize=${pageSize}&limit=${query?.limit}&order=${query?.order}&orderBy=${query?.orderBy}`,
                     method: "GET",
                     headers:{
                         Authorization: `Bearer ${globalToken}`
@@ -92,7 +82,6 @@ export const expenseSlice = createApi({
 
 export const {
     useGetExpenseDataQuery,
-    useGetExpensElementeDataQuery,
     useGetSingleExpenseDataQuery,
     useCreateExpenseMutation,
     useDeleteExpenseMutation

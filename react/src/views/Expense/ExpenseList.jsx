@@ -21,7 +21,8 @@ import Iconify from "../../components/Iconify.jsx";
 
 const defaultQuery = {
   searchTerm: "",
-  orderBy: "DESC",
+  order: "DESC",
+  orderBy: "id",
   limit: 10,
   to_date: "",
   from_date: "",
@@ -70,9 +71,11 @@ export default function ExpenseList() {
     useContext(SettingsContext);
   const { num_data_per_page, default_currency } = applicationSettings;
 
-  const pageSize = num_data_per_page;
+  let pageSize = num_data_per_page;
+  if (typeof pageSize === 'undefined'){
+    pageSize = 10;
+  }
   const totalPages = Math.ceil(totalCount / pageSize);
-
   // api call
   const {
     data: getExpenseData,
@@ -131,15 +134,7 @@ export default function ExpenseList() {
     }
 
     return (
-      expense.user_name
-        .toLowerCase()
-        .includes(query?.searchTerm.toLowerCase()) ||
-      expense.account_number
-        .toLowerCase()
-        .includes(query?.searchTerm.toLowerCase()) ||
-      expense.category_name
-        .toLowerCase()
-        .includes(query?.searchTerm.toLowerCase()) ||
+      expense.category.label.toLowerCase().includes(query?.searchTerm.toLowerCase()) ||
       expense.amount.toLowerCase().includes(query?.searchTerm.toLowerCase()) ||
       expense.refundable_amount
         .toLowerCase()
@@ -150,7 +145,7 @@ export default function ExpenseList() {
       expense.description
         .toLowerCase()
         .includes(query?.searchTerm.toLowerCase()) ||
-      expense.bank_name.toLowerCase().includes(query?.searchTerm.toLowerCase())
+      expense.account.label.toLowerCase().includes(query?.searchTerm.toLowerCase())
     );
   });
 
@@ -160,7 +155,7 @@ export default function ExpenseList() {
         <Box>{expense.description}</Box>
         <Box>
           <small>
-            <a href={`/categories`}>{expense.category_name}</a>
+            <a href={`/categories`}>{expense.category.label}</a>
           </small>
         </Box>
       </Box>

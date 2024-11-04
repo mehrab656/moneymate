@@ -5,7 +5,6 @@ export default function ExpenseFilter(props) {
   const { search, query, setQuery, resetFilterParameter,placeHolderTxt } = props;
   return (
     <>
-     <Card className="p-3" style={{ borderBottom: "1px solid" }}>
       <Stack gap={3}>
         {/* Form Inputs */}
         <Row className="g-3">
@@ -15,12 +14,12 @@ export default function ExpenseFilter(props) {
                 Search
               </Form.Label>
               <Form.Control
-                type="text"
-                size="sm"
-                value={query?.searchTerm}
-                onChange={(e) => setQuery({ ...query, searchTerm: e.target.value })}
-                placeholder={placeHolderTxt}
-                style={{ textTransform: "capitalize" }}
+                  type="text"
+                  size="sm"
+                  value={query?.searchTerm}
+                  onChange={(e) => setQuery({ ...query, searchTerm: e.target.value })}
+                  placeholder={placeHolderTxt}
+                  style={{ textTransform: "capitalize" }}
               />
             </Form.Group>
           </Col>
@@ -31,10 +30,10 @@ export default function ExpenseFilter(props) {
                 From
               </Form.Label>
               <Form.Control
-                type="date"
-                size="sm"
-                value={query.start_date}
-                onChange={(e) => setQuery({ ...query, start_date: e.target.value })}
+                  type="date"
+                  size="sm"
+                  value={query.start_date}
+                  onChange={(e) => setQuery({ ...query, start_date: e.target.value })}
               />
             </Form.Group>
           </Col>
@@ -45,10 +44,10 @@ export default function ExpenseFilter(props) {
                 To
               </Form.Label>
               <Form.Control
-                type="date"
-                size="sm"
-                value={query.end_date}
-                onChange={(e) => setQuery({ ...query, end_date: e.target.value })}
+                  type="date"
+                  size="sm"
+                  value={query.end_date}
+                  onChange={(e) => setQuery({ ...query, end_date: e.target.value })}
               />
             </Form.Group>
           </Col>
@@ -59,9 +58,9 @@ export default function ExpenseFilter(props) {
                 Order
               </Form.Label>
               <Form.Select
-                size="md"
-                value={query.order}
-                onChange={(e) => setQuery({ ...query, order: e.target.value })}
+                  size="md"
+                  value={query.order}
+                  onChange={(e) => setQuery({ ...query, order: e.target.value })}
               >
                 <option value="ASC">Ascending</option>
                 <option value="DESC">Descending</option>
@@ -75,9 +74,9 @@ export default function ExpenseFilter(props) {
                 Limit
               </Form.Label>
               <Form.Select
-                size="md"
-                value={query.limit}
-                onChange={(e) => setQuery({ ...query, limit: e.target.value })}
+                  size="md"
+                  value={query.limit}
+                  onChange={(e) => setQuery({ ...query, limit: e.target.value })}
               >
                 <option value="">Limit</option>
                 <option value="10">10</option>
@@ -99,7 +98,7 @@ export default function ExpenseFilter(props) {
           </Col>
         </Row>
       </Stack>
-    </Card>
+
     </>
   );
 }

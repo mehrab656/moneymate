@@ -80,13 +80,6 @@ class IncomeController extends Controller
         if ($limit) {
             $query = $query->limit($limit);
         }
-//        $incomes = Income::where('company_id', Auth::user()->primary_company)
-//            ->whereHas('category', function ($query) {
-//                $query->where('type', 'income');
-//            })->skip(($page - 1) * $pageSize)
-//            ->take($pageSize)
-//            ->orderBy('date', 'desc')
-//            ->get();
         $query = $query->skip(($page - 1) * $pageSize)->take($pageSize)->get();
         $totalCount = Income::where('company_id', Auth::user()->primary_company)->count();
 
@@ -104,8 +97,7 @@ class IncomeController extends Controller
      * @throws Exception
      * @throws Throwable
      */
-    public function add(IncomeRequest $request): JsonResponse
-    {
+    public function add(IncomeRequest $request): JsonResponse {
         $income = $request->validated();
 
 
@@ -346,9 +338,8 @@ class IncomeController extends Controller
 
 
     /**
-     * @param IncomeUpdateRequest $request
-     * @param Income $income
-     *
+     * @param IncomeRequest $request
+     * @param $id
      * @return JsonResponse
      * @throws Exception
      */
@@ -532,7 +523,6 @@ class IncomeController extends Controller
      */
     public function destroy($id): JsonResponse
     {
-//        $income = Income::where('slug',$id)->get()->first();
         $status = (new Income())->deleteIncome($id);
         return response()->json([
             'message' => $status['message'],

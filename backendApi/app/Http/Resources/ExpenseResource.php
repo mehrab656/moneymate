@@ -20,34 +20,32 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property mixed $user_id
  * @property mixed $attachment
  */
-class ExpenseResource extends JsonResource {
+class ExpenseResource extends JsonResource
+{
 
-	public static $wrap = false;
+    public static $wrap = false;
 
 
-	/**
-	 * Transform the resource into an array.
-	 *
-	 * @return array<string, mixed>
-	 */
-	public function toArray( Request $request ): array {
-		return [
-			'id'                => $this->id,
-			'user_name'         => $this->person->username,
-			'user_id'           => $this->user_id,
-			'account_number'    => $this->bankAccount->account_number,
-			'account_id'        => $this->bankAccount->id,
-			'category_name'     => $this->category->name,
-			'category_id'       => $this->category->id,
-			'amount'            => $this->amount,
-			'refundable_amount' => $this->refundable_amount,
-			'refunded_amount'   => $this->refunded_amount,
-			'attachment'        => $this->attachment,
-			'description'       => $this->description,
-			'bank_name'         => $this->bankAccount && $this->bankAccount->bankName ? $this->bankAccount->bankName->bank_name : '',
-			'date'              => $this->date,
-			'note'              => $this->note,
-			'reference'         => $this->reference
-		];
-	}
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->slug,
+            'user_name' => $this->person->username,
+            'account' => ['label' => $this->bankAccount->bankName->bank_name . '(' . $this->bankAccount->account_number . ')', 'value' => $this->bankAccount->slug],
+            'category' => ['value' => $this->category->slug, 'label' => $this->category->name],
+            'amount' => $this->amount,
+            'refundable_amount' => $this->refundable_amount,
+            'refunded_amount' => $this->refunded_amount,
+            'attachment' => $this->attachment,
+            'description' => $this->description,
+            'date' => $this->date,
+            'note' => $this->note,
+            'reference' => $this->reference
+        ];
+    }
 }

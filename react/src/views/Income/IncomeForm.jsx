@@ -80,46 +80,6 @@ export default function IncomeForm({handelCloseModal, title, id}) {
     } = useGetSingleIncomeDataQuery({
         id: id,
     });
-    const [createIncome] = useCreateIncomeMutation();
-
-    const submit = async (e) => {
-        e.preventDefault();
-        let formData = new FormData();
-        formData.append("account", income.account.value);
-        formData.append("income_type", income.income_type.value);
-        formData.append("amount", income.amount);
-        formData.append("category", income.category.value);
-        formData.append("description", income.description);
-        formData.append("note", income.note);
-        formData.append("reference", income.reference.value);
-        formData.append("date", income.date);
-        formData.append("checkin_date", income.checkin_date);
-        formData.append("checkout_date", income.checkout_date);
-        formData.append("attachment", income.attachment);
-
-        const url = id ? `/income/${id}` : `/income/add`;
-
-        try {
-            const data = await createIncome({url: url, formData}).unwrap();
-            notification("success", data?.message, data?.description);
-            handelCloseModal();
-        } catch (err) {
-            if (err.status === 406) {
-                setShowExistingTask(true);
-                setExistingTask(err?.errorData?.data);
-            } else if (err.status === 422) {
-                setErrors(err.errorData?.errors);
-                notification("error", err?.message);
-            } else {
-                notification(
-                    "error",
-                    err?.message || "An error occurred",
-                    err?.description || "Please try again later."
-                );
-                setErrors({});
-            }
-        }
-    };
 
     const {
         data: getBankData,
@@ -206,7 +166,45 @@ export default function IncomeForm({handelCloseModal, title, id}) {
             }
         }
     }
+    const [createIncome] = useCreateIncomeMutation();
+    const submit = async (e) => {
+        e.preventDefault();
+        let formData = new FormData();
+        formData.append("account", income.account.value);
+        formData.append("income_type", income.income_type.value);
+        formData.append("amount", income.amount);
+        formData.append("category", income.category.value);
+        formData.append("description", income.description);
+        formData.append("note", income.note);
+        formData.append("reference", income.reference.value);
+        formData.append("date", income.date);
+        formData.append("checkin_date", income.checkin_date);
+        formData.append("checkout_date", income.checkout_date);
+        formData.append("attachment", income.attachment);
 
+        const url = id ? `/income/${id}` : `/income/add`;
+
+        try {
+            const data = await createIncome({url: url, formData}).unwrap();
+            notification("success", data?.message, data?.description);
+            handelCloseModal();
+        } catch (err) {
+            if (err.status === 406) {
+                setShowExistingTask(true);
+                setExistingTask(err?.errorData?.data);
+            } else if (err.status === 422) {
+                setErrors(err.errorData?.errors);
+                notification("error", err?.message);
+            } else {
+                notification(
+                    "error",
+                    err?.message || "An error occurred",
+                    err?.description || "Please try again later."
+                );
+                setErrors({});
+            }
+        }
+    };
     return (<>
             <Modal show={true} centered onHide={handelCloseModal} backdrop="static"
                    keyboard={false}
