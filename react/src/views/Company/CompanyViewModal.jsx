@@ -4,7 +4,7 @@ import {Col, Container, Modal, Row} from "react-bootstrap";
 const CompanyViewModal = ({showModal, handelCloseModal, title, data}) => {
     return (
         <>
-            <Modal show={showModal} centered onHide={handelCloseModal} className="custom-modal modal-lg">
+            <Modal show={true} centered onHide={handelCloseModal} className="custom-modal modal-lg">
                 <Modal.Header closeButton>
                     <Modal.Title>
                         <span>{title}</span>

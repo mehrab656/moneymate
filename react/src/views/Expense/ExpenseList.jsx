@@ -1,9 +1,5 @@
-import { Link } from "react-router-dom";
 import React, { useContext, useEffect, useState } from "react";
-import axiosClient from "../../axios-client.js";
 import Swal from "sweetalert2";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { SettingsContext } from "../../contexts/SettingsContext";
 import MainLoader from "../../components/MainLoader.jsx";
 import { notification } from "../../components/ToastNotification.jsx";
@@ -67,7 +63,7 @@ export default function ExpenseList() {
   const handleCloseModal = () => {
     setShowModal(false);
   };
-  const { applicationSettings, userRole, userPermission } =
+  const { applicationSettings, userRole } =
     useContext(SettingsContext);
   const { num_data_per_page, default_currency } = applicationSettings;
 
@@ -102,13 +98,6 @@ export default function ExpenseList() {
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
     setIsPaginate(true);
-  };
-  const resetFilterParameter = () => {
-    setQuery(defaultQuery);
-    setHasFilter(!hasFilter);
-  };
-  const handelFilter = () => {
-    setHasFilter(!hasFilter);
   };
   const showExpenseFormFunc = () => {
     setShowExpenseForm(true);
@@ -223,6 +212,13 @@ export default function ExpenseList() {
     },
   ];
 
+  const resetFilterParameter = () => {
+    setQuery(defaultQuery);
+    setHasFilter(!hasFilter);
+  };
+  const handelFilter = () => {
+    setHasFilter(!hasFilter);
+  };
   const filter = () => {
     return (
       <ExpenseFilter

@@ -1,10 +1,11 @@
-import React from "react";
-import { Stack, Row, Col, Form, Button } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Card, Stack, Row, Col, Form, Button } from "react-bootstrap";
 
-export default function ExpenseFilter(props) {
+export default function CompanyFilter(props) {
   const { search, query, setQuery, resetFilterParameter,placeHolderTxt } = props;
   return (
     <>
+     <Card className="p-3" style={{ borderBottom: "1px solid" }}>
       <Stack gap={3}>
         {/* Form Inputs */}
         <Row className="g-3">
@@ -14,44 +15,15 @@ export default function ExpenseFilter(props) {
                 Search
               </Form.Label>
               <Form.Control
-                  type="text"
-                  size="sm"
-                  value={query?.searchTerm}
-                  onChange={(e) => setQuery({ ...query, searchTerm: e.target.value })}
-                  placeholder={placeHolderTxt}
-                  style={{ textTransform: "capitalize" }}
+                type="text"
+                size="sm"
+                value={query?.searchTerm}
+                onChange={(e) => setQuery({ ...query, searchTerm: e.target.value })}
+                placeholder={placeHolderTxt}
+                style={{ textTransform: "capitalize" }}
               />
             </Form.Group>
           </Col>
-
-          <Col md={2}>
-            <Form.Group controlId="start-date">
-              <Form.Label className="custom-form-label" style={{ marginBottom: "0px" }}>
-                From
-              </Form.Label>
-              <Form.Control
-                  type="date"
-                  size="sm"
-                  value={query.start_date}
-                  onChange={(e) => setQuery({ ...query, start_date: e.target.value })}
-              />
-            </Form.Group>
-          </Col>
-
-          <Col md={2}>
-            <Form.Group controlId="end-date">
-              <Form.Label className="custom-form-label" style={{ marginBottom: "0px" }}>
-                To
-              </Form.Label>
-              <Form.Control
-                  type="date"
-                  size="sm"
-                  value={query.end_date}
-                  onChange={(e) => setQuery({ ...query, end_date: e.target.value })}
-              />
-            </Form.Group>
-          </Col>
-
           <Col md={2}>
             <Form.Group controlId="order">
               <Form.Label className="custom-form-label" style={{ marginBottom: "0px" }}>
@@ -76,7 +48,8 @@ export default function ExpenseFilter(props) {
               <Form.Select
                 size="sm"
                 value={query.limit}
-                onChange={(e) => setQuery({ ...query, limit: e.target.value })}>
+                onChange={(e) => setQuery({ ...query, limit: e.target.value })}
+              >
                 <option value="">Limit</option>
                 <option value="10">10</option>
                 <option value="20">20</option>
@@ -97,7 +70,7 @@ export default function ExpenseFilter(props) {
           </Col>
         </Row>
       </Stack>
-
+    </Card>
     </>
   );
 }
