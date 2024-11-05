@@ -16,7 +16,7 @@ jobs:
 
         with:
           command: |
-            cd staging.esholiday.com
+            cd staging.malinstay.com
             git pull
             cd backendApi/
             php artisan route:clear
@@ -30,7 +30,7 @@ jobs:
           port: ${{ secrets.PORT }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /staging.esholiday.com/
+          server-dir: /staging.malinstay.com/
 
 #          script: "cd /var/www/html && ./.scripts/deploy.sh"
 
