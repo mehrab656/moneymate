@@ -10,14 +10,11 @@ jobs:
     steps:
       - name: 🚚 Get latest code
         uses: actions/checkout@v4
-#      - name: 📂 Sync files
       - name: 🚚 Executing Git Pull on Server.
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           command: |
             cd staging.malinstay.com/backendApi/
-#            git pull
-#            cd backendApi/
             composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
             php artisan clear-compiled
             php artisan route:clear
