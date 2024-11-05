@@ -1,8 +1,10 @@
 name: 🚀 Deploy website on Live Server
-on: [push]
+on:
+  push:
+    branches:
+      - saas
 jobs:
   web-deploy:
-    if: .github.ref == 'refs/heads/saas'
     name: 🎉 Deploy on Saas Branch
     runs-on: ubuntu-latest
     steps:
@@ -14,8 +16,6 @@ jobs:
         with:
           command: |
             cd staging.esholiday.com/backendApi/
-          
-          
             php artisan route:clear
             php artisan cache:clear
             php artisan config:clear
