@@ -11,7 +11,7 @@ echo "Deployment started ..."
 git pull origin saas
 
 # Install composer dependencies
-composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+composer install --ignore-platform-req=ext-http
 
 # Clear the old cache
 php artisan clear-compiled
