@@ -13,12 +13,13 @@ jobs:
 #      - name: 📂 Sync files
       - name: 🚚 Executing Git Pull on Server.
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-
         with:
           command: |
-            cd staging.malinstay.com
-            git pull
-            cd backendApi/
+            cd staging.malinstay.com/backendApi/
+#            git pull
+#            cd backendApi/
+            composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+            php artisan clear-compiled
             php artisan route:clear
             php artisan cache:clear
             php artisan config:clear
@@ -31,7 +32,5 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: /staging.malinstay.com/
-
-#          script: "cd /var/www/html && ./.scripts/deploy.sh"
 
 
