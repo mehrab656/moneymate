@@ -22,7 +22,7 @@ jobs:
             php artisan config:clear
             php artisan route:cache
             php artisan optimize
-            php artisan migrate
+            php artisan migrate --force
             composer dump-autoload
           server: ${{ secrets.SERVER_HOST }}
           port: ${{ secrets.PORT }}
