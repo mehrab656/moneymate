@@ -15,9 +15,7 @@ jobs:
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           command: |
-            cd staging.malinstay.com/
-            git pull
-            cd backendApi/
+            cd staging.malinstay.com/backendApi/
             composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
             php artisan clear-compiled
             php artisan route:clear
