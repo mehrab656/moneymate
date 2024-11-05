@@ -25,10 +25,10 @@ jobs:
 #            php artisan optimize
 #            php artisan migrate
 #            composer dump-autoload
-          server: ${{ secrets.server_host }}
-          port: ${{ secrets.port }} 
-          username: ${{ secrets.ftp_username }}
-          password: ${{ secrets.ftp_password }}
+          server: ${{ secrets.SERVER_HOST }}
+          port: ${{ secrets.PORT }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
           server-dir: /staging.esholiday.com/
 #          script: "cd /var/www/html && ./.scripts/deploy.sh"
 
