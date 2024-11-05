@@ -9,20 +9,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🚚 Get latest code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: 🚚 Executing Git Pull on Server.
         uses: SamKirkland/FTP-Deploy-Action@4.3.0
         with:
-          script:
-            "cd staging.esholiday.com/backendApi/ &&
-            php artisan route:clear &&
-            php artisan cache:clear &&
-            php artisan config:clear &&
-            php artisan route:cache &&
-            php artisan optimize &&
-            php artisan migrate &&
-            composer dump-autoload"
+          run:
+            cd staging.esholiday.com/backendApi/ 
+            php artisan route:clear 
+            php artisan cache:clear 
+            php artisan config:clear 
+            php artisan route:cache 
+            php artisan optimize 
+            php artisan migrate 
+            composer dump-autoload
           server: ${{ secrets.server_host }}
           port: ${{ secrets.port }} 
           username: ${{ secrets.ftp_username }}
