@@ -11,20 +11,20 @@ jobs:
       - name: 🚚 Get latest code
         uses: actions/checkout@v4
 
-      - name: 🚚 Executing Git Pull on Server.
+      - name: 📂 Sync files
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          run:
-            cd staging.esholiday.com
-            git pull
-            cd backendApi/ 
-            php artisan route:clear 
-            php artisan cache:clear 
-            php artisan config:clear 
-            php artisan route:cache 
-            php artisan optimize 
-            php artisan migrate 
-            composer dump-autoload
+#          run:
+#            cd staging.esholiday.com
+#            git pull
+#            cd backendApi/
+#            php artisan route:clear
+#            php artisan cache:clear
+#            php artisan config:clear
+#            php artisan route:cache
+#            php artisan optimize
+#            php artisan migrate
+#            composer dump-autoload
           server: ${{ secrets.server_host }}
           port: ${{ secrets.port }} 
           username: ${{ secrets.ftp_username }}
