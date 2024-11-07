@@ -115,7 +115,7 @@ class TaskController extends Controller
     public function add(TaskRequest $task)
     {
         $data = $task->validated();
-        $customValidation = (new TaskModel())->taskCustomValidation([
+        $validationStatus = (new TaskModel())->taskCustomValidation([
             'categoryID' => $data['categoryID'],
             'startTime' => $data['startTime'],
             'endTime' => $data['endTime'],
@@ -124,8 +124,8 @@ class TaskController extends Controller
             'type' => $data['type'],
         ]);
 
-        if ($customValidation['status_code'] !== 200) {
-            return response()->json($customValidation, $customValidation['status_code']);
+        if ($validationStatus['status_code'] !== 200) {
+            return response()->json($validationStatus, $validationStatus['status_code']);
         }
 
         $workflow[] = buildTimelineWorkflow('create', 'Created a new task');
@@ -140,7 +140,7 @@ class TaskController extends Controller
                 'slug' => Uuid::uuid4(),
                 'company_id' => Auth::user()->primary_company,
                 'description' => $data['description'],
-                'category_id' => $data['categoryID'],
+                'category_id' => $validationStatus['category']->id,
                 'date' => date('Y-m-d', strtotime($data['date'])),
                 'start_time' => date('H:i', strtotime($data['startTime'])),
                 'end_time' => date('H:i', strtotime($data['endTime'])),
@@ -250,7 +250,6 @@ class TaskController extends Controller
             ], 403);
         }
 
-
         if (!$data['amount']) {
             return response()->json([
                 'message' => 'Amount',
@@ -263,7 +262,6 @@ class TaskController extends Controller
                 'description' => 'Payment Status is required!'
             ], 403);
         }
-
 
         try {
             DB::beginTransaction();
@@ -370,7 +368,7 @@ class TaskController extends Controller
 
         $data = $task->validated();
 
-        $customValidation = (new TaskModel())->taskCustomValidation([
+        $validationStatus = (new TaskModel())->taskCustomValidation([
             'categoryID' => $data['categoryID'],
             'startTime' => $data['startTime'],
             'endTime' => $data['endTime'],
@@ -379,29 +377,27 @@ class TaskController extends Controller
             'date' => $data['date'],
         ], 'update');
 
-        if ($customValidation['status_code'] !== 200) {
-            return response()->json($customValidation, $customValidation['status_code']);
+        if ($validationStatus['status_code'] !== 200) {
+            return response()->json($validationStatus, $validationStatus['status_code']);
         }
 
         $task = TaskModel::where('slug', $id)->first();
         $workflow = json_decode($task->workflow);
         $workflow[] = buildTimelineWorkflow('update');
 
-        if (isset($data['comment']) && $data['comment']) {
+        if (isset($data['comment']) && $data['comment'] !== 'undefined') {
             $workflow[] = buildTimelineWorkflow('comment', $data['comment']);
         }
         try {
             DB::beginTransaction();
             $task->update([
                 'description' => $data['description'],
-                'category_id' => $data['categoryID'],
+                'category_id' => $validationStatus['category']->id,
                 'date' => date('Y-m-d', strtotime($data['date'])),
                 'start_time' => date('H:i', strtotime($data['startTime'])),
                 'end_time' => date('H:i', strtotime($data['endTime'])),
                 'type' => $data['type'],
                 'amount' => $data['amount'],
-                'status' => $data['status'] ?? 'pending',
-                'payment_status' => $data['payment_status'] ?? 'pending',
                 'workflow' => json_encode($workflow),
             ]);
 

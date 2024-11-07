@@ -134,14 +134,14 @@ class TaskModel extends Model
 
         $category = Category::select('categories.*')
             ->join('sectors', 'categories.sector_id', '=', 'sectors.id')
-            ->where(['sectors.company_id' => \Illuminate\Support\Facades\Auth::user()->primary_company, 'categories.id' => $data['categoryID']])
+            ->where(['sectors.company_id' => \Illuminate\Support\Facades\Auth::user()->primary_company, 'categories.slug' => $data['categoryID']])
             ->first();
 
         if (!$category) {
             return [
                 'status_code' => 400,
                 'message' => 'error!',
-                'description' => 'You can not add task for other company.',
+                'description' => 'Category Was not Found',
             ];
         }
 
@@ -194,6 +194,7 @@ class TaskModel extends Model
             'status_code' => 200,
             'message' => 'success',
             'description' => 'Validation is ok',
+            'category'=>$category
         ];
     }
 

@@ -111,7 +111,7 @@ export const incomeSlice = createApi({
                 }
 
             },
-            providesTags: ["task"],
+            providesTags: ["income"],
         }),
     }),
 });

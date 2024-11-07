@@ -9,16 +9,11 @@ import {checkPermission, compareDates} from "../../helper/HelperFunctions.js";
 import SummeryCard from "../../helper/SummeryCard.jsx";
 import {notification} from "../../components/ToastNotification.jsx";
 
-import {
-    Box,
-
-    Button,
-
-} from "@mui/material";
+import {Box, Button} from "@mui/material";
 
 import Iconify from "../../components/Iconify.jsx";
 import CommonTable from "../../helper/CommonTable.jsx";
-import TaskFilters from "../HRMS/Task/TaskFilters.jsx";
+import {useDeleteSectorMutation, useGetSectorsDataQuery,useGetIncomeAndExpenseQuery} from "../../api/slices/sectorSlice.js";
 
 const _initialSectorData = {
     contract_end_date: "",
@@ -35,6 +30,15 @@ const _initialSectorData = {
     name: "",
     payments: [],
 };
+
+const defaultQuery = {
+    name: "",
+    payment_account_id: "",
+    contract_start_date: "",
+    contract_end_date: "",
+    orderBy: "",
+    order: "",
+};
 export default function Sectors() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
@@ -44,7 +48,21 @@ export default function Sectors() {
     const [sector, setSector] = useState(_initialSectorData);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
+    const [query, setQuery] = useState(defaultQuery);
+    const [isPaginate, setIsPaginate] = useState(false);
+    const [modalSector, setModalSector] = useState(false);
+    const [showHelperModel, setShowHelperModel] = useState(false);
+    const [showHelperModelType, setShowHelperModelType] = useState("");
+    const [activeInternetModal, setActiveInternetModal] = useState(null);
+    const [activeElectricityModal, setActiveElectricityModal] = useState(null);
+    const [showSectorForm, setShowSectorForm] = useState(false);
+    const [showContractExtend, setShowContractExtendModal] = useState(false);
+    const [showMainLoader, setShowMainLoader] = useState(false);
 
+    const [incomeExpense, setIncomeExpense] = useState({
+        income: 0,
+        expense: 0,
+    });
     const {
         num_data_per_page,
         default_currency
@@ -53,16 +71,17 @@ export default function Sectors() {
     const TABLE_HEAD = [
         {id: "name", label: "Sector", align: "left"},
         {id: "rent", label: "Rent", align: "right"},
-        {id: "el_acc_no", label: "Elec. Account", align: "right"},
-        {id: "internet_acc_no", label: "Int. Account", align: "right"},
-        {id: "electricity", label: "Electricity next payment", align: "right"},
-        {id: "internet", label: "Internet next payment", align: "left"},
-        {id: "cheque", label: "Cheque next payment", align: "right"},
+        {id: "cheque", label: "Next Payment", align: "right"},
     ];
-    const pageSize = num_data_per_page;
+    const pageSize =
+        Number(query.limit) > 0
+            ? Number(query.limit)
+            : num_data_per_page
+                ? num_data_per_page
+                : 10;
     const totalPages = Math.ceil(totalCount / pageSize);
 
-    const showSector = (sector) => {
+    const showViewModalFunc = (sector) => {
         axiosClient(`/sectorsIncomeExpense/${sector.id}`)
             .then(({data}) => {
                 setIncomeExpense(data);
@@ -76,8 +95,7 @@ export default function Sectors() {
     };
 
     const filteredSectors = sectors.filter(
-        (sector) =>
-            sector.name.toLowerCase().includes(searchTerm.toLowerCase())
+        (sector) => sector.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const onDelete = (sector) => {
@@ -93,7 +111,6 @@ export default function Sectors() {
                 axiosClient
                     .delete(`sector/${sector.id}`)
                     .then((data) => {
-                        getSectors(currentPage, pageSize);
                         notification("success", data?.message, data?.description);
                     })
                     .catch((err) => {
@@ -114,37 +131,40 @@ export default function Sectors() {
         setShowHelperModel(false);
     };
 
-    const getSectors = (page, pageSize) => {
-        setLoading(true);
-        axiosClient
-            .get("/sectors", {params: {page, pageSize}})
-            .then(({data}) => {
-                setLoading(false);
-                setSectors(data.data);
-                setTotalCount(data.total);
-            })
-            .catch(() => {
-                setLoading(false);
-            });
-    };
+    //api call
+    const {
+        data: getSectorsData,
+        isFetching: sectorDataFetching,
+    } = useGetSectorsDataQuery(
+        {currentPage, pageSize, query: query},
+        {refetchOnMountOrArgChange: isPaginate}
+    );
+    // const {
+    //     data: getIncomeAndExpense,
+    //     isFetching: sectorDataFetching,
+    // } = getIncomeAndExpense(
+    //     {currentPage, pageSize, query: query},
+    //     {refetchOnMountOrArgChange: isPaginate}
+    // );
+    const [deleteSector] = useDeleteSectorMutation();
 
     useEffect(() => {
         document.title = "Manage Sectors";
-        getSectors(currentPage, pageSize);
-    }, [currentPage, pageSize]);
+        console.log(getSectorsData);
+        if (getSectorsData?.data) {
+            setSectors(getSectorsData.data);
+            setTotalCount(getSectorsData.total);
+            setShowMainLoader(false);
+        } else {
+            setShowMainLoader(true);
+        }
+        setIsPaginate(false);
+    }, [getSectorsData, currentPage]);
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
     };
 
-    const [modalSector, setModalSector] = useState(false);
-    const [showHelperModel, setShowHelperModel] = useState(false);
-    const [showHelperModelType, setShowHelperModelType] = useState("");
-    const [activeInternetModal, setActiveInternetModal] = useState(null);
-    const [activeElectricityModal, setActiveElectricityModal] = useState(null);
-    const [incomeExpense, setIncomeExpense] = useState({
-        income: 0,
-        expense: 0,
-    });
+
     const Toast = Swal.mixin({
         toast: true,
         position: "top-end",
@@ -300,18 +320,35 @@ export default function Sectors() {
     }
 
     const modifiedSectors = filteredSectors.map((sector, index) => {
-        sector.electricity = electricityBillColumn(sector, index);
-        sector.internet = internetBillColumn(sector, index);
-        sector.cheque = nextPaymentColumn(sector.payments, default_currency, handlePay);
+        console.log(sector);
+
+        // sector.electricity = electricityBillColumn(sector, index);
+        // sector.internet = internetBillColumn(sector, index);
+        // sector.cheque = nextPaymentColumn(sector.payments, default_currency, handlePay);
         return sector;
     });
-
+    const showEditModalFunc = (sector) => {
+        setShowSectorForm(true);
+        setSector(sector);
+    };
+    const showContractExtendFunc = (sector) => {
+        setShowContractExtendModal(true);
+        setSector(sector);
+    };
     const actionParams = [
         {
             actionName: 'Edit',
-            type: "route",
-            route: "/sector/update/",
-            actionFunction: "editModal",
+            type: "modal",
+            route: "",
+            actionFunction: showEditModalFunc,
+            permission: 'sector_edit',
+            textClass: 'text-info',
+        },
+        {
+            actionName: 'Extend Contract',
+            type: "modal",
+            route: "",
+            actionFunction: showContractExtendFunc,
             permission: 'sector_edit',
             textClass: 'text-info',
         },
@@ -319,7 +356,7 @@ export default function Sectors() {
             actionName: 'View',
             type: "modal",
             route: "",
-            actionFunction: showSector,
+            actionFunction: showViewModalFunc,
             permission: 'sector_view',
             textClass: 'text-warning'
         },
@@ -332,21 +369,21 @@ export default function Sectors() {
             textClass: 'text-danger'
         }
     ];
-
+    const showSectorFormFunc = () => {
+        setShowSectorForm(true);
+    };
     return (
         <div>
-            <MainLoader loaderVisible={loading}/>
+            <MainLoader loaderVisible={showMainLoader}/>
             <CommonTable
                 cardTitle={"List of Sectors"}
-                addBTN={
-                    {
-                        permission: checkPermission('sector_create'),
-                        txt: "Create New",
-                        icon: (<Iconify icon={"eva:plus-fill"}/>), //"faBuildingFlag",
-                        linkTo: 'route',
-                        link: '/sector/new'
-                    }
-                }
+                addBTN={{
+                    permission: checkPermission('sector_create'),
+                    txt: "New Sector",
+                    icon: (<Iconify icon={"eva:plus-fill"}/>), //"faBuildingFlag",
+                    linkTo: 'modal',
+                    link: showSectorFormFunc
+            }}
                 paginations={{
                     totalPages: totalPages,
                     totalCount: totalCount,
@@ -359,16 +396,17 @@ export default function Sectors() {
                     showIdColumn: userRole === 'admin' ?? false,
                     tableColumns: TABLE_HEAD,
                     tableBody: {
-                        loading: loading,
-                        loadingColSpan: 8,
+                        loading: sectorDataFetching,
+                        loadingColSpan: 3,
                         rows: filteredSectors,//rendering data
                     },
                     actionButtons: actionParams
 
                 }}
-
                 filter={filters}
-
+                loading={sectorDataFetching}
+                loaderRow={query?.limit}
+                loaderCol={3}
             />
 
             <SummeryCard
@@ -379,7 +417,6 @@ export default function Sectors() {
                 modalType={showHelperModelType}
                 Toast={Toast}
                 navigation={useNavigate}
-                loadingMethod={setLoading}
             />
 
             <Modal

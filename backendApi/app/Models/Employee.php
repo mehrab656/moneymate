@@ -31,6 +31,7 @@ class Employee extends Model
         try {
             DB::beginTransaction();
             $employee = $this->create([
+                'slug' => $data['slug'],
                 'company_id' => $data['company_id'],
                 'user_id' => $data['user_id'],
                 'phone' => $data['phone'],

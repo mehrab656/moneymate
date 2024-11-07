@@ -13,6 +13,7 @@ use Auth;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
+use Ramsey\Uuid\Uuid;
 
 class EmployeeController extends Controller
 {
@@ -113,7 +114,9 @@ class EmployeeController extends Controller
         }
 
 
+        $uuid = Uuid::uuid4();
         $user = (new User)->addNewUser([
+            'slug'=>$uuid,
             'name' => $employee['name'],
             'email' => $employee['email'],
             'profile_picture' => $employee['profile_picture'] ?? 'default_employee.png',
@@ -128,6 +131,7 @@ class EmployeeController extends Controller
         //@need to add data on employee table
 
         $newEmployee = (new Employee())->addEmployee([
+            'slug'=>$uuid,
             'company_id' => Auth::user()->primary_company,
             'user_id' => $user['user']->id,
             'phone' => $employee['phone'],

@@ -218,13 +218,13 @@ export default function Task() {
     ) => {
       const task = {};
       const statusClass =
-        status === "pending"
+        status.value === "pending"
           ? "warning"
           : status === "complete"
           ? "success"
           : "danger";
       const PaymentStatusClass =
-        payment_status === "pending"
+        payment_status.value === "pending"
           ? "warning"
           : payment_status === "paid"
           ? "success"
@@ -236,14 +236,12 @@ export default function Task() {
       task.task_status = status;
       task.status = (
         <span className={`text-${statusClass}`}>
-          {status.charAt(0).toUpperCase() + status.slice(1)}
+          {status.label}
         </span>
       );
       task.payment_status = (
         <span className={`text-${PaymentStatusClass}`}>
-          {(
-            payment_status.charAt(0).toUpperCase() + payment_status.slice(1)
-          ).replace("_", " ")}
+          {payment_status.label}
         </span>
       );
       task.history = (
@@ -259,7 +257,7 @@ export default function Task() {
           </span>
         </a>
       );
-      task.type = type.charAt(0).toUpperCase() + type.slice(1);
+      task.type = type.label;
       task.description = description;
       task.id = id;
       task.workflow = workflow;

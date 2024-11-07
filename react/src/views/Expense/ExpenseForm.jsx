@@ -91,7 +91,6 @@ export default function ExpenseForm({handelCloseModal, id}) {
     }, [expense?.date]);
 
     const expenseSubmit = async (event) => {
-        console.log("hello")
         event.preventDefault();
         setSaveBtnTxt('Saving...');
         // event.currentTarget.disabled = true;

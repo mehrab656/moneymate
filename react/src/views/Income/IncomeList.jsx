@@ -35,7 +35,6 @@ export default function IncomeList() {
     const {applicationSettings, userRole, userPermission} = useContext(SettingsContext);
     const [incomes, setIncomes] = useState([]);
     const [income, setIncome] = useState({});
-    const [loading, setLoading] = useState(true);
     const [showIncomeForm, setShowIncomeForm] = useState(false);
     const [showIncomeDetails, setShowIncomeDetails] = useState(false);
     const [showMainLoader, setShowMainLoader] = useState(false);
@@ -196,7 +195,7 @@ export default function IncomeList() {
                 cardTitle={"List of Incomes"}
                 addBTN={{
                     permission: checkPermission("income_create"),
-                    txt: "Add New Income",
+                    txt: "New Income",
                     icon: <Iconify icon={"eva:plus-fill"}/>, //"faBuildingFlag",
                     linkTo: "modal",
                     link: showIncomeFormFunc,
@@ -213,7 +212,7 @@ export default function IncomeList() {
                     showIdColumn: userRole === "admin" ?? false,
                     tableColumns: TABLE_HEAD,
                     tableBody: {
-                        loading: loading,
+                        loading: incomeDataFetching,
                         loadingColSpan: 4,
                         rows: filteredIncomes, //rendering data
                     },
