@@ -51,7 +51,7 @@ class TaskController extends Controller
         }
 
         if ($startDate && empty($endDate)) {
-            $endDate = Carbon::now()->toDateString();
+            $endDate = (new DateTime($startDate))->format('Y-m-01');
         }
 
         if ($endDate && empty($startDate)) {

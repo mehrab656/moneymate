@@ -3,7 +3,6 @@ import {Col, Form, Row} from "react-bootstrap";
 import {CardContent, TextField} from "@mui/material";
 import axiosClient from "../../../axios-client.js";
 import { useGetAllEmployeeDataQuery } from "../../../api/slices/employeeSlice.js";
-
 export default function TaskFilters(props) {
     const {search, query, setQuery,resetFilterParameter,getTask,handelFilter} = props;
     const {placeHolderTxt, searchBoxValue, handelSearch} = search;

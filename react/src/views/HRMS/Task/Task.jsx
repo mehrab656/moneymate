@@ -69,6 +69,7 @@ export default function Task() {
   const [query, setQuery] = useState(defaultQuery);
   const { num_data_per_page } = applicationSettings;
   const [isPaginate, setIsPaginate] = useState(false);
+  const [subTitle,setSubTitle] = useState('');
 
   const [hasFilter, setHasFilter] = useState(false);
   const TABLE_HEAD = [
@@ -179,6 +180,7 @@ export default function Task() {
   const resetFilterParameter = () => {
     setQuery(defaultQuery);
     setHasFilter(!hasFilter);
+    setSearchTerm("");
   };
   const handelFilter = () => {
     setHasFilter(!hasFilter);
@@ -190,6 +192,8 @@ export default function Task() {
       setTasks(getTaskData.data);
       setTotalCount(getTaskData.total);
       setShowMainLoader(false);
+      const subTitle = <span><small><i>{`Showing ${getTaskData?.data.length} results of ${totalCount}`}</i></small></span>
+      setSubTitle(`Showing ${getTaskData?.data.length} results of ${getTaskData.total}`)
     } else {
       setShowMainLoader(true);
     }
@@ -218,15 +222,12 @@ export default function Task() {
     ) => {
       const task = {};
       const statusClass =
-        status.value === "pending"
-          ? "warning"
-          : status === "complete"
-          ? "success"
-          : "danger";
+        status.value === "pending" ? "warning" : (status.value === "complete" ? "success" : "danger");
+
       const PaymentStatusClass =
         payment_status.value === "pending"
           ? "warning"
-          : payment_status === "paid"
+          : payment_status.value === "paid"
           ? "success"
           : "info";
 
@@ -329,7 +330,8 @@ export default function Task() {
     <div>
       <MainLoader loaderVisible={showMainLoader} />
       <CommonTable
-        cardTitle={"List of Tasks"}
+        cardTitle={`List of Tasks`}
+        cardSubTitle={subTitle}
         addBTN={{
           permission: checkPermission("task_create"),
           txt: "Add New Task",

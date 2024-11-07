@@ -17,7 +17,8 @@
         "laravel/framework": "^10.8",
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
-        "stripe/stripe-php": "^10.15"
+        "stripe/stripe-php": "^10.15",
+        "twilio/sdk": "^8.3"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.13",

@@ -42,6 +42,7 @@ const useStyles = makeStyles(() => ({
 function CommonTable(props) {
   const {
     cardTitle,
+    cardSubTitle = '',
     addBTN,
     paginations,
     table,
@@ -51,7 +52,6 @@ function CommonTable(props) {
     loaderCol,
   } = props;
   const [expanded, setExpanded] = React.useState(false);
-
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
@@ -220,6 +220,7 @@ function CommonTable(props) {
                 page={paginations.currentPage}
                 onChange={paginations.handlePageChange}
               />
+              <span><small className={'text-muted'}><i>{cardSubTitle}</i></small></span>
             </Stack>
           )}
         </CardActions>
