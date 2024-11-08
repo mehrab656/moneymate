@@ -13,7 +13,13 @@ import {Box, Button} from "@mui/material";
 
 import Iconify from "../../components/Iconify.jsx";
 import CommonTable from "../../helper/CommonTable.jsx";
-import {useDeleteSectorMutation, useGetSectorsDataQuery,useGetIncomeAndExpenseQuery} from "../../api/slices/sectorSlice.js";
+import {
+    useDeleteSectorMutation,
+    useGetSectorsDataQuery,
+    useGetIncomeAndExpenseQuery
+} from "../../api/slices/sectorSlice.js";
+import IncomeShow from "../Income/IncomeShow.jsx";
+import ContractExtendForm from "./ContractExtendForm.jsx";
 
 const _initialSectorData = {
     contract_end_date: "",
@@ -58,6 +64,7 @@ export default function Sectors() {
     const [showSectorForm, setShowSectorForm] = useState(false);
     const [showContractExtend, setShowContractExtendModal] = useState(false);
     const [showMainLoader, setShowMainLoader] = useState(false);
+    const [subTitle, setSubTitle] = useState('');
 
     const [incomeExpense, setIncomeExpense] = useState({
         income: 0,
@@ -150,11 +157,12 @@ export default function Sectors() {
 
     useEffect(() => {
         document.title = "Manage Sectors";
-        console.log(getSectorsData);
         if (getSectorsData?.data) {
             setSectors(getSectorsData.data);
             setTotalCount(getSectorsData.total);
             setShowMainLoader(false);
+            setSubTitle(`Showing ${getSectorsData?.data.length} results of ${getSectorsData.total}`)
+
         } else {
             setShowMainLoader(true);
         }
@@ -320,7 +328,6 @@ export default function Sectors() {
     }
 
     const modifiedSectors = filteredSectors.map((sector, index) => {
-        console.log(sector);
 
         // sector.electricity = electricityBillColumn(sector, index);
         // sector.internet = internetBillColumn(sector, index);
@@ -335,6 +342,9 @@ export default function Sectors() {
         setShowContractExtendModal(true);
         setSector(sector);
     };
+    const closeModal = (modalName) => {
+        modalName(false);
+    }
     const actionParams = [
         {
             actionName: 'Edit',
@@ -377,13 +387,15 @@ export default function Sectors() {
             <MainLoader loaderVisible={showMainLoader}/>
             <CommonTable
                 cardTitle={"List of Sectors"}
+                cardSubTitle={subTitle}
+
                 addBTN={{
                     permission: checkPermission('sector_create'),
                     txt: "New Sector",
                     icon: (<Iconify icon={"eva:plus-fill"}/>), //"faBuildingFlag",
                     linkTo: 'modal',
                     link: showSectorFormFunc
-            }}
+                }}
                 paginations={{
                     totalPages: totalPages,
                     totalCount: totalCount,
@@ -408,6 +420,13 @@ export default function Sectors() {
                 loaderRow={query?.limit}
                 loaderCol={3}
             />
+
+            {showContractExtend && (
+                <ContractExtendForm handleCloseModal={closeModal}
+                                    element={sector}
+                                    closeFuncAttr = {setShowContractExtendModal}
+                />
+            )}
 
             <SummeryCard
                 showModal={showHelperModel}

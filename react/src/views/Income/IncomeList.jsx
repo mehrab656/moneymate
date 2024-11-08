@@ -41,6 +41,7 @@ export default function IncomeList() {
     const [query, setQuery] = useState(defaultQuery);
     const {num_data_per_page,default_currency} = applicationSettings;
     const [isPaginate, setIsPaginate] = useState(false);
+    const [subTitle,setSubTitle] = useState('');
 
     const [hasFilter, setHasFilter] = useState(false);
     const TABLE_HEAD = [
@@ -133,6 +134,8 @@ export default function IncomeList() {
             setIncomes(getIncomeData.data);
             setTotalCount(getIncomeData.total);
             setShowMainLoader(false);
+            setSubTitle(`Showing ${getIncomeData?.data.length} results of ${getIncomeData.total}`)
+
         } else {
             setShowMainLoader(true);
         }
@@ -193,6 +196,7 @@ export default function IncomeList() {
             <MainLoader loaderVisible={showMainLoader}/>
             <CommonTable
                 cardTitle={"List of Incomes"}
+                cardSubTitle={subTitle}
                 addBTN={{
                     permission: checkPermission("income_create"),
                     txt: "New Income",

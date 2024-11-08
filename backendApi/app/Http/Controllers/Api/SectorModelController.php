@@ -37,6 +37,9 @@ class SectorModelController extends Controller
 
         $page = $request->query('page', 1);
         $pageSize = $request->query('pageSize', 10);
+        $order = $request->query('order');
+        $orderBy = $request->query('orderBy');
+        $limit = $request->query('limit');
 
 
         $sectors = SectorModel::where('company_id', Auth::user()->primary_company)

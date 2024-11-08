@@ -11,6 +11,9 @@ import MainLoader from "../../../components/MainLoader.jsx";
 import {useGetAllEmployeeDataQuery} from "../../../api/slices/employeeSlice.js";
 import {useCreateTaskMutation, useGetSingleTaskDataQuery} from "../../../api/slices/taskSlice.js";
 import {useGetCategoryListDataQuery} from "../../../api/slices/categorySlice.js";
+import {faDownload, faEye, faEyeSlash, faRefresh, faSync} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {useDispatch} from "react-redux";
 
 
 const defaultTaskData = {
@@ -241,7 +244,17 @@ function TaskAddModal({handelCloseModal, title, id}) {
                                 <Col xs={12} md={6}>
                                     <Form.Group className="mb-3" controlId="category">
                                         <Form.Label style={{marginBottom: '0px'}}
-                                                    className="custom-form-label">Category</Form.Label>
+                                                    className="custom-form-label">Category
+                                            {/*<small>*/}
+                                            {/*<a onClick={(e)=>{*/}
+                                            {/*    console.log('clicked');*/}
+                                            {/*    reload()*/}
+
+                                            {/*}}*/}
+                                            {/*className={'text-muted p-1'}>*/}
+                                            {/*    <FontAwesomeIcon icon={faSync}/>*/}
+                                            {/*</a></small>*/}
+                                        </Form.Label>
                                         <Select
                                             className="basic-single"
                                             classNamePrefix="select"

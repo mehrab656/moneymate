@@ -51,7 +51,7 @@ class TaskController extends Controller
         }
 
         if ($startDate && empty($endDate)) {
-            $endDate = (new DateTime($startDate))->format('Y-m-01');
+            $endDate = (new DateTime($startDate))->format('Y-m-31');
         }
 
         if ($endDate && empty($startDate)) {

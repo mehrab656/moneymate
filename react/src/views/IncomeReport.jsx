@@ -187,8 +187,7 @@ export default function IncomeReport() {
                                                    data-tooltip-id='expense-details'
                                                    data-tooltip-content={"View details"}>
                                                       <span className="aside-menu-icon">
-                                                        <FontAwesomeIcon
-                                                            icon={index === activeModal ? faEye : faEyeSlash}/>
+                                                        <FontAwesomeIcon icon={index === activeModal ? faEye : faEyeSlash}/>
                                                     </span>
                                                 </a>
                                             </td>

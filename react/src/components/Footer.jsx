@@ -13,7 +13,7 @@ const Footer = () => {
                 <Col md={4} sm={6}>{company_name}</Col>
                 <Col md={2} sm={6}><a target="_blank" href={`${web_site}`}>{"Website"}</a></Col>
                 <Col md={4} sm={6}>{address}</Col>
-                <Col md={2} sm={6}>Version: 1.10.11</Col>
+                <Col md={2} sm={6}>Version: 1.10.12</Col>
             </Row>
 
         </footer>
