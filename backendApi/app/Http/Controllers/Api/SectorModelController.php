@@ -251,7 +251,6 @@ class SectorModelController extends Controller
 
     public function getTotalExpenseAndIncomeBySectorID($sectorID)
     {
-        $sectorID = (int)$sectorID;
 
         if (!$sectorID) {
             return [
@@ -264,18 +263,20 @@ class SectorModelController extends Controller
         $expense = DB::table('sectors')
             ->join('categories', 'sectors.id', '=', 'categories.sector_id')
             ->join('expenses', 'categories.id', '=', 'expenses.category_id')
-            ->where('sectors.id', $sectorID)
+            ->where('sectors.slug', $sectorID)
             ->sum('expenses.amount');
 
         $income = DB::table('sectors')
             ->join('categories', 'sectors.id', '=', 'categories.sector_id')
             ->join('incomes', 'categories.id', '=', 'incomes.category_id')
-            ->where('sectors.id', $sectorID)
+            ->where('sectors.slug', $sectorID)
             ->sum('incomes.amount');
 
         return response()->json([
-            'income' => $income,
-            'expense' => $expense
+            'data'=>[
+                'income' => $income,
+                'expense' => $expense
+            ]
         ]);
     }
 

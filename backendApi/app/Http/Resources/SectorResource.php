@@ -31,10 +31,9 @@ class SectorResource extends JsonResource {
 	public function toArray( Request $request ): array {
 		return [
 			'id'                    => $this->slug,
-			'company_id'            => $this->company_id,
 			'name'                  => $this->name,
 			'rent'                  => $this->rent,
-			'payment_account_id'    => $this->payment_account_id,
+//			'payment_account_id'    => $this->payment_account_id,
 			'contract_start_date'   => $this->contract_start_date,
 			'contract_end_date'     => $this->contract_end_date,
 			'el_premises_no'        => $this->el_premises_no,

@@ -60,7 +60,6 @@ let categories= ['Rent','Electricity','Internet','DTCM','Furniture','Maintenance
 
 function SectorCreate() {
     const {applicationSettings} = useContext(SettingsContext);
-
     let {id} = useParams();
     const navigate = useNavigate();
     const {setNotification} = useStateContext();
