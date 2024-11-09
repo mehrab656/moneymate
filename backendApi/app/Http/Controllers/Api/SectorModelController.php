@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SectorContractUpdateRequest;
 use App\Http\Requests\SectorRequest;
 use App\Http\Requests\SectorUpdateRequest;
 use App\Http\Resources\IncomeResource;
@@ -22,6 +23,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Mockery\Exception;
 use Nette\Schema\ValidationException;
 use Ramsey\Uuid\Uuid;
 use Throwable;
@@ -132,7 +134,6 @@ class SectorModelController extends Controller
             //now insert the payment plans for the sectors cheque.
             if (!empty($payment['numbers'])) {
                 $totalPayment = count($payment['numbers']);
-
                 for ($i = 0; $i < $totalPayment; $i++) {
                     PaymentModel::create([
                         'sector_id' => $sector['id'],
@@ -554,8 +555,102 @@ class SectorModelController extends Controller
     public function sectorList(): JsonResponse
     {
         $sectors = SectorModel::where('company_id', Auth::user()->primary_company)->get();
-
         return response()->json(['data' => SectorForFilterResource::collection($sectors)]);
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function updateContract($slug, SectorContractUpdateRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+
+        if (!$slug){
+            return response()->json([
+                'message' => 'error',
+                'description'=>'Id is Missing'
+            ],404);
+
+        }
+
+        $sector = SectorModel::where('slug',$slug)->get()->first();
+        if (!$sector){
+            return response()->json([
+                'message' => 'error',
+                'description'=>'Sector not found'
+            ],404);
+        }
+        $payment['numbers'] = $data['payment_number'];
+        $payment['amount'] = $data['payment_amount'];
+        $payment['date'] = $data['payment_date'];
+
+        try {
+            DB::beginTransaction();
+            //first handel the billing dates
+            //for internets:
+            for ($i = 1; $i <= $data['internet_bill_month']; $i++) {
+                PaymentModel::create([
+                    'sector_id' => $sector->id,
+                    'payment_number' => sprintf("%s internet bill for %s ",$sector->name,date('Y-m-d', strtotime("+$i month", strtotime($sector->internet_billing_date)))),
+                    'date' => date('Y-m-d', strtotime("+$i month", strtotime($sector->internet_billing_date))),
+                    'amount' => 0,
+                    'type' => 'internet',
+                    'note' => sprintf("After Contract has updated from %s to %s",$data['contract_start_date'],$data['contract_end_date']),
+                ]);
+            }
+            //now handel the electricity
+            for ($i = 1; $i <= $data['electricity_bill_month']; $i++) {
+                PaymentModel::create([
+                    'sector_id' => $sector['id'],
+                    'payment_number' => sprintf("%s electricity bill for %s ",$sector->name,date('Y-m-d', strtotime("+$i month", strtotime($sector->el_billing_date)))),
+                    'date' => date('Y-m-d', strtotime("+$i month", strtotime($sector->el_billing_date))),
+                    'amount' => 0,
+                    'type' => 'electricity',
+                    'note' => sprintf("After Contract has updated from %s to %s",$data['contract_start_date'],$data['contract_end_date']),
+                ]);
+            }
+            //now handel the cheques
+            if (!empty($payment['numbers'])) {
+                $totalPayment = count($payment['numbers']);
+                for ($i = 0; $i < $totalPayment; $i++) {
+                    PaymentModel::create([
+                        'sector_id' => $sector['id'],
+                        'payment_number' => $payment['numbers'][$i],
+                        'date' => Carbon::parse($payment['date'][$i])->format('Y-m-d'),
+                        'amount' => $payment['amount'][$i],
+                        'type' => 'cheque',
+                        'note' => sprintf("After Contract has updated from %s to %s",$data['contract_start_date'],$data['contract_end_date']),
+                    ]);
+                }
+            }
+
+            //now update sector for new contract data's
+            $sector->contract_start_date = $data['contract_start_date'];
+            $sector->contract_end_date = $data['contract_end_date'];
+            $sector->rent = $data['rent'];
+            $sector->save();
+            storeActivityLog([
+                'user_id' => Auth::user()->id,
+                'object_id' => $sector->id,
+                'log_type' => 'update',
+                'module' => 'sectors',
+                'descriptions' => sprintf('Update Contract for %s',$sector->name),
+                'data_records' => $sector,
+            ]);
+            DB::commit();
+        }catch (Exception $e){
+            DB::rollBack();
+
+            return response()->json([
+                'message' => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
+                'error' => 'error'
+            ], 400);
+        }
+
+        return response()->json([
+            'message' => 'updated',
+            'description'=>"Contract has been updated"
+        ]);
     }
 }
 

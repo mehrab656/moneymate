@@ -197,6 +197,7 @@ Route::middleware('auth:sanctum')->group(function () {
     ]);
     Route::post('/change-payment-status/{sector}', [SectorModelController::class, 'changePaymentStatus']);
     Route::post('/pay-bill/{payment}', [SectorModelController::class, 'payBills']);
+    Route::post('/sector/update-contract/{slug}', [SectorModelController::class, 'updateContract']);
     Route::get('/sectors-list', [SectorModelController::class, 'sectorList']);
 
     //finance report
