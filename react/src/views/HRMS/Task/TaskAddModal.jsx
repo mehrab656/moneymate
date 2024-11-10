@@ -48,9 +48,8 @@ function TaskAddModal({handelCloseModal, title, id}) {
         isFetching: categoryDataFetching,
         isError: categoryDataError,
     } = useGetCategoryListDataQuery({
-        categoryType: ""
+        categoryType: taskData?.type?.value
     });
-
     useEffect(() => {
         if (id && getSingleTaskData?.data) {
             setTaskData(getSingleTaskData?.data);
@@ -58,7 +57,7 @@ function TaskAddModal({handelCloseModal, title, id}) {
         if (getCategoryListData?.data.length > 0) {
             setCategories(getCategoryListData?.data);
         }
-    }, [id, getSingleTaskData]);
+    }, [id, getSingleTaskData, getCategoryListData]);
 
     const {
         data: getAllEmployeeData,

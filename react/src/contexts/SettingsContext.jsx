@@ -51,7 +51,7 @@ const SettingsProvider = ({children}) => {
     }, []);
 
     const checkPermission = (permission, limit=0)=>{
-        if (userRole === 'admin') {
+        if (userRole === 'admin' || permission) {
             return true;
         }
         else if(userRole === 'baseUser'){

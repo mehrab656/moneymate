@@ -41,11 +41,11 @@ export const ContextProvider = ({children}) => {
 
     useEffect(()=>{
         //check if user exist on local storage
-        const getUser = localStorage.getItem('ACCESS_USER')
-        if(getUser){
+        const getUser = sessionStorage.getItem('ACCESS_USER')
+        if(getUser && !user?.id){
             setUser(JSON.parse(getUser))
         }
-    },[localStorage.getItem('ACCESS_USER')])
+    },[sessionStorage.getItem('ACCESS_USER')])
 
     const setNotification = message => {
         _setNotification(message);

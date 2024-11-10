@@ -67,6 +67,7 @@ export default function Login() {
                     setUser(data.user);
                     setUserRole(data.user.role_as);
                     setToken(data.token);
+                    sessionStorage.setItem('ACCESS_USER', JSON.stringify(data.user));
                     localStorage.setItem('ACCESS_TOKEN', data.token);
                     localStorage.setItem('ACCESS_ROLE', data.user.role_as);
                     localStorage.setItem('CURRENT_COMPANY',data.user.primary_company)
