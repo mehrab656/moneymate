@@ -60,7 +60,6 @@ let categories= ['Rent','Electricity','Internet','DTCM','Furniture','Maintenance
 
 function SectorCreate() {
     const {applicationSettings} = useContext(SettingsContext);
-
     let {id} = useParams();
     const navigate = useNavigate();
     const {setNotification} = useStateContext();
@@ -71,7 +70,6 @@ function SectorCreate() {
     const [channelData, setChannelData] = useState(initialChannelData);
     const [categoryName, setCategoryName] = useState([]);
     const [bankAccounts, setBankAccounts] = useState([])
-    const {associative_categories} = applicationSettings;
 
     useEffect(() => {
         axiosClient.get('/all-bank-account')

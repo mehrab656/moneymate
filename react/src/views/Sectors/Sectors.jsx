@@ -20,6 +20,7 @@ import {
 } from "../../api/slices/sectorSlice.js";
 import IncomeShow from "../Income/IncomeShow.jsx";
 import ContractExtendForm from "./ContractExtendForm.jsx";
+import Show from "./Show.jsx";
 
 const _initialSectorData = {
     contract_end_date: "",
@@ -52,11 +53,8 @@ export default function Sectors() {
     const {applicationSettings, userRole, userPermission} = useContext(SettingsContext);
     const [sectors, setSectors] = useState([]);
     const [sector, setSector] = useState(_initialSectorData);
-    const [loading, setLoading] = useState(true);
-    const [showModal, setShowModal] = useState(false);
     const [query, setQuery] = useState(defaultQuery);
     const [isPaginate, setIsPaginate] = useState(false);
-    const [modalSector, setModalSector] = useState(false);
     const [showHelperModel, setShowHelperModel] = useState(false);
     const [showHelperModelType, setShowHelperModelType] = useState("");
     const [activeInternetModal, setActiveInternetModal] = useState(null);
@@ -65,6 +63,9 @@ export default function Sectors() {
     const [showContractExtend, setShowContractExtendModal] = useState(false);
     const [showMainLoader, setShowMainLoader] = useState(false);
     const [subTitle, setSubTitle] = useState('');
+    const [showDetails, setShowDetails] = useState(false);
+
+
 
     const [incomeExpense, setIncomeExpense] = useState({
         income: 0,
@@ -78,7 +79,9 @@ export default function Sectors() {
     const TABLE_HEAD = [
         {id: "name", label: "Sector", align: "left"},
         {id: "rent", label: "Rent", align: "right"},
-        {id: "cheque", label: "Next Payment", align: "right"},
+        {id: "electricity", label: "Next internet Bill", align: "left"},
+        {id: "internet", label: "Next Electricity Bill", align: "left"},
+        {id: "cheque", label: "Next Payment", align: "left"},
     ];
     const pageSize =
         Number(query.limit) > 0
@@ -89,16 +92,8 @@ export default function Sectors() {
     const totalPages = Math.ceil(totalCount / pageSize);
 
     const showViewModalFunc = (sector) => {
-        axiosClient(`/sectorsIncomeExpense/${sector.id}`)
-            .then(({data}) => {
-                setIncomeExpense(data);
-            })
-            .catch((e) => {
-                console.warn(e);
-            });
-        setModalSector(sector);
-
-        setShowModal(true);
+        setShowDetails(true);
+        setSector(sector)
     };
 
     const filteredSectors = sectors.filter(
@@ -134,7 +129,6 @@ export default function Sectors() {
     const handleCloseModal = () => {
         setActiveElectricityModal("");
         setActiveInternetModal("");
-        setShowModal(false);
         setShowHelperModel(false);
     };
 
@@ -252,36 +246,6 @@ export default function Sectors() {
         setShowHelperModel(true);
     };
 
-    const remainingContract = (end) => {
-        let startDate = new Date();
-
-        let endDate = new Date(end);
-
-        const startYear = startDate.getFullYear();
-        const february =
-            (startYear % 4 === 0 && startYear % 100 !== 0) || startYear % 400 === 0
-                ? 29
-                : 28;
-        const daysInMonth = [31, february, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-
-        let yearDiff = endDate.getFullYear() - startYear;
-        let monthDiff = endDate.getMonth() - startDate.getMonth();
-        if (monthDiff < 0) {
-            yearDiff--;
-            monthDiff += 12;
-        }
-        let dayDiff = endDate.getDate() - startDate.getDate();
-        if (dayDiff < 0) {
-            if (monthDiff > 0) {
-                monthDiff--;
-            } else {
-                yearDiff--;
-                monthDiff = 11;
-            }
-            dayDiff += daysInMonth[startDate.getMonth()];
-        }
-        return yearDiff + " Year " + monthDiff + " Months " + dayDiff + " Days.";
-    };
     const nextPaymentColumn = (payments, currency, handelPayment) => {
         let breakStatement = false;
         let nextPayment;
@@ -296,21 +260,18 @@ export default function Sectors() {
         });
 
         if (nextPayment) {
-            return <Box display={'flex'}>
-                <Box sx={{ml: 2}}>
-                    <span className={"text-" + compareDates(nextPayment.date)}>{nextPayment.date}</span>
-                    {compareDates(nextPayment.date) === 'danger' &&
-                        <Button
-                            onClick={() => handlePay(nextPayment)}
-                            sx={{cursor: "pointer"}}>
-                            <small>pay</small>
-                        </Button>
-                    }
-                </Box>
-
-            </Box>
+            return <>
+                <span className={" text-" + compareDates(nextPayment.date)}>{nextPayment.date}</span>
+                {compareDates(nextPayment.date) === 'danger' &&
+                    <Button
+                        onClick={() => handlePay(nextPayment)}
+                        sx={{cursor: "pointer"}}>
+                        <small>pay</small>
+                    </Button>
+                }
+            </>
         } else {
-            return <Box sx={{ml: 2}}><Button variant='outlined'>All Paid</Button></Box>;
+            return <span className={"text-success"}>All Paid</span>;
         }
     }
 
@@ -327,11 +288,38 @@ export default function Sectors() {
         </Box>)
     }
 
-    const modifiedSectors = filteredSectors.map((sector, index) => {
-
-        // sector.electricity = electricityBillColumn(sector, index);
-        // sector.internet = internetBillColumn(sector, index);
-        // sector.cheque = nextPaymentColumn(sector.payments, default_currency, handlePay);
+    const modifiedSectors = filteredSectors.map(({id, name, rent, payments,
+                                                     contract_start_date,
+                                                     contract_end_date,
+                                                     el_premises_no,
+                                                     el_business_acc_no,
+                                                     el_acc_no,
+                                                     el_note,
+                                                     el_billing_date,
+                                                     internet_acc_no,
+                                                     internet_billing_date,
+                                                     int_note,
+                                                     channels,
+                                                 },index) => {
+        const sector = {};
+        sector.id = id;
+        sector.name = name;
+        sector.rent = rent;
+        sector.contract_start_date = contract_start_date;
+        sector.contract_end_date = contract_end_date;
+        sector.el_premises_no = el_premises_no;
+        sector.el_business_acc_no = el_business_acc_no;
+        sector.el_acc_no = el_acc_no;
+        sector.el_note = el_note;
+        sector.el_billing_date = el_billing_date;
+        sector.internet_acc_no = internet_acc_no;
+        sector.internet_billing_date = internet_billing_date;
+        sector.int_note = int_note;
+        sector.payments = payments;
+        sector.channels = channels;
+        sector.electricity = electricityBillColumn(sector, index);
+        sector.internet = internetBillColumn(sector, index);
+        sector.cheque = nextPaymentColumn(payments, default_currency, handlePay);
         return sector;
     });
     const showEditModalFunc = (sector) => {
@@ -342,8 +330,8 @@ export default function Sectors() {
         setShowContractExtendModal(true);
         setSector(sector);
     };
-    const closeModal = (modalName) => {
-        modalName(false);
+    const closeContractExtendModal = () => {
+        setShowContractExtendModal(false);
     }
     const actionParams = [
         {
@@ -382,6 +370,9 @@ export default function Sectors() {
     const showSectorFormFunc = () => {
         setShowSectorForm(true);
     };
+    const closeShowDetailsModal = () => {
+        setShowDetails(false);
+    };
     return (
         <div>
             <MainLoader loaderVisible={showMainLoader}/>
@@ -410,7 +401,7 @@ export default function Sectors() {
                     tableBody: {
                         loading: sectorDataFetching,
                         loadingColSpan: 3,
-                        rows: filteredSectors,//rendering data
+                        rows: modifiedSectors,//rendering data
                     },
                     actionButtons: actionParams
 
@@ -422,9 +413,14 @@ export default function Sectors() {
             />
 
             {showContractExtend && (
-                <ContractExtendForm handleCloseModal={closeModal}
+                <ContractExtendForm handleCloseModal={closeContractExtendModal}
                                     element={sector}
-                                    closeFuncAttr = {setShowContractExtendModal}
+                />
+            )}
+            {showDetails && (
+                <Show handleCloseModal={closeShowDetailsModal}
+                                    element={sector}
+                      currency={default_currency}
                 />
             )}
 
@@ -438,186 +434,7 @@ export default function Sectors() {
                 navigation={useNavigate}
             />
 
-            <Modal
-                size="lg"
-                show={showModal}
-                centered
-                onHide={handleCloseModal}
-                className="custom-modal lg"
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title>
-                        <span>{modalSector?.name}</span>
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <table className="table table-bordered border-primary ">
-                        <tbody>
-                        <tr>
-                            <td>
-                                Rent:<strong>{modalSector?.rent}</strong>
-                            </td>
-                            <td>
-                                Contract Start:
-                                <strong> {modalSector?.contract_start_date}</strong>
-                            </td>
-                            <td>
-                                Contract End:
-                                <strong> {modalSector?.contract_end_date}</strong>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colSpan={2}>Contract Remaining</td>
-                            <td>
-                                <strong>
-                                    {" "}
-                                    {remainingContract(modalSector.contract_end_date)}
-                                </strong>
-                            </td>
-                        </tr>
 
-                        <tr>
-                            <td rowSpan={3}>DEWA account</td>
-                            <td>
-                                AC/No:<strong> {modalSector?.el_acc_no}</strong>
-                            </td>
-                            <td>
-                                Business Num.:
-                                <strong> {modalSector?.el_business_acc_no}</strong>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Premises:<strong> {modalSector?.el_premises_no}</strong>
-                            </td>
-                            <td>
-                                Billing Date:<strong> {modalSector?.el_billing_date}</strong>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colSpan={2}>Note:</td>
-                        </tr>
-                        <tr>
-                            <td rowSpan={2}>Internet</td>
-                            <td>
-                                Acc No:<strong> {modalSector?.internet_acc_no}</strong>
-                            </td>
-                            <td>
-                                Billing Date:
-                                <strong> {modalSector?.internet_billing_date}</strong>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colSpan={2}>{"Note: " + modalSector?.int_note}</td>
-                        </tr>
-
-                        <tr>
-                            <td rowSpan={2}>{" Income and Expense"}</td>
-                            <td colSpan={2}>
-                                Total Income:{" "}
-                                <strong>
-                                    {default_currency + " " + incomeExpense.income}
-                                </strong>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colSpan={2}>
-                                Total Expense:{" "}
-                                <strong>
-                                    {default_currency + " " + incomeExpense.expense}
-                                </strong>
-                            </td>
-                        </tr>
-
-                        {modalSector?.channels && modalSector?.channels.length > 0 && (
-                            <>
-                                <tr>
-                                    <td rowSpan={modalSector.channels.length + 1}>
-                                        {"Channels"}
-                                    </td>
-                                </tr>
-                                {modalSector?.channels.map((data, i) => {
-                                    return (
-                                        <tr key={"channel-row-" + i}>
-                                            <td colSpan={2}>
-                                                {data.channel_name} listing reference id{" "}
-                                                <strong>{data.reference_id}</strong> and listed on{" "}
-                                                {data.listing_date}
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </>
-                        )}
-
-                        <tr>
-                            <td colSpan={3}>
-                                <strong>Payment Information</strong>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>#</th>
-                            <th>Payment No.</th>
-                            <th>Amount</th>
-                        </tr>
-                        {modalSector?.payments &&
-                            modalSector?.payments.length > 0 &&
-                            modalSector?.payments.map((data, i) => {
-                                return (
-                                    <tr key={data.id}>
-                                        <td>{i + 1}</td>
-                                        <td>
-                                            {data?.payment_number}
-                                            <ul style={{display: "inline"}}>
-                                                ({" "}
-                                                <a
-                                                    href="#"
-                                                    style={{
-                                                        textDecoration: "none",
-                                                        marginRight: 10,
-                                                    }}
-                                                >
-                                                    {data.date}
-                                                </a>
-                                                <a
-                                                    href="#"
-                                                    style={{
-                                                        textDecoration: "none",
-                                                        marginRight: 10,
-                                                    }}
-                                                >
-                                                    {data?.type}
-                                                </a>
-                                                )
-                                            </ul>
-                                        </td>
-                                        <td>
-                                            {default_currency + " " + data?.amount}
-                                            <div>
-                                                <a
-                                                    href="#"
-                                                    style={{
-                                                        textDecoration: "none",
-                                                        float: "right",
-                                                        color: data?.status === "paid" ? "green" : "red",
-                                                    }}
-                                                >
-                                                    {data?.status}
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                </Modal.Body>
-                <Modal.Footer>
-                    <button className="btn btn-primary" onClick={handleCloseModal}>
-                        Close
-                    </button>
-                </Modal.Footer>
-            </Modal>
         </div>
     );
 }

@@ -240,14 +240,17 @@ class ExpenseController extends Controller
      * @return JsonResponse
      * @throws Exception
      */
-    public function destroy(Expense $expense): JsonResponse
+    public function destroy($slug): JsonResponse
     {
 
         /**
          * Adjust bank account
          */
 
-        $status = (new Expense())->deleteExpense($expense->slug);
+        $status = (new Expense())->deleteExpense($slug);
+
+
+
         return response()->json([
             'message' => $status['message'],
             'description' => $status['description']

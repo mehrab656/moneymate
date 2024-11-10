@@ -71,13 +71,10 @@ export default function ExpenseForm({handelCloseModal, id}) {
         if (getCategoryListData?.data.length > 0) {
             setCategories(getCategoryListData?.data);
         }
-
-        if(id){
-            if ( id && getSingleExpenseData?.data) {
-
-                setExpense(getSingleExpenseData?.data);
-            }
+        if (id && getSingleExpenseData?.data) {
+            setExpense(getSingleExpenseData?.data);
         }
+
     }, [id, getSingleExpenseData, getBankData]);
 
     // set some default data
@@ -153,7 +150,7 @@ export default function ExpenseForm({handelCloseModal, id}) {
                                             as="textarea"
                                             autoFocus
                                             rows={3}
-                                            value={expense.description}
+                                            value={expense.description??''}
                                             name={"description"}
                                             onChange={(e) => {
                                                 setExpense({
@@ -255,7 +252,7 @@ export default function ExpenseForm({handelCloseModal, id}) {
                                         <Form.Control
                                             type="text"
                                             placeholder="i.g: 50 AED"
-                                            value={expense.reference}
+                                            value={expense.reference??''}
                                             onChange={(e) => {
                                                 setExpense({...expense, reference: e.target.value});
                                             }}
@@ -273,7 +270,7 @@ export default function ExpenseForm({handelCloseModal, id}) {
                                         <Form.Control
                                             as="textarea"
                                             rows={3}
-                                            value={expense.note}
+                                            value={expense.note??''}
                                             name={"note"}
                                             onChange={(e) => {
                                                 setExpense({

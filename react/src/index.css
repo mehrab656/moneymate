@@ -1073,3 +1073,13 @@ select option:focus {
         display: none;
     }
 }
+
+.offcanvas.offcanvas-start {
+    width: auto !important;
+}
+.addRowBtn {
+    display: flex !important;
+
+    justify-content: center;
+}
+
