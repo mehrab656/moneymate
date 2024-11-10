@@ -154,6 +154,7 @@ export default function ExpenseList() {
     Object.assign({}, expense, { descriptions: modifyDescription(expense) })
   );
   const onDelete = (expense) => {
+
     if (userRole !== "admin") {
       Swal.fire({
         title: "Permission Denied!",

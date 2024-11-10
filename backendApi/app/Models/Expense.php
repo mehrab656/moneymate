@@ -64,7 +64,7 @@ class Expense extends Model
      * @throws \Exception
      * @throws Throwable
      */
-    public function addExpense($expense,$slug='')
+    public function addExpense($expense, $slug = '')
     {
         $bankAccount = BankAccount::find($expense['account_id']);
 
@@ -93,7 +93,7 @@ class Expense extends Model
         try {
             DB::beginTransaction();
             $expense = $this->create([
-                'slug' => $slug?: Uuid::uuid4(),
+                'slug' => $slug ?: Uuid::uuid4(),
                 'user_id' => Auth::user()->id,
                 'company_id' => Auth::user()->primary_company,
                 'account_id' => $expense['account_id'],
@@ -142,6 +142,7 @@ class Expense extends Model
     {
 
         $expense = Expense::where('slug', $slug)->first();
+
         if (!$expense) {
             return [
                 'message' => 'Not Found',
@@ -149,19 +150,30 @@ class Expense extends Model
                 'status_code' => 404
             ];
         }
-        $expense->delete();
-        $bankAccount = BankAccount::find($expense->account_id);
-        if ($expense->amount > 0) {
-            $bankAccount->balance += $expense->amount;
-            $bankAccount->save();
+        try {
+            DB::beginTransaction();
+            $expense->delete();
+            $bankAccount = BankAccount::find($expense->account_id);
+            if ($expense->amount > 0) {
+                $bankAccount->balance += $expense->amount;
+                $bankAccount->save();
+            }
+            storeActivityLog([
+                'object_id' => $expense->id,
+                'log_type' => 'delete',
+                'module' => 'expense',
+                'descriptions' => "",
+                'data_records' => array_merge(json_decode(json_encode($expense), true), ['account_balance' => $bankAccount->balance]),
+            ]);
+            DB::commit();
+        } catch (Exception $e) {
+            return [
+                'message' => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
+                'error' => 'error',
+                'status_code' => 400
+            ];
         }
-        storeActivityLog([
-            'object_id' => $expense->id,
-            'log_type' => 'delete',
-            'module' => 'expense',
-            'descriptions' => "",
-            'data_records' => array_merge(json_decode(json_encode($expense), true), ['account_balance' => $bankAccount->balance]),
-        ]);
+
 
         return [
             'message' => 'success',
