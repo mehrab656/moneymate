@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { NavDropdown, Button, Col, Row } from "react-bootstrap";
+import { NavDropdown, Col, Row, Collapse } from "react-bootstrap";
 import DropDownProperties from "./DropDownProperties";
-import { faBars, faBell } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faBell, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 
 const Header = ({
   default_currency,
@@ -14,6 +14,17 @@ const Header = ({
   toggleSidebar,
   onLogout,
 }) => {
+  const [open, setOpen] = useState(false);
+  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 768);
+
+  // Update screen size state on resize
+  useEffect(() => {
+    const handleResize = () => setIsLargeScreen(window.innerWidth >= 768);
+    window.addEventListener("resize", handleResize);
+    setOpen(isLargeScreen); // Set initial open state based on screen size
+    return () => window.removeEventListener("resize", handleResize);
+  }, [isLargeScreen]);
+
   const renderCurrencyItem = (label, amount) => (
     <Col xs={12} sm="auto" className="header-item">
       <span>
@@ -27,19 +38,36 @@ const Header = ({
 
   return (
     <header className="header-container bg-white py-3 shadow-sm">
-      <Row className="align-items-center justify-content-between px-3">
-        {/* Finance Info */}
-        {renderCurrencyItem("Account Balance", financeStatus.totalAccountBalance)}
-        {renderCurrencyItem("Total Income", financeStatus.totalIncome)}
-        {renderCurrencyItem("Total Expense", financeStatus.totalExpense)}
+      <Row className="align-items-center px-3">
+        
+       {/* Finance Section with Collapse */}
+<Col xs={12} md="auto" className="d-flex flex-column align-items-start">
+  <Collapse in={open || isLargeScreen} dimension="height">
+    <div id="finance-collapse" className="w-100">
+      <Row className="d-flex flex-wrap align-items-center">
+        <Col xs={12} sm="auto" md="auto" className="text-center text-md-start mb-2 mb-md-0">
+          {renderCurrencyItem("Account Balance", financeStatus.totalAccountBalance)}
+        </Col>
+        <Col xs={12} sm="auto" md="auto" className="text-center text-md-start mb-2 mb-md-0">
+          {renderCurrencyItem("Total Income", financeStatus.totalIncome)}
+        </Col>
+        <Col xs={12} sm="auto" md="auto" className="text-center text-md-start mb-2 mb-md-0">
+          {renderCurrencyItem("Total Expense", financeStatus.totalExpense)}
+        </Col>
+      </Row>
+    </div>
+  </Collapse>
+</Col>
 
-        {/* Notifications and User Dropdown */}
-        <Col xs={12} sm="auto" className="d-flex align-items-center justify-content-center">
+
+        {/* Notifications, User Dropdown, Toggle Icon, and Sidebar Toggle Button */}
+        <Col xs="auto" className="d-flex align-items-center ms-auto">
+          {/* Notifications Dropdown */}
           <NavDropdown
             title={
               <DropDownProperties
                 icon={faBell}
-                totalNotification={notifications.length}
+                totalNotification={notifications.length || 0}
               />
             }
             id="notification-dropdown"
@@ -67,16 +95,13 @@ const Header = ({
               </NavDropdown.Item>
             )}
           </NavDropdown>
-        </Col>
 
-        {/* Sidebar Toggle Button */}
-        <Col xs={12} sm="auto" className="d-flex align-items-center justify-content-center">
-          {/* User Name and Dropdown */}
+          {/* User Dropdown */}
           <NavDropdown
             title={user?.username ?? "User"}
             id="user-dropdown"
             align="end"
-            className="user-dropdown"
+            className="user-dropdown ms-3"
           >
             <NavDropdown.Item href="#action/3.1">Profile</NavDropdown.Item>
             <NavDropdown.Item href="application-settings">
@@ -92,14 +117,27 @@ const Header = ({
             <NavDropdown.Divider />
             <NavDropdown.Item onClick={onLogout}>Logout</NavDropdown.Item>
           </NavDropdown>
-          <Button
-            variant="primary"
+
+          {/* Finance Section Toggle Icon for Small Screens */}
+          {!isLargeScreen && (
+            <FontAwesomeIcon
+              icon={open ? faChevronUp : faChevronDown}
+              onClick={() => setOpen(!open)}
+              aria-controls="finance-collapse"
+              aria-expanded={open}
+              className="d-md-none ms-3"
+              style={{ cursor: "pointer" }}
+            />
+          )}
+
+          {/* Sidebar Toggle Button */}
+          <FontAwesomeIcon
+            icon={faBars}
             onClick={toggleSidebar}
-            className="d-lg-none ml-2"
-            size="sm"
-          >
-            <FontAwesomeIcon icon={faBars} />
-          </Button>
+            aria-label="Toggle sidebar"
+            className="d-lg-none ms-3"
+            style={{ cursor: "pointer" }}
+          />
         </Col>
       </Row>
     </header>
