@@ -30,6 +30,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'slug',
         'username',
         'primary_company',
         'profile_picture',
@@ -175,7 +176,15 @@ class User extends Authenticatable
             DB::beginTransaction();
 
             $user = $this->create([
-                'name' => $data['name'],
+                'slug' => $data['slug'],
+                'username' => $data['user_name'],
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
+                'phone' => $data['phone'],
+                'emergency_contact' => $data['emergency_contact'],
+                'dob' => $data['dob'] ?? null,
+                'gender' => $data['gender'] ?? null,
+                'activation_code' => $data['slug'],
                 'email' => $data['email'],
                 'profile_picture' => $data['profile_picture'], //$data['role_id'],//admin role.
                 'password' => $password,
@@ -195,7 +204,7 @@ class User extends Authenticatable
                 'company_id' => $data['primary_company'],
                 'user_id' => $user['id'],
                 'role_id' => $data['role_id'],
-                'role_as' => $data['role_as'],
+//                'role_as' => $data['role_as'],
                 'status' => true,
                 'created_by' => Auth::user()->id,
                 'updated_by' => Auth::user()->id,
