@@ -54,11 +54,10 @@ const SettingsProvider = ({children}) => {
         if (userRole === 'admin' || permission) {
             return true;
         }
-        else if(userRole === 'baseUser'){
+        else if(userRole === 'baseUser'){ //baseUser = baseAdmin edit, delete, view = always true
             return true; //@FIx Me for base user and subscriptions limit.
         }
-        else { // sub-user
-
+        else { // sub-user or employee
             return userPermission[permission];
         }
     }

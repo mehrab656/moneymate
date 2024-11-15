@@ -90,9 +90,14 @@ class TaskController extends Controller
         ]);
     }
 
-    public function assignedTasks()
+    public function assignedTasks(Request $request)
     {
+        $quickFilter = $request->query('quickFilter');
 
+
+
+
+        //default is today
         $tasks = TaskModel::where('company_id', Auth::user()->primary_company)
             ->join('task_employee', 'tasks.id', '=', 'task_employee.task_id')
             ->where('employee_id', Auth::user()->slug)

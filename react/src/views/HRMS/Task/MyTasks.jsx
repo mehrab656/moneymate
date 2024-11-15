@@ -19,18 +19,15 @@ import Button from 'react-bootstrap/Button';
 import TaskHistoryModal from "./TaskHistoryModal.jsx";
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
-import {CardBody} from "react-bootstrap";
+import {CardBody, Form} from "react-bootstrap";
+import {genRand} from "../../../helper/HelperFunctions.js";
+import WizCard from "../../../components/WizCard.jsx";
 
-const defaultQuery = {
-    employee_id: '',
+const query = {
+    quickFilter: '',
     status: '',
-    payment_status: '',
-    orderBy: '',
-    order: '',
-    limit: '',
-    category_id: '',
-    end_date: '',
-    start_date: '',
+    toDate: '',
+    fromDate: '',
 }
 export default function MyTasks() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -154,41 +151,56 @@ export default function MyTasks() {
     return (
         <div>
             <MainLoader loaderVisible={loading}/>
-                    {
-                        tasks.length > 0 && tasks.map((task,index) => {
-                            return <>
-                                <Col md={3} sm={12} key={task.slug+index}>
-                                    <Card className={'border-primary'} sx={{p: 5}} style={{padding: "0px", marginBottom:"20px"}} key={task.slug}>
-                                        <div className="my-task-header">
-                                            <span>{task.date}</span>
-                                            <span>{task.startTime +' to '+task.endTime}</span>
-                                        </div>
+            <Row>
+                <Col md={6} lg={6} sm={6}>
+                    <Form.Label style={{marginBottom:'0px'}} className="custom-form-label">Quick Filter</Form.Label>
+                    <Form.Select size={"sm"} value={query.quickFilter} aria-label="Payment Status" onChange={(e) => {
+                        setQuery({...query, quickFilter: e.target.value});
+                    }}>
+                        <option value="today">Today's All Task</option>
+                        <option value="tomorrow">Today's All Task</option>
+                        <option value="this_week">Today's All Task</option>
+                        <option value="next_week">Today's All Task</option>
+                        <option value="this_month">Today's All Task</option>
+                    </Form.Select>
+                </Col>
+            </Row>
+            <WizCard className="animated fadeInDown wiz-card-mh">
 
-                                        <CardContent style={{minHeight: '100px'}}>
-                                            {task.description}
-                                        </CardContent>
-                                        <CardActions className={'my-task-card-footer'}>
-                                            <Button variant="success" onClick={() => startTask(task)}
-                                                    disabled={!!task.started_at}>{
-                                                task.started_at ? 'Started..' : 'Start'
-                                            }</Button>
-                                            <a
-                                                onClick={() => showTimelineModalFunc(task.workflow)}
-                                                style={{cursor: "pointer"}}
-                                                className={'text-primary'}
-                                                data-tooltip-id='internet-account'
-                                                data-tooltip-content={"IncomeShow this internet details"}>
-                                                    <span className="aside-menu-icon"><FontAwesomeIcon icon={faEye}/></span>
-                                            </a>
-                                            <Button variant="danger" onClick={() => endTask(task)}
-                                                    disabled={!!task.ended_at}>End</Button>
-                                        </CardActions>
-                                    </Card>
-                                </Col>
-                            </>
-                        })
-                    }
+                {
+                    tasks.length > 0 && tasks.map((task, index) => {
+                        return <>
+                            <Card  className={'border-primary col-12 col-md-3'} sx={{p: 5}} style={{padding: "0px", marginBottom: "20px"}}
+                                  key={task.slug + genRand(8)}>
+                                <div className="my-task-header" key={genRand(8)}>
+                                    <span>{task.date}</span>
+                                    <span>{task.startTime + ' to ' + task.endTime}</span>
+                                </div>
 
+                                <CardContent style={{minHeight: '100px'}}>
+                                    {task.description}
+                                </CardContent>
+                                <CardActions className={'my-task-card-footer'}>
+                                    <Button variant="success" onClick={() => startTask(task)}
+                                            disabled={!!task.started_at}>{
+                                        task.started_at ? 'Started..' : 'Start'
+                                    }</Button>
+                                    <a
+                                        onClick={() => showTimelineModalFunc(task.workflow)}
+                                        style={{cursor: "pointer"}}
+                                        className={'text-primary'}
+                                        data-tooltip-id='internet-account'
+                                        data-tooltip-content={"IncomeShow this internet details"}>
+                                        <span className="aside-menu-icon"><FontAwesomeIcon icon={faEye}/></span>
+                                    </a>
+                                    <Button variant="danger" onClick={() => endTask(task)}
+                                            disabled={!!task.ended_at}>End</Button>
+                                </CardActions>
+                            </Card>
+                        </>
+                    })
+                }
+            </WizCard>
             {
                 taskTimelineModal &&
                 <TaskHistoryModal handelCloseModal={closeTimelineModalFunc}

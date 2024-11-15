@@ -235,7 +235,7 @@ function TaskAddModal({handelCloseModal, title, id}) {
                                                 }
                                             ]}
                                             onChange={(e) => {
-                                                setTaskData({...taskData, type: e});
+                                                setTaskData({...taskData, type: e,category: {}});
                                             }}
                                         />
                                     </Form.Group>
@@ -244,15 +244,6 @@ function TaskAddModal({handelCloseModal, title, id}) {
                                     <Form.Group className="mb-3" controlId="category">
                                         <Form.Label style={{marginBottom: '0px'}}
                                                     className="custom-form-label">Category
-                                            {/*<small>*/}
-                                            {/*<a onClick={(e)=>{*/}
-                                            {/*    console.log('clicked');*/}
-                                            {/*    reload()*/}
-
-                                            {/*}}*/}
-                                            {/*className={'text-muted p-1'}>*/}
-                                            {/*    <FontAwesomeIcon icon={faSync}/>*/}
-                                            {/*</a></small>*/}
                                         </Form.Label>
                                         <Select
                                             className="basic-single"
@@ -355,6 +346,14 @@ function TaskAddModal({handelCloseModal, title, id}) {
                                 <Col xs={12} md={12}>
                                     <Form.Group className="mb-3" controlId="employee_id">
                                         <Form.Label>Assign to</Form.Label>
+                                        <small>
+                                        <a onClick={(e)=>{
+                                            console.log('clicked');
+
+                                        }}
+                                        className={'text-muted p-1'}>
+                                            <FontAwesomeIcon icon={faSync}/>
+                                        </a></small>
                                         <Select
                                             isMulti
                                             className="basic-single"
