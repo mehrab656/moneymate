@@ -54,14 +54,13 @@ export function reservationValidationBuilder(check_in, check_out) {
 }
 export const checkPermission = (permission, _checkLimit = false)=>{
     const { userRole,userPermission} = useContext(SettingsContext);
-    if (userRole === 'admin') {
+    if (userRole === 'admin' || permission === 'admin') {
         return true;
     }
     else if(userRole === 'baseUser'){
         return true; //@FIx Me for base user and subscriptions limit.
     }
     else { // sub-user
-
         return userPermission[permission];
     }
 }

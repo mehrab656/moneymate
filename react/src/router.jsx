@@ -3,9 +3,7 @@ import Login from "./views/Login.jsx";
 import Signup from "./views/Signup.jsx";
 import Users from "./views/User/Users.jsx";
 import NotFound from "./views/NotFound.jsx";
-import DefaultLayout from "./components/DefaultLayout.jsx";
 import GuestLayout from "./components/GuestLayout.jsx";
-import Dashboard from "./views/Dashboard.jsx";
 import UserForm from "./views/User/UserForm.jsx";
 import Accounts from "./views/Accounts.jsx";
 import Categories from "./views/Categories.jsx";
@@ -49,6 +47,8 @@ import EmployeeDashboard from "./components/EmployeeDashboard.jsx";
 import InvestmentList from "./views/Investment/InvestmentList.jsx";
 import IncomeList from "./views/Income/IncomeList.jsx";
 import ExpenseList from "./views/Expense/ExpenseList.jsx";
+import Dashboard from "./views/Dashboard/Dashboard.jsx";
+import DefaultLayout from "./components/DefaultLayout/index.jsx";
 
 const router = createBrowserRouter([
 

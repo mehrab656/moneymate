@@ -78,8 +78,6 @@ export default function CreateOrUpdateModal({show, closeFunc}) {
         formData.append('id_copy', employee.id_copy);
 
         const url = id ? `/employee/${id}` : `/employee/add`;
-
-        console.log(employee)
         axiosClient.post(url, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',

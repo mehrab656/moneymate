@@ -12,10 +12,12 @@ import {investmentSlice} from "../api/slices/investmentSlice.js";
 import {bankSlice} from "../api/slices/bankSlice.js";
 import {incomeSlice} from "../api/slices/incomeSlice.js";
 import { expenseSlice } from "../api/slices/expenseSlice.js";
+import { dashboardSlice } from "../api/slices/dashBoardSlice.js";
 
 
 export const store = configureStore({
     reducer: {
+        [dashboardSlice.reducerPath]: dashboardSlice.reducer,
         [userSlice.reducerPath]: userSlice.reducer,
         [sectorSlice.reducerPath]: sectorSlice.reducer,
         [accountSlice.reducerPath]: accountSlice.reducer,
@@ -30,6 +32,7 @@ export const store = configureStore({
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(
+            dashboardSlice.middleware,
             userSlice.middleware,
             sectorSlice.middleware,
             accountSlice.middleware,
