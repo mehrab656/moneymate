@@ -229,7 +229,6 @@ export default function MyTasks() {
                     <ul className="sortable-list taskList list-unstyled ui-sortable" id="upcoming">
                         {ongoingTasks.length > 0 ?
                             ongoingTasks.map((task, index) => (
-
                                 <li id={`task-${task.slug}`} key={task.slug + index + genRand(8)}>
                                     <Card className={'border-primary '} sx={{p: 5}}
                                           style={{padding: "0px", marginBottom: "20px"}}
@@ -238,7 +237,6 @@ export default function MyTasks() {
                                             <span>{task.date}</span>
                                             <span>{task.startTime + ' to ' + task.endTime}</span>
                                         </div>
-
                                         <CardContent style={{minHeight: '100px'}}>
                                             {task.description}
                                             <br/>
