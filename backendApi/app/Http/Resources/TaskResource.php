@@ -49,10 +49,10 @@ class TaskResource extends JsonResource
             'category_id' => $this->category_id,
             'date' => $this->date,
             'slot' => $slot,
-            'startTime' => $this->start_time, // date("g:i a",strtotime($this->start_time)),
-            'started_at' => $this->started_at,//when the task was started by someone
-            'endTime' => $this->end_time, // date("g:i a",strtotime($this->end_time)),
-            'ended_at' => $this->ended_at,
+            'startTime' =>  date("g:i a",strtotime($this->start_time)),
+            'started_at' => date("g:i a",strtotime($this->started_at)) ,//when the task was started by someone
+            'endTime' =>  date("g:i a",strtotime($this->end_time)),
+            'ended_at' => date("g:i a",strtotime($this->ended_at)) ,
             'amount' => $this->amount,
             'type' => ['value' => $this->type, 'label' => strtoupper($this->type)],
             'status' => ['value' => $this->status, 'label' => strtoupper($this->status)],

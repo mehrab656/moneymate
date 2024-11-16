@@ -44,7 +44,6 @@ export default function DefaultLayout() {
     if (!token) {
       navigate("/login");
     }
-
     //get total account balance
   }, [token]);
 

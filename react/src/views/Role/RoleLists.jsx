@@ -37,7 +37,6 @@ function RoleLists({permissions, setPermissions}) {
                 submenuTransactionVisible:true,
             }));
         }
-        console.log(section);
 
         if (name === "selectAll") {
             setPermissions((prevState) => ({

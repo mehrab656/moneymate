@@ -348,8 +348,6 @@ function TaskAddModal({handelCloseModal, title, id}) {
                                         <Form.Label>Assign to</Form.Label>
                                         <small>
                                         <a onClick={(e)=>{
-                                            console.log('clicked');
-
                                         }}
                                         className={'text-muted p-1'}>
                                             <FontAwesomeIcon icon={faSync}/>

@@ -511,23 +511,25 @@ class ExpenseController extends Controller
         $expense->save();
 
         $accountBalance = 0;
-        if ($oldBankAccount->id != $newBankAccount->id) {
+        $oldBankAccount->balance += $oldAmount;
+        $oldBankAccount->save();
 
-            $oldBankAccount->balance += $oldAmount;
-            $oldBankAccount->save();
+        $newBankAccount->balance -= $data['amount'];
+        $newBankAccount->save();
+        $accountBalance = $newBankAccount->balance;
 
-            $newBankAccount->balance -= $data['amount'];
-            $newBankAccount->save();
-            $accountBalance = $newBankAccount->balance;
-
-        } else {
-
-            $bankAccount = BankAccount::where('slug',$data['account_id'])->first();
-            $bankAccount->balance += $oldAmount;
-            $bankAccount->balance -= $data['amount'];
-            $bankAccount->save();
-            $accountBalance = $bankAccount->balance;
-        }
+//        if ($oldBankAccount->id != $newBankAccount->id) {
+//        } else {
+//            $bankAccount = BankAccount::where('slug',$data['account_id'])->first();
+//            return response()->json([
+//                'message' => 'Test',
+//                'description' =>$data['account_id'],
+//            ],400);
+//            $bankAccount->balance += $oldAmount;
+//            $bankAccount->balance -= $data['amount'];
+//            $bankAccount->save();
+//            $accountBalance = $bankAccount->balance;
+//        }
         storeActivityLog([
             'object_id' => $expense->id,
             'log_type' => 'edit',

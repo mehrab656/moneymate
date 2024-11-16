@@ -114,7 +114,6 @@ function InvestmentForm({handelCloseModal, title, id}) {
             setInvestmentData(getSingleInvestmentData?.data);
         }
     }, [getSingleInvestmentData?.data]);
-    console.log(id);
     return (
         <>
             <MainLoader loaderVisible={loading}/>

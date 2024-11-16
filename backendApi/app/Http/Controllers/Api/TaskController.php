@@ -82,7 +82,7 @@ class TaskController extends Controller
             $query = $query->limit($limit);
         }
         $query = $query->select('tasks.*')->skip(($page - 1) * $pageSize)->take($pageSize)->get();
-        $totalCount = TaskModel::where('company_id',Auth::user()->primary_company)->count();
+        $totalCount = TaskModel::where('company_id', Auth::user()->primary_company)->count();
 
         return response()->json([
             'data' => TaskResource::collection($query),
@@ -93,23 +93,64 @@ class TaskController extends Controller
     public function assignedTasks(Request $request)
     {
         $quickFilter = $request->query('quickFilter');
+        $status = $request->query('status');
+        $start_Date = $request->query('fromDate');
+        $end_Date = $request->query('toDate');
+        $fromDate = date('Y-m-d 00:00:00');
+        $toDate = date('Y-m-d 23:59:59');
+
+        if ($start_Date) {
+            $fromDate = date('Y-m-d 00:00:00', strtotime($start_Date));
+        }
+        if ($end_Date) {
+            $toDate = date('Y-m-d 23:59:59', strtotime($end_Date));
+        }
 
 
+        if ($quickFilter) {
+            if ($quickFilter === 'yesterday') {
+                $fromDate = date('Y-m-d 00:00:00', strtotime('-1 day'));;
+                $toDate = date('Y-m-d 23:59:59', strtotime('-1 day'));
+            }
+            if ($quickFilter === 'tomorrow') {
+                $fromDate = date('Y-m-d 00:00:00', strtotime('+1 day'));;
+                $toDate = date('Y-m-d 23:59:59', strtotime('+1 day'));
+            }
+            if ($quickFilter === 'this_week') {
+                $fromDate = date('Y-m-d H:i:s', strtotime('-1 week monday 00:00:00'));;
+                $toDate = date('Y-m-d H:i:s', strtotime('sunday 23:59:59'));
+            }
+            if ($quickFilter === 'last_week') {
+                $fromDate = date('Y-m-d 00:00:00', strtotime('-2 week monday 00:00:00'));;
+                $toDate = date('Y-m-d 23:59:59', strtotime('-1 week sunday 23:59:59'));
+            }
+            if ($quickFilter === 'next_week') {
+                $fromDate = date('Y-m-d H:i:s', strtotime('+1 week monday 00:00:00'));;
+                $toDate = date('Y-m-d H:i:s', strtotime('+2 week sunday 23:59:59'));
+            }
+            if ($quickFilter === 'this_month') {
+                $fromDate = date('Y-m-01 00:00:00', strtotime('today'));;
+                $toDate = date('Y-m-t 23:59:59', strtotime('today'));
+            }
+        }
 
 
         //default is today
-        $tasks = TaskModel::where('company_id', Auth::user()->primary_company)
+        $query = TaskModel::where('company_id', Auth::user()->primary_company)
             ->join('task_employee', 'tasks.id', '=', 'task_employee.task_id')
             ->where('employee_id', Auth::user()->slug)
-            ->where('task_employee.status','pending')
-            ->orWhere('task_employee.status','ongoing')
-            ->orderBy('date','ASC')
-            ->orderBy('start_time','ASC')
+            ->whereBetween('date', [$fromDate, $toDate]);
+
+        if ($status){
+            $query = $query->where('task_employee.status',$status);
+        }
+
+        $tasks =  $query->orderBy('date', 'ASC')
+            ->orderBy('start_time', 'ASC')
             ->get();
         return response()->json([
             'data' => TaskResource::collection($tasks),
-            'total' => 1000,
-            'test'=>Auth::user()->slug
+            'test' => Auth::user()->slug
         ]);
     }
 
@@ -227,7 +268,7 @@ class TaskController extends Controller
             ], 403);
         }
 
-        $task = TaskModel::where(['slug'=> $id, 'company_id'=> Auth::user()->primary_company])->first();
+        $task = TaskModel::where(['slug' => $id, 'company_id' => Auth::user()->primary_company])->first();
         if (!$task) {
             return response()->json([
                 'message' => 'Not Found',
@@ -237,7 +278,7 @@ class TaskController extends Controller
 
         return response()->json([
             'data' => TaskResource::make($task),
-            'id'=>$id
+            'id' => $id
         ]);
     }
 
@@ -500,10 +541,10 @@ class TaskController extends Controller
             ], 403);
         }
         $hasOngoingTask = DB::table('task_employee')
-            ->where('status', '=','ongoing')
+            ->where('status', '=', 'ongoing')
             ->where('employee_id', Auth::user()->slug)->first();
 
-        if ($hasOngoingTask){
+        if ($hasOngoingTask) {
             return response()->json([
                 'message' => 'Not Allowed',
                 'description' => 'You can\'t start multiple task at same time.'
@@ -516,7 +557,7 @@ class TaskController extends Controller
         $workflow[] = buildTimelineWorkflow('started');
 
         $task->workflow = json_encode($workflow);
-        $task->status="ongoing";
+        $task->status = "ongoing";
 
         try {
             DB::beginTransaction();
@@ -524,7 +565,7 @@ class TaskController extends Controller
             DB::table('task_employee')
                 ->where('task_id', $task->id)
                 ->where('employee_id', Auth::user()->slug)
-                ->update(['started_at' => date('H:i'),'status'=>'ongoing']);
+                ->update(['started_at' => date('H:i'), 'status' => 'ongoing']);
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
@@ -571,10 +612,10 @@ class TaskController extends Controller
             ->where('task_id', $task->id)
             ->where('employee_id', Auth::user()->slug)->first();
 
-        if ($hasStartedBefore->started_at === null){
+        if ($hasStartedBefore->started_at === null) {
             return response()->json([
                 'message' => 'Not Allowed',
-                'description' => 'Tas has not started yet'
+                'description' => 'Task has not started yet'
             ], 403);
         }
 
@@ -585,7 +626,7 @@ class TaskController extends Controller
         $workflow[] = buildTimelineWorkflow('complete');
 
         $task->workflow = json_encode($workflow);
-        $task->status="complete";
+        $task->status = "complete";
 
         try {
             DB::beginTransaction();
@@ -593,7 +634,7 @@ class TaskController extends Controller
             DB::table('task_employee')
                 ->where('task_id', $task->id)
                 ->where('employee_id', Auth::user()->slug)
-                ->update(['ended_at' => date('H:i'),'status'=>'complete']);
+                ->update(['ended_at' => date('H:i'), 'status' => 'complete']);
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();

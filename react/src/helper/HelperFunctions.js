@@ -69,7 +69,6 @@ export const checkPermission = (permission, _checkLimit = false)=>{
 // export const checkPermission = (permission, _checkLimit = false)=>{
 //
 //     // const { userRole,userPermission} = useContext(SettingsContext);
-//     console.log(userPermission())
 //
 // }
 export const genRand = (len) => {
