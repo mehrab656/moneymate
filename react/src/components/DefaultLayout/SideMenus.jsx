@@ -45,22 +45,22 @@ const SideMenus = ({isActive,toggleSubmenu,user, submenuTransactionVisible, subm
       text: 'Dashboard',
       permission: 'dashboard'
     },
-    {
-      hasMultiMenu: false,
-      className: 'aside-menu-item',
-      link: { to: '/users', className: isActive('/users') ? 'active' : '' },
-      icon: faEdit,
-      text: 'Manage Users',
-      permission: 'admin'
-    },
-    {
-      hasMultiMenu: false,
-      className: 'aside-menu-item',
-      link: { to: '/users/' + user.id, className: isActive('/users/' + user.id) ? 'active' : '' },
-      icon: faEdit,
-      text: 'Manage Profile',
-      permission: 'user'
-    },
+    // {
+    //   hasMultiMenu: false,
+    //   className: 'aside-menu-item',
+    //   link: { to: '/users', className: isActive('/users') ? 'active' : '' },
+    //   icon: faEdit,
+    //   text: 'Manage Users',
+    //   permission: 'admin'
+    // },
+    // {
+    //   hasMultiMenu: false,
+    //   className: 'aside-menu-item',
+    //   link: { to: '/users/' + user.id, className: isActive('/users/' + user.id) ? 'active' : '' },
+    //   icon: faEdit,
+    //   text: 'Manage Profile',
+    //   permission: 'user'
+    // },
     {
       hasMultiMenu: false,
       className: 'aside-menu-item',
@@ -335,7 +335,7 @@ const SideMenus = ({isActive,toggleSubmenu,user, submenuTransactionVisible, subm
             className: 'aside-menu-item',
             link: { to: '/application-settings', className: isActive('/application-settings') ? 'active' : '' },
             icon: faCog,
-            text: 'Application Settings',
+            text: 'Appli... Settings',
             permission: 'admin'
           },
           {

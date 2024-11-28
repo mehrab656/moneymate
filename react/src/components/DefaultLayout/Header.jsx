@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { NavDropdown, Col, Row, Collapse, Badge } from "react-bootstrap";
+import { Menu, MenuItem, Divider, IconButton, Avatar } from "@mui/material";
+
 import DropDownProperties from "./DropDownProperties";
 import {
   faBars,
@@ -21,6 +23,16 @@ const Header = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 768);
+
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   // Update screen size state on resize
   useEffect(() => {
@@ -123,30 +135,55 @@ const Header = ({
             )}
           </NavDropdown>
 
-          {/* User Dropdown */}
-          <NavDropdown
-            title={user?.username ?? "User"}
-            id="user-dropdown"
-            align="end"
+          <IconButton
+            aria-controls="user-menu"
+            aria-haspopup="true"
+            onClick={handleClick}
             className="user-dropdown ms-3"
+            sx={{mt:-1}}
           >
-            <NavDropdown.Item href="#action/3.1">Profile</NavDropdown.Item>
-            <NavDropdown.Item href="application-settings">
+            <Avatar  sx={{ width: 28, height: 28 }} alt={user?.username ?? "User"} src={user?.profile_picture} />
+          </IconButton>
+
+          <Menu
+            id="user-menu"
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+          >
+            <MenuItem component={Link} to={`/users/${user.id}`} onClick={handleClose}>
+              Profile
+            </MenuItem>
+            <MenuItem
+              component={Link}
+              to="/application-settings"
+              onClick={handleClose}
+            >
               Activity Log
-            </NavDropdown.Item>
+            </MenuItem>
+
             {userRole === "admin" && (
-              <NavDropdown.Item>
-                <Link
-                  className="header-dropdown-item"
-                  to="/application-settings"
-                >
-                  Application Settings
-                </Link>
-              </NavDropdown.Item>
+              <MenuItem
+                component={Link}
+                to="/application-settings"
+                onClick={handleClose}
+              >
+                Application Settings
+              </MenuItem>
             )}
-            <NavDropdown.Divider />
-            <NavDropdown.Item onClick={onLogout}>Logout</NavDropdown.Item>
-          </NavDropdown>
+
+            <Divider />
+
+            <MenuItem onClick={onLogout}>Logout</MenuItem>
+          </Menu>
 
           {/* Finance Section Toggle Icon for Small Screens */}
           {!isLargeScreen && (
