@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { NavDropdown, Col, Row, Collapse } from "react-bootstrap";
+import { NavDropdown, Col, Row, Collapse, Badge } from "react-bootstrap";
 import DropDownProperties from "./DropDownProperties";
-import { faBars, faBell, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBars,
+  faBell,
+  faChevronDown,
+  faChevronUp,
+} from "@fortawesome/free-solid-svg-icons";
 
 const Header = ({
   default_currency,
@@ -39,26 +44,48 @@ const Header = ({
   return (
     <header className="header-container bg-white py-3 shadow-sm">
       <Row className="align-items-center px-3">
-        
-       {/* Finance Section with Collapse */}
-<Col xs={12} md="auto" className="d-flex flex-column align-items-start">
-  <Collapse in={open || isLargeScreen} dimension="height">
-    <div id="finance-collapse" className="w-100">
-      <Row className="d-flex flex-wrap align-items-center">
-        <Col xs={12} sm="auto" md="auto" className="text-center text-md-start mb-2 mb-md-0">
-          {renderCurrencyItem("Account Balance", financeStatus.totalAccountBalance)}
+        {/* Finance Section with Collapse */}
+        <Col xs={12} md="auto" className="d-flex flex-column align-items-start">
+          <Collapse in={open || isLargeScreen} dimension="height">
+            <div id="finance-collapse" className="w-100">
+              <Row className="d-flex flex-wrap align-items-center">
+                <Col
+                  xs={12}
+                  sm="auto"
+                  md="auto"
+                  className="text-center text-md-start mb-2 mb-md-0"
+                >
+                  {renderCurrencyItem(
+                    "Account Balance",
+                    financeStatus.totalAccountBalance
+                  )}
+                </Col>
+                <Col
+                  xs={12}
+                  sm="auto"
+                  md="auto"
+                  className="text-center text-md-start mb-2 mb-md-0"
+                >
+                  {renderCurrencyItem(
+                    "Total Income",
+                    financeStatus.totalIncome
+                  )}
+                </Col>
+                <Col
+                  xs={12}
+                  sm="auto"
+                  md="auto"
+                  className="text-center text-md-start mb-2 mb-md-0"
+                >
+                  {renderCurrencyItem(
+                    "Total Expense",
+                    financeStatus.totalExpense
+                  )}
+                </Col>
+              </Row>
+            </div>
+          </Collapse>
         </Col>
-        <Col xs={12} sm="auto" md="auto" className="text-center text-md-start mb-2 mb-md-0">
-          {renderCurrencyItem("Total Income", financeStatus.totalIncome)}
-        </Col>
-        <Col xs={12} sm="auto" md="auto" className="text-center text-md-start mb-2 mb-md-0">
-          {renderCurrencyItem("Total Expense", financeStatus.totalExpense)}
-        </Col>
-      </Row>
-    </div>
-  </Collapse>
-</Col>
-
 
         {/* Notifications, User Dropdown, Toggle Icon, and Sidebar Toggle Button */}
         <Col xs="auto" className="d-flex align-items-center ms-auto">
@@ -109,7 +136,10 @@ const Header = ({
             </NavDropdown.Item>
             {userRole === "admin" && (
               <NavDropdown.Item>
-                <Link className="header-dropdown-item" to="/application-settings">
+                <Link
+                  className="header-dropdown-item"
+                  to="/application-settings"
+                >
                   Application Settings
                 </Link>
               </NavDropdown.Item>
