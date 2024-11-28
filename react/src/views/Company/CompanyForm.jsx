@@ -57,8 +57,6 @@ export default function CompanyForm({ handelCloseModal, id }) {
     }
   }, [getSingleCompanyData]);
 
-  //   console.log('getSingleExpenseData', getSingleExpenseData)
-  //   console.log('getExpensElementeData', getExpensElementeData) // bank account related
 
   // set some default data
   useEffect(() => {

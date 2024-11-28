@@ -15,6 +15,8 @@ const defaultEmployee = {
     name: '',
     email: '',
     phone: '',
+    dob: '',
+    gender: '',
     emergency_contact: '',
     joining_date: '',
     role_id: '',

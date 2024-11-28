@@ -244,7 +244,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/all-tasks', [TaskController::class, 'index']);
     Route::get('/my-tasks', [TaskController::class, 'assignedTasks']);
     Route::post('/task/add', [TaskController::class, 'add']);
-    Route::delete('/delete-task/{id}', [TaskController::class, 'delete']);
+    Route::delete('/delete-task/{slug}', [TaskController::class, 'delete']);
     Route::get('task/{id}', [TaskController::class, 'edit']);
     Route::post('task/{id}', [TaskController::class, 'update']);
     Route::post('update-task-status/{id}', [TaskController::class, 'updateStatus']);

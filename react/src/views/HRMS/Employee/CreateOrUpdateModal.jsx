@@ -11,7 +11,11 @@ import {notification} from "../../../components/ToastNotification.jsx";
 import MainLoader from "../../../components/MainLoader.jsx";
 
 const defaultEmployee = {
-    name: '',
+    first_name: '',
+    last_name: '',
+    user_name: '',
+    dob: '',
+    gender: '',
     email: '',
     phone: '',
     emergency_contact: '',
@@ -57,7 +61,11 @@ export default function CreateOrUpdateModal({show, closeFunc}) {
         e.preventDefault();
         setLoading(true);
         let formData = new FormData();
-        formData.append('name', employee.name);
+        formData.append('first_name', employee.first_name);
+        formData.append('last_name', employee.last_name);
+        formData.append('user_name', employee.user_name);
+        formData.append('dob', employee.dob);
+        formData.append('gender', employee.gender);
         formData.append('email', employee.email);
         formData.append('phone', employee.phone);
         formData.append('emergency_contact', employee.emergency_contact);
@@ -70,7 +78,6 @@ export default function CreateOrUpdateModal({show, closeFunc}) {
         formData.append('id_copy', employee.id_copy);
 
         const url = id ? `/employee/${id}` : `/employee/add`;
-
         axiosClient.post(url, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -116,16 +123,49 @@ export default function CreateOrUpdateModal({show, closeFunc}) {
                                 <Col xs={12} md={6}>
                                     <Form.Group
                                         className="mb-3"
-                                        controlId="name">
-                                        <Form.Label>Name</Form.Label>
-                                        <Form.Control type="text" rows={3} value={employee.name}
-                                                      name={'name'}
+                                        controlId="first_name">
+                                        <Form.Label>First Name</Form.Label>
+                                        <Form.Control type="text" value={employee.first_name}
+                                                      name={'first_name'}
                                                       onChange={(e) => {
-                                                          setEmployee({...employee, name: e.target.value});
+                                                          console.log(e.target.value)
+                                                          setEmployee({...employee, first_name: e.target.value});
                                                       }}
                                         />
-                                        {errors?.name &&
-                                            <small className="error-message mt-2">{errors?.name[0]}</small>}
+                                        {errors?.first_name &&
+                                            <small className="error-message mt-2">{errors?.first_name[0]}</small>}
+                                    </Form.Group>
+                                </Col>
+                                <Col xs={12} md={6}>
+                                    <Form.Group
+                                        className="mb-3"
+                                        controlId="last_name">
+                                        <Form.Label>Last Name</Form.Label>
+                                        <Form.Control type="text" rows={3} value={employee.last_name}
+                                                      name={'last_name'}
+                                                      onChange={(e) => {
+                                                          setEmployee({...employee, last_name: e.target.value});
+                                                      }}
+                                        />
+                                        {errors?.last_name &&
+                                            <small className="error-message mt-2">{errors?.last_name[0]}</small>}
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col xs={12} md={6}>
+                                    <Form.Group
+                                        className="mb-3"
+                                        controlId="user_name">
+                                        <Form.Label>User Name</Form.Label>
+                                        <Form.Control type="text" rows={3} value={employee.user_name}
+                                                      name={'user_name'}
+                                                      onChange={(e) => {
+                                                          setEmployee({...employee, user_name: e.target.value});
+                                                      }}
+                                        />
+                                        {errors?.user_name &&
+                                            <small className="error-message mt-2">{errors?.user_name[0]}</small>}
                                     </Form.Group>
                                 </Col>
                                 <Col xs={12} md={6}>
@@ -144,9 +184,39 @@ export default function CreateOrUpdateModal({show, closeFunc}) {
                                     </Form.Group>
                                 </Col>
                             </Row>
+                            <Row>
+                                <Col xs={12} md={6}>
+                                    <Form.Group
+                                        className="mb-3"
+                                        controlId="dob">
+                                        <Form.Label>Date Of Birth</Form.Label>
+                                        <Form.Control type="date" rows={3} value={employee.dob}
+                                                      name={'dob'}
+                                                      onChange={(e) => {
+                                                          setEmployee({...employee, dob: e.target.value});
+                                                      }}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                                <Col xs={12} md={6}>
+                                    <Form.Group
+                                        className="mb-3"
+                                        controlId="gender">
+                                        <Form.Label>Gender</Form.Label>
+                                        <Form.Select
+                                            aria-label="gender" onChange={(e) => {
+                                            setEmployee({...employee, gender: e.target.value});
+                                        }}>
+                                            <option defaultValue>Select Gender</option>
+                                            <option value="male">Male</option>
+                                            <option value="female">Female</option>
+                                        </Form.Select>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+
                             <hr className={'border-danger'}/>
                             <Row>
-
                                 <Col xs={12} md={6}>
                                     <Form.Group
                                         className="mb-3"

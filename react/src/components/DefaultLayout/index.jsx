@@ -44,7 +44,6 @@ export default function DefaultLayout() {
     if (!token) {
       navigate("/login");
     }
-
     //get total account balance
   }, [token]);
 
@@ -108,9 +107,10 @@ export default function DefaultLayout() {
 
   // Handle link click
   const [showSidebar, setShowSidebar] = useState(false);
-  const toggleSidebar = () => {
-    setShowSidebar(!showSidebar);
-  };
+  const handleCloseSidebar = () => setShowSidebar(false);
+  const handleShowSidebar = () => setShowSidebar(true);
+
+
   const [submenuTransactionVisible, setSubmenuTransactionVisible] =
     useState(false);
   const [submenuReportVisible, setSubmenuReportVisible] = useState(false);
@@ -201,6 +201,7 @@ export default function DefaultLayout() {
                       <SideMenus
                         isActive={isActive}
                         toggleSubmenu={toggleSubmenu}
+                        handleCloseSidebar={handleCloseSidebar}
                         user={user}
                         submenuTransactionVisible={submenuTransactionVisible}
                         submenuReportVisible={submenuReportVisible}
@@ -221,7 +222,7 @@ export default function DefaultLayout() {
                     notifications={notifications}
                     user={user}
                     userRole={userRole}
-                    toggleSidebar={toggleSidebar}
+                    toggleSidebar={handleShowSidebar}
                     onLogout={onLogout}
                   />
                   <main className="flex-grow-1 py-2">
@@ -243,7 +244,8 @@ export default function DefaultLayout() {
         {/* Off canvas Sidebar */}
         <Offcanvas
           show={showSidebar}
-          onClick={(e) => toggleSidebar()}
+          onHide={(e)=> setShowSidebar(false)}
+          // onClick={(e) => toggleSidebar()}
           placement="start"
         >
           <Offcanvas.Body>
@@ -255,6 +257,7 @@ export default function DefaultLayout() {
                     <SideMenus
                       isActive={isActive}
                       toggleSubmenu={toggleSubmenu}
+                      handleCloseSidebar={handleCloseSidebar}
                       user={user}
                       submenuTransactionVisible={submenuTransactionVisible}
                       submenuReportVisible={submenuReportVisible}

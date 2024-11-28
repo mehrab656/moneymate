@@ -3,7 +3,7 @@
   <component name="WebServers">
     <option name="servers">
       <webServer id="586628ee-6565-4dd8-a7d0-3b6b59eac017" name="Test Site" url="http://198.187.31.160">
-        <fileTransfer rootFolder="/staging.malinstay.com" host="198.187.31.160" port="21">
+        <fileTransfer rootFolder="/managerio.esholiday.com" host="198.187.31.160" port="21">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>

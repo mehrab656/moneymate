@@ -104,7 +104,7 @@ class InvestmentController extends Controller
             ],404);
         }
 
-        $bankAccount = BankAccount::find($invest['account_id']);
+        $bankAccount = BankAccount::where('slug',$invest['account_id'])->get()->first();
 
         if (!$bankAccount){
             return response()->json([

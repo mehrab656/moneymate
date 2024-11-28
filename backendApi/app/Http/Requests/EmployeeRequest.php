@@ -22,10 +22,14 @@ class EmployeeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required',
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'user_name' => 'required',
             'email' => ['required', 'email', 'unique:users,email'],
             'phone' => 'required',
             'emergency_contact' => 'nullable',
+            'dob' => 'nullable',
+            'gender' => 'nullable',
             'joining_date' => 'required',
             'role_id' => 'required',
             'position' => 'required',
@@ -37,7 +41,9 @@ class EmployeeRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Name is Required',
+            'first_name.required' => 'Employee First Name is Required',
+            'last_name.required' => 'Employee Second Name is Required',
+            'user_name.required' => 'Employee User Name is Required',
             'email.required' => 'Email is Required',
             'phone.required' => 'Email is Required',
             'joining_date.required' => 'Joining date is Required',

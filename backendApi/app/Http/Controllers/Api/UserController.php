@@ -181,7 +181,7 @@ class UserController extends Controller
         $userList = User::select('users.*')
             ->join('company_user', 'users.id', '=', 'company_user.user_id')
             ->where('company_id', Auth::user()->primary_company)
-            ->where('role_as','!=','employee')
+            ->where('users.role_as','!=','employee')
             ->get();
         return response()->json([
             'data' => InvestorResource::collection($userList)
