@@ -35,7 +35,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import {genRand} from "../../helper/HelperFunctions.js";
 
-const SideMenus = ({isActive,toggleSubmenu,user, submenuTransactionVisible, submenuReportVisible, submenuBankAccVisible, submenuHrModuleVisible,submenuSettingsVisible, checkPermission }) => {
+const SideMenus = ({isActive,toggleSubmenu,handleCloseSidebar,user, submenuTransactionVisible, submenuReportVisible, submenuBankAccVisible, submenuHrModuleVisible,submenuSettingsVisible, checkPermission }) => {
   const sideMenus = useMemo(() => [
     {
       hasMultiMenu: false,
@@ -374,7 +374,7 @@ const SideMenus = ({isActive,toggleSubmenu,user, submenuTransactionVisible, subm
                 <ul className="submenu">
                   {menu.subMenus.map(submenu => {
                     return checkPermission(submenu.permission) && (
-                      <li className="aside-menu-item" key={submenu.permission+genRand(8)}>
+                      <li className="aside-menu-item" key={submenu.permission+genRand(8)} onClick={()=> handleCloseSidebar()}>
                         <Link to={submenu.link.to} className={submenu.link.className}>
                           <span className="aside-menu-icon">
                             <FontAwesomeIcon icon={submenu.icon} />
@@ -390,7 +390,7 @@ const SideMenus = ({isActive,toggleSubmenu,user, submenuTransactionVisible, subm
           );
         } else {
           return checkPermission(menu.permission) && (
-            <li className={menu.className} key={index}>
+            <li className={menu.className} key={index} onClick={()=> handleCloseSidebar()}>
               <Link to={menu.link.to} className={menu.link.className}>
                 <span className="aside-menu-icon">
                   <FontAwesomeIcon icon={menu.icon} />

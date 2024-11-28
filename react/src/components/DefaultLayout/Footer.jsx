@@ -10,9 +10,8 @@ const Footer = () => {
 
     return (
         <footer style={{backgroundColor: "#f2f2f2", height: "50px"}}>
-            <Row>
+            <Row className='d-flex justify-content-center align-items-center pt-3'>
                 <Col md={4} sm={6}>{company_name}</Col>
-                <Col md={2} sm={6}><a target="_blank" href={`${web_site}`}>{"Website"}</a></Col>
                 <Col md={4} sm={6}>{address}</Col>
                 <Col md={2} sm={6}>Version: {version}</Col>
             </Row>

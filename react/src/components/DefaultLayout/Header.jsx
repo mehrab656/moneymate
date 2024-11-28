@@ -192,7 +192,7 @@ const Header = ({
               onClick={() => setOpen(!open)}
               aria-controls="finance-collapse"
               aria-expanded={open}
-              className="d-md-none ms-3"
+              className="d-md-none ms-3 mb-2"
               style={{ cursor: "pointer" }}
             />
           )}
@@ -202,7 +202,7 @@ const Header = ({
             icon={faBars}
             onClick={toggleSidebar}
             aria-label="Toggle sidebar"
-            className="d-lg-none ms-3"
+            className="d-lg-none ms-3 mb-2"
             style={{ cursor: "pointer" }}
           />
         </Col>
