@@ -133,7 +133,6 @@ export default function IncomeForm({handelCloseModal, title, id}) {
         e.preventDefault();
         // e.currentTarget.disabled = true;
         setCsvBtnText("Uploading...")
-        setLoading(true);
         let csvFormData = new FormData();
         csvFormData.append("channel", channel);
         csvFormData.append("csvFile", csvFile);

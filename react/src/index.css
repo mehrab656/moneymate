@@ -1083,6 +1083,7 @@ select option:focus {
     justify-content: center;
 }
 
+<<<<<<< HEAD
 .dropdown-properties {
     position: relative;
     display: inline-block;
@@ -1097,3 +1098,71 @@ select option:focus {
     border-radius: 50%;
   }
   
+=======
+/*Card CSS for my Task Start Here*/
+
+.thumb-sm {
+    height: 36px;
+    width: 36px;
+}
+.card-box {
+    border-radius: 3px;
+    text-align: center;
+}
+taskList {
+    min-height: 40px;
+    margin-bottom: 0
+}
+.pending-task-header{
+    background: #f8b6bd !important;
+}
+.complete-task-header{
+    background: #198754 !important;
+}
+.ongoing-task-header{
+    background: #ffc107 !important;
+}
+.taskList li {
+    /*background-color: #fff;*/
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 3px
+}
+
+.taskList li:last-of-type {
+    margin-bottom: 0
+}
+
+.taskList a {
+    font-size: 13px
+}
+
+.taskList .checkbox {
+    margin-left: 20px;
+    margin-top: 5px
+}
+.text-muted {
+    color: #98a6ad!important;
+}
+
+.horizontal-scrollable > .row {
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.horizontal-scrollable > .row > .col-xs-4 {
+    display: inline-block;
+    float: none;
+}
+.filter-footer-combo{
+    display: flex;
+    justify-content: space-between;
+}
+.task-not-found {
+    min-height: 100px;
+    color: darkred;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+>>>>>>> d4b4320d3c7491c0eb4e93c4e4d18d0e8a116eec

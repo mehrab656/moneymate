@@ -77,7 +77,7 @@ class LendController extends Controller
             'amount' => 'required|numeric',
             'note' => 'required',
             'debt_id' => 'required|exists:debts,id',
-            'account_id' => 'required|exists:bank_accounts,id',
+            'account_id' => 'required',
             'date' => 'required|date',
         ]);
 

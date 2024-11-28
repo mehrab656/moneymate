@@ -33,6 +33,7 @@ import {
     faCalendarCheck,
     faListUl, faMoneyBill1Wave, faSunPlantWilt, faList, faCog, faTools
 } from '@fortawesome/free-solid-svg-icons';
+import {genRand} from "../../helper/HelperFunctions.js";
 
 const SideMenus = ({isActive,toggleSubmenu,user, submenuTransactionVisible, submenuReportVisible, submenuBankAccVisible, submenuHrModuleVisible,submenuSettingsVisible, checkPermission }) => {
   const sideMenus = useMemo(() => [
@@ -373,7 +374,7 @@ const SideMenus = ({isActive,toggleSubmenu,user, submenuTransactionVisible, subm
                 <ul className="submenu">
                   {menu.subMenus.map(submenu => {
                     return checkPermission(submenu.permission) && (
-                      <li className="aside-menu-item" key={submenu.permission}>
+                      <li className="aside-menu-item" key={submenu.permission+genRand(8)}>
                         <Link to={submenu.link.to} className={submenu.link.className}>
                           <span className="aside-menu-icon">
                             <FontAwesomeIcon icon={submenu.icon} />

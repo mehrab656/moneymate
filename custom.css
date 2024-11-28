@@ -434,10 +434,10 @@ footer {
     display: flex;
     justify-content: space-between;
     padding: 10px;
-    background: floralwhite;
     font-size: 12px;
     font-weight: 500;
 }
+
 
 .offcanvas.offcanvas-start{
     width: auto !important;
