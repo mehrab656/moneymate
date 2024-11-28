@@ -1083,7 +1083,6 @@ select option:focus {
     justify-content: center;
 }
 
-<<<<<<< HEAD
 .dropdown-properties {
     position: relative;
     display: inline-block;
@@ -1098,7 +1097,6 @@ select option:focus {
     border-radius: 50%;
   }
   
-=======
 /*Card CSS for my Task Start Here*/
 
 .thumb-sm {
@@ -1165,4 +1163,3 @@ taskList {
     justify-content: center;
     align-items: center;
 }
->>>>>>> d4b4320d3c7491c0eb4e93c4e4d18d0e8a116eec
