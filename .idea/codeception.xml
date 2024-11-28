@@ -9,15 +9,6 @@
         <Configuration>
           <option name="path" value="$PROJECT_DIR$/backendApi/tests" />
         </Configuration>
-        <Configuration>
-          <option name="path" value="$PROJECT_DIR$/backendApi/tests" />
-        </Configuration>
-        <Configuration>
-          <option name="path" value="$PROJECT_DIR$/backendApi/tests" />
-        </Configuration>
-        <Configuration>
-          <option name="path" value="$PROJECT_DIR$/backendApi/tests" />
-        </Configuration>
       </list>
     </option>
   </component>

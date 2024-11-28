@@ -1,15 +1,18 @@
 import MainLoader from "../../components/MainLoader.jsx";
 import Modal from "react-bootstrap/Modal";
 import Container from "react-bootstrap/Container";
-import {Form, InputGroup} from "react-bootstrap";
+import {Form, InputGroup, TabContainer} from "react-bootstrap";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import React, {useState} from "react";
 import {useUpdateContractMutation} from "../../api/slices/sectorSlice.js";
 import {notification} from "../../components/ToastNotification.jsx";
-import {ButtonGroup, Card, CardContent, Grid, TextField, Typography} from "@mui/material";
+import {ButtonGroup, Card, CardContent, Grid, Table, TableBody, TextField, Typography} from "@mui/material";
 import {genRand} from "../../helper/HelperFunctions.js";
+import TableHead from "@mui/material/TableHead";
+import TableCell from "@mui/material/TableCell";
+import TableRow from "@mui/material/TableRow";
 
 
 const initialPaymentState = [
@@ -44,7 +47,6 @@ export default function ContractExtendForm({handleCloseModal, element}) {
         formData.append('rent', sector.rent);
         formData.append('electricity_bill_month', sector.electricity_bill_month);
         formData.append('internet_bill_month', sector.internet_bill_month);
-
         if (paymentData && paymentData.length > 0) {
             paymentData.forEach(element => {
                 formData.append('payment_amount[]', element.amount);
@@ -62,13 +64,13 @@ export default function ContractExtendForm({handleCloseModal, element}) {
         }
     }
 
-    const handlePaymentInputChange = (e, index) => {
-        const {name, value} = e.target;
-        const updatedPayments = [...paymentData];
-        updatedPayments[index][name] = value;
-        setPaymentData(updatedPayments);
+    const handleChange = (e, index) => {
+        let {name, value} = e.target;
+        const onChangeValue = [...paymentData];
+        onChangeValue[index][name] = value;
+        setPaymentData(onChangeValue);
     };
-    const handleAddPaymentRow = () => {
+    const handleAddInput = (e) => {
         setPaymentData([...paymentData, {paymentNumber: '', paymentDate: '', amount: ''}]);
     };
 
@@ -77,7 +79,6 @@ export default function ContractExtendForm({handleCloseModal, element}) {
         updatedPayments.splice(index, 1);
         setPaymentData(updatedPayments);
     };
-
 
     return (<>
         <>
@@ -88,190 +89,192 @@ export default function ContractExtendForm({handleCloseModal, element}) {
                 backdrop="static"
                 keyboard={false}
                 size={'lg'}
-                // fullscreen={true}
             >
                 <Modal.Header closeButton>
                     <Modal.Title>{"Extend Contract"}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Container>
-                        <Form>
-                            <Row>
-                                <Col xs={12} md={6}>
-                                    <InputGroup className="mb-3">
-                                        <InputGroup.Text id="current-starting-date">
-                                            Current Starting Date
-                                        </InputGroup.Text>
-                                        <Form.Control type="date"
-                                                      value={element.contract_start_date}
-                                                      disabled={true}
-                                                      id="current-starting-date" aria-describedby="basic-addon3"/>
-                                    </InputGroup>
-                                </Col>
-                                <Col xs={12} md={6}>
-                                    <InputGroup className="mb-3">
-                                        <InputGroup.Text id="new-starting-date">
-                                            New Starting Date
-                                        </InputGroup.Text>
-                                        <Form.Control type="date" id="new-starting-date" aria-describedby="basic-addon3"
-                                                      onChange={(e) => {
-                                                          setSector({...sector, contract_start_date: e.target.value});
-                                                      }}
-                                        />
-                                    </InputGroup>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col xs={12} md={6}>
-                                    <InputGroup className="mb-3">
-                                        <InputGroup.Text id="current-starting-date">
-                                            Current Expire Date
-                                        </InputGroup.Text>
-                                        <Form.Control type="date" disabled={true} value={element.contract_end_date}
-                                                      id="current-expire-date"
-                                                      aria-describedby="basic-addon3"
-                                        />
-                                    </InputGroup>
-                                </Col>
-                                <Col xs={12} md={6}>
-                                    <InputGroup className="mb-3">
-                                        <InputGroup.Text id="current-expire-date">
-                                            New Expire Date
-                                        </InputGroup.Text>
-                                        <Form.Control type="date" id="new-expire-date" aria-describedby="basic-addon3"
-                                                      onChange={(e) => {
-                                                          setSector({...sector, contract_end_date: e.target.value});
-                                                      }}/>
-                                    </InputGroup>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col xs={12} md={6}>
-                                    <InputGroup className="mb-3">
-                                        <InputGroup.Text id="current-contract-value">
-                                            Current Contract Value
-                                        </InputGroup.Text>
-                                        <Form.Control type="number" disabled={true} value={element.rent}
-                                                      id="current-contract-value" aria-describedby="basic-addon3"/>
-                                    </InputGroup>
-                                </Col>
+                        <Row>
+                            <Col xs={12} md={6}>
+                                <InputGroup className="mb-3">
+                                    <InputGroup.Text id="current-starting-date">
+                                        Current Starting Date
+                                    </InputGroup.Text>
+                                    <Form.Control type="date"
+                                                  value={element.contract_start_date}
+                                                  disabled={true}
+                                                  id="current-starting-date" aria-describedby="basic-addon3"/>
+                                </InputGroup>
+                            </Col>
+                            <Col xs={12} md={6}>
+                                <InputGroup className="mb-3">
+                                    <InputGroup.Text id="new-starting-date">
+                                        New Starting Date
+                                    </InputGroup.Text>
+                                    <Form.Control type="date" id="new-starting-date" aria-describedby="basic-addon3"
+                                                  onChange={(e) => {
+                                                      setSector({...sector, contract_start_date: e.target.value});
+                                                  }}
+                                    />
+                                </InputGroup>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col xs={12} md={6}>
+                                <InputGroup className="mb-3">
+                                    <InputGroup.Text id="current-starting-date">
+                                        Current Expire Date
+                                    </InputGroup.Text>
+                                    <Form.Control type="date" disabled={true} value={element.contract_end_date}
+                                                  id="current-expire-date"
+                                                  aria-describedby="basic-addon3"
+                                    />
+                                </InputGroup>
+                            </Col>
+                            <Col xs={12} md={6}>
+                                <InputGroup className="mb-3">
+                                    <InputGroup.Text id="current-expire-date">
+                                        New Expire Date
+                                    </InputGroup.Text>
+                                    <Form.Control type="date" id="new-expire-date"
+                                                  aria-describedby="basic-addon3"
+                                                  onChange={(e) => {
+                                                      setSector({...sector, contract_end_date: e.target.value});
+                                                  }}/>
+                                </InputGroup>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col xs={12} md={6}>
+                                <InputGroup className="mb-3">
+                                    <InputGroup.Text id="current-contract-value">
+                                        Current Contract Value
+                                    </InputGroup.Text>
+                                    <Form.Control type="number"
+                                                  disabled={true}
+                                                  value={element.rent}
+                                                  id="current-contract-value" aria-describedby="basic-addon3"/>
+                                </InputGroup>
+                            </Col>
 
-                                <Col xs={12} md={6}>
-                                    <InputGroup className="mb-3">
-                                        <InputGroup.Text id="new-contract-value">
-                                            New Contract Value
-                                        </InputGroup.Text>
-                                        <Form.Control type="number" id="new-contract-value"
-                                                      aria-describedby="basic-addon3"
-                                                      onChange={(e) => {
-                                                          setSector({...sector, rent: e.target.value});
-                                                      }}
-                                        />
-                                    </InputGroup>
+                            <Col xs={12} md={6}>
+                                <InputGroup className="mb-3">
+                                    <InputGroup.Text id="new-contract-value">
+                                        New Contract Value
+                                    </InputGroup.Text>
+                                    <Form.Control type="number"
+                                                  id="new-contract-value"
+                                                  aria-describedby="new-contract-value"
+                                                  onChange={(e) => {
+                                                      setSector({...sector, rent: e.target.value});
+                                                  }}
+                                    />
+                                </InputGroup>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col xs={12} md={6}>
+                                <InputGroup className="mb-3">
+                                    <InputGroup.Text id="internet-billing-mobth">
+                                        Generate Internet Bill for
+                                    </InputGroup.Text>
+                                    <Form.Select size={"sm"} value={sector.internet_bill_month}
+                                                 aria-label="Internet Bill" onChange={(e) => {
+                                        setSector({...sector, internet_bill_month: e.target.value});
+                                    }}>
+                                        <option defaultValue value={''}>Billing Month</option>
+                                        {
+                                            months.map(value => (
+                                                <option key={genRand(8)} value={value}>
+                                                    {value}
+                                                </option>
+                                            ))
+                                        }
+                                    </Form.Select>
+                                </InputGroup>
+                            </Col>
+
+                            <Col xs={12} md={6}>
+                                <InputGroup className="mb-3">
+                                    <InputGroup.Text id="internet-billing-mobth">
+                                        Generate Electricity Bill for
+                                    </InputGroup.Text>
+                                    <Form.Select size={"sm"} value={sector.electricity_bill_month}
+                                                 aria-label="Electircity Bill" onChange={(e) => {
+                                        setSector({...sector, electricity_bill_month: e.target.value});
+                                    }}>
+                                        <option defaultValue value={''}>Billing Month</option>
+                                        {
+                                            months.map(value => (
+                                                <option key={genRand(8)} value={value}>
+                                                    {value}
+                                                </option>
+                                            ))
+                                        }
+                                    </Form.Select>
+                                </InputGroup>
+                            </Col>
+                        </Row>
+                        <Typography variant="h5" gutterBottom>
+                            Payment
+                        </Typography>
+                        {paymentData.map((payment, index) =>
+                            <Row key={"paymentData-" + index} className={"mb-2"}>
+                                <Col md={4} sm={4}>
+                                    <TextField
+                                        className={"w-100"}
+                                        label="Payment Details"
+                                        id="paymentNumber"
+                                        name="paymentNumber"
+                                        defaultValue={payment.paymentNumber}
+                                        size="small"
+                                        onChange={(e) => {
+                                            handleChange(e, index);
+                                        }}
+                                    />
+                                </Col>
+                                <Col md={3} sm={3}>
+                                    <TextField
+                                        type={"date"}
+                                        label="Payment Date"
+                                        id="paymentDate"
+                                        name="paymentDate"
+                                        InputLabelProps={{shrink: true}}
+                                        defaultValue={payment.paymentDate}
+                                        size="small"
+                                        onChange={(e) => {
+                                            handleChange(e, index);
+                                        }}
+                                    />
+                                </Col>
+                                <Col md={3} sm={3}>
+                                    <TextField
+                                        label="Payment Amount"
+                                        id="paymentAmount"
+                                        name="amount"
+                                        defaultValue={payment.amount}
+                                        size="small"
+                                        onChange={(e) => {
+                                            handleChange(e, index);
+                                        }}
+                                    />
+                                </Col>
+                                <Col md={2} sm={2}>
+                                    <div className={"add-remove-btn-grp"}>
+                                        <Button className="btn btn-sm btn-primary"
+                                                onClick={handleAddInput}>+</Button>
+                                        {index > 0 && (
+                                            <Button className="btn btn-sm btn-danger"
+                                                    onClick={() => handleRemovePaymentRow(index)}>-</Button>
+                                        )}
+                                    </div>
                                 </Col>
                             </Row>
-                            <Row>
-                                <Col xs={12} md={6}>
-                                    <InputGroup className="mb-3">
-                                        <InputGroup.Text id="internet-billing-mobth">
-                                            Generate Internet Bill for
-                                        </InputGroup.Text>
-                                        <Form.Select size={"sm"} value={sector.internet_bill_month}
-                                                     aria-label="Internet Bill" onChange={(e) => {
-                                            setSector({...sector, internet_bill_month: e.target.value});
-                                        }}>
-                                            <option defaultValue value={''}>Billing Month</option>
-                                            {
-                                                months.map(value => (
-                                                    <option key={genRand(8)} value={value}>
-                                                        {value}
-                                                    </option>
-                                                ))
-                                            }
-                                        </Form.Select>
-                                    </InputGroup>
-                                </Col>
-
-                                <Col xs={12} md={6}>
-                                    <InputGroup className="mb-3">
-                                        <InputGroup.Text id="internet-billing-mobth">
-                                            Generate Electricity Bill for
-                                        </InputGroup.Text>
-                                        <Form.Select size={"sm"} value={sector.electricity_bill_month}
-                                                     aria-label="Electircity Bill" onChange={(e) => {
-                                            setSector({...sector, electricity_bill_month: e.target.value});
-                                        }}>
-                                            <option defaultValue value={''}>Billing Month</option>
-                                            {
-                                                months.map(value => (
-                                                    <option key={genRand(8)} value={value}>
-                                                        {value}
-                                                    </option>
-                                                ))
-                                            }
-                                        </Form.Select>
-                                    </InputGroup>
-                                </Col>
-                            </Row>
-                            <Typography variant="h5" gutterBottom>
-                                Payment
-                            </Typography>
-                            {paymentData.map((payment, index) =>
-                                <Row key={genRand(8)}>
-                                    <Col sm={5} md={5}>
-                                        <Form.Group className="mb-3" controlId="paymentNumber">
-                                            <Form.Label style={{marginBottom: '0px'}}
-                                                        className="custom-form-label">Payment Number</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                value={payment.paymentNumber}
-                                                onChange={(e) =>{
-                                                    const updatedPayments = [...paymentData];
-                                                    updatedPayments[index]['paymentNumber'] = e.target.value;
-                                                    setPaymentData(updatedPayments);
-                                                }
-                                            }
-                                            />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col sm={3} md={3}>
-                                        <Form.Group className="mb-3" controlId="paymentDate">
-                                            <Form.Label style={{marginBottom: '0px'}}
-                                                        className="custom-form-label">Payment Date</Form.Label>
-                                            <Form.Control
-                                                type="date"
-                                                value={payment.paymentDate}
-                                                name={"paymentDate"}
-                                                onChange={(e) => handlePaymentInputChange(e, index)}
-                                            />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col sm={3} md={3}>
-                                        <Form.Group className="mb-3" controlId="amount">
-                                            <Form.Label style={{marginBottom: '0px'}}
-                                                        className="custom-form-label">Amount</Form.Label>
-                                            <Form.Control
-                                                type="number"
-                                                value={payment.amount}
-                                                name={"amount"}
-                                                onChange={(e) => handlePaymentInputChange(e, index)}
-                                            />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col sm={1} md={1}>
-                                        <ButtonGroup size="sm" className="addRowBtn ">
-                                            <Button variant="success" onClick={handleAddPaymentRow}>+</Button>
-                                            {index > 0 && (
-                                                <Button variant="danger"
-                                                        onClick={() => handleRemovePaymentRow(index)}>-</Button>
-                                            )}
-                                        </ButtonGroup>
-
-                                    </Col>
-                                </Row>
-                            )}
-                        </Form>
+                        )}
                     </Container>
+
+
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="danger" onClick={handleCloseModal}>Close</Button>

@@ -33,8 +33,6 @@ const SettingsProvider = ({children}) => {
             });
 
         var access_token = localStorage.getItem('ACCESS_TOKEN');
-
-
         if (access_token) {
             axiosClient
                 .get('/get-user-role')

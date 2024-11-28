@@ -34,7 +34,7 @@ class ApplicationSettingsController extends Controller {
 			] );
 		}
 
-		return response()->json( [ 
+		return response()->json( [
 			'application_settings' => ApplicationSettingsResource::collection( Option::all() ) ,
 			'message'     => 'Success!',
 			'description' => 'Application settings have been updated',
@@ -46,7 +46,7 @@ class ApplicationSettingsController extends Controller {
 	 * @return JsonResponse
 	 */
 	public function getApplicationSettings(): JsonResponse {
-		$keys = [
+      $keys = [
 			'company_name',
 			'web_site',
 			'default_currency',

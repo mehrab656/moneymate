@@ -2,13 +2,11 @@ import React, {useEffect, useState} from "react";
 import {Col, Form, Row} from "react-bootstrap";
 import {CardContent, TextField} from "@mui/material";
 import {useGetBankDataQuery} from "../../api/slices/bankSlice.js";
-import {useGetSectorListDataQuery} from "../../api/slices/sectorSlice.js";
 import {useGetIncomeTypesDataQuery} from "../../api/slices/incomeSlice.js";
 
 export default function IncomeFilter(props) {
     const {search, query, setQuery, resetFilterParameter, handelFilter} = props;
     const {placeHolderTxt, searchBoxValue, handelSearch} = search;
-    const [sectors, setSectors] = useState([]);
     const [categories, setCategories] = useState([]);
     const [accounts, setAccounts] = useState([]);
     const [incomeTypes, setIncomeTypes] = useState([]);
@@ -32,25 +30,10 @@ export default function IncomeFilter(props) {
         pageSize: 100,
     });
 
-    const {
-        data: getSectorListData,
-        isFetching: sectorListIsFetching,
-        isError: sectorListFetchingDataError,
-    } = useGetSectorListDataQuery({
-        currentPage: "",
-        pageSize: 100,
-    });
-
     useEffect(() => {
         if (getBankData?.data.length > 0) {
             setAccounts(getBankData?.data);
         }
-        if (getSectorListData?.data.length > 0) {
-            setSectors(getSectorListData?.data);
-        }
-        // if (getCategoryListData?.data.length > 0) {
-        //     setCategories(getCategoryListData?.data);
-        // }
         if (getIncomeTypesData?.data.length > 0) {
             setIncomeTypes(getIncomeTypesData?.data);
         }

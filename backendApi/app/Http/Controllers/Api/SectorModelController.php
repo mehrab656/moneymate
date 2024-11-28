@@ -27,6 +27,7 @@ use Mockery\Exception;
 use Nette\Schema\ValidationException;
 use Ramsey\Uuid\Uuid;
 use Throwable;
+use DateTime;
 
 class SectorModelController extends Controller
 {
@@ -37,11 +38,54 @@ class SectorModelController extends Controller
     public function index(Request $request)
     {
 
-        $page = $request->query('page', 1);
+        $page = $request->query('currentPage', 1);
         $pageSize = $request->query('pageSize', 10);
         $order = $request->query('order');
         $orderBy = $request->query('orderBy');
         $limit = $request->query('limit');
+        $accountID = $request->query('account_id');
+        $from_date = $request->query('contract_start_date');
+        $to_date = $request->query('contract_end_date');
+
+
+
+
+        if ($from_date) {
+            $from_date = date('Y-m-d', strtotime($from_date));
+        }
+        if ($to_date) {
+            $to_date = date('Y-m-d', strtotime($to_date));
+        }
+
+        if ($from_date && empty($to_date)) {
+            $to_date = Carbon::now()->toDateString();
+        }
+
+        if ($to_date && empty($from_date)) {
+            $from_date = (new DateTime($to_date))->format('Y-m-01');
+        }
+
+
+        $query = SectorModel::where('company_id', Auth::user()->primary_company);
+
+        if($from_date){
+            $query = $query->whereBetween('contract_start_date', [$from_date, $to_date]);
+        }
+        if($from_date){
+            $query = $query->whereBetween('contract_end_date', [$from_date, $to_date]);
+        }
+
+        if ($accountID){
+            $account =  BankAccount::where('slug',$accountID)->first()->get();
+            $query=$query->where('payment_account_id',$account->id);
+        }
+        if ($orderBy && $order) {
+            $query = $query->orderBy($orderBy, $order);
+        }
+        if ($limit) {
+            $query = $query->limit($limit);
+        }
+        $query = $query->skip(($page - 1) * $pageSize)->take($pageSize)->get();
 
 
         $sectors = SectorModel::where('company_id', Auth::user()->primary_company)

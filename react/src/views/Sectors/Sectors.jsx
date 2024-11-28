@@ -21,6 +21,7 @@ import {
 import IncomeShow from "../Income/IncomeShow.jsx";
 import ContractExtendForm from "./ContractExtendForm.jsx";
 import Show from "./Show.jsx";
+import Filter from "./Filter.jsx";
 
 const _initialSectorData = {
     contract_end_date: "",
@@ -39,12 +40,12 @@ const _initialSectorData = {
 };
 
 const defaultQuery = {
-    name: "",
     payment_account_id: "",
     contract_start_date: "",
     contract_end_date: "",
     orderBy: "",
     order: "",
+    limit:10
 };
 export default function Sectors() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -64,8 +65,7 @@ export default function Sectors() {
     const [showMainLoader, setShowMainLoader] = useState(false);
     const [subTitle, setSubTitle] = useState('');
     const [showDetails, setShowDetails] = useState(false);
-
-
+    const [hasFilter, setHasFilter] = useState(false);
 
     const [incomeExpense, setIncomeExpense] = useState({
         income: 0,
@@ -90,7 +90,6 @@ export default function Sectors() {
                 ? num_data_per_page
                 : 10;
     const totalPages = Math.ceil(totalCount / pageSize);
-
     const showViewModalFunc = (sector) => {
         setShowDetails(true);
         setSector(sector)
@@ -210,13 +209,29 @@ export default function Sectors() {
             }
         });
     };
+
+    const resetFilterParameter = () => {
+        setQuery(defaultQuery);
+        setHasFilter(!hasFilter);
+    };
+    const handelFilter = () => {
+        setHasFilter(!hasFilter);
+    };
     const filters = () => {
-        // filter={{
-        //     filterByText: true,
-        //         placeHolderTxt: 'Search Sector...',
-        //         searchBoxValue: searchTerm,
-        //         handelSearch: setSearchTerm
-        // }}
+        return (
+        <Filter
+            search={{
+                filterByText: true,
+                placeHolderTxt: "Search by name...",
+                searchBoxValue: searchTerm,
+                handelSearch: setSearchTerm,
+            }}
+            query={query}
+            setQuery={setQuery}
+            resetFilterParameter={resetFilterParameter}
+            handelFilter={handelFilter}
+        />
+    );
     }
 
     const checkPayments = (payments, type) => {

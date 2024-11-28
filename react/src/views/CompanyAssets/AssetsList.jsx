@@ -261,12 +261,12 @@ export default function AssetsList() {
                             return (
                                 <tr>
                                     <td>{index+1}</td>
-                                    <td>{_asset.name}</td>
+                                    <td>{_asset?.name}</td>
                                     <td>{_asset?.description}</td>
-                                    <td>{_asset.qty}</td>
-                                    <td>{_asset.unit_price}</td>
-                                    <td>{_asset.total_price}</td>
-                                    <td>{_asset?.current_stock??_asset.qty}</td>
+                                    <td>{_asset?.qty}</td>
+                                    <td>{_asset?.unit_price}</td>
+                                    <td>{_asset?.total_price}</td>
+                                    <td>{_asset?.current_stock??_asset?.qty}</td>
                                 </tr>
                             )
                         })}

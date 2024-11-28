@@ -1082,4 +1082,7 @@ select option:focus {
 
     justify-content: center;
 }
-
+.add-remove-btn-grp{
+    display: flex;
+    justify-content: space-between;
+}

@@ -78,7 +78,12 @@ class UserController extends Controller
         $data = $request->validated();
         $data['password'] = bcrypt($data['password']);
         $data['primary_company'] = auth()->user()->primary_company;
-
+        if ($request->hasFile('profile_picture')) {
+            $attachment = $request->file('profile_picture');
+            $filename = $employee['name'] . '_' . 'profile_picture_' . time() . '.' . $attachment->getClientOriginalExtension();
+            $attachment->move('avatars', $filename);
+            $employee['profile_picture'] = $filename; // Store only the filename
+        }
 
         try {
             DB::beginTransaction();

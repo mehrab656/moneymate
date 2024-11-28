@@ -34,6 +34,7 @@ export default function CreateOrUpdateModal({handelCloseModal, element, setEleme
         let formData = new FormData();
         formData.append('first_name', element.first_name);
         formData.append('last_name', element.last_name);
+        formData.append('email', element.email);
         formData.append('phone', element.phone);
         formData.append('emergency_contract', element.emergency_contract);
         formData.append('dob', element.dob);
@@ -108,6 +109,22 @@ export default function CreateOrUpdateModal({handelCloseModal, element, setEleme
                                             className={'border-primary'}
                                             onChange={(e) => {
                                                 setElement({...element, last_name: e.target.value});
+                                            }}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col xs={12} md={6}>
+                                    <Form.Group className="mb-3" controlId="first_name">
+                                        <Form.Label><b>Email</b></Form.Label>
+                                        <Form.Control
+                                            type="email"
+                                            value={element.email == null ? '' : element.email}
+                                            autoFocus
+                                            className={'border-primary'}
+                                            onChange={(e) => {
+                                                setElement({...element, email: e.target.value});
                                             }}
                                         />
                                     </Form.Group>

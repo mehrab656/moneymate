@@ -43,6 +43,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
@@ -55,6 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/get-investors', [UserController::class, 'getInvestors']);
     Route::get('/dashboard-data', [DashboardController::class, 'dashboardData']);
     Route::post('/update-profile/{slug}', [UserController::class, 'updateProfile']);
+    Route::post('/user/add', [UserController::class, 'store']);
 
 
     // Category Api
