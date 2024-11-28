@@ -70,52 +70,60 @@ class UserController extends Controller
      *
      * @param StoreUserRequest $request
      *
-     * @return Response
+     * @return JsonResponse
      * @throws Exception
      */
-    public function store(StoreUserRequest $request): Response
+    public function store(StoreUserRequest $request): JsonResponse
     {
-        $data = $request->validated();
-        $data['password'] = bcrypt($data['password']);
-        $data['primary_company'] = auth()->user()->primary_company;
-        if ($request->hasFile('profile_picture')) {
-            $attachment = $request->file('profile_picture');
-            $filename = $employee['name'] . '_' . 'profile_picture_' . time() . '.' . $attachment->getClientOriginalExtension();
+        $employee = $request->validated();
+
+        if ($request->hasFile('attachment')) {
+            $attachment = $request->file('attachment');
+            $filename = $employee['user_name'] . '_' . 'profile_picture_' . time() . '.' . $attachment->getClientOriginalExtension();
             $attachment->move('avatars', $filename);
             $employee['profile_picture'] = $filename; // Store only the filename
         }
 
         try {
             DB::beginTransaction();
-            $user = User::create($data);
-            DB::table('company_user')->insert([
-                'company_id' => auth()->user()->primary_company,
-                'user_id' => $user->id,
-                'role_id' => 2, //$data['role_id'],//admin role.
-                'status' => true,
-                'created_by' => Auth::user()->id,
-                'updated_by' => Auth::user()->id,
-                'created_at' => date('y-m-d'),
-                'updated_at' => date('y-m-d'),
+            $uuid = Uuid::uuid4();
+            $user = (new User)->addNewUser([
+                'slug'=>$uuid,
+                'first_name' => $employee['first_name'],
+                'last_name' => $employee['last_name'],
+                'user_name' => $employee['user_name'],
+                'email' => $employee['email'],
+                'phone' => $employee['phone'],
+                'emergency_contact' => $employee['emergency_contact'],
+                'dob' => $employee['dob'],
+                'gender' => $employee['gender'],
+                'profile_picture' => $employee['profile_picture'] ?? 'default_employee.png',
+                'role_as' => 'investor',
+                'role_id' => $employee['role'],
+                'primary_company' => Auth::user()->primary_company,
             ]);
 
-            storeActivityLog([
-                'object_id' => $user['id'],
-                'log_type' => 'create',
-                'module' => 'user',
-                'descriptions' => "",
-                'data_records' => $user,
-            ]);
+//            DB::table('company_user')->insert([
+//                'company_id' => auth()->user()->primary_company,
+//                'user_id' => $user->id,
+//                'role_id' => 2, //$data['role_id'],//admin role.
+//                'status' => true,
+//                'created_by' => Auth::user()->id,
+//                'updated_by' => Auth::user()->id,
+//                'created_at' => date('y-m-d'),
+//                'updated_at' => date('y-m-d'),
+//            ]);
+
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
             return response($e, 400);
 
         }
-
-
-        return response(new UserResource($user), 200);
-    }
+        return response()->json( [
+            'message'  => 'success',
+            'description' => 'User Created Successfully',
+        ] );    }
 
     /**
      * Display the specified resource.

@@ -9,9 +9,10 @@ import axiosClient from "../../axios-client.js";
 import {notification} from "../../components/ToastNotification.jsx";
 import MainLoader from "../../components/MainLoader.jsx";
 import Image from "react-bootstrap/Image";
-
+import {useCreateUserMutation,useUpdateUserMutation} from "../../api/slices/userSlice.js"
 export default function CreateOrUpdateModal({handelCloseModal, element, setElement}) {
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
+    const [errors, setErrors] = useState({});
     const [status, setStatus] = useState({
         task_status: '',
         comment: ''
@@ -28,39 +29,54 @@ export default function CreateOrUpdateModal({handelCloseModal, element, setEleme
         });
 
     }, []);
-    const submit = (e) => {
+
+    const [createUser] = useCreateUserMutation();
+    const [updateUser] = useUpdateUserMutation();
+
+    const submit = async (e) => {
         e.preventDefault();
         // setLoading(true);
         let formData = new FormData();
         formData.append('first_name', element.first_name);
         formData.append('last_name', element.last_name);
+        formData.append('user_name', element.user_name);
         formData.append('email', element.email);
         formData.append('phone', element.phone);
-        formData.append('emergency_contract', element.emergency_contract);
+        formData.append('emergency_contact', element.emergency_contact);
         formData.append('dob', element.dob);
         formData.append('gender', element.gender);
         formData.append('profile', element.profile);
         formData.append('role', element.role);
         formData.append('active', element.active);
         formData.append('attachment', element.attachment);
-        const url = slug ? `/update-profile/${element.slug}` : `/user/add`;
+        const url = slug ? `/update-profile/${element.slug}` : `/users`;
 
-        axiosClient.post(url, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        }).then(({data}) => {
-            setLoading(false);
-            notification('success', data?.message, data?.description);
-            location.reload();
-        }).catch((err) => {
-            if (err.response) {
-                const error = err.response.data;
-                notification('error', error?.message, error.description);
-                setLoading(false);
+        try{
+            let data;
+            if (slug){
+                 data = await updateUser({slug, formData}).unwrap();
+            }else{
+                data = await createUser({formData}).unwrap();
             }
-            setLoading(false);
-        });
+            notification("success", data?.message, data?.description);
+            handelCloseModal();
+        }catch (err){
+            if (err.status === 406) {
+                const errors = err.errorData;
+                notification("error", errors.message, errors.description);
+
+            } else if (err.status === 422) {
+                setErrors(err.errorData?.errors);
+                notification("error", err?.message);
+            } else {
+                notification(
+                    "error",
+                    err?.message || "An error occurred",
+                    err?.description || "Please try again later."
+                );
+                setErrors({});
+            }
+        }
     }
     const handelImageChange =(e)=>{
         const file = e.target.files[0];
@@ -116,6 +132,20 @@ export default function CreateOrUpdateModal({handelCloseModal, element, setEleme
                             </Row>
                             <Row>
                                 <Col xs={12} md={6}>
+                                    <Form.Group className="mb-3" controlId="user_name">
+                                        <Form.Label><b>User Name</b></Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            value={element.user_name == null ? '' : element.user_name}
+                                            autoFocus
+                                            className={'border-primary'}
+                                            onChange={(e) => {
+                                                setElement({...element, user_name: e.target.value});
+                                            }}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                                <Col xs={12} md={6}>
                                     <Form.Group className="mb-3" controlId="first_name">
                                         <Form.Label><b>Email</b></Form.Label>
                                         <Form.Control
@@ -147,15 +177,15 @@ export default function CreateOrUpdateModal({handelCloseModal, element, setEleme
                                     </Form.Group>
                                 </Col>
                                 <Col xs={12} md={6}>
-                                    <Form.Group className="mb-3" controlId="emergency_contract">
+                                    <Form.Group className="mb-3" controlId="emergency_contact">
                                         <Form.Label><b>Emergency Contract</b></Form.Label>
                                         <Form.Control
                                             type="text"
-                                            value={element.emergency_contract == null ? '' : element.emergency_contract}
+                                            value={element.emergency_contact == null ? '' : element.emergency_contact}
                                             autoFocus
                                             className={'border-primary'}
                                             onChange={(e) => {
-                                                setElement({...element, emergency_contract: e.target.value});
+                                                setElement({...element, emergency_contact: e.target.value});
                                             }}
                                         />
                                     </Form.Group>

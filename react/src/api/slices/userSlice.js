@@ -1,4 +1,5 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
+import axiosClient from "../../axios-client";
 
 import {baseUrl} from "../baseUrl";
 import {globalToken} from "../globalToken.js";
@@ -75,10 +76,67 @@ export const userSlice = createApi({
         //   }),
         //   invalidatesTags: ['users'],
         // }),
+
+        createUser: builder.mutation({
+            queryFn: async ({formData}) => {
+                try {
+                    const response = await axiosClient.post('/users', formData, {
+                        headers: {"Content-Type": "multipart/form-data"},
+                    });
+                    const {message, description, data} = response.data;
+                    return {data: {message, description, data}};
+                } catch (error) {
+                    const status = error?.response?.status || 500;
+                    const message = error?.response?.data?.message || "An unexpected error occurred.";
+                    const description = error?.response?.data?.description || "";
+                    const errorData = error?.response?.data || {};
+                    return {
+                        error: {
+                            status,
+                            message,
+                            description,
+                            errorData: errorData,
+                        },
+                    };
+                }
+            },
+
+            invalidatesTags: ["task"],
+        }),
+        updateUser: builder.mutation({
+            queryFn: async ({slug, formData}) => {
+                try {
+                    const response = await axiosClient.put(`/users/${slug}`, formData, {
+                        headers: {"Content-Type": "multipart/form-data"},
+                    });
+                    const {message, description, data} = response.data;
+                    return {data: {message, description, data}};
+                } catch (error) {
+                    const status = error?.response?.status || 500;
+                    const message = error?.response?.data?.message || "An unexpected error occurred.";
+                    const description = error?.response?.data?.description || "";
+                    const errorData = error?.response?.data || {};
+                    return {
+                        error: {
+                            status,
+                            message,
+                            description,
+                            errorData: errorData,
+                        },
+                    };
+                }
+            },
+
+            invalidatesTags: ["task"],
+        }),
     }),
 });
 
 export const {
     useGetUserDataQuery,
-    useGetInvestorDataQuery
+    useGetInvestorDataQuery,
+    useCreateUserMutation,
+    useDeleteuserMutation,
+    useUpdateUserMutation,
+    useGetSingleUserDataQuery
 } = userSlice;

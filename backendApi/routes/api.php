@@ -27,6 +27,7 @@ use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WalletController;
+use Encore\Admin\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -56,7 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/get-investors', [UserController::class, 'getInvestors']);
     Route::get('/dashboard-data', [DashboardController::class, 'dashboardData']);
     Route::post('/update-profile/{slug}', [UserController::class, 'updateProfile']);
-    Route::post('/user/add', [UserController::class, 'store']);
+//    Route::post('/user/add', [UserController::class, 'store']);
 
 
     // Category Api
