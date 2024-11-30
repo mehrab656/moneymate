@@ -12,11 +12,7 @@ export const taskSlice = createApi({
     tagTypes: ["task"],
     endpoints: (builder) => ({
         getTaskData: builder.query({
-            query: ({
-                        currentPage,
-                        pageSize,
-                        query
-                    }) => {
+            query: ({currentPage, pageSize, query}) => {
                 return {
                     url: `all-tasks?currentPage=${currentPage}&pageSize=${pageSize}&employee_id=${query?.employee_id}&status=${query?.status}&payment_status=${query?.payment_status}&orderBy=${query?.orderBy}&order=${query?.order}&limit=${query?.limit}&category_id=${query?.category_id}&end_date=${query?.end_date}&start_date=${query?.start_date}`,
                     method: "GET",
@@ -135,7 +131,6 @@ export const taskSlice = createApi({
 
             invalidatesTags: ["task"],
         }),
-
         deleteTask: builder.mutation({
             query: ({id}) => ({
                 url: `delete-task/${id}`,

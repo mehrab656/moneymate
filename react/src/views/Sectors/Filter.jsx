@@ -16,7 +16,6 @@ export default function Filter(props){
         currentPage: "",
         pageSize: 100,
     });
-
     useEffect(() => {
         if (getBankData?.data.length > 0) {
             setAccounts(getBankData?.data);

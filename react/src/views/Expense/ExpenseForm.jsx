@@ -109,6 +109,7 @@ export default function ExpenseForm({handelCloseModal, id}) {
             notification("success", data?.message, data?.description);
             handelCloseModal();
         } catch (err) {
+            setSaveBtnTxt('Save');
             notification(
                 "error",
                 err?.message || "An error occurred",

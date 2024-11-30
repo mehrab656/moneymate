@@ -136,9 +136,10 @@ export default function Sectors() {
         data: getSectorsData,
         isFetching: sectorDataFetching,
     } = useGetSectorsDataQuery(
-        {currentPage, pageSize, query: query},
+        {currentPage, pageSize, query:query},
         {refetchOnMountOrArgChange: isPaginate}
     );
+
     // const {
     //     data: getIncomeAndExpense,
     //     isFetching: sectorDataFetching,
@@ -155,7 +156,6 @@ export default function Sectors() {
             setTotalCount(getSectorsData.total);
             setShowMainLoader(false);
             setSubTitle(`Showing ${getSectorsData?.data.length} results of ${getSectorsData.total}`)
-
         } else {
             setShowMainLoader(true);
         }
@@ -164,7 +164,6 @@ export default function Sectors() {
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
     };
-
 
     const Toast = Swal.mixin({
         toast: true,
@@ -384,6 +383,7 @@ export default function Sectors() {
     ];
     const showSectorFormFunc = () => {
         setShowSectorForm(true);
+        console.log(showSectorForm);
     };
     const closeShowDetailsModal = () => {
         setShowDetails(false);

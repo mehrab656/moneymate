@@ -76,7 +76,7 @@ class SectorModelController extends Controller
         }
 
         if ($accountID){
-            $account =  BankAccount::where('slug',$accountID)->first()->get();
+            $account =  BankAccount::where('slug',$accountID)->first();
             $query=$query->where('payment_account_id',$account->id);
         }
         if ($orderBy && $order) {

@@ -213,7 +213,7 @@ export default function MyTasks() {
                                 <Card className={'border-primary '} sx={{p: 5}}
                                       style={{padding: "0px", marginBottom: "20px"}}
                                 >
-                                    <CardContent class="task-not-found">
+                                    <CardContent className="task-not-found">
                                         {"You Have no Upcoming Task"}
                                     </CardContent>
                                 </Card>
@@ -264,7 +264,7 @@ export default function MyTasks() {
                                 <Card className={'border-primary '} sx={{p: 5}}
                                       style={{padding: "0px", marginBottom: "20px"}}
                                 >
-                                    <CardContent class="task-not-found">
+                                    <CardContent className="task-not-found">
                                         {"You Have no Ongoing Task"}
                                     </CardContent>
                                 </Card>
@@ -314,7 +314,7 @@ export default function MyTasks() {
                                 <Card className={'border-primary '} sx={{p: 5}}
                                       style={{padding: "0px", marginBottom: "20px"}}
                                 >
-                                    <CardContent class="task-not-found">
+                                    <CardContent className="task-not-found">
                                         {"You Have no Completed Task"}
                                     </CardContent>
                                 </Card>

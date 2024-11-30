@@ -8,7 +8,7 @@ import Col from "react-bootstrap/Col";
 import Select from "react-select";
 import {notification} from "../../../components/ToastNotification.jsx";
 import MainLoader from "../../../components/MainLoader.jsx";
-import {useGetAllEmployeeDataQuery} from "../../../api/slices/employeeSlice.js";
+import {useGetEmployeeListDataQuery} from "../../../api/slices/employeeSlice.js";
 import {useCreateTaskMutation, useGetSingleTaskDataQuery} from "../../../api/slices/taskSlice.js";
 import {useGetCategoryListDataQuery} from "../../../api/slices/categorySlice.js";
 import {faDownload, faEye, faEyeSlash, faRefresh, faSync} from "@fortawesome/free-solid-svg-icons";
@@ -23,7 +23,10 @@ const defaultTaskData = {
     date: "",
     startTime: "",
     endTime: "",
-    type: {},
+    type:  {
+        label: "Income",
+        value: "income"
+    },
     amount: "",
     status: {},
     payment_status: {},
@@ -60,14 +63,11 @@ function TaskAddModal({handelCloseModal, title, id}) {
     }, [id, getSingleTaskData, getCategoryListData]);
 
     const {
-        data: getAllEmployeeData,
-        isFetching: allEmployeeDataFetching,
-        isError: allEmployeeDataDataError,
-    } = useGetAllEmployeeDataQuery({
-        currentPage: "",
-        pageSize: 100,
-    });
-    const modifiedEmployeeList = getAllEmployeeData?.data.map(({id, name}) => {
+        data: getEmployeeList,
+        isFetching: isGetEmployeeListFetching,
+        isError: isEmoloyeeListFetchingError,
+    } = useGetEmployeeListDataQuery({});
+    const modifiedEmployeeList = getEmployeeList?.data.map(({id, name}) => {
         return {
             value: id,
             label: name
