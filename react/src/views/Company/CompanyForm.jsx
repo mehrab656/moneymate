@@ -49,9 +49,9 @@ export default function CompanyForm({ handelCloseModal, id }) {
 
   useEffect(() => {
     if (getSingleCompanyData) {
-      setCompanyData((prevExpense) => ({
-        ...prevExpense,
-        ...getSingleExpenseData,
+      setCompanyData((prevCompany) => ({
+        ...prevCompany,
+        ...getSingleCompanyData,
         date: getSingleCompanyData.date || "", // Set to empty string if the value is null or undefined
       }));
     }
@@ -104,7 +104,7 @@ export default function CompanyForm({ handelCloseModal, id }) {
       if (!stay) {
         handelCloseModal();
       } else {
-        setCompanyData(_initialExpense);
+        setCompanyData(_initialCompany);
       }
     } catch (err) {
       notification(

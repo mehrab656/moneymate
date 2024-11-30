@@ -1167,3 +1167,9 @@ taskList {
     justify-content: center;
     align-items: center;
 }
+.css-11xur9t-MuiPaper-root-MuiTableContainer-root {
+    overflow-x: unset !important;
+}
+.css-13xy2my {
+    overflow-x: unset !important;
+}
