@@ -81,7 +81,6 @@ class EmployeeController extends Controller
         return response()->json([
             'data' => EmployeeResource::collection($query),
         ]);
-
     }
 
     /**

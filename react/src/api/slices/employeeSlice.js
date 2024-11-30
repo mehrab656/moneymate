@@ -22,10 +22,23 @@ export const employeeSlice = createApi({
         };
       },
       providesTags: ["employee"],
-    })
+    }),
+    getEmployeeList: builder.query({
+      query: () => {
+        return {
+          url: `/employees`,
+          method: "GET",
+          headers:{
+            Authorization: `Bearer ${globalToken}`
+          }
+        };
+      },
+      providesTags: ["employee"],
+    }),
   }),
 });
 
 export const {
  useGetAllEmployeeDataQuery,
+ useGetEmployeeListDataQuery,
   } = employeeSlice;
