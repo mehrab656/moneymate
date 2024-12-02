@@ -13,6 +13,7 @@ import {bankSlice} from "../api/slices/bankSlice.js";
 import {incomeSlice} from "../api/slices/incomeSlice.js";
 import { expenseSlice } from "../api/slices/expenseSlice.js";
 import { dashboardSlice } from "../api/slices/dashBoardSlice.js";
+import { assetSlice } from "../api/slices/assetSlice.js";
 
 
 export const store = configureStore({
@@ -20,6 +21,7 @@ export const store = configureStore({
         [dashboardSlice.reducerPath]: dashboardSlice.reducer,
         [userSlice.reducerPath]: userSlice.reducer,
         [sectorSlice.reducerPath]: sectorSlice.reducer,
+        [assetSlice.reducerPath]: assetSlice.reducer,
         [accountSlice.reducerPath]: accountSlice.reducer,
         [companySlice.reducerPath]: companySlice.reducer,
         [categorySlice.reducerPath]: categorySlice.reducer,
@@ -34,6 +36,7 @@ export const store = configureStore({
         getDefaultMiddleware().concat(
             dashboardSlice.middleware,
             userSlice.middleware,
+            assetSlice.middleware,
             sectorSlice.middleware,
             accountSlice.middleware,
             companySlice.middleware,

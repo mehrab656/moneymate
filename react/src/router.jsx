@@ -34,7 +34,6 @@ import RoleForms from "./views/Role/RoleForms.jsx";
 import Companies from "./views/Company/Companies.jsx";
 import CompanySignUp from "./views/Company/CompanySignUp.jsx";
 import AssetsList from "./views/CompanyAssets/AssetsList.jsx";
-import AddNewAssets from "./views/CompanyAssets/AddNewAssets.jsx";
 import Employee from "./views/HRMS/Employee/Employee.jsx";
 import Payrolls from "./views/HRMS/Payrolls/Payrolls.jsx";
 import Attendance from "./views/HRMS/Attandance/Attendance.jsx";
@@ -77,14 +76,6 @@ const router = createBrowserRouter([
             {
                 path: '/all-assets',
                 element: <AssetsList/>
-            },
-            {
-                path: '/asset/new',
-                element: <AddNewAssets key="AssetCreate"/>
-            },
-            {
-                path: '/asset/update/:id',
-                element: <AddNewAssets key="AssetCreate"/>
             },
             {
                 path: '/categories',

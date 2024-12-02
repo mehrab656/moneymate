@@ -23,6 +23,7 @@ import TableBody from "@mui/material/TableBody";
 import ActionButtonHelpers from "../../helper/ActionButtonHelpers.jsx";
 import {CardFooter} from "react-bootstrap";
 import {notification} from "../../components/ToastNotification.jsx";
+import { Col, Form, Modal, Row } from "react-bootstrap";
 
 
 const initialFormData = {
@@ -46,10 +47,8 @@ const initialAssetData = [
 ];
 
 
-export default function AddNewAssets() {
-    let {id} = useParams();
+export default function AssetForm({ handelCloseModal, id }) {
     const navigate = useNavigate();
-    const {setNotification} = useStateContext();
     const [formData, setFormData] = useState(initialFormData);
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false)
@@ -181,7 +180,21 @@ export default function AddNewAssets() {
         }
     }, [id]);
 
-    return <Fragment>
+    return <>
+     <Modal
+        show={true}
+        centered
+        onHide={handelCloseModal}
+        backdrop="static"
+        keyboard={false}
+        size={"lg"}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <span>{id ? "Update" : "Add"} Asset</span>
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
         <MainLoader loaderVisible={loading}/>
         <Card>
             <CardContent>
@@ -258,10 +271,7 @@ export default function AddNewAssets() {
                 </form>
             </CardContent>
         </Card>
-
-        {
-            <>
-                <Card style={{marginTop: '20px'}}>
+         <Card style={{marginTop: '20px'}}>
                     <CardContent>
                         <Typography variant="h5" gutterBottom>
                             Asset Details
@@ -377,11 +387,9 @@ export default function AddNewAssets() {
                         }
                         </div>
                     </CardFooter>
-                </Card>
-            </>
-        }
-
-
-    </Fragment>;
+         </Card>
+         </Modal.Body>
+      </Modal>
+    </>
 }
 
