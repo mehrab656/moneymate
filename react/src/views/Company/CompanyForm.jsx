@@ -48,7 +48,7 @@ export default function CompanyForm({ handelCloseModal, id }) {
   const [createCompany] = useCreateCompanyMutation();
 
   useEffect(() => {
-    if (getSingleCompanyData) {
+    if (id && getSingleCompanyData) {
       setCompanyData((prevCompany) => ({
         ...prevCompany,
         ...getSingleCompanyData,

@@ -229,6 +229,9 @@ export default function AssetsList() {
           actionButtons: actionParams,
         }}
         filter={filter}
+        loading={assrtDataFetching}
+        loaderRow={query?.limit}
+        loaderCol={8}
       />
 
       {showModal && (

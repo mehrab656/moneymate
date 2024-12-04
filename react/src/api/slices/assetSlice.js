@@ -80,5 +80,7 @@ export const assetSlice = createApi({
 
 export const {
     useGetAssetDataQuery,
+    useGetSingleAssetDataQuery,
+    useCreateAssetMutation,
     useDeleteAssetMutation
   } = assetSlice;
