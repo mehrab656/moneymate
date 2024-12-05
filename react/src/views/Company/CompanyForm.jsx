@@ -48,10 +48,10 @@ export default function CompanyForm({ handelCloseModal, id }) {
   const [createCompany] = useCreateCompanyMutation();
 
   useEffect(() => {
-    if (getSingleCompanyData) {
-      setCompanyData((prevExpense) => ({
-        ...prevExpense,
-        ...getSingleExpenseData,
+    if (id && getSingleCompanyData) {
+      setCompanyData((prevCompany) => ({
+        ...prevCompany,
+        ...getSingleCompanyData,
         date: getSingleCompanyData.date || "", // Set to empty string if the value is null or undefined
       }));
     }
@@ -104,7 +104,7 @@ export default function CompanyForm({ handelCloseModal, id }) {
       if (!stay) {
         handelCloseModal();
       } else {
-        setCompanyData(_initialExpense);
+        setCompanyData(_initialCompany);
       }
     } catch (err) {
       notification(

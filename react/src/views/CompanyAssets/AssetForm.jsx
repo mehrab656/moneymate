@@ -1,28 +1,20 @@
 import React, {Fragment, useState, useEffect, useContext, isValidElement, createElement} from 'react';
 import {Card, CardContent, Grid, TextField, Button, Typography, Box, ButtonGroup} from '@mui/material';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import ListItemText from '@mui/material/ListItemText';
-import Select from '@mui/material/Select';
-import Checkbox from '@mui/material/Checkbox';
 import {useNavigate, useParams} from 'react-router-dom';
-import axiosClient from '../../axios-client';
 import MainLoader from '../../components/MainLoader';
-import {useStateContext} from "../../contexts/ContextProvider.jsx";
-import {SettingsContext} from "../../contexts/SettingsContext.jsx";
-import {getType} from "@reduxjs/toolkit";
 import TableContainer from "@mui/material/TableContainer";
-import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import TableBody from "@mui/material/TableBody";
-import ActionButtonHelpers from "../../helper/ActionButtonHelpers.jsx";
 import {CardFooter} from "react-bootstrap";
 import {notification} from "../../components/ToastNotification.jsx";
+import { Modal} from "react-bootstrap";
+import { useCreateAssetMutation, useGetSingleAssetDataQuery } from '../../api/slices/assetSlice.js';
+import { useGetSectorListDataQuery } from '../../api/slices/sectorSlice.js';
+import { useGetBankDataQuery } from '../../api/slices/bankSlice.js';
+import { useGetExpenseCategoriesDataQuery } from '../../api/slices/expenseSlice.js';
 
 
 const initialFormData = {
@@ -46,10 +38,8 @@ const initialAssetData = [
 ];
 
 
-export default function AddNewAssets() {
-    let {id} = useParams();
+export default function AssetForm({ handelCloseModal, id }) {
     const navigate = useNavigate();
-    const {setNotification} = useStateContext();
     const [formData, setFormData] = useState(initialFormData);
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false)
@@ -58,21 +48,55 @@ export default function AddNewAssets() {
     const [sectors, setSectors] = useState([]);
     const [categories, setCategories] = useState([]);
 
+// api call
+  const {
+    data: getSingleAssetData,
+    isFetching: singleAssetFetching,
+    isError: singleAssetDataError,
+  } = useGetSingleAssetDataQuery({ id }, { skip: !id });
+  const {
+    data: getSectorListData,
+    isFetching: sectorListFetching,
+    isError: sectorListError,
+  } = useGetSectorListDataQuery();
+  const {
+    data: getBankData,
+    isFetching: bankAccListFetching,
+    isError: bankAccListError,
+  } = useGetBankDataQuery({
+    currentPage: "",
+    pageSize: 100,
+});
+
+  const {
+    data: getexpenseCategoriesData,
+    isFetching: expenseCategoriesFetching,
+    isError: expenseCategoriesDataError,
+  } = useGetExpenseCategoriesDataQuery({ id : formData?.sector_id  }, { skip: formData?.sector_id === '' });
+
+  const [createAsset] = useCreateAssetMutation();
+
     useEffect(() => {
-        axiosClient.get('/sectors-list').then(({data}) => {
-            setSectors(data.data);
-        }).catch(error => {
-            console.warn('Error fetching Sector list:', error)
-        });
+        if (id && getSingleAssetData) {
+             setFormData(getSingleAssetData?.data);
+             setCategories(getSingleAssetData?.categories);
+             setAssets(JSON.parse(getSingleAssetData?.assets));
+        }
+    }, [getSingleAssetData]);
+    useEffect(() => {
+        if (getexpenseCategoriesData?.categories) {
+             setCategories(getexpenseCategoriesData?.categories);
+        }
+    }, [getexpenseCategoriesData]);
 
-        axiosClient.get('/all-bank-account').then(({data}) => {
-            setBankAccounts(data.data);
-        }).catch(error => {
-            console.warn('Error fetching bank accounts:', error)
-        });
-
+    useEffect(() => {
+        if(getSectorListData?.data){
+            setSectors(getSectorListData?.data);
+        }
+        if(getBankData?.data){
+            setBankAccounts(getBankData?.data);
+        }
     }, [])
-
 
     const handleInputChange = (e) => {
         const {name, value} = e.target;
@@ -81,16 +105,6 @@ export default function AddNewAssets() {
     const handelSectorChange = (e) => {
         setCategories([]);
         setFormData({...formData, sector_id: e.target.value});
-        getCategories(e.target.value)
-    }
-    const getCategories = (sectorID) => {
-        axiosClient.get('/expense-categories', {
-            params: {sector_id: sectorID}
-        }).then(({data}) => {
-            setCategories(data.categories);
-        }).catch(error => {
-            console.error('Error loading expense categories:', error);
-        });
     }
 
     //payment
@@ -125,9 +139,8 @@ export default function AddNewAssets() {
     };
 
 
-    const submitData = (e, stay) => {
+    const submitData = async(e, stay) => {
         e.preventDefault();
-        setLoading(true)
         // Handle form submission, e.g., send data to an API
         let _formData = new FormData();
         _formData.append('sector_id', formData.sector_id);
@@ -139,49 +152,40 @@ export default function AddNewAssets() {
             _formData.append('id', id);
 
         }
-
         const url = id ? `/asset/${id}` : `/asset/add`;
-        setLoading(false)
-
-        axiosClient.post(url, _formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        }).then(({data}) => {
-            if (stay) {
-                // setFormData(initialFormData);
-                // setAssets(initialAssetData);
-                // notification('success', data?.message, data?.description)
+        try {
+            const data = await createAsset({ url: url, formData }).unwrap();
+            notification("success", data?.message, data?.description);
+            if (!stay) {
+              handelCloseModal();
             } else {
-                navigate('/assets');
-                notification('success', data?.message, data?.description)
+                setAssets(initialAssetData);
             }
-            setLoading(false)
-        }).catch((err) => {
-            if (err.response) {
-                const error = err.response.data
-                notification('error', error?.message, error.description)
-            }
-            setLoading(false)
-        });
-    };
-    useEffect(() => {
-        if (id) {
-            setLoading(true);
-            axiosClient.get(`/asset/${id}`)
-                .then(({data}) => {
-                    setFormData(data.data);
-                    setCategories(data.categories);
-                    setAssets(JSON.parse(data.data.assets));
-                    setLoading(false);
-                })
-                .catch(() => {
-                    setLoading(false);
-                });
-        }
-    }, [id]);
+          } catch (err) {
+            notification(
+              "error",
+              err?.message || "An error occurred",
+              err?.description || "Please try again later."
+            );
+          }
 
-    return <Fragment>
+    };
+
+    return <>
+     <Modal
+        show={true}
+        centered
+        onHide={handelCloseModal}
+        backdrop="static"
+        keyboard={false}
+        size={"lg"}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <span>{id ? "Update" : "Add"} Asset</span>
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
         <MainLoader loaderVisible={loading}/>
         <Card>
             <CardContent>
@@ -200,8 +204,8 @@ export default function AddNewAssets() {
                                 <option defaultValue>{"Select Sector"}</option>
                                 {
                                     sectors.length > 0 ? (sectors.map((sector) => (
-                                            <option key={sector.id} value={sector.id}>
-                                                {sector.name}
+                                            <option key={sector.value} value={sector.value}>
+                                                {sector.label}
                                             </option>)))
                                         :
                                         (<option disabled={true}>{"No Sector was found"}</option>)
@@ -218,7 +222,7 @@ export default function AddNewAssets() {
                                 onChange={handleInputChange}>
                                 <option defaultValue>{"Select Category"}</option>
                                 {
-                                    categories.length > 0 ? (categories.map((category) => (
+                                    categories?.length > 0 ? (categories.map((category) => (
                                             <option key={category.id} value={category.id}>
                                                 {category.name}
                                             </option>))) :
@@ -258,10 +262,7 @@ export default function AddNewAssets() {
                 </form>
             </CardContent>
         </Card>
-
-        {
-            <>
-                <Card style={{marginTop: '20px'}}>
+         <Card style={{marginTop: '20px'}}>
                     <CardContent>
                         <Typography variant="h5" gutterBottom>
                             Asset Details
@@ -377,11 +378,9 @@ export default function AddNewAssets() {
                         }
                         </div>
                     </CardFooter>
-                </Card>
-            </>
-        }
-
-
-    </Fragment>;
+         </Card>
+         </Modal.Body>
+      </Modal>
+    </>
 }
 

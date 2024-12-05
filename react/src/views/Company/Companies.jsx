@@ -27,17 +27,16 @@ const _initialCompanyData = {
   expiry_date: null,
   registration_number: null,
   extra: null,
-  logo: null
+  logo: null,
 };
 const defaultQuery = {
   searchTerm: "",
   orderBy: "DESC",
-  limit: 10
+  limit: 10,
 };
 export default function companies() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  const [searchTerm, setSearchTerm] = useState("");
   const { applicationSettings, userRole, userPermission } =
     useContext(SettingsContext);
   const [companies, setCompanies] = useState([]);
@@ -67,7 +66,7 @@ export default function companies() {
     isError: companyDataError,
   } = useGetCompanyDataQuery(
     { currentPage, pageSize, query },
-    { refetchOnMountOrArgChange: isPaginate }
+    { skip: !pageSize, refetchOnMountOrArgChange: isPaginate }
   );
   const [deleteCompany] = useDeleteCompanyMutation();
 
@@ -87,9 +86,6 @@ export default function companies() {
     setQuery(defaultQuery);
     setHasFilter(!hasFilter);
   };
-  const handelFilter = () => {
-    setHasFilter(!hasFilter);
-  };
   const filter = () => {
     return (
       <CompanyFilter
@@ -97,18 +93,19 @@ export default function companies() {
         query={query}
         setQuery={setQuery}
         resetFilterParameter={resetFilterParameter}
-        handelFilter={handelFilter}
       />
     );
   };
 
   const filteredCompanies = companies.filter(
     (company) =>
-      company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.license_no.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.activity.toLowerCase().includes(searchTerm.toLowerCase())
+      company.name.toLowerCase().includes(query.searchTerm.toLowerCase()) ||
+      company.email.toLowerCase().includes(query.searchTerm.toLowerCase()) ||
+      company.license_no
+        .toLowerCase()
+        .includes(query.searchTerm.toLowerCase()) ||
+      company.phone.toLowerCase().includes(query.searchTerm.toLowerCase()) ||
+      company.activity.toLowerCase().includes(query.searchTerm.toLowerCase())
   );
 
   const showCompany = (company) => {
@@ -235,7 +232,6 @@ export default function companies() {
           id={company.id}
         />
       )}
-
     </div>
   );
 }

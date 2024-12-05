@@ -27,16 +27,13 @@ import InvestmentPlan from "./views/InvestmentPlan.jsx";
 import InvestmentPlanForm from "./views/InvestmentPlanForm.jsx";
 import OverallReport from "./views/OverallReport";
 import Sectors from "./views/Sectors/Sectors.jsx";
-import SectorCreate from "./views/Sectors/SectorCreate.jsx";
 import MonthlyReport from "./views/MonthlyReport.jsx";
 import ActivityLogs from "./views/ActivityLogs/ActivityLogs.jsx";
 import Roles from "./views/Role/Roles.jsx";
 import RoleForms from "./views/Role/RoleForms.jsx";
 import Companies from "./views/Company/Companies.jsx";
-import CompanyCreate from "./views/Company/CompanyCreate.jsx";
 import CompanySignUp from "./views/Company/CompanySignUp.jsx";
 import AssetsList from "./views/CompanyAssets/AssetsList.jsx";
-import AddNewAssets from "./views/CompanyAssets/AddNewAssets.jsx";
 import Employee from "./views/HRMS/Employee/Employee.jsx";
 import Payrolls from "./views/HRMS/Payrolls/Payrolls.jsx";
 import Attendance from "./views/HRMS/Attandance/Attendance.jsx";
@@ -79,22 +76,6 @@ const router = createBrowserRouter([
             {
                 path: '/all-assets',
                 element: <AssetsList/>
-            },
-            {
-                path: '/asset/new',
-                element: <AddNewAssets key="AssetCreate"/>
-            },
-            {
-                path: '/asset/update/:id',
-                element: <AddNewAssets key="AssetCreate"/>
-            },
-            {
-                path: '/sector/new',
-                element: <SectorCreate key="SectorCreate"/>
-            },
-            {
-                path: '/sector/update/:id',
-                element: <SectorCreate key="SectorCreate"/>
             },
             {
                 path: '/categories',
@@ -237,14 +218,6 @@ const router = createBrowserRouter([
             {
                 path: '/companies',
                 element: <Companies />
-            },
-            {
-                path: '/company/add',
-                element: <CompanyCreate key={"companyCreate"}/>
-            },
-            {
-                path: '/company/:id',
-                element: <CompanyCreate key={"companyUpdate"}/>
             },
             {
                 path: '/all-employee',

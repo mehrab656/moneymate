@@ -41,6 +41,20 @@ export const expenseSlice = createApi({
             },
             providesTags: ["expense"],
           }),
+        getExpenseCategoriesData: builder.query({
+            query: ({id}) => {
+              if (typeof id !== "undefined"){
+                return {
+                  url: `/expense-categories?sector_id${id}`,
+                  method: "GET",
+                  headers: {
+                    Authorization: `Bearer ${globalToken}`,
+                  },
+                };
+              }
+            },
+            providesTags: ["expense"],
+          }),
         createExpense: builder.mutation({
             queryFn: async ({ url, formData }) => {
                 try {
@@ -82,6 +96,7 @@ export const expenseSlice = createApi({
 
 export const {
     useGetExpenseDataQuery,
+    useGetExpenseCategoriesDataQuery,
     useGetSingleExpenseDataQuery,
     useCreateExpenseMutation,
     useDeleteExpenseMutation

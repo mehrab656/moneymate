@@ -63,7 +63,7 @@ export const companySlice = createApi({
           }
       },
 
-      invalidatesTags: ["expense"],
+      invalidatesTags: ["company"],
   }),
     deleteCompany: builder.mutation({
       query: ({id}) => ({
