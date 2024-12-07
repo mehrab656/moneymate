@@ -76,17 +76,17 @@ export default function AssetForm({ handelCloseModal, id }) {
   const [createAsset] = useCreateAssetMutation();
 
     useEffect(() => {
-        if (id && getSingleAssetData?.assets) {
-             setFormData(getSingleAssetData?.data);
-             setCategories(getSingleAssetData?.categories);
-             setAssets(JSON.parse(getSingleAssetData?.assets));
+        if (id && getSingleAssetData) {
+            setFormData(getSingleAssetData?.data ?? initialFormData);
+            setCategories(getSingleAssetData?.categories ?? []);
+            setAssets(getSingleAssetData?.data ? JSON.parse(getSingleAssetData?.data?.assets):[])
         }
-    }, [getSingleAssetData]);
+    }, [getSingleAssetData, id]);
     useEffect(() => {
-        if (getexpenseCategoriesData?.categories) {
+        if (!id && getexpenseCategoriesData?.categories) {
              setCategories(getexpenseCategoriesData?.categories);
         }
-    }, [getexpenseCategoriesData]);
+    }, [getexpenseCategoriesData, id]);
 
     useEffect(() => {
         if(getSectorListData?.data){
@@ -136,7 +136,6 @@ export default function AssetForm({ handelCloseModal, id }) {
         updateAssets.splice(index, 1);
         setAssets(updateAssets);
     };
-
 
     const submitData = async(e, stay) => {
         e.preventDefault();
@@ -280,7 +279,7 @@ export default function AssetForm({ handelCloseModal, id }) {
                                 </TableHead>
                                 <TableBody>
 
-                                    {assets.map((asset, index) =>
+                                    {assets && assets?.length>0 && assets.map((asset, index) =>
                                         <TableRow key={"asset-" + index}>
                                             <TableCell align={"left"}>
                                                 <input

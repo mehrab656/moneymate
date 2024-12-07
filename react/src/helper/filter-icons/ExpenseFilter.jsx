@@ -33,8 +33,8 @@ const ExpenseFilter = ({
                         }}>
                         <option defaultValue>Filter By Sectors</option>
                         {sectors.map(sector => (
-                            <option key={"sec-" + sector.id} value={sector.id}>
-                                {sector.name}
+                            <option key={"sec-" + sector.value} value={sector.value}>
+                                {sector.label}
                             </option>
                         ))}
                     </select>

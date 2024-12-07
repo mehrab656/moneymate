@@ -8,7 +8,7 @@ import { SettingsContext } from "../../contexts/SettingsContext.jsx";
 import Footer from "./Footer.jsx";
 import { Container, Row, Col, Button, Offcanvas } from "react-bootstrap";
 import { compareDates } from "../../helper/HelperFunctions.js";
-import { useGetSectorsDataQuery } from "../../api/slices/sectorSlice.js";
+import { useGetSectorListDataQuery } from "../../api/slices/sectorSlice.js";
 import { useGetFinancialReportDataQuery } from "../../api/slices/accountSlice.js";
 import Dropdown from "react-bootstrap/Dropdown";
 import { notification } from "../ToastNotification.jsx";
@@ -50,7 +50,12 @@ export default function DefaultLayout() {
 
   const pageSize = num_data_per_page;
 
-  const { data: getSectorsData } = useGetSectorsDataQuery( { currentPage, pageSize, query: query },);
+  const {
+    data: getSectorListData,
+    isFetching: sectorListFetching,
+    isError: sectorListError,
+  } = useGetSectorListDataQuery();
+
   const { data: getCompanyData } = useGetSideBarCompanyListsDataQuery();
   const { data: getCurrentCompanyData } = useGetCurrentCompanyDataQuery({id:currentCompanyID});
   const { data: getFinancialReportData } = useGetFinancialReportDataQuery({token})
@@ -63,9 +68,9 @@ export default function DefaultLayout() {
   }, [token]);
 
   useEffect(() => {
-    if (getSectorsData?.data) {
+    if (getSectorListData?.data) {
       let notificationsArray = [];
-      getSectorsData?.data.map((item) => {
+      getSectorListData?.data.map((item) => {
         if (compareDates(item.internet_billing_date) === "danger") {
           item = { ...item, type: "internet" };
           notificationsArray.push(item);
@@ -79,7 +84,7 @@ export default function DefaultLayout() {
 
       setNotifications(notificationsArray);
     }
-  }, [getSectorsData]);
+  }, [getSectorListData]);
 
   //screen resize for responsive dynamic class
   const handleResize = () => {

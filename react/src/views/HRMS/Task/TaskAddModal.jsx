@@ -8,7 +8,7 @@ import Col from "react-bootstrap/Col";
 import Select from "react-select";
 import {notification} from "../../../components/ToastNotification.jsx";
 import MainLoader from "../../../components/MainLoader.jsx";
-import {useGetEmployeeListDataQuery} from "../../../api/slices/employeeSlice.js";
+import {useGetEmployeeListQuery} from "../../../api/slices/employeeSlice.js";
 import {useCreateTaskMutation, useGetSingleTaskDataQuery} from "../../../api/slices/taskSlice.js";
 import {useGetCategoryListDataQuery} from "../../../api/slices/categorySlice.js";
 import {faDownload, faEye, faEyeSlash, faRefresh, faSync} from "@fortawesome/free-solid-svg-icons";
@@ -39,6 +39,7 @@ function TaskAddModal({handelCloseModal, title, id}) {
     const [loading, setLoading] = useState(false);
     const [taskData, setTaskData] = useState(defaultTaskData);
     const [categories, setCategories] = useState([]);
+    const [reFetachEmlpoyee, setRefetchEmployee] = useState(false)
     const {
         data: getSingleTaskData,
         isFetching: singleTaskFetching,
@@ -66,7 +67,8 @@ function TaskAddModal({handelCloseModal, title, id}) {
         data: getEmployeeList,
         isFetching: isGetEmployeeListFetching,
         isError: isEmoloyeeListFetchingError,
-    } = useGetEmployeeListDataQuery({});
+    } = useGetEmployeeListQuery({refetchOnMountOrArgChange: reFetachEmlpoyee});
+
     const modifiedEmployeeList = getEmployeeList?.data.map(({id, name}) => {
         return {
             value: id,
@@ -348,6 +350,7 @@ function TaskAddModal({handelCloseModal, title, id}) {
                                         <Form.Label>Assign to</Form.Label>
                                         <small>
                                         <a onClick={(e)=>{
+                                            setRefetchEmployee(true)
                                         }}
                                         className={'text-muted p-1'}>
                                             <FontAwesomeIcon icon={faSync}/>
@@ -359,7 +362,7 @@ function TaskAddModal({handelCloseModal, title, id}) {
                                             value={taskData.employee_list}
                                             isSearchable={true}
                                             name="employee_id"
-                                            isLoading={allEmployeeDataFetching}
+                                            isLoading={isGetEmployeeListFetching}
                                             options={modifiedEmployeeList}
                                             onChange={(e) => {
                                                 setTaskData({...taskData, employee_list: e});

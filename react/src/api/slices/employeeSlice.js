@@ -40,5 +40,5 @@ export const employeeSlice = createApi({
 
 export const {
  useGetAllEmployeeDataQuery,
- useGetEmployeeListDataQuery,
+ useGetEmployeeListQuery,
   } = employeeSlice;

@@ -13,6 +13,7 @@ use App\Models\BudgetCategory;
 use App\Models\BudgetExpense;
 use App\Models\Category;
 use App\Models\Expense;
+use App\Models\SectorModel;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -219,15 +220,30 @@ class ExpenseController extends Controller
     public function categories(Request $request): JsonResponse
     {
 
-        $sectorID = abs($request->sector_id);
+        $sectorSlug = $request->sector_id;
 
-        $categories = DB::table('categories')->select('categories.*')
+        $columns = 'categories.*';
+
+        if($sectorSlug){
+            $sector = SectorModel::where('slug',$sectorSlug)->first();
+
+            if(!$sector){
+                return response()->json([
+                    'message' => 'Success!',
+                    'description' => 'Sector not find by given id.'
+                ]);
+            }
+
+            $columns = ['categories.slug','categories.name'];
+        }
+
+        $categories = DB::table('categories')->select($columns)
             ->join('sectors', 'categories.sector_id', '=', 'sectors.id')
             ->where('sectors.company_id', '=', Auth::user()->primary_company)
             ->where('type', '=', 'expense');
 
-        if ($sectorID) {
-            $categories = $categories->where('sectors.id', '=', $sectorID);
+        if ($sectorSlug) {
+            $categories = $categories->where('sectors.id', '=', $sector->id);
         }
 
 

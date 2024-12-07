@@ -23,7 +23,9 @@ class SectorForFilterResource extends JsonResource
     {
         return [
             'label' => $this->name,
-            'value' => $this->slug
+            'value' => $this->slug,
+            'internet_billing_date' => $this->internet_billing_date,
+            'el_billing_date' => $this->el_billing_date
         ];
     }
 }
