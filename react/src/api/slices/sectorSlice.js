@@ -14,7 +14,7 @@ export const sectorSlice = createApi({
     getSectorsData: builder.query({
       query: ({ currentPage, pageSize, query }) => {
         return {
-          url: `/sectors?currentPage=${currentPage}&pageSize=${pageSize}&account_id=${query.payment_account_id}&contract_start_date=${query.contract_start_date}&contract_end_date=${query.contract_end_date}&orderBy=${query.orderBy}&order=${query.order}&limit=${query.limit}`,
+          url: `/sectors?currentPage=${currentPage}&pageSize=${pageSize}&account_id=${query?.payment_account_id}&contract_start_date=${query?.contract_start_date}&contract_end_date=${query?.contract_end_date}&orderBy=${query?.orderBy}&order=${query?.order}&limit=${query?.limit}`,
           method: "GET",
           headers: {
             Authorization: `Bearer ${globalToken}`,

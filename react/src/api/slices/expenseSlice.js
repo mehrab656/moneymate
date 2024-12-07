@@ -45,7 +45,7 @@ export const expenseSlice = createApi({
             query: ({id}) => {
               if (typeof id !== "undefined"){
                 return {
-                  url: `/expense-categories?sector_id${id}`,
+                  url: `/expense-categories?sector_id=${id}`,
                   method: "GET",
                   headers: {
                     Authorization: `Bearer ${globalToken}`,

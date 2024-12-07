@@ -18,8 +18,20 @@ import Header from "./Header.jsx";
 import LeftSideBarSkeleton from "../SkeletonLoader/LeftSideBarSkeleton.jsx";
 import { useGetCurrentCompanyDataQuery, useGetSideBarCompanyListsDataQuery } from "../../api/slices/dashBoardSlice.js";
 
+const defaultQuery = {
+  searchTerm: "",
+  payment_account_id: "",
+  contract_start_date: "",
+  contract_end_date: "",
+  orderBy: "DESC",
+  order: "",
+  limit: 10,
+};
+
 export default function DefaultLayout() {
   const location = useLocation();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [query, setQuery] = useState(defaultQuery);
   const isActive = (linkPath) => location.pathname === linkPath;
   const { user, token, setUser, setToken } = useStateContext();
   const navigate = useNavigate();
@@ -32,10 +44,13 @@ export default function DefaultLayout() {
   const [notifications, setNotifications] = useState([]);
   const { applicationSettings, userRole, setUserRole, checkPermission } =
     useContext(SettingsContext);
-  let { default_currency } = applicationSettings;
+  const { num_data_per_page, default_currency } = applicationSettings;
+
   const currentCompanyID = localStorage.getItem("CURRENT_COMPANY");
 
-  const { data: getSectorsData } = useGetSectorsDataQuery({ token });
+  const pageSize = num_data_per_page;
+
+  const { data: getSectorsData } = useGetSectorsDataQuery( { currentPage, pageSize, query: query },);
   const { data: getCompanyData } = useGetSideBarCompanyListsDataQuery();
   const { data: getCurrentCompanyData } = useGetCurrentCompanyDataQuery({id:currentCompanyID});
   const { data: getFinancialReportData } = useGetFinancialReportDataQuery({token})

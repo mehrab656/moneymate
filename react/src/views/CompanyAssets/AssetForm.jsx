@@ -39,7 +39,6 @@ const initialAssetData = [
 
 
 export default function AssetForm({ handelCloseModal, id }) {
-    const navigate = useNavigate();
     const [formData, setFormData] = useState(initialFormData);
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false)
@@ -77,7 +76,7 @@ export default function AssetForm({ handelCloseModal, id }) {
   const [createAsset] = useCreateAssetMutation();
 
     useEffect(() => {
-        if (id && getSingleAssetData) {
+        if (id && getSingleAssetData?.assets) {
              setFormData(getSingleAssetData?.data);
              setCategories(getSingleAssetData?.categories);
              setAssets(JSON.parse(getSingleAssetData?.assets));
@@ -96,7 +95,7 @@ export default function AssetForm({ handelCloseModal, id }) {
         if(getBankData?.data){
             setBankAccounts(getBankData?.data);
         }
-    }, [])
+    }, [getSectorListData,getBankData])
 
     const handleInputChange = (e) => {
         const {name, value} = e.target;
