@@ -408,12 +408,31 @@ class ExpenseController extends Controller
     /**
      * @throws Throwable
      */
-    public function updateReturn(UpdateExpenseRequest $request, Expense $return): JsonResponse|RedirectResponse
+    public function updateReturn(UpdateExpenseRequest $request): JsonResponse|RedirectResponse
     {
         $data = $request->validated();
 
-        $refundableAmount = $return->refundable_amount; // Actual Return amount
-        $refundedAmount = $return->refunded_amount; // Already refund amount
+        $expense = Expense::where('slug', $request->id)->first();
+
+        if (!$expense) {
+            return response()->json([
+                'message' => 'Not Found',
+                'description' => 'No associative expense was found!',
+            ], 404);
+        }
+
+        $bankAccount = BankAccount::where('slug',$data['account_id'])->first();
+         if (!$bankAccount) {
+            return response()->json([
+                'message' => 'Not Found',
+                'description' => 'No associative Bank Account was Found!',
+            ], 404);
+        }
+
+         $prevBalance = $bankAccount->balance;//previous account balance
+
+        $refundableAmount = $expense->refundable_amount; // Actual Return amount
+        $refundedAmount = $expense->refunded_amount; // Already refund amount
         $refundAmount = $data['return_amount']; // just now return amount
         $remainingAmount = $refundableAmount - $refundedAmount; // just now return amount
 
@@ -424,36 +443,38 @@ class ExpenseController extends Controller
             ], 400);
         }
 
-        DB::beginTransaction();
         try {
+            DB::beginTransaction();
+
             //first update bank account to adjust the balance from return
-            $bankAccount = BankAccount::find($return->account_id);
             $bankAccount->balance += $refundAmount;
+
             $bankAccount->save();
+
             // now time to update the expense field refunded amount.
-            $return->update(['refunded_amount' => $refundedAmount + $refundAmount]);
+            $expense->refunded_amount += $refundAmount;
+            $expense->save();
+
 
             storeActivityLog([
-                'object_id' => $return->id,
-                'log_type' => 'edit',
-                'module' => 'return',
-                'descriptions' => "added returns. Amount: $refundAmount",
-                'data_records' => $data,
+                'object_id' => $expense['id'],
+                'log_type' => 'update',
+                'module' => 'expense',
+                'descriptions' => sprintf("%s add a new return of an amount %s", Auth::user()->username, $refundAmount),
+                'data_records' => array_merge(json_decode(json_encode($expense), true), ['old_account_balance' => $prevBalance, 'new_account_balance' => $bankAccount->balance]),
             ]);
+            DB::commit();
 
-            $return->save();
-        } catch (ValidationException $e) {
+        } catch (Exception $e) {
             DB::rollBack();
 
             return redirect()->back()->withErrors($e->getMessages())->withInput();
         }
 
-        DB::commit();
 
         return response()->json([
             'message' => 'Success',
-            'description' => "New return adjusted successfully!",
-            'data' => $return
+            'description' => "New return has been added!"
         ]);
     }
 

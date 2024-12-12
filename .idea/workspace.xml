@@ -5,9 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb82f29d-a946-4d7c-af4f-355ea30ae3ce" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/moneymate.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/moneymate.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Requests/UpdateExpenseRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Requests/UpdateExpenseRequest.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/database/migrations/2024_04_26_234750_update_activity_log_type_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/database/migrations/2024_04_26_234750_update_activity_log_type_table.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/helper/ActivityLogRows.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/helper/ActivityLogRows.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/ActivityLogs/ActivityLogs.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/ActivityLogs/ActivityLogs.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Return.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Return.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -152,10 +157,10 @@
       <path value="$PROJECT_DIR$/backendApi/vendor/spatie/error-solutions" />
     </include_path>
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 1
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 1
+}</component>
   <component name="ProjectId" id="2pZ1W5l1UImfptnpJB2EfI1Jf6P" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -178,10 +183,11 @@
     "nodejs_package_manager_path": "npm",
     "npm.dev.executor": "Run",
     "settings.editor.selected.configurable": "reference.webide.settings.project.settings.php.zend.framework.tool",
+    "ts.external.directory.path": "/Applications/PhpStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager">
+  <component name="RunManager" selected="npm.build">
     <configuration name="Main" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
       <TestRunner configuration_file="$PROJECT_DIR$/backendApi/phpunit.xml" scope="XML" use_alternative_configuration_file="true" />
       <method v="2" />

@@ -65,7 +65,15 @@ export default function Return() {
     const submitForUpdate = (event) => {
         event.preventDefault();
         setLoading(true);
-        axiosClient.post(`/return/${marketReturn.id}`, marketReturn)
+
+        const formData = new FormData();
+        formData.append("account_id", marketReturn.account.value);
+        formData.append("amount", marketReturn.amount);
+        formData.append("id", marketReturn.id);
+        formData.append("return_amount", marketReturn.return_amount);
+        formData.append("amount", marketReturn.amount);
+
+        axiosClient.post(`/return/${marketReturn.id}`, formData)
             .then(({data}) => {
                 setShowModal(false);
                 getMarketReturns(currentPage, pageSize);
@@ -76,7 +84,6 @@ export default function Return() {
                     text: data.description,
                 });
                 setLoading(false)
-
             }).catch(error => {
             if (error.response) {
                 Toast.fire({
