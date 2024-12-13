@@ -36,7 +36,7 @@ class DebtController extends Controller {
 		$totalCount = Debt::where('company_id',Auth::user()->primary_company)->count();
 
 		return response()->json( [
-			'debts' => DebtResource::collection( $debts ),
+			'data' => DebtResource::collection( $debts ),
 			'total' => $totalCount,
 		] );
 	}
@@ -48,19 +48,16 @@ class DebtController extends Controller {
 	 * @return JsonResponse
 	 */
 	public function store( DebtRequest $request ): JsonResponse {
-		$selectedBankAccount = BankAccount::find( $request->account_id );
 
 		$debt = $request->validated();
-		if ( $debt['type'] === 'borrow' ) {
+
+        $selectedBankAccount = BankAccount::where('slug',$request->account_id)->first();
+
+        if ( $debt['type'] === 'borrow' ) {
 			$debtAmount   = - $debt['amount'];
 			$borrowAmount = $debt['amount'];
 		} else {
 			if ( $debt['amount'] > $selectedBankAccount->balance ) {
-				// return response()->json( [
-				// 	'status'            => 'insufficient_balance',
-				// 	'message'           => 'Insufficient balance in the selected bank account. Please use another bank account to repay.',
-				// 	'available_balance' => $selectedBankAccount->balance
-				// ] );
 				return response()->json( [
 					'message'     => 'Insufficient_balance',
 					'description' => 'Insufficient balance in the selected bank account. Please use another bank account to repay.',
@@ -71,12 +68,11 @@ class DebtController extends Controller {
 		}
 
 		$person = $debt['person'];
-		/** @var TYPE_NAME $debtAmount */
 		$debt = Debt::firstOrCreate( [
 			'user_id'    => auth()->user()->id,
 			'company_id'    => auth()->user()->primary_company,
 			'amount'     => $debtAmount,
-			'account_id' => $debt['account_id'],
+			'account_id' => $selectedBankAccount->id,
 			'type'       => $debt['type'],
 			'person'     => $person,
 			'date'       => $debt['date'],
@@ -151,7 +147,7 @@ class DebtController extends Controller {
 				'message'     => 'Success!',
 				'description' => 'Borrow created successfully',
 			] );
-			
+
 		}
 
 

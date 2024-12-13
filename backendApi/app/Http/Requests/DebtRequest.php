@@ -24,7 +24,7 @@ class DebtRequest extends FormRequest
     {
         return [
             'amount' => 'required|numeric',
-            'account_id' => 'required|exists:bank_accounts,id',
+            'account_id' => 'required|exists:bank_accounts,slug',
             'type' => 'required|in:lend,repayment,borrow,debt-collection',
             'person' => 'required|string',
             'date' => 'required|date',

@@ -510,9 +510,9 @@ class SectorModelController extends Controller
                 storeActivityLog([
                     'user_id' => Auth::user()->id,
                     'object_id' => $id,
-                    'object' => 'Bill payment',
+                    'object' => 'expense',
                     'log_type' => 'failed',
-                    'module' => "$type-bill-payments",
+                    'module' => "expenses",
                     'descriptions' => __('sectors.bill_payment_category_not_found', ['name' => auth()->user()->name]),
                     'data_records' => ['Records' => 'no records'],
                 ]);
@@ -540,8 +540,9 @@ class SectorModelController extends Controller
             ], 404);
         }
 
-        DB::beginTransaction();
         try {
+            DB::beginTransaction();
+
             $expense = Expense::create([
                 'slug'=>Uuid::uuid4(),
                 'user_id' => Auth::user()->id,
@@ -554,7 +555,7 @@ class SectorModelController extends Controller
                 'reference' => 'Automated Payment for : ' . $sector->name . ' ' . strtoupper($request->type),
                 'date' => $date
             ]);
-            $isUpdated = DB::table('payments')
+            DB::table('payments')
                 ->where('id', $id)
                 ->update([
                     'status' => 'paid',
@@ -575,25 +576,26 @@ class SectorModelController extends Controller
             storeActivityLog([
                 'user_id' => Auth::user()->id,
                 'object_id' => $objectID,
-                'object' => $category->sector->name,
-                'log_type' => $request->type . ' bill payment',
-                'module' => "$type-payments",
+                'object' => "expenses",
+                'log_type' => 'updated',
+                'module' => "expenses",
                 'descriptions' => "made $type bill payment on " . $request->payment_number . ' ' . $request->amount,
                 'data_records' => $expense,
             ]);
+            DB::commit();
 
-
-        } catch (ValidationException $e) {
+        } catch (Exception $e) {
             DB::rollBack();
 
-            return redirect()->back()->withErrors($e->getMessages())->withInput();
+            return response()->json([
+                'description' => $e->getMessages(),
+                'message' => '$isUpdated ? 200 : 400'
+            ],404);
         }
 
-        DB::commit();
-
         return response()->json([
-            'message' => $isUpdated ? 'Bill paid successfully!' : 'Unable to pay bill.',
-            'status' => $isUpdated ? 200 : 400
+            'description' => 'Bill paid successfully!',
+            'message' => 'success'
         ]);
     }
 

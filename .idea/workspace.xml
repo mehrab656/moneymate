@@ -5,14 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb82f29d-a946-4d7c-af4f-355ea30ae3ce" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/react/src/api/slices/debtSlice.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/react/src/views/Debts/DebtCreate.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/react/src/views/Debts/DebtList.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/react/src/views/Debts/Filter.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Requests/UpdateExpenseRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Requests/UpdateExpenseRequest.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/database/migrations/2024_04_26_234750_update_activity_log_type_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/database/migrations/2024_04_26_234750_update_activity_log_type_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/DebtController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/DebtController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Requests/DebtRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Requests/DebtRequest.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/helper/ActivityLogRows.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/helper/ActivityLogRows.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/ActivityLogs/ActivityLogs.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/ActivityLogs/ActivityLogs.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Return.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Return.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/router.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/router.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/store/store.js" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/store/store.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Debts.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Debts.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/HRMS/Task/Task.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/HRMS/Task/Task.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Income/IncomeFilter.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Income/IncomeFilter.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,6 +28,14 @@
   <component name="ComposerSettings" synchronizationState="SYNCHRONIZE">
     <pharConfigPath>$PROJECT_DIR$/backendApi/composer.json</pharConfigPath>
     <execution />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+        <option value="JSX File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -162,6 +176,9 @@
   &quot;associatedIndex&quot;: 1
 }</component>
   <component name="ProjectId" id="2pZ1W5l1UImfptnpJB2EfI1Jf6P" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
