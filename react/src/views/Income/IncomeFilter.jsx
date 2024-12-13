@@ -111,11 +111,7 @@ export default function IncomeFilter(props) {
                             setQuery({...query, account_id: e.target.value});
                         }}>
                             <option defaultValue>{"Account"}</option>
-                            {accounts.length > 0 ? accounts.map(({
-                                                                                        id,
-                                                                                        bank_name,
-                                                                                        account_number
-                                                                                    }) => (
+                            {accounts.length > 0 ? accounts.map(({id, bank_name, account_number}) => (
                                     <option key={id} value={id}>
                                         {bank_name + '(' + account_number + ')'}
                                     </option>

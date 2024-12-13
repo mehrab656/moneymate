@@ -317,13 +317,9 @@ export default function Debts() {
                                         <td className="text-center">{debt.type === 'borrow' ? "Borrowed from " : "Lend to "} {debt.person}</td>
                                         <td className="text-center">{debt.account}</td>
                                         <td>{default_currency+' '}{debt.amount}</td>
-                                       
                                         <td className="text-center">
-                                        <Tooltip title={debt?.note} arrow>
                                             {debt.note?debt.note.split(' ').slice(0,3).join(' ')+` ....` :''}
-                                        </Tooltip>
                                         </td>
-                                      
                                         {userRole ==='admin' && 
                                         <td>
                                             <ActionButtonHelpers

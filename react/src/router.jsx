@@ -15,7 +15,7 @@ import BudgetForm from "./views/BudgetForm.jsx";
 import ExpenseReport from "./views/Expense/ExpenseReport.jsx";
 import IncomeReport from "./views/IncomeReport.jsx";
 import WalletForm from "./views/WalletForm.jsx";
-import Debts from "./views/Debts.jsx";
+import Debts from "./views/Debts/DebtList.jsx";
 import ManageDebt from "./views/ManageDebt.jsx";
 import Transfers from "./views/Transfers.jsx";
 import Calendar from "./views/Calendar.jsx";

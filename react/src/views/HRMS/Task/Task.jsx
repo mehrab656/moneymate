@@ -192,7 +192,6 @@ export default function Task() {
       setTasks(getTaskData.data);
       setTotalCount(getTaskData.total);
       setShowMainLoader(false);
-      const subTitle = <span><small><i>{`Showing ${getTaskData?.data.length} results of ${totalCount}`}</i></small></span>
       setSubTitle(`Showing ${getTaskData?.data.length} results of ${getTaskData.total}`)
     } else {
       setShowMainLoader(true);
