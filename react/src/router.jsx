@@ -6,7 +6,6 @@ import NotFound from "./views/NotFound.jsx";
 import GuestLayout from "./components/GuestLayout.jsx";
 import UserForm from "./views/User/UserForm.jsx";
 import Accounts from "./views/Accounts.jsx";
-import Categories from "./views/Categories.jsx";
 import ExpenseForm from "./views/Expense/ExpenseForm.jsx";
 import ApplicationSettingsForm from "./views/ApplicationSettingsForm.jsx";
 import Banks from "./views/Banks.jsx";
@@ -46,6 +45,7 @@ import IncomeList from "./views/Income/IncomeList.jsx";
 import ExpenseList from "./views/Expense/ExpenseList.jsx";
 import Dashboard from "./views/Dashboard/Dashboard.jsx";
 import DefaultLayout from "./components/DefaultLayout/index.jsx";
+import Categories from "./views/Categories/Categories.jsx";
 
 const router = createBrowserRouter([
 

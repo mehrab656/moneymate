@@ -192,7 +192,7 @@ function CommonTable(props) {
                       )}
                       {
                         // JSON.stringify(table.actionBtn) !== '{}' &&
-                        <TableCell align="right">
+                        <TableCell align="center">
                           <ActionButtonHelpers
                             actionBtn={table.actionButtons}
                             element={row}
