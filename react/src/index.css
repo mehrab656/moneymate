@@ -760,12 +760,12 @@ select option:focus {
 }
 
 .custom-form-control {
-    height: 40px;
+    /*height: 40px;*/
     border-radius: 4px;
     border: 1px solid #ccc;
     padding: 8px;
-    width: 100%;
-    resize: none;
+    /*width: 100%;*/
+    /*resize: none;*/
 }
 
 .btn-primary {
@@ -871,7 +871,7 @@ select option:focus {
 }
 .my-custom-scrollbar {
     position: relative;
-    height: 400px;
+    height: 100vh;
     /* overflow: auto; */
 }
 .table-wrapper-scroll-y {
@@ -1172,4 +1172,63 @@ taskList {
 }
 .css-13xy2my {
     overflow-x: unset !important;
+}
+
+.report-table{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.report-table th, td{
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    white-space: nowrap;
+
+}
+.report-table thead th{
+    background-color: #f2f2f2;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.report-table tfoot tr{
+    background-color: #f2f2f2;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+.report-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.report-table-container{
+    max-height: 200px;
+    max-width: 500px;
+    overflow: auto;
+    border: 1px solid #ddd;
+}
+.quick-filter{
+    display: flex;
+    justify-content: space-around;
+    align-items: baseline;
+}
+.popover-body{
+    padding: 0;
+}
+.filter-modal-body.modal-body{
+    padding: 0 ;
+    height: 100vh;
+}
+.filter-modal-row{
+    height: 100vh;
+}
+.filter-column{
+    padding: 5px !important;
+    border: 1px solid;
+}
+.report-filter-list{
+    max-height: 68vh;
+    overflow-y: auto;
 }

@@ -1,33 +1,27 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import axiosClient from "../../axios-client.js";
-import DatePicker from "react-datepicker";
-import WizCard from "../../components/WizCard.jsx";
 import { SettingsContext } from "../../contexts/SettingsContext.jsx";
 import MainLoader from "../../components/MainLoader.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faArrowsToEye,
   faEye,
-  faEyeDropper,
-  faEyeSlash,
-  faFilter,
-  faListAlt,
-  faStreetView,
+  faEyeSlash
 } from "@fortawesome/free-solid-svg-icons";
 import { Tooltip } from "react-tooltip";
-import { Col, Container, Row } from "react-bootstrap";
-import NavDropdown from "react-bootstrap/NavDropdown";
-import { Link } from "react-router-dom";
+import {Col, Container, Form, InputGroup, Row} from "react-bootstrap";
 import ExpenseFilter from "../../helper/filter-icons/ExpenseFilter.jsx";
 import { Box, Button } from "@mui/material";
 import ReactToPrint from "react-to-print";
 import ExpenseShow from "./ExpenseShow.jsx";
+import {genRand} from "../../helper/HelperFunctions.js";
+import {useGetExpenseReportDataQuery} from "../../api/slices/reportSlice.js"
+import {useGetSectorListDataQuery} from "../../api/slices/sectorSlice.js";
 
-const defaultParams = {
+const defaultQuery = {
   start_date: "",
   end_date: "",
-  cat_id: "",
-  sec_id: "",
+  categoryIDS: [],
+  sectorIDS: [],
   search_terms: "",
   orderBy: "date",
   order: "DESC",
@@ -55,7 +49,7 @@ export default function ExpenseReport() {
     note: "",
     attachment: "",
   });
-  const [params, setParam] = useState(defaultParams);
+  const [filterQuery, setFilterQuery] = useState(defaultQuery);
   const [hasFilter, setHasFilter] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const { applicationSettings } = useContext(SettingsContext);
@@ -64,103 +58,119 @@ export default function ExpenseReport() {
   if (default_currency === undefined) {
     default_currency = "AED ";
   }
-
   const showExpenseDetails = (expense, index) => {
     setActiveModal(index);
     setModalData(expense);
     setShowModal(true);
   };
-  useEffect(() => {
-    axiosClient
-      .get("/expense-categories", {
-        params: { sector_id: params.sec_id },
-      })
-      .then(({ data }) => {
-        setExpenseCategories(data.categories);
-      })
-      .catch((error) => {
-        console.error("Error loading expense categories:", error);
-      });
-  }, [params.sec_id]);
+
+  const {data: getExpenseReport} = useGetExpenseReportDataQuery({query:filterQuery});
+  const {data: getSectorListData} = useGetSectorListDataQuery();
 
   useEffect(() => {
-    axiosClient
-      .get("/sectors-list")
-      .then(({ data }) => {
-        setSectors(data.data);
-      })
-      .catch((error) => {
-        console.warn("Error Loading sectors: ", error);
-      });
-  }, []);
+    document.title = "Expenses Report";
+    if (getExpenseReport?.expenses.length>0){
+      setExpenseReport(getExpenseReport?.expenses);
+      setTotalExpense(getExpenseReport?.totalExpense);
+    }
+    if (getSectorListData?.data) {
+      setSectors(getSectorListData.data);
+    }
+  }, [getExpenseReport?.expenses,hasFilter]);
 
   const handleCloseModal = () => {
     setActiveModal("");
     setShowModal(false);
   };
-  const getExpenseReport = () => {
-    setLoading(true);
-    setTotalExpense(0);
-    axiosClient
-      .get("/report/expense", { params: params })
-      .then(({ data }) => {
-        setExpenseReport(data.expenses);
-        setTotalExpense(data.totalExpense);
-        setLoading(false);
-      })
-      .catch((e) => {
-        setLoading(false);
-      });
-  };
-  useEffect(() => {
-    document.title = "Expenses Report";
-    getExpenseReport();
-  }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+
+  const handleFilterSubmit = (e) => {
     setHasFilter(true);
-    getExpenseReport();
   };
-
   const resetFilterParameter = () => {
+    setFilterQuery(defaultQuery);
     setHasFilter(false);
-    setParam(defaultParams);
-    getExpenseReport();
   };
 
   return (
     <div>
       <MainLoader loaderVisible={loading} />
-      <WizCard className="animated fadeInDown wiz-card-mh expx">
-        <div className="row">
-          <Container>
+        <Container fluid>
             <Row>
-              <ExpenseFilter
-                params={params}
-                setParam={setParam}
-                handleSubmit={handleSubmit}
-                sectors={sectors}
-                expenseCategories={expenseCategories}
-                resetFilterParameter={resetFilterParameter}
-                hasFilter={hasFilter}
-              />
+              <Col xs={6} md={4}>
+                <div className={"quick-filter"}>
+                  <InputGroup className="mb-3" style={{width:'70%'}} >
+                    <InputGroup.Text id="auick-filter-by-sector">
+                      {"Quick Filter"}
+                    </InputGroup.Text>
+                    <Form.Select
+                        value={filterQuery.sec_id}
+                        aria-label="Filter By Sectors"
+                        id="sector"
+                        name="sector"
+                        onChange={(event) => {
+                          const value = event.target.value || '';
+                          setFilterQuery({...filterQuery,sec_id:value,cat_id:''});
+                        }}>
+
+                      <option defaultValue>Filter By Sectors</option>
+                      {sectors.map(sector => (
+                          <option key={"sec-" + genRand(8)} value={sector.value}>
+                            {sector.label}
+                          </option>
+                      ))}
+                    </Form.Select>
+                  </InputGroup>
+                  <ExpenseFilter
+                      params={filterQuery}
+                      setParam={setFilterQuery}
+                      handleFilterSubmit={handleFilterSubmit}
+                      resetFilterParameter={resetFilterParameter}
+                  />
+                </div>
+              </Col>
+              <Col xs={12} md={5}>
+
+                <Box display={"flex"} justifyContent={"center"} alignItems={"center"}>
+                  <ReactToPrint
+                      trigger={() => (
+                          <Button sx={{ ml: 1 }} variant="outlined">
+                            Print
+                          </Button>
+                      )}
+                      content={() => componentRef.current}
+                  />
+                </Box>
+
+              </Col>
+              <Col xs={12} md={3}>
+                <div className='form-group'>
+                  <input
+                      className='custom-form-control'
+                      placeholder='search by keywards'
+                      value={filterQuery.search_terms}
+                      onChange={(ev) =>
+                          setFilterQuery({...filterQuery, search_terms: ev.target.value})
+                      }
+                  />
+                </div>
+              </Col>
+
             </Row>
-            <Row>
-              <Col xs={12} md={9} ref={componentRef}>
-                <div className="table-responsive-sm my-custom-scrollbar table-wrapper-scroll-y">
-                  <table className="table table-bordered custom-table">
-                    <thead>
-                      <tr className={"text-center"}>
-                        <th>Expense Date</th>
-                        <th>Expense Category</th>
-                        <th>Description</th>
-                        <th>Expense Amount</th>
-                      </tr>
-                    </thead>
-                    {loading && (
-                      <tbody>
-                        <tr className={"text-center"}>
+          <Row>
+            <div className="report-table-containe">
+              <table className={"report-table"}>
+                <thead>
+                <tr className={"text-center"}>
+                  <th>Expense Date</th>
+                  <th>Expense Category</th>
+                  <th>Description</th>
+                  <th>Expense Amount</th>
+                </tr>
+                </thead>
+                {loading && (
+                    <tbody>
+                    <tr className={"text-center"}>
                           <td colSpan={4} className="text-center">
                             Loading...
                           </td>
@@ -227,35 +237,8 @@ export default function ExpenseReport() {
                     </tfoot>
                   </table>
                 </div>
-              </Col>
-              <Col xs={12} md={3}>
-                <div className="card ">
-                  <div className="card-block">
-                    <h6 className="text-muted m-b-20">Total Expense</h6>
-                    <h4>{default_currency + " " + totalExpense}</h4>
-                    <p className="text-muted">Total expense amount</p>
-                  </div>
-                </div>
-
-                <Box
-                  display={"flex"}
-                  justifyContent={"center"}
-                  alignItems={"center"}
-                >
-                  <ReactToPrint
-                    trigger={() => (
-                      <Button sx={{ ml: 1 }} variant="outlined">
-                        Print
-                      </Button>
-                    )}
-                    content={() => componentRef.current}
-                  />
-                </Box>
-              </Col>
             </Row>
           </Container>
-        </div>
-      </WizCard>
 
       {showModal && (
         <ExpenseShow

@@ -13,9 +13,7 @@ export const expenseSlice = createApi({
     tagTypes: ["expense"],
     endpoints: (builder) => ({
         getExpenseData: builder.query({
-
             query: ({currentPage,pageSize,query}) => {
-
                 return {
                     url: `/expenses?page=${currentPage}&pageSize=${pageSize}&limit=${query?.limit}&order=${query?.order}&orderBy=${query?.orderBy}`,
                     method: "GET",
