@@ -7,8 +7,10 @@ use App\Http\Resources\ExpenseReportResource;
 use App\Http\Resources\ExpenseResource;
 use App\Http\Resources\IncomeReportResource;
 use App\Http\Resources\IncomeResource;
+use App\Models\Category;
 use App\Models\Expense;
 use App\Models\Income;
+use App\Models\SectorModel;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\JsonResponse;
@@ -73,8 +75,6 @@ class ReportController extends Controller {
 			'category_id' => $cat_id ?: null
 		] );
 	}
-
-
 	/**
 	 * @param Request $request
 	 *
@@ -83,13 +83,13 @@ class ReportController extends Controller {
 	 */
 
 	public function expenseReport( Request $request ): JsonResponse {
-		$startDate = $request->start_date;
-		$endDate   = $request->end_date;
-		$cat_id    = $request->cat_id;
-		$sec_id    = $request->sec_id;
-		$limit    = $request->limit;
+		$startDate = $request->startDate;
+		$endDate   = $request->endDate;
+		$categorySlugs   = $request->categoryIDS;
+		$sectorSlugs    = $request->sectorIDS;
 		$order    = $request->order;
         $orderBy = $request->orderBy;
+        $limit = $request->limit;
 
 		if ( $startDate ) {
 			$startDate = date( 'Y-m-d', strtotime( $startDate ) );
@@ -116,24 +116,42 @@ class ReportController extends Controller {
 			$query = $query->whereBetween( 'date', [ $startDate, $endDate ] );
 		}
 
-		if ( $sec_id ) {
-			$query = $query->where( 'sector_id', $sec_id );
+		if ( $sectorSlugs ) {
+            $sectorSlugs = explode( ',', $sectorSlugs );
+            $sectors= SectorModel::whereIn('slug', $sectorSlugs)->get();
+            if (!$sectors){
+                return response()->json( [
+                    'message' => 'Not Found',
+                    'description'     => 'No sector was not found.',
+                ],400 );
+            }
+            $catIDS = [];
+            foreach ( $sectors as $sector ) {
+                $category = Category::where('sector_id',$sector['id'])->first();
+                if ($category){
+                    $catIDS[] = $category->id;
+                }
+            }
+
+            $query = $query->whereIn( 'category_id', $catIDS );
 		}
-		if ( $cat_id ) {
-			$query = $query->where( 'category_id', $cat_id );
+		if ( $categorySlugs ) {
+            $categorySlugs = explode( ',', $categorySlugs );
+            $catIDS =[];
+            foreach ( $categorySlugs as $categorySlug ) {
+                $category = Category::where('slug', $categorySlug)->first();
+                if ($category){
+                    $catIDS[]= $category->id;
+                }
+            }
+            $query = $query->whereIn( 'category_id', $catIDS );
 		}
 
-
-
-		$expensesRes = ExpenseReportResource::collection( $query->orderBy( $orderBy??'date', $order??'DESC' )->limit($limit??10)->get() );
+		$expensesRes = ExpenseReportResource::collection( $query->orderBy( $orderBy??'date', $order??'DESC' )->get() );
 
 		return response()->json( [
 			'totalExpense' => fix_number_format( $query->get()->sum( 'amount' ) ),
 			'expenses'     => $expensesRes,
-			'start_date'   => $startDate ?: null,
-			'end_date'     => $endDate ?: null,
-			'sector_id'    => $sec_id ?: null,
-			'category_id'  => $cat_id ?: null,
 		] );
 	}
 
@@ -148,6 +166,7 @@ class ReportController extends Controller {
 		if ( $startDate && ! $endDate ) {
 			$endDate = Carbon::now()->toDateString();
 		}
+
 		$investments = DB::table( 'investments' )->selectRaw( 'sum(amount) as amount, investor_id, name' )
 		                 ->where( 'company_id', Auth::user()->primary_company )
 		                 ->join( 'users', 'investments.investor_id', '=', 'users.id' )
@@ -160,13 +179,13 @@ class ReportController extends Controller {
 			$investments     = $investments->whereBetween( 'investment_date', [ $startDate, $endDate ] );
 			$totalInvestment = $totalInvestment->whereBetween( 'investment_date', [ $startDate, $endDate ] );
 		}
+
 		$totalInvestment = $totalInvestment->sum( 'amount' );
 
 		return response()->json( [
 			'investments'     => $investments->get(),
 			'totalInvestment' => $totalInvestment //fix_number_format($totalInvestment),
 		] );
-
 	}
 
 	/**
@@ -242,7 +261,6 @@ class ReportController extends Controller {
 		$totalInvestment = $totalInvestment->sum( 'amount' );
 		$totalIncome     = $totalIncome->sum( 'amount' );
 		$totalExpense    = $totalExpense->sum( 'amount' );
-
 		$refundable_amount = $refund->sum( 'refundable_amount' );
 		$refunded_amount   = $refund->sum( 'refunded_amount' );
 
@@ -282,7 +300,6 @@ class ReportController extends Controller {
 		$fromDate         = date( 'Y-m-d', strtotime( $request->from_date ) );
 		$toDate           = ( new DateTime( $fromDate ) )->format( 'Y-m-t' );
 
-
 		if ( ! $incomeCategoryId || ! $fromDate ) {
 			return response()->json( [
 				'message' => "Select Income sector or Month."
@@ -295,8 +312,8 @@ class ReportController extends Controller {
 				'message' => "Income Category not Found!",
 			], 404 );
 		}
-		$sector = DB::table( 'sectors' )->find( $category->sector_id );
 
+		$sector = DB::table( 'sectors' )->find( $category->sector_id );
 		if ( ! $sector ) {
 			return response()->json( [
 				'message' => "This income Category is not associated with any sector!",
