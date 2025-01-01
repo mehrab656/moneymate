@@ -33,7 +33,6 @@ class CompanyRequest extends FormRequest {
 			'issue_date'          => 'nullable',
 			'expiry_date'         => 'nullable',
 			'registration_number' => 'nullable',
-			'extra'               => 'nullable',
 			'logo'                => 'nullable',
 		];
 		if ($this->hasFile('logo')) {
