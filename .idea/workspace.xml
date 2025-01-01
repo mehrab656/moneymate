@@ -5,20 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb82f29d-a946-4d7c-af4f-355ea30ae3ce" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/react/src/api/slices/debtSlice.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/react/src/views/Debts/DebtCreate.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/react/src/views/Debts/DebtList.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/react/src/views/Debts/Filter.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/react/src/api/slices/reportSlice.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/DebtController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/DebtController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ReportController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ReportController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Requests/DebtRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Requests/DebtRequest.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/router.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/router.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/api/slices/expenseSlice.js" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/api/slices/expenseSlice.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/helper/filter-icons/ExpenseFilter.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/helper/filter-icons/ExpenseFilter.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/index.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/store/store.js" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/store/store.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Debts.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Debts.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/HRMS/Task/Task.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/HRMS/Task/Task.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Income/IncomeFilter.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Income/IncomeFilter.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Expense/ExpenseReport.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Expense/ExpenseReport.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,8 +29,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="JavaScript File" />
         <option value="JSX File" />
+        <option value="JavaScript File" />
       </list>
     </option>
   </component>
@@ -183,27 +180,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowPanel.toolwindow.highlight.mappings": "true",
-    "WebServerToolWindowPanel.toolwindow.highlight.symlinks": "true",
-    "WebServerToolWindowPanel.toolwindow.show.date": "false",
-    "WebServerToolWindowPanel.toolwindow.show.permissions": "false",
-    "WebServerToolWindowPanel.toolwindow.show.size": "false",
-    "git-widget-placeholder": "saas",
-    "last_opened_file_path": "/Applications/XAMPP/xamppfiles/htdocs/moneymate",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "npm.dev.executor": "Run",
-    "settings.editor.selected.configurable": "reference.webide.settings.project.settings.php.zend.framework.tool",
-    "ts.external.directory.path": "/Applications/PhpStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.highlight.mappings&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.highlight.symlinks&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.show.date&quot;: &quot;false&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.show.permissions&quot;: &quot;false&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.show.size&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;saas&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Applications/XAMPP/xamppfiles/htdocs/moneymate/assets&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;npm.dev.executor&quot;: &quot;Run&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Applications/PhpStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/assets" />
+    </key>
+  </component>
   <component name="RunManager" selected="npm.build">
     <configuration name="Main" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
       <TestRunner configuration_file="$PROJECT_DIR$/backendApi/phpunit.xml" scope="XML" use_alternative_configuration_file="true" />
@@ -252,6 +254,8 @@
       <option name="presentableId" value="Default" />
       <updated>1732958812093</updated>
       <workItem from="1732958813148" duration="6900000" />
+      <workItem from="1734462041039" duration="24013000" />
+      <workItem from="1734721119047" duration="9792000" />
     </task>
     <servers />
   </component>

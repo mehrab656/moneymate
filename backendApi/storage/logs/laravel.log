@@ -14318,3 +14318,4 @@
 #60 C:\\xampp\\htdocs\\moneymate\\backendApi\\public\\index.php(51): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
 #61 {main}
 "} 
+
