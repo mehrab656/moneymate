@@ -90,64 +90,79 @@ class ReportController extends Controller {
 		$order    = $request->order;
         $orderBy = $request->orderBy;
         $limit = $request->limit;
+        $quickFilter = $request->quickFilter; //filter by sectors only
 
-		if ( $startDate ) {
-			$startDate = date( 'Y-m-d', strtotime( $startDate ) );
-		}
-		if ( $endDate ) {
-			$endDate = date( 'Y-m-d', strtotime( $endDate ) );
-		}
 
-		if ( $startDate && empty( $endDate ) ) {
-			$endDate = Carbon::now()->toDateString();
-		}
 
-		if ( $endDate && empty( $startDate ) ) {
-			$startDate = ( new DateTime( $endDate ) )->format( 'Y-m-01' );
-		}
+        $query = Expense::select( 'expenses.*' )
+            ->where( 'company_id', Auth::user()->primary_company )
+            ->join( 'categories', 'categories.id', '=', 'expenses.category_id' )
+            ->where( 'type', 'expense' )
+            ->whereNull( 'expenses.deleted_at' );
 
-		$query = Expense::select( 'expenses.*' )
-		                ->where( 'company_id', Auth::user()->primary_company )
-		                ->join( 'categories', 'categories.id', '=', 'expenses.category_id' )
-		                ->where( 'type', 'expense' )
-		                ->whereNull( 'expenses.deleted_at' );
 
-		if ( $startDate || $endDate ) {
-			$query = $query->whereBetween( 'date', [ $startDate, $endDate ] );
-		}
 
-		if ( $sectorSlugs ) {
-            $sectorSlugs = explode( ',', $sectorSlugs );
-            $sectors= SectorModel::whereIn('slug', $sectorSlugs)->get();
-            if (!$sectors){
-                return response()->json( [
-                    'message' => 'Not Found',
-                    'description'     => 'No sector was not found.',
-                ],400 );
+        if( $quickFilter){
+            $categoryIDS=[];
+            $sector= SectorModel::where('slug', $quickFilter)->get()->first();
+
+            if ($sector){
+                $categoryIDS = Category::where(['sector_id'=>$sector->id,'type'=>'expense'])->pluck('id')->toArray();
             }
-            $catIDS = [];
-            foreach ( $sectors as $sector ) {
-                $category = Category::where('sector_id',$sector['id'])->first();
-                if ($category){
-                    $catIDS[] = $category->id;
+            $query = $query->whereIn( 'category_id', $categoryIDS );
+
+        }else{
+            if ( $startDate ) {
+                $startDate = date( 'Y-m-d', strtotime( $startDate ) );
+            }
+            if ( $endDate ) {
+                $endDate = date( 'Y-m-d', strtotime( $endDate ) );
+            }
+
+            if ( $startDate && empty( $endDate ) ) {
+                $endDate = Carbon::now()->toDateString();
+            }
+
+            if ( $endDate && empty( $startDate ) ) {
+                $startDate = ( new DateTime( $endDate ) )->format( 'Y-m-01' );
+            }
+            if ( $startDate || $endDate ) {
+                $query = $query->whereBetween( 'date', [ $startDate, $endDate ] );
+            }
+            if ( $sectorSlugs ) {
+                $sectorSlugs = explode( ',', $sectorSlugs );
+                $sectors= SectorModel::whereIn('slug', $sectorSlugs)->get();
+                if (!$sectors){
+                    return response()->json( [
+                        'message' => 'Not Found',
+                        'description'     => 'No sector was not found.',
+                    ],400 );
                 }
-            }
-
-            $query = $query->whereIn( 'category_id', $catIDS );
-		}
-		if ( $categorySlugs ) {
-            $categorySlugs = explode( ',', $categorySlugs );
-            $catIDS =[];
-            foreach ( $categorySlugs as $categorySlug ) {
-                $category = Category::where('slug', $categorySlug)->first();
-                if ($category){
-                    $catIDS[]= $category->id;
+                $catIDS = [];
+                foreach ( $sectors as $sector ) {
+                    $category = Category::where('sector_id',$sector['id'])->first();
+                    if ($category){
+                        $catIDS[] = $category->id;
+                    }
                 }
-            }
-            $query = $query->whereIn( 'category_id', $catIDS );
-		}
 
-		$expensesRes = ExpenseReportResource::collection( $query->orderBy( $orderBy??'date', $order??'DESC' )->get() );
+                $query = $query->whereIn( 'category_id', $catIDS );
+            }
+            if ( $categorySlugs ) {
+                $categorySlugs = explode( ',', $categorySlugs );
+                $catIDS =[];
+                foreach ( $categorySlugs as $categorySlug ) {
+                    $category = Category::where('slug', $categorySlug)->first();
+                    if ($category){
+                        $catIDS[]= $category->id;
+                    }
+                }
+                $query = $query->whereIn( 'category_id', $catIDS );
+            }
+        }
+
+
+		$expensesRes = ExpenseReportResource::collection( $query->orderBy( $orderBy??'date', $order??'DESC' )->limit(50)->get() );
 
 		return response()->json( [
 			'totalExpense' => fix_number_format( $query->get()->sum( 'amount' ) ),

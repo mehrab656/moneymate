@@ -5,16 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb82f29d-a946-4d7c-af4f-355ea30ae3ce" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/react/src/api/slices/reportSlice.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/CompanyController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/CompanyController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ReportController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ReportController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/api/slices/expenseSlice.js" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/api/slices/expenseSlice.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Models/Company.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Models/Company.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/api/slices/reportSlice.js" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/api/slices/reportSlice.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/helper/filter-icons/ExpenseFilter.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/helper/filter-icons/ExpenseFilter.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/store/store.js" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/store/store.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Expense/ExpenseList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Expense/ExpenseList.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/views/Expense/ExpenseReport.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Expense/ExpenseReport.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -255,7 +253,7 @@
       <updated>1732958812093</updated>
       <workItem from="1732958813148" duration="6900000" />
       <workItem from="1734462041039" duration="24013000" />
-      <workItem from="1734721119047" duration="9792000" />
+      <workItem from="1734721119047" duration="37641000" />
     </task>
     <servers />
   </component>

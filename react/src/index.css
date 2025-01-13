@@ -1210,9 +1210,9 @@ taskList {
     border: 1px solid #ddd;
 }
 .quick-filter{
-    display: flex;
-    justify-content: space-around;
-    align-items: baseline;
+    /*display: flex;*/
+    /*justify-content: space-around;*/
+    /*align-items: baseline;*/
 }
 .popover-body{
     padding: 0;
@@ -1231,4 +1231,7 @@ taskList {
 .report-filter-list{
     max-height: 68vh;
     overflow-y: auto;
+}
+.expense-filter-actionBtn{
+    float: right;
 }

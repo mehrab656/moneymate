@@ -5,7 +5,7 @@ import MainLoader from "../../components/MainLoader.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEye,
-  faEyeSlash
+  faEyeSlash, faPrint
 } from "@fortawesome/free-solid-svg-icons";
 import { Tooltip } from "react-tooltip";
 import {Col, Container, Form, InputGroup, Row} from "react-bootstrap";
@@ -22,7 +22,7 @@ const defaultQuery = {
   end_date: "",
   categoryIDS: [],
   sectorIDS: [],
-  search_terms: "",
+  quickFilterSectorID:"",
   orderBy: "date",
   order: "DESC",
   limit: 10,
@@ -35,6 +35,7 @@ export default function ExpenseReport() {
   const [sectors, setSectors] = useState([]);
   const [totalExpense, setTotalExpense] = useState(parseFloat(0).toFixed(2));
   const [activeModal, setActiveModal] = useState("");
+  const [searchTerms, setSearchTerms]=useState("");
   const [modalData, setModalData] = useState({
     id: null,
     user_id: null,
@@ -69,28 +70,47 @@ export default function ExpenseReport() {
 
   useEffect(() => {
     document.title = "Expenses Report";
-    if (getExpenseReport?.expenses.length>0){
+    if (getExpenseReport?.expenses.length>0) {
       setExpenseReport(getExpenseReport?.expenses);
       setTotalExpense(getExpenseReport?.totalExpense);
+    }else{
+      setExpenseReport([]);
+      setTotalExpense(parseFloat(0).toFixed(2));
+
     }
+
     if (getSectorListData?.data) {
       setSectors(getSectorListData.data);
     }
-  }, [getExpenseReport?.expenses,hasFilter]);
+  }, [getExpenseReport?.expenses]);
 
+  const filteredExpenseData = expenseReport.filter((expense)=>{
+    return (
+        expense.category_name.toLowerCase().includes(searchTerms?.toLowerCase()) ||
+        expense.bank_name.toLowerCase().includes(searchTerms?.toLowerCase()) ||
+        expense.amount.toLowerCase().includes(searchTerms?.toLowerCase()) ||
+        expense.refundable_amount.toLowerCase().includes(searchTerms?.toLowerCase()) ||
+        expense.refunded_amount.toLowerCase().includes(searchTerms?.toLowerCase()) ||
+        expense.description.toLowerCase().includes(searchTerms?.toLowerCase())
+    );
+  })
   const handleCloseModal = () => {
     setActiveModal("");
     setShowModal(false);
   };
 
-
   const handleFilterSubmit = (e) => {
     setHasFilter(true);
   };
+  console.log(hasFilter)
   const resetFilterParameter = () => {
     setFilterQuery(defaultQuery);
     setHasFilter(false);
   };
+  const handelQuickFilter = (e)=>{
+    setFilterQuery(defaultQuery);
+    setFilterQuery({...filterQuery,quickFilterSectorID: e.target.value})
+  }
 
   return (
     <div>
@@ -98,22 +118,33 @@ export default function ExpenseReport() {
         <Container fluid>
             <Row>
               <Col xs={6} md={4}>
+                <div className='form-group'>
+                  <input
+                      className='custom-form-control'
+                      placeholder='search by keywards'
+                      value={filterQuery.search_terms}
+                      onChange={(ev) =>
+                          setSearchTerms(ev.target.value)
+                      }
+                  />
+                </div>
+              </Col>
+
+              <Col xs={6} md={4}>
                 <div className={"quick-filter"}>
-                  <InputGroup className="mb-3" style={{width:'70%'}} >
+                  <InputGroup className="mb-3">
                     <InputGroup.Text id="auick-filter-by-sector">
                       {"Quick Filter"}
                     </InputGroup.Text>
                     <Form.Select
-                        value={filterQuery.sec_id}
+                        value={filterQuery.quickFilterSectorID}
                         aria-label="Filter By Sectors"
                         id="sector"
                         name="sector"
-                        onChange={(event) => {
-                          const value = event.target.value || '';
-                          setFilterQuery({...filterQuery,sec_id:value,cat_id:''});
-                        }}>
+                        onChange={(e)=>{handelQuickFilter(e)}}
+                    >
 
-                      <option defaultValue>Filter By Sectors</option>
+                      <option defaultValue disabled={true}>Filter By Sectors</option>
                       {sectors.map(sector => (
                           <option key={"sec-" + genRand(8)} value={sector.value}>
                             {sector.label}
@@ -121,41 +152,25 @@ export default function ExpenseReport() {
                       ))}
                     </Form.Select>
                   </InputGroup>
-                  <ExpenseFilter
-                      params={filterQuery}
-                      setParam={setFilterQuery}
-                      handleFilterSubmit={handleFilterSubmit}
-                      resetFilterParameter={resetFilterParameter}
-                  />
                 </div>
               </Col>
-              <Col xs={12} md={5}>
-
-                <Box display={"flex"} justifyContent={"center"} alignItems={"center"}>
+              <Col xs={12} md={4}>
+                <div className={'expense-filter-actionBtn'}>
+                  <ExpenseFilter
+                      queryParams={filterQuery}
+                      setQueryParams={setFilterQuery}
+                      setHasFilter={setHasFilter}
+                      defaultQueryParoms={defaultQuery}
+                  />
                   <ReactToPrint
                       trigger={() => (
-                          <Button sx={{ ml: 1 }} variant="outlined">
-                            Print
-                          </Button>
+                          <button className={'btn btn-success btn-sm mr-2'}>
+                            <FontAwesomeIcon icon={faPrint}/>{' Print'}</button>
                       )}
                       content={() => componentRef.current}
                   />
-                </Box>
-
-              </Col>
-              <Col xs={12} md={3}>
-                <div className='form-group'>
-                  <input
-                      className='custom-form-control'
-                      placeholder='search by keywards'
-                      value={filterQuery.search_terms}
-                      onChange={(ev) =>
-                          setFilterQuery({...filterQuery, search_terms: ev.target.value})
-                      }
-                  />
                 </div>
               </Col>
-
             </Row>
           <Row>
             <div className="report-table-containe">
@@ -179,41 +194,39 @@ export default function ExpenseReport() {
                     )}
                     {!loading && (
                       <tbody>
-                        {expenseReport.length === 0 ? (
+                        {filteredExpenseData.length === 0 ? (
                           <tr>
                             <td colSpan={4} className="text-center">
                               Nothing found !
                             </td>
                           </tr>
                         ) : (
-                          expenseReport.map((expense, index) => (
-                            <tr key={expense.id} className={"text-start"}>
+                            filteredExpenseData.map((expense, index) => (
+                            <tr className={"text-start"} key={`exp-rep-${index}`}>
                               <td>{expense.date}</td>
                               <td>{expense.category_name}</td>
-                              <td>
-                                {expense.description}
-                                <a
-                                  onClick={() =>
-                                    showExpenseDetails(expense, index)
-                                  }
-                                  className={
-                                    index === activeModal
-                                      ? "text-primary fa-pull-right "
-                                      : "text-muted fa-pull-right"
-                                  }
-                                  data-tooltip-id="expense-details"
-                                  data-tooltip-content={"View details"}
-                                >
-                                  <span className="aside-menu-icon">
-                                    <FontAwesomeIcon
-                                      icon={
-                                        index === activeModal
-                                          ? faEye
-                                          : faEyeSlash
-                                      }
-                                    />
-                                  </span>
-                                </a>
+                              <td className={"report-descriptions"}>
+                                <span>{expense.description}</span>
+                                {/*<a*/}
+                                {/*  onClick={() =>*/}
+                                {/*    showExpenseDetails(expense, index)*/}
+                                {/*  }*/}
+                                {/*  className={*/}
+                                {/*    index === activeModal ? "text-primary fa-pull-right " : "text-muted fa-pull-right"*/}
+                                {/*  }*/}
+                                {/*  data-tooltip-id="expense-details"*/}
+                                {/*  data-tooltip-content={"View details"}*/}
+                                {/*>*/}
+                                {/*  <span className="aside-menu-icon">*/}
+                                {/*    <FontAwesomeIcon*/}
+                                {/*      icon={*/}
+                                {/*        index === activeModal*/}
+                                {/*          ? faEye*/}
+                                {/*          : faEyeSlash*/}
+                                {/*      }*/}
+                                {/*    />*/}
+                                {/*  </span>*/}
+                                {/*</a>*/}
                                 <Tooltip id={"expense-details"} />
                               </td>
                               <td className={"text-end"}>

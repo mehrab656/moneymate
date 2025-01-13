@@ -14,7 +14,7 @@ export const reportSlice = createApi({
         getExpenseReportData: builder.query({
             query: ({ query}) => {
                 return {
-                    url: `/report/expense?startDate${query?.start_date}&endDate=${query?.end_date}&categoryIDS=${query?.categoryIDS}&orderBy=${query?.orderBy}&order=${query?.order}&limit=${query?.limit}&sectorIDS=${query?.sectorIDS}`,
+                    url: `/report/expense?startDate${query?.start_date}&endDate=${query?.end_date}&categoryIDS=${query?.categoryIDS}&orderBy=${query?.orderBy}&order=${query?.order}&limit=${query?.limit}&sectorIDS=${query?.sectorIDS}&quickFilter=${query?.quickFilterSectorID}`,
                     method: "GET",
                     headers: {
                         Authorization: `Bearer ${globalToken}`,

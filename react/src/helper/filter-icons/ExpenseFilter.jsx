@@ -4,6 +4,8 @@ import Container from "react-bootstrap/Container";
 import {useGetSectorListDataQuery} from "../../api/slices/sectorSlice.js"
 import {useGetCategoryListDataQuery} from "../../api/slices/categorySlice.js"
 import {genRand} from "../HelperFunctions.js";
+import {faBank, faFilter, faPrint} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 const navItems = [
     {key: 'filter-report-by-sector', name: 'Sector'},
@@ -12,11 +14,7 @@ const navItems = [
 ]
 
 
-const ExpenseFilter = ({
-                           params,
-                           setParam,
-                           handleFilterSubmit,
-    resetFilterParameter
+const ExpenseFilter = ({queryParams, setQueryParams, setHasFilter,defaultQueryParoms
                        }) => {
     const [showFilterModal, setShowFilterModal] = useState(false);
     const [currentTab, setCurrentTab] = useState(navItems[0].key)
@@ -30,7 +28,6 @@ const ExpenseFilter = ({
     const toggleFilterModal = () => {
         setShowFilterModal(!showFilterModal);
     }
-
     useEffect(() => {
         if (getSectorListData?.data) {
             setSectors(getSectorListData.data);
@@ -38,7 +35,7 @@ const ExpenseFilter = ({
         if (getCategoryListData?.data) {
             setCategories(getCategoryListData.data);
         }
-    }, [getSectorListData,getCategoryListData]);
+    }, []);
 
 
     const filteredSectors = sectors.filter((sector) =>
@@ -49,31 +46,30 @@ const ExpenseFilter = ({
         category.label.toLowerCase().includes(searchCategories.toLowerCase())
     );
     const handelSectorIds = (e, slug) => {
-        let sectorLists = params.sectorIDS;
+        let secList = queryParams.sectorIDS;
         if (e.target.checked) {
-            sectorLists = sectorLists.concat(slug)
+            secList = secList.concat(slug)
         } else {
-            const index = sectorLists.indexOf(slug)
-            sectorLists.splice(index, 1);
+             secList = secList.filter(sectorID=> sectorID !== slug)
         }
-        setParam({...params, sectorIDS: sectorLists})
+        setQueryParams({...queryParams, sectorIDS: secList})
     }
+
+    const handleFilterSubmit = (e) => {
+        setHasFilter(true);
+    };
+    const resetFilterParameter = () => {
+        setQueryParams(defaultQueryParoms);
+        setHasFilter(false);
+    };
     const handelCategoryIDS = (e, slug) => {
-        let categoryList = params.categoryIDS;
+        let categoryList = queryParams.categoryIDS;
         if (e.target.checked) {
-            const isValueExist = categoryList.includes(slug);
-            if (!isValueExist){
-                categoryList = categoryList.concat(slug)
-                setParam({...params, categoryIDS: categoryList})
-
-            }
+            categoryList = categoryList.concat(slug)
         } else {
-            const index = categoryList.indexOf(slug)
-            console.log(index);
-            categoryList.splice(index, 1);
-            setParam({...params, categoryIDS: categoryList})
-
+            categoryList = categoryList.filter(catID=> catID !== slug)
         }
+        setQueryParams({...queryParams, categoryIDS: categoryList})
     }
 
     const showCurrentPan = (currentTab) => {
@@ -109,7 +105,8 @@ const ExpenseFilter = ({
                                 />
                             </InputGroup>
                         )) :
-                        'Nothing found'}</div>
+                        'Nothing found'}
+                </div>
             </Tab.Pane>)
         }
         if (currentTab === 'filter-report-by-categories') {
@@ -156,10 +153,10 @@ const ExpenseFilter = ({
                     <select
                         className="form-control"
                         name="expense-filter-order-by"
-                        value={params.orderBy}
+                        value={queryParams.orderBy}
                         onChange={(event) => {
                             const value = event.target.value || '';
-                            setParam({...params, orderBy: value});
+                            setQueryParams({...queryParams, orderBy: value});
                         }}>
                         <option defaultValue>Filter By Order Column</option>
                         <option value={'id'}>{'Id'}</option>
@@ -174,12 +171,12 @@ const ExpenseFilter = ({
                     <label className="custom-form-label" htmlFor="expense-filter-order">Order</label>
                     <select
                         className="form-control"
-                        value={params.order}
+                        value={queryParams.order}
                         id="order"
                         name="order"
                         onChange={(event) => {
                             const value = event.target.value || '';
-                            setParam({...params, order: value});
+                            setQueryParams({...queryParams, order: value});
                         }}>
                         <option defaultValue>Filter By Order</option>
                         <option value={'DESC'}>{'DESCENDING'}</option>
@@ -193,7 +190,8 @@ const ExpenseFilter = ({
 
     return (
         <>
-            <button className={'btn btn-success btn-sm mr-2'} onClick={toggleFilterModal}>Filter</button>
+            <button className={'btn btn-secondary btn-sm mr-2'} onClick={toggleFilterModal}>
+                <FontAwesomeIcon icon={faFilter}/>{' More Filter'}</button>
             <Modal
                 show={showFilterModal}
                 onHide={toggleFilterModal}

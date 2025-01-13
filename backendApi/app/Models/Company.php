@@ -48,7 +48,7 @@ class Company extends Model {
 				'issue_date'          => $data['issue_date'] ? date( 'Y-m-d', strtotime( $data['issue_date'] ) ) : null,
 				'expiry_date'         => $data['expiry_date'] ? date( 'Y-m-d', strtotime( $data['expiry_date'] ) ) : null,
 				'registration_number' => $data['registration_number'],
-				'extra'               => $data['extra'],
+//				'extra'               => $data['extra'],
 				'logo'                => $data['filename'],
 				'created_by'          => $userID,
 				'updated_by'          => $userID,

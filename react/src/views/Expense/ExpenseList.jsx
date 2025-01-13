@@ -125,15 +125,9 @@ export default function ExpenseList() {
     return (
       expense.category.label.toLowerCase().includes(query?.searchTerm.toLowerCase()) ||
       expense.amount.toLowerCase().includes(query?.searchTerm.toLowerCase()) ||
-      expense.refundable_amount
-        .toLowerCase()
-        .includes(query?.searchTerm.toLowerCase()) ||
-      expense.refunded_amount
-        .toLowerCase()
-        .includes(query?.searchTerm.toLowerCase()) ||
-      expense.description
-        .toLowerCase()
-        .includes(query?.searchTerm.toLowerCase()) ||
+      expense.refundable_amount.toLowerCase().includes(query?.searchTerm.toLowerCase()) ||
+      expense.refunded_amount.toLowerCase().includes(query?.searchTerm.toLowerCase()) ||
+      expense.description.toLowerCase().includes(query?.searchTerm.toLowerCase()) ||
       expense.account.label.toLowerCase().includes(query?.searchTerm.toLowerCase())
     );
   });
