@@ -29,7 +29,6 @@ const _initialCompany = {
   issue_date: null,
   expiry_date: null,
   registration_number: null,
-  extra: null,
   logo: null,
 };
 export default function CompanyForm({ handelCloseModal, id }) {
@@ -81,7 +80,6 @@ export default function CompanyForm({ handelCloseModal, id }) {
       issue_date,
       expiry_date,
       registration_number,
-      extra,
       logo,
     } = companyData;
     let formData = new FormData();
@@ -94,7 +92,6 @@ export default function CompanyForm({ handelCloseModal, id }) {
     formData.append("issue_date", issue_date);
     formData.append("expiry_date", expiry_date);
     formData.append("registration_number", registration_number);
-    formData.append("extra", extra);
     formData.append("logo", logo);
 
     const url = companyData.id ? `/company/update/${companyData?.id}` : "/addCompany";
@@ -344,23 +341,7 @@ export default function CompanyForm({ handelCloseModal, id }) {
                       </p>
                     )}
                   </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label> Extra.</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={
-                        companyData.extra !== "null" ? companyData.extra : ""
-                      }
-                      onChange={(ev) =>
-                        setCompanyData({
-                          ...companyData,
-                          extra: ev.target.value,
-                        })
-                      }
-                      placeholder="Extra"
-                    />
-                  </Form.Group>
-
+                 
                   <Form.Group className="mb-3">
                     <Form.Label>Logo</Form.Label>
                     <Form.Control
