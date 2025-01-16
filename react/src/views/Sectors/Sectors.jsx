@@ -72,8 +72,8 @@ export default function Sectors() {
   const TABLE_HEAD = [
     { id: "name", label: "Sector", align: "left" },
     { id: "rent", label: "Rent", align: "right" },
-    { id: "electricity", label: "Next internet Bill", align: "left" },
-    { id: "internet", label: "Next Electricity Bill", align: "left" },
+    { id: "electricity", label: "Next Electricity Bill", align: "left" },
+    { id: "internet", label: "Next internet Bill", align: "left" },
     { id: "cheque", label: "Next Payment", align: "left" },
   ];
   const pageSize = num_data_per_page;
@@ -267,8 +267,8 @@ export default function Sectors() {
   const electricityBillColumn = (sector, index) => {
     return (
       <Box display={"flex"}>
-        <Box sx={{ ml: 2 }} onClick={() => showHelperModels(sector, index)}>
-          {checkPayments(sector.payments, "internet")}
+        <Box sx={{ ml: 2 }} onClick={() => showHelperModels(sector, index,'electricity')}>
+          {checkPayments(sector.payments, "electricity")}
         </Box>
       </Box>
     );
@@ -443,15 +443,20 @@ export default function Sectors() {
         />
       )}
 
-      <SummeryCard
-        showModal={showHelperModel}
-        handelCloseModal={handleCloseModal}
-        data={sector}
-        currency={default_currency}
-        modalType={showHelperModelType}
-        Toast={Toast}
-        navigation={useNavigate}
-      />
+      {
+        showHelperModelType && (
+              <SummeryCard
+                  showModal={showHelperModel}
+                  handelCloseModal={handleCloseModal}
+                  data={sector}
+                  currency={default_currency}
+                  modalType={showHelperModelType}
+                  Toast={Toast}
+                  navigation={useNavigate}
+              />
+          )
+      }
+
     </div>
   );
 }

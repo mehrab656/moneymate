@@ -11,7 +11,7 @@ const SummeryCard = ({showModal, handelCloseModal, data, currency, modalType, To
         "internet": " Internet Details",
         "cheque": " Cheque Details",
     }
-
+    console.log(modalType);
     const handelPayment = async (payment) => {
         // setElectricityShowModal(false);
         handelCloseModal(); //otherwise input filed of swal will not work

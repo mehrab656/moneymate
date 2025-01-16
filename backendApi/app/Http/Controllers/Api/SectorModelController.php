@@ -113,7 +113,7 @@ class SectorModelController extends Controller
         $payment['numbers'] = $sector['payment_number'];
         $payment['amount'] = $sector['payment_amount'];
         $payment['date'] = $sector['payment_date'];
-
+        $accountSlug = $sector['payment_account_id'];
 
         $channel = [
             'channel_name' => $sector['channel_name'],
@@ -125,11 +125,19 @@ class SectorModelController extends Controller
             $associativeCategories = $sector['category_name'];
         }
 
+        $bankAccount = BankAccount::where('slug',$accountSlug)->first();
+        if (!$bankAccount){
+            return response()->json([
+                'message' => 'Not Found!',
+                'description' => "Bank account was not found!",
+            ], 400);
+        }
+
         $sectorData = [
             'slug'=>Uuid::uuid4(),
             'company_id' => Auth::user()->primary_company,
             'name' => $sector['name'],
-            'payment_account_id' => $sector['payment_account_id'],
+            'payment_account_id' => $bankAccount->id,
             'contract_start_date' => Carbon::parse($sector['contract_start_date'])->format('Y-m-d'),
             'contract_end_date' => Carbon::parse($sector['contract_end_date'])->format('Y-m-d'),
             'el_premises_no' => $sector['el_premises_no'],

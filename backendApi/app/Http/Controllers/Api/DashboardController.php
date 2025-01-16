@@ -56,7 +56,8 @@ class DashboardController extends Controller {
 			'total_borrow'                            => $totalBorrow,
 			'number_of_bank_account'                  => $numberOfBankAccount,
 			'total_subscription_amount_of_this_month' => $totalSubscriptionAmountOfThisMonth,
-			'active_budget'                           => $active_budget
+			'active_budget'                           => $active_budget,
+			'company'                           => Auth::user()->primary_company,
 		] );
 	}
 
