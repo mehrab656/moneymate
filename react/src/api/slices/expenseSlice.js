@@ -14,8 +14,11 @@ export const expenseSlice = createApi({
     endpoints: (builder) => ({
         getExpenseData: builder.query({
             query: ({currentPage,pageSize,query}) => {
+                const sectors=query.sectorIDS.toString();
+                const categories=query.categoryIDS.toString();
+
                 return {
-                    url: `/expenses?page=${currentPage}&pageSize=${pageSize}&limit=${query?.limit}&order=${query?.order}&orderBy=${query?.orderBy}`,
+                    url: `/expenses?page=${currentPage}&pageSize=${pageSize}&limit=${query?.limit}&order=${query?.order}&orderBy=${query?.orderBy}&sectors=${sectors}&categories=${categories}&start_date=${query?.start_date}&end_date=${query?.end_date}`,
                     method: "GET",
                     headers:{
                         Authorization: `Bearer ${globalToken}`

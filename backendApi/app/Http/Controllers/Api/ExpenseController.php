@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ExpenseRequest;
 use App\Http\Requests\UpdateExpenseRequest;
 use App\Http\Resources\BankAccountResource;
+use App\Http\Resources\ExpenseReportResource;
 use App\Http\Resources\ExpenseResource;
 use App\Models\BankAccount;
 use App\Models\Budget;
@@ -15,6 +16,7 @@ use App\Models\Category;
 use App\Models\Expense;
 use App\Models\SectorModel;
 use Carbon\Carbon;
+use DateTime;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -35,21 +37,76 @@ class ExpenseController extends Controller
      * @param Request $request
      *
      * @return JsonResponse
+     * @throws \DateMalformedStringException
      */
     public function index(Request $request): JsonResponse
     {
 
         $page = $request->query('page', 1);
         $pageSize = $request->query('pageSize', 10);
+        $order = $request->query('order');
+        $sectorSlugs = $request->query('sectors');
+        $categorySlugs = $request->query('categories');
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+        $orderBy = $request->query('orderBy');
+        $limit = $request->query('limit');
 
-        $expenses = Expense::where('company_id', Auth::user()->primary_company)
-            ->whereHas('category', function ($query) {
-                $query->where('type', 'expense');
-            })->skip(($page - 1) * $pageSize)
-            ->take($pageSize)
-            ->orderBy('date', 'desc')
-            ->orderBy('id', 'desc')
-            ->get();
+        $query = Expense::select( 'expenses.*' )
+            ->where( 'company_id', Auth::user()->primary_company )
+            ->join( 'categories', 'categories.id', '=', 'expenses.category_id' )
+            ->where( 'type', 'expense' )
+            ->whereNull( 'expenses.deleted_at' );
+
+        if ( $startDate ) {
+            $startDate = date( 'Y-m-d', strtotime( $startDate ) );
+        }
+        if ( $endDate ) {
+            $endDate = date( 'Y-m-d', strtotime( $endDate ) );
+        }
+
+        if ( $startDate && empty( $endDate ) ) {
+            $endDate = Carbon::now()->toDateString();
+        }
+
+        if ( $endDate && empty( $startDate ) ) {
+            $startDate = ( new DateTime( $endDate ) )->format( 'Y-m-01' );
+        }
+        if ( $startDate || $endDate ) {
+            $query = $query->whereBetween( 'date', [ $startDate, $endDate ] );
+        }
+        if ( $sectorSlugs ) {
+            $sectorSlugs = explode( ',', $sectorSlugs );
+            $sectors= SectorModel::whereIn('slug', $sectorSlugs)->get();
+            if (!$sectors){
+                return response()->json( [
+                    'message' => 'Not Found',
+                    'description'     => 'No sector was not found.',
+                ],400 );
+            }
+            $catIDS = [];
+            foreach ( $sectors as $sector ) {
+                $category = Category::where('sector_id',$sector['id'])->first();
+                if ($category){
+                    $catIDS[] = $category->id;
+                }
+            }
+
+            $query = $query->whereIn( 'category_id', $catIDS );
+        }
+
+        if ( $categorySlugs ) {
+            $categorySlugs = explode( ',', $categorySlugs );
+            $catIDS =[];
+            foreach ( $categorySlugs as $categorySlug ) {
+                $category = Category::where('slug', $categorySlug)->first();
+                if ($category){
+                    $catIDS[]= $category->id;
+                }
+            }
+            $query = $query->whereIn( 'category_id', $catIDS );
+        }
+        $expensesRes = ExpenseReportResource::collection( $query->skip(($page - 1) * $pageSize)->take($pageSize)->orderBy( $orderBy??'date', $order??'DESC' )->limit($limit)->get() );
 
         $totalCount = Expense::where('company_id', Auth::user()->primary_company)
             ->whereHas('category', function ($query) {
@@ -57,8 +114,10 @@ class ExpenseController extends Controller
             })->count();
 
         return response()->json([
-            'data' => ExpenseResource::collection($expenses),
+            'data' => ExpenseResource::collection($expensesRes),
             'total' => $totalCount,
+            'totalFound' => $expensesRes->count(),
+
         ]);
     }
 

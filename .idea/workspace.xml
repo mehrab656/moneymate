@@ -5,13 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb82f29d-a946-4d7c-af4f-355ea30ae3ce" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/react/src/views/Expense/Components/FilteredParameters.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/react/src/views/Expense/Components/ListTable.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/DashboardController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/DashboardController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/helper/SummeryCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/helper/SummeryCard.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Sectors/SectorForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Sectors/SectorForm.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/custom.css" beforeDir="false" afterPath="$PROJECT_DIR$/custom.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/public/custom.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/public/custom.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/api/slices/expenseSlice.js" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/api/slices/expenseSlice.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/helper/CommonTable.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/helper/CommonTable.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Expense/ExpenseFilter.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Expense/ExpenseFilter.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Expense/ExpenseForm copy.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Expense/ExpenseForm copy.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Expense/ExpenseList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Expense/ExpenseList.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,8 +32,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="JSX File" />
         <option value="JavaScript File" />
+        <option value="JSX File" />
       </list>
     </option>
   </component>
@@ -251,7 +258,7 @@
       <updated>1732958812093</updated>
       <workItem from="1732958813148" duration="6900000" />
       <workItem from="1734462041039" duration="24013000" />
-      <workItem from="1734721119047" duration="52940000" />
+      <workItem from="1734721119047" duration="105258000" />
     </task>
     <servers />
   </component>

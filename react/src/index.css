@@ -736,7 +736,6 @@ select option:focus {
 
 .custom-modal .modal-content {
     border: none;
-    border-radius: 8px;
 }
 
 .custom-modal .modal-header {
@@ -757,6 +756,9 @@ select option:focus {
 .custom-form-label {
     font-size: 16px;
     font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .custom-form-control {
@@ -1234,4 +1236,27 @@ taskList {
 }
 .expense-filter-actionBtn{
     float: right;
+}
+.page-title-header{
+    margin: 0;
+    font-family: "Roboto","Helvetica","Arial",sans-serif;
+    font-weight: 400;
+    font-size: 1.5rem;
+    line-height: 1.334;
+    letter-spacing: 0em;
+    display: block;
+}
+.custom-icon-color{
+    color: #2f9f9f;
+}
+.badge-cursor{
+    cursor: pointer;
+}
+
+.custom-table-cell{
+    display: block;
+    width: 600px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }

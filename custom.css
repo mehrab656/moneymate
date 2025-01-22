@@ -78,11 +78,9 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 1rem;
 }
 
-.form-group .custom-form-label,
-.custom-form-label {
+.form-group .custom-form-label{
     font-weight: 600;
     color: var(--dark);
-    display: block;
     margin-bottom: 8px;
 }
 

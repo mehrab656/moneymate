@@ -136,11 +136,6 @@ function CommonTable(props) {
             <Table size={table.size} aria-label={table.ariaLabel}>
               <TableHead>
                 <TableRow>
-                  {table.showIdColumn && (
-                    <TableCell>
-                      <b>ID</b>
-                    </TableCell>
-                  )}
                   {table.tableColumns.map((column) => {
                     return (
                       <TableCell align={column.align} key={column.id}>
@@ -170,11 +165,6 @@ function CommonTable(props) {
                 ) : (
                   table.tableBody.rows?.map((row) => (
                     <TableRow key={genRand(12)}>
-                      {table.showIdColumn && (
-                        <TableCell component="th" scope="row">
-                          {row.id}
-                        </TableCell>
-                      )}
                       {table.tableColumns.map((column) =>
                         isValidElement(row?.[column.id]) ? (
                           <TableCell align={column.align} key={genRand(8)}>
