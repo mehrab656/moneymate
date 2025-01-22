@@ -51,7 +51,7 @@ export default function ExpenseReport() {
     attachment: "",
   });
   const [filterQuery, setFilterQuery] = useState(defaultQuery);
-  const [hasFilter, setHasFilter] = useState(false);
+  const [hasFilter, setHasFilter] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const { applicationSettings } = useContext(SettingsContext);
   let { default_currency } = applicationSettings;
@@ -65,7 +65,7 @@ export default function ExpenseReport() {
     setShowModal(true);
   };
 
-  const {data: getExpenseReport} = useGetExpenseReportDataQuery({query:filterQuery});
+  const {data: getExpenseReport} = useGetExpenseReportDataQuery({query:filterQuery},{ skip: !hasFilter });
   const {data: getSectorListData} = useGetSectorListDataQuery();
 
   useEffect(() => {
