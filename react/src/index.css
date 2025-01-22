@@ -1260,3 +1260,8 @@ taskList {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+.results{
+    font-size: small;
+    font-style: italic;
+    font-weight: 500;
+}

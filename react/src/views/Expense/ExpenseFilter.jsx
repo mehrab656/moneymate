@@ -3,7 +3,7 @@ import {Col, Tab, Row, Button, Nav, Modal, InputGroup, Form} from "react-bootstr
 import Container from "react-bootstrap/Container";
 import {useGetSectorListDataQuery} from "../../api/slices/sectorSlice.js"
 import {useGetCategoryListDataQuery} from "../../api/slices/categorySlice.js"
-import {faFilter, faRefresh} from "@fortawesome/free-solid-svg-icons";
+import {faCheckSquare, faFilter, faRefresh} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {useDispatch} from "react-redux";
 
@@ -14,28 +14,39 @@ const navItems = [
   {key: 'filter-report-by-date', name: 'Date'},
 ]
 
-
-const ExpenseFilter = ({showModal,closeModal,queryParams, setQueryParams, setHasFilter,defaultQueryParoms
+const ExpenseFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams, setQueryParams
                        }) => {
   const [currentTab, setCurrentTab] = useState(navItems[0].key)
   const [sectors, setSectors] = useState([]);
+  const [reloadCategory,setReloadCategory] = useState(false);
+  const [reloadSectors,setReloadSectors] = useState(false);
   const [searchSectors, setSearchSector] = useState("");
   const [searchCategories, setSearchCategories] = useState("");
   const [categories, setCategories] =useState([]);
 
-  const {data: getSectorListData} = useGetSectorListDataQuery();
-  const {data: getCategoryListData} = useGetCategoryListDataQuery({categoryType: 'expense'});
+  //fetching sectors and categories.
+  const {
+    data: getSectorListData,
+    isFetching: isFetchingSector,
+    isError: hasSectorFetchingError,
+  } = useGetSectorListDataQuery({skip:!reloadSectors});
 
-  const dispatch = useDispatch();
+  const {
+    data: getCategoryListData,
+    isFetching: isFetchingCategory,
+    isError: hasCategoryFetchingError} = useGetCategoryListDataQuery({categoryType: 'expense'},{skip:!reloadCategory});
+
 
   useEffect(() => {
     if (getSectorListData?.data) {
       setSectors(getSectorListData.data);
+      setReloadSectors(false);
     }
     if (getCategoryListData?.data) {
       setCategories(getCategoryListData.data);
+      setReloadCategory(false);
     }
-  }, []);
+  }, [getSectorListData?.data,getCategoryListData?.data]);
 
 
   const filteredSectors = sectors.filter((sector) =>
@@ -58,13 +69,6 @@ const ExpenseFilter = ({showModal,closeModal,queryParams, setQueryParams, setHas
     setQueryParams({...queryParams, sectorIDS: sectorIDS,sectorNames: sectorNames})
   }
 
-  const handleFilterSubmit = (e) => {
-    setHasFilter(true);
-  };
-  const resetFilterParameter = () => {
-    setQueryParams(defaultQueryParoms);
-    setHasFilter(false);
-  };
   const handelCategoryIDS = (e, category) => {
     let categoryID = queryParams.categoryIDS;
     let categoryNames = queryParams.categoryNames;
@@ -79,60 +83,66 @@ const ExpenseFilter = ({showModal,closeModal,queryParams, setQueryParams, setHas
   }
 
   const reFetchSector = ()=>{
-    console.log("ReFetch Sector")
+    setReloadSectors(true);
   }
   const reFetchCategory = ()=>{
-    console.log("ReFetch")
-
+    setReloadCategory(true);
   }
-
   const showCurrentPan = (currentTab) => {
     if (currentTab === 'filter-report-by-sector') {
-      return (<Tab.Pane eventKey={'filter-report-by-sector'}>
-        <label className="custom-form-label" htmlFor="filter-by-sector">
-          Filter By Sectors
-          <FontAwesomeIcon icon={faRefresh} className={"custom-icon-color float-end"} onClick={reFetchSector}/>
+      return (
+          <Tab.Pane eventKey={'filter-report-by-sector'}>
+            <label className="custom-form-label" htmlFor="filter-by-sector">
+              Filter By Sectors
+              <FontAwesomeIcon icon={faRefresh}
+                               className={"custom-icon-color float-end"}
+                               onClick={reFetchSector}
+                               spin={isFetchingSector}
+              />
 
-        </label>
-        <div className='form-group'>
-          <input
-              className='custom-form-control'
-              placeholder='search by keywards'
-              value={searchSectors}
-              onChange={(ev) =>
-                  setSearchSector(ev.target.value)
-              }
-          />
-        </div>
-        <div className={"report-filter-list"}>
-          {filteredSectors.length > 0 ?
-              filteredSectors.map((sector,index) => (
-                  <InputGroup className="mb-3" size={"sm"} key={`sector-${index}`}>
-                    <InputGroup.Checkbox aria-label={`Checkbox for ${sector.label}`}
-                                         id={sector.value}
-                                         checked={queryParams.sectorIDS.includes(sector.value)}
-                                         onChange={e => {
-                                           handelSectorIds(e, sector)
-                                         }}/>
-                    <Form.Control
-                        type="text"
-                        value={sector.label}
-                        disabled={true}
-                        aria-describedby="basic-addon3"
-                    />
-                  </InputGroup>
-              )) :
-              'Nothing found'}
-        </div>
-      </Tab.Pane>)
+            </label>
+            <div className='form-group mb-1'>
+              <input
+                  className='custom-form-control'
+                  placeholder='search by keywards'
+                  value={searchSectors}
+                  onChange={(ev) =>
+                      setSearchSector(ev.target.value)
+                  }
+              />
+            </div>
+            <span className={'results'}>{`Found ${filteredSectors.length} Results`}</span>
+
+            <div className={"report-filter-list"}>
+              {filteredSectors.length > 0 ?
+                  filteredSectors.map((sector, index) => (
+                      <InputGroup className="mb-3" size={"sm"} key={`sector-${index}`}>
+                        <InputGroup.Checkbox aria-label={`Checkbox for ${sector.label}`}
+                                             id={sector.value}
+                                             checked={queryParams.sectorIDS.includes(sector.value)}
+                                             onChange={e => {
+                                               handelSectorIds(e, sector)
+                                             }}/>
+                        <Form.Control
+                            type="text"
+                            value={sector.label}
+                            disabled={true}
+                            aria-describedby="basic-addon3"
+                        />
+                      </InputGroup>
+                  )) :
+                  'Nothing found'}
+            </div>
+          </Tab.Pane>)
     }
     if (currentTab === 'filter-report-by-categories') {
       return (<Tab.Pane eventKey={'filter-report-by-categories'}>
         <label className="custom-form-label" htmlFor="filter-by-sector">
           Filter By Categories
-          <FontAwesomeIcon icon={faRefresh} className={"custom-icon-color float-end"} onClick={reFetchCategory}/>
+          <FontAwesomeIcon icon={faRefresh} className={"custom-icon-color float-end"} onClick={reFetchCategory}
+          spin={isFetchingCategory}/>
         </label>
-        <div className='form-group'>
+        <div className='form-group mb-1'>
           <input
               className='custom-form-control'
               placeholder='search by keywards'
@@ -142,6 +152,7 @@ const ExpenseFilter = ({showModal,closeModal,queryParams, setQueryParams, setHas
               }
           />
         </div>
+        <span className={'results'}>{`Found ${filteredCategories.length} Results`}</span>
         <div className={"report-filter-list"}>
           {filteredCategories.length > 0 ?
               filteredCategories.map((category,index) => (
@@ -290,10 +301,10 @@ const ExpenseFilter = ({showModal,closeModal,queryParams, setQueryParams, setHas
             </Container>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="danger" onClick={resetFilterParameter}>
+            <Button variant="danger" onClick={resetFilter}>
               Reset
             </Button>
-            <Button variant="info" onClick={handleFilterSubmit}>Filter</Button>
+            <Button variant="info" onClick={submitFilter}>Filter</Button>
           </Modal.Footer>
         </Modal>
       </>

@@ -4,7 +4,7 @@ import * as React from "react";
 import Stack from "@mui/material/Stack";
 import Pagination from "@mui/material/Pagination";
 
-function ListTable({expenses,tableColumns,actionBtns,paginations,cardSubTitle}) {
+function ListTable({expenses,isFetching,hasError,tableColumns,actionBtns,paginations,cardSubTitle}) {
     return (
         <div>
             <Table responsive="md">
@@ -21,7 +21,7 @@ function ListTable({expenses,tableColumns,actionBtns,paginations,cardSubTitle}) 
                 <tbody>
                 {
                     expenses.length===0?
-                        (<tr><td colSpan={4}>{"Nothing Found"}</td></tr>):
+                        (<tr><td colSpan={4}>{" Nothing Found"}</td></tr>):
                         (
                                 expenses.map((expense,index)=>(
                                     <tr key={`expense-row-${index}`}>

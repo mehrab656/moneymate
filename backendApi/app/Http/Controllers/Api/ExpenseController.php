@@ -50,7 +50,7 @@ class ExpenseController extends Controller
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
         $orderBy = $request->query('orderBy');
-        $limit = $request->query('limit');
+        $limit = $request->query('limit',10);
 
         $query = Expense::select( 'expenses.*' )
             ->where( 'company_id', Auth::user()->primary_company )

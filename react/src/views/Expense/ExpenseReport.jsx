@@ -76,7 +76,6 @@ export default function ExpenseReport() {
     }else{
       setExpenseReport([]);
       setTotalExpense(parseFloat(0).toFixed(2));
-
     }
 
     if (getSectorListData?.data) {
@@ -102,7 +101,6 @@ export default function ExpenseReport() {
   const handleFilterSubmit = (e) => {
     setHasFilter(true);
   };
-  console.log(hasFilter)
   const resetFilterParameter = () => {
     setFilterQuery(defaultQuery);
     setHasFilter(false);

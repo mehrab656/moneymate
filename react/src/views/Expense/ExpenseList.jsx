@@ -31,6 +31,13 @@ const defaultQuery = {
     order: "",
     limit: "",
 };
+const TABLE_HEAD = [
+    {id: "date", label: "Date", align: "left"},
+    {id: "descriptions", label: "Details", align: "left"},
+    {id: "amount", label: "Amount", align: "right"},
+    // {id: "refundable_amount", label: "Refundable amount", align: "right"},
+    // {id: "refunded_amount", label: "Refunded amount", align: "right"},
+];
 
 export default function ExpenseList() {
     const [loading, setLoading] = useState(false);
@@ -41,10 +48,10 @@ export default function ExpenseList() {
     const [showMainLoader, setShowMainLoader] = useState(false);
     const [isPaginate, setIsPaginate] = useState(false);
     const [query, setQuery] = useState(defaultQuery);
-    const [hasFilter, setHasFilter] = useState(false);
+    const [hasFilter, setHasFilter] = useState(true);
     const [showExpenseForm, setShowExpenseForm] = useState(false);
     const [searchTerms, setSearchTerms] = useState("");
-    const [showFilterModal, setShowFilterModal] = useState(false)
+    const [showFilterModal, setShowFilterModal] = useState(false);//important
     const [expense, setExpense] = useState({
         id: null,
         user_id: null,
@@ -59,13 +66,6 @@ export default function ExpenseList() {
         note: "",
         attachment: "",
     });
-    const TABLE_HEAD = [
-        {id: "date", label: "Date", align: "left"},
-        {id: "descriptions", label: "Details", align: "left"},
-        {id: "amount", label: "Amount", align: "right"},
-        // {id: "refundable_amount", label: "Refundable amount", align: "right"},
-        // {id: "refunded_amount", label: "Refunded amount", align: "right"},
-    ];
     const toggleFilterModal = () => {
         setShowFilterModal(!showFilterModal);
     }
@@ -80,22 +80,28 @@ export default function ExpenseList() {
         useContext(SettingsContext);
     const {num_data_per_page, default_currency} = applicationSettings;
 
+
     let pageSize = num_data_per_page;
     if (typeof pageSize === 'undefined') {
         pageSize = 10;
     }
+    useEffect(() => {
+        if (num_data_per_page>0){
+            setQuery({...query,limit: num_data_per_page})
+        }
+    }, []);
     const totalPages = Math.ceil(totalCount / pageSize);
     // api call
     const {
         data: getExpenseData,
-        isFetching: expenseDataFetching,
-        isError: expenseDataError,
+        isFetching: isDataFetching,
+        isError: hasDataFetchingError,
     } = useGetExpenseDataQuery(
         {currentPage, pageSize, query: query},
+        {skip: !hasFilter},
         {refetchOnMountOrArgChange: isPaginate}
     );
     const [deleteExpense] = useDeleteExpenseMutation();
-
     useEffect(() => {
         document.title = "Manage Expenses";
         if (getExpenseData?.data) {
@@ -115,9 +121,7 @@ export default function ExpenseList() {
     const showExpenseFormFunc = () => {
         setShowExpenseForm(true);
     };
-    const closeExpenseFilterFunc = () => {
-        setShowFilterModal(false)
-    }
+
     const closeCreateModalFunc = () => {
         setShowExpenseForm(false);
         setExpense({});
@@ -138,14 +142,16 @@ export default function ExpenseList() {
             updatedExpense.refunded_txt_clr = "dark";
         }
 
-        return (
-            expense.category.label.toLowerCase().includes(searchTerms.toLowerCase()) ||
-            expense.amount.toLowerCase().includes(searchTerms.toLowerCase()) ||
-            expense.refundable_amount.toLowerCase().includes(searchTerms.toLowerCase()) ||
-            expense.refunded_amount.toLowerCase().includes(searchTerms.toLowerCase()) ||
-            expense.description.toLowerCase().includes(searchTerms.toLowerCase()) ||
-            expense.account.label.toLowerCase().includes(searchTerms.toLowerCase())
-        );
+        return (expense.description.toLowerCase().includes(searchTerms.toLowerCase()));
+
+        // return (
+        //     expense.category.label.toLowerCase().includes(searchTerms.toLowerCase()) ||
+        //     expense.amount.toLowerCase().includes(searchTerms.toLowerCase()) ||
+        //     expense.refundable_amount.toLowerCase().includes(searchTerms.toLowerCase()) ||
+        //     expense.refunded_amount.toLowerCase().includes(searchTerms.toLowerCase()) ||
+        //     expense.description.toLowerCase().includes(searchTerms.toLowerCase() ||
+        //     expense.account.label.toLowerCase().includes(searchTerms.toLowerCase())
+        // );
     });
 
     const modifyDescription = (expense) => {
@@ -164,7 +170,6 @@ export default function ExpenseList() {
         Object.assign({}, expense, {descriptions: modifyDescription(expense)})
     );
     const onDelete = (expense) => {
-
         if (userRole !== "admin") {
             Swal.fire({
                 title: "Permission Denied!",
@@ -223,39 +228,28 @@ export default function ExpenseList() {
         },
     ];
 
+    const submitFilter = ()=>{
+        setHasFilter(true);
+        setShowFilterModal(false);
+    }
     const resetFilterParameter = () => {
         setQuery(defaultQuery);
         setHasFilter(!hasFilter);
     };
-    const handelFilter = () => {
-        setHasFilter(!hasFilter);
-    };
-    const filter = () => {
-        return (
-            <ExpenseFilter
-                placeHolderTxt="Search by details..."
-                query={query}
-                setQuery={setQuery}
-                resetFilterParameter={resetFilterParameter}
-                handelFilter={handelFilter}
-            />
-        );
-    };
-
-    const handleCloseFilterModal = ()=>{
+    const closeFilterModal = ()=>{
         setShowFilterModal(false);
     }
-
+console.log(searchTerms)
     return (
         <div>
-            {/*<MainLoader loaderVisible={showMainLoader}/>*/}
+            <MainLoader loaderVisible={isDataFetching}/>
 
             <div className={"row mb-2"}>
                 <div className={"col-md-4"}>
                     <span className={"page-title-header"}>Expense Histories</span>
                 </div>
                 <div className={"col-md-8 text-end"}>
-                    <button className={'btn btn-secondary btn-sm mr-2'} onClick={toggleFilterModal}>
+                    <button className={'btn btn-secondary btn-sm mr-2'}>
                         <FontAwesomeIcon icon={faDownload}/>{' Download CSV'}
                     </button>
                     <button className={'btn-sm btn-add'} onClick={showExpenseFormFunc}>
@@ -275,7 +269,7 @@ export default function ExpenseList() {
                         type="text"
                         size="sm"
                         value={searchTerms}
-                        onChange={(e) => searchTerms(searchTerms)}
+                        onChange={(e) => setSearchTerms(e.target.value)}
                         placeholder={"search by key wards..."}
                         style={{textTransform: "capitalize"}}
                     />
@@ -296,7 +290,9 @@ export default function ExpenseList() {
                            currentPage: currentPage,
                            handlePageChange: handlePageChange,
                        }}
-                       cardSubTitle={`Page-${currentPage}`}
+                       cardSubTitle={`Page-${currentPage} (showing ${modifiedFilteredExpenses.length} results from ${totalCount})`}
+                       isFetching={isDataFetching}
+                       hasError={hasDataFetchingError}
             />
             {showModal && (
                 <ExpenseShow
@@ -317,11 +313,12 @@ export default function ExpenseList() {
             {showFilterModal && (
                 <ExpenseFilter
                     showModal={showFilterModal}
-                    closeModal={handleCloseFilterModal}
+                    closeModal={closeFilterModal}
+                    resetFilter={resetFilterParameter}
+                    submitFilter={submitFilter}
                     queryParams={query}
                     setQueryParams={setQuery}
-                    setHasFilter={setHasFilter}
-                    defaultQueryParoms={defaultQuery}
+
                 />)}
         </div>
     );
