@@ -13,10 +13,9 @@ import {
 import ExpenseShow from "./ExpenseShow.jsx";
 import ExpenseFilter from "./ExpenseFilter.jsx";
 import ExpenseForm from "./ExpenseForm.jsx";
-import Iconify from "../../components/Iconify.jsx";
-import {Card, Form} from "react-bootstrap";
+import { Form} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faDownload, faFilter, faPrint} from "@fortawesome/free-solid-svg-icons";
+import {faDownload, faFilter} from "@fortawesome/free-solid-svg-icons";
 import FilteredParameters from "./Components/FilteredParameters.jsx";
 import ListTable from "./Components/ListTable.jsx";
 
@@ -34,9 +33,7 @@ const defaultQuery = {
 const TABLE_HEAD = [
     {id: "date", label: "Date", align: "left"},
     {id: "descriptions", label: "Details", align: "left"},
-    {id: "amount", label: "Amount", align: "right"},
-    // {id: "refundable_amount", label: "Refundable amount", align: "right"},
-    // {id: "refunded_amount", label: "Refunded amount", align: "right"},
+    {id: "amount", label: "Amount", align: "right"}
 ];
 
 export default function ExpenseList() {
@@ -81,7 +78,7 @@ export default function ExpenseList() {
     const {num_data_per_page, default_currency} = applicationSettings;
 
 
-    let pageSize = num_data_per_page;
+    let pageSize = query?.limit??num_data_per_page;
     if (typeof pageSize === 'undefined') {
         pageSize = 10;
     }
@@ -239,7 +236,6 @@ export default function ExpenseList() {
     const closeFilterModal = ()=>{
         setShowFilterModal(false);
     }
-console.log(searchTerms)
     return (
         <div>
             <MainLoader loaderVisible={isDataFetching}/>

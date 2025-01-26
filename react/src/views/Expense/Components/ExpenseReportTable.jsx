@@ -4,7 +4,8 @@ import * as React from "react";
 import Stack from "@mui/material/Stack";
 import Pagination from "@mui/material/Pagination";
 
-function ListTable({expenses,isFetching,hasError,tableColumns,actionBtns,paginations,cardSubTitle}) {
+function ExpenseReportTable({expenses,isFetching,hasError,tableColumns,actionBtns,paginations,cardSubTitle}) {
+
     const tableRows=()=>{
         if (isFetching){
             return <><tr><td colSpan={4} className={'text-center'}>Loading...</td></tr></>
@@ -42,14 +43,12 @@ function ListTable({expenses,isFetching,hasError,tableColumns,actionBtns,paginat
         <div>
             <Table responsive="md">
                 <thead>
-                <tr>
-                    {
-                        tableColumns.map(column => (
-                            <th align={column.align} key={column.id}>{column.label}</th>
-                        ))
-                    }
-                    <th>Actions</th>
-                </tr>
+                    <tr className={"text-center"}>
+                        <th>Expense Date</th>
+                        <th>Expense Category</th>
+                        <th>Description</th>
+                        <th>Expense Amount</th>
+                    </tr>
                 </thead>
                 <tbody>
                 {
@@ -75,4 +74,4 @@ function ListTable({expenses,isFetching,hasError,tableColumns,actionBtns,paginat
     );
 }
 
-export default ListTable;
+export default ExpenseReportTable;

@@ -1,16 +1,12 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import axiosClient from "../../axios-client.js";
 import { SettingsContext } from "../../contexts/SettingsContext.jsx";
 import MainLoader from "../../components/MainLoader.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEye,
-  faEyeSlash, faPrint
-} from "@fortawesome/free-solid-svg-icons";
+import {faFilter, faPrint} from "@fortawesome/free-solid-svg-icons";
 import { Tooltip } from "react-tooltip";
 import {Col, Container, Form, InputGroup, Row} from "react-bootstrap";
-import ExpenseFilter from "../../helper/filter-icons/ExpenseFilter.jsx";
-import { Box, Button } from "@mui/material";
+import ExpenseFilter from "./ExpenseFilter.jsx";
+
 import ReactToPrint from "react-to-print";
 import ExpenseShow from "./ExpenseShow.jsx";
 import {genRand} from "../../helper/HelperFunctions.js";
@@ -26,15 +22,15 @@ const defaultQuery = {
   orderBy: "date",
   order: "DESC",
   limit: 10,
+  categoryNames: [],
+  sectorNames: [],
 };
 export default function ExpenseReport() {
   const componentRef = useRef();
   const [loading, setLoading] = useState(false);
   const [expenseReport, setExpenseReport] = useState([]);
-  const [expenseCategories, setExpenseCategories] = useState([]);
   const [sectors, setSectors] = useState([]);
   const [totalExpense, setTotalExpense] = useState(parseFloat(0).toFixed(2));
-  const [activeModal, setActiveModal] = useState("");
   const [searchTerms, setSearchTerms]=useState("");
   const [modalData, setModalData] = useState({
     id: null,
@@ -55,15 +51,11 @@ export default function ExpenseReport() {
   const [showModal, setShowModal] = useState(false);
   const { applicationSettings } = useContext(SettingsContext);
   let { default_currency } = applicationSettings;
+  const [showFilterModal, setShowFilterModal] = useState(false);//important
 
   if (default_currency === undefined) {
     default_currency = "AED ";
   }
-  const showExpenseDetails = (expense, index) => {
-    setActiveModal(index);
-    setModalData(expense);
-    setShowModal(true);
-  };
 
   const {data: getExpenseReport} = useGetExpenseReportDataQuery({query:filterQuery},{ skip: !hasFilter });
   const {data: getSectorListData} = useGetSectorListDataQuery();
@@ -94,20 +86,26 @@ export default function ExpenseReport() {
     );
   })
   const handleCloseModal = () => {
-    setActiveModal("");
     setShowModal(false);
   };
 
-  const handleFilterSubmit = (e) => {
-    setHasFilter(true);
-  };
-  const resetFilterParameter = () => {
-    setFilterQuery(defaultQuery);
-    setHasFilter(false);
-  };
   const handelQuickFilter = (e)=>{
     setFilterQuery(defaultQuery);
     setFilterQuery({...filterQuery,quickFilterSectorID: e.target.value})
+  }
+  const toggleFilterModal = () => {
+    setShowFilterModal(!showFilterModal);
+  }
+  const submitFilter = ()=>{
+    setHasFilter(true);
+    setShowFilterModal(false);
+  }
+  const resetFilterParameter = () => {
+    setQuery(defaultQuery);
+    setHasFilter(!hasFilter);
+  };
+  const closeFilterModal = ()=>{
+    setShowFilterModal(false);
   }
 
   return (
@@ -154,12 +152,15 @@ export default function ExpenseReport() {
               </Col>
               <Col xs={12} md={4}>
                 <div className={'expense-filter-actionBtn'}>
-                  <ExpenseFilter
-                      queryParams={filterQuery}
-                      setQueryParams={setFilterQuery}
-                      setHasFilter={setHasFilter}
-                      defaultQueryParoms={defaultQuery}
-                  />
+                  {/*<ExpenseFilter*/}
+                  {/*    queryParams={filterQuery}*/}
+                  {/*    setQueryParams={setFilterQuery}*/}
+                  {/*    setHasFilter={setHasFilter}*/}
+                  {/*    defaultQueryParoms={defaultQuery}*/}
+                  {/*/>*/}
+                  <button className={'btn btn-secondary btn-sm mr-2'} onClick={toggleFilterModal}>
+                    <FontAwesomeIcon icon={faFilter}/>{' Filter'}</button>
+
                   <ReactToPrint
                       trigger={() => (
                           <button className={'btn btn-success btn-sm mr-2'}>
@@ -173,7 +174,7 @@ export default function ExpenseReport() {
           <Row>
             <div className="report-table-containe">
               <table className={"report-table"}>
-                <thead>
+              <thead>
                 <tr className={"text-center"}>
                   <th>Expense Date</th>
                   <th>Expense Category</th>
@@ -259,6 +260,18 @@ export default function ExpenseReport() {
           currency={default_currency}
         />
       )}
+
+      {showFilterModal && (
+          <ExpenseFilter
+              showModal={showFilterModal}
+              closeModal={closeFilterModal}
+              resetFilter={resetFilterParameter}
+              submitFilter={submitFilter}
+              queryParams={filterQuery}
+              setQueryParams={setFilterQuery}
+
+          />)}
+
     </div>
   );
 }

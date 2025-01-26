@@ -12,8 +12,7 @@ import {
 import Container from "react-bootstrap/Container";
 import { useGetSectorListDataQuery } from "../../api/slices/sectorSlice.js";
 import { useGetCategoryListDataQuery } from "../../api/slices/categorySlice.js";
-import { genRand } from "../HelperFunctions.js";
-import { faBank, faFilter, faPrint } from "@fortawesome/free-solid-svg-icons";
+import {  faFilter } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const navItems = [
@@ -69,7 +68,7 @@ const ExpenseFilter = ({
     setQueryParams({ ...queryParams, sectorIDS: secList });
   };
 
-  const handleFilterSubmit = (e) => {
+  const handleFilterSubmit = () => {
     setHasFilter(true);
     setShowFilterModal(false)
   };
@@ -104,8 +103,8 @@ const ExpenseFilter = ({
           </div>
           <div className={"report-filter-list"}>
             {filteredSectors.length > 0
-              ? filteredSectors.map((sector) => (
-                  <InputGroup className="mb-3" size={"sm"}>
+              ? filteredSectors.map((sector,index) => (
+                  <InputGroup className="mb-3" size={"sm"} key={`sector-report-${index}`}>
                     <InputGroup.Checkbox
                       aria-label={`Checkbox for ${sector.label}`}
                       id={sector.value}
@@ -142,8 +141,8 @@ const ExpenseFilter = ({
           </div>
           <div className={"report-filter-list"}>
             {filteredCategories.length > 0
-              ? filteredCategories.map((category) => (
-                  <InputGroup className="mb-3" size={"sm"}>
+              ? filteredCategories.map((category,index) => (
+                  <InputGroup className="mb-3" size={"sm"} key={`category-report-${index}`}>
                     <InputGroup.Checkbox
                       aria-label={`Checkbox for ${category.label}`}
                       id={category.value}

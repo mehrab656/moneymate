@@ -95,9 +95,10 @@ const ExpenseFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParam
             <label className="custom-form-label" htmlFor="filter-by-sector">
               Filter By Sectors
               <FontAwesomeIcon icon={faRefresh}
-                               className={"custom-icon-color float-end"}
+                               className={"reload-icon float-end"}
                                onClick={reFetchSector}
                                spin={isFetchingSector}
+                               title={"reload sectors"}
               />
 
             </label>
@@ -139,8 +140,8 @@ const ExpenseFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParam
       return (<Tab.Pane eventKey={'filter-report-by-categories'}>
         <label className="custom-form-label" htmlFor="filter-by-sector">
           Filter By Categories
-          <FontAwesomeIcon icon={faRefresh} className={"custom-icon-color float-end"} onClick={reFetchCategory}
-          spin={isFetchingCategory}/>
+          <FontAwesomeIcon icon={faRefresh} className={"reload-icon float-end"} onClick={reFetchCategory}
+          spin={isFetchingCategory} title={"reload category"} />
         </label>
         <div className='form-group mb-1'>
           <input

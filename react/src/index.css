@@ -1246,8 +1246,13 @@ taskList {
     letter-spacing: 0em;
     display: block;
 }
-.custom-icon-color{
+.reload-icon{
     color: #2f9f9f;
+    cursor: pointer;
+}
+.reload-icon:hover{
+    /*background-color: #e5e5e5;*/
+    font-size: 20px;
 }
 .badge-cursor{
     cursor: pointer;
