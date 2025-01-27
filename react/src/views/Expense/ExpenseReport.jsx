@@ -95,6 +95,7 @@ export default function ExpenseReport() {
   }
   const toggleFilterModal = () => {
     setShowFilterModal(!showFilterModal);
+    setHasFilter(false);
   }
   const submitFilter = ()=>{
     setHasFilter(true);
@@ -269,7 +270,7 @@ export default function ExpenseReport() {
               submitFilter={submitFilter}
               queryParams={filterQuery}
               setQueryParams={setFilterQuery}
-
+              setHasFilter={setHasFilter}
           />)}
 
     </div>

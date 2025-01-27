@@ -65,6 +65,7 @@ export default function ExpenseList() {
     });
     const toggleFilterModal = () => {
         setShowFilterModal(!showFilterModal);
+        setHasFilter(false);
     }
     const showExpense = (expense) => {
         setExpense(expense);
@@ -314,7 +315,7 @@ export default function ExpenseList() {
                     submitFilter={submitFilter}
                     queryParams={query}
                     setQueryParams={setQuery}
-
+                    setHasFilter={setHasFilter}
                 />)}
         </div>
     );
