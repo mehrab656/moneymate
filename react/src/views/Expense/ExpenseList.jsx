@@ -40,7 +40,7 @@ export default function ExpenseList() {
     const [loading, setLoading] = useState(false);
     const [expenses, setExpenses] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalCount, setTotalCount] = useState(0);
+    const [totalCount, setTotalCount] = useState(1);
     const [showModal, setShowModal] = useState(false);
     const [showMainLoader, setShowMainLoader] = useState(false);
     const [isPaginate, setIsPaginate] = useState(false);
@@ -78,7 +78,13 @@ export default function ExpenseList() {
     const {num_data_per_page, default_currency} = applicationSettings;
 
 
-    let pageSize = query?.limit??num_data_per_page;
+    let pageSize = 1;
+    if (query.limit){
+       pageSize= query?.limit
+    }else{
+        pageSize=num_data_per_page
+    }
+
     if (typeof pageSize === 'undefined') {
         pageSize = 10;
     }
@@ -87,7 +93,9 @@ export default function ExpenseList() {
             setQuery({...query,limit: num_data_per_page})
         }
     }, []);
-    const totalPages = Math.ceil(totalCount / pageSize);
+
+    const totalPages = totalCount>0? Math.ceil(totalCount / pageSize):1;
+    console.log({totalPages});
     // api call
     const {
         data: getExpenseData,
@@ -281,7 +289,7 @@ export default function ExpenseList() {
                        actionBtns={actionParams}
                        loading={loading}
                        paginations={{
-                           totalPages: totalPages,
+                           totalPages: totalPages??0,
                            totalCount: totalCount,
                            currentPage: currentPage,
                            handlePageChange: handlePageChange,
