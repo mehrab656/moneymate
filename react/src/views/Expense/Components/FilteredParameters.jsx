@@ -1,13 +1,9 @@
 
 import Badge from 'react-bootstrap/Badge';
-import Stack from 'react-bootstrap/Stack';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faArrowLeft, faArrowLeftRotate, faArrowRightLong, faClose, faRefresh} from "@fortawesome/free-solid-svg-icons";
+import { faArrowRightLong, faClose} from "@fortawesome/free-solid-svg-icons";
 import React from "react";
-import {getType} from "@reduxjs/toolkit";
 export default function FilteredParameters({queries,setQuery}){
-
-
     const updateQuery = (parameter,name=null,slug=null)=>{
         if (parameter==='date'){
             setQuery({...queries,start_date:'',end_date:''})
@@ -37,13 +33,12 @@ export default function FilteredParameters({queries,setQuery}){
         }
     };
 
-
     return (
         <>
                 <div className={"col-2"}><span><b>Filtered Queries:</b> </span></div>
                 <div className={"col-10"}>
                     {
-                    queries.sectorNames &&
+                        queries.sectorNames &&
                     <>
                         { queries.sectorNames.map((name,index)=>{
                             return(<Badge bg="secondary m-1" key={`badge-sector-${index}`}>{name}
@@ -90,14 +85,11 @@ export default function FilteredParameters({queries,setQuery}){
                         queries.start_date &&
                         <>
                             <Badge bg="secondary m-1"><span>Date-{queries.start_date}<FontAwesomeIcon icon={faArrowRightLong}/>{queries.end_date} </span>
-
                                 <FontAwesomeIcon icon={faClose} className={"badge-cursor float-end ml-2"} onClick={()=>{updateQuery('date')}}/>
-
                             </Badge>
                         </>
                     }
                 </div>
-
         </>
     )
 }

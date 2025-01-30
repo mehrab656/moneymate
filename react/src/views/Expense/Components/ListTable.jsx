@@ -1,7 +1,6 @@
 import Table from 'react-bootstrap/Table';
 import ActionButtonHelpers from "../../../helper/ActionButtonHelpers.jsx";
 import * as React from "react";
-import Stack from "@mui/material/Stack";
 import Pagination from "@mui/material/Pagination";
 
 function ListTable({expenses,isFetching,hasError,tableColumns,actionBtns,paginations,cardSubTitle}) {

@@ -96,7 +96,6 @@ export default function ExpenseList() {
     }, []);
 
     const totalPages = totalCount>0? Math.ceil(totalCount / pageSize):1;
-    console.log({totalPages});
     // api call
     const {
         data: getExpenseData,
@@ -149,15 +148,6 @@ export default function ExpenseList() {
         }
 
         return (expense.description.toLowerCase().includes(searchTerms.toLowerCase()));
-
-        // return (
-        //     expense.category.label.toLowerCase().includes(searchTerms.toLowerCase()) ||
-        //     expense.amount.toLowerCase().includes(searchTerms.toLowerCase()) ||
-        //     expense.refundable_amount.toLowerCase().includes(searchTerms.toLowerCase()) ||
-        //     expense.refunded_amount.toLowerCase().includes(searchTerms.toLowerCase()) ||
-        //     expense.description.toLowerCase().includes(searchTerms.toLowerCase() ||
-        //     expense.account.label.toLowerCase().includes(searchTerms.toLowerCase())
-        // );
     });
 
     const modifyDescription = (expense) => {
