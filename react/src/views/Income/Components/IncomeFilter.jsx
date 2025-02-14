@@ -9,7 +9,6 @@ const navItems = [
   {key: 'filter-report-by-sector', name: 'Sector'},
   {key: 'filter-report-by-date', name: 'Date'},
   {key: 'filter-report-by-others', name: 'Others'},
-  {key: 'filter-report-by-others', name: 'Others'},
 ]
 
 const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams, setQueryParams}) => {
@@ -52,7 +51,7 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
   const reFetchSector = ()=>{
     setReloadSectors(true);
   }
-
+  console.log(queryParams);
   const showCurrentPan = (currentTab) => {
     if (currentTab === 'filter-report-by-sector') {
       return (

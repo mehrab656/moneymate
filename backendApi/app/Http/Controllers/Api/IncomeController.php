@@ -36,15 +36,15 @@ class IncomeController extends Controller
     {
         $page = $request->query('page', 1);
         $pageSize = $request->query('pageSize', 1000);
-        $sector = $request->query('sector');
-        $category = $request->query('category');
+        $sectorIDS = $request->query('sectorIDS');
+        $category = $request->query('sectorIDS');
         $order = $request->query('order', 'DESC');
         $orderBy = $request->query('orderBy', 'id');
+        $limit = $request->query('limit');
         $from_date = $request->query('from_date');
         $to_date = $request->query('to_date');
         $type = $request->query('type');
         $account_id = $request->query('account_id');
-        $limit = $request->query('limit');
 
 
         if ($from_date) {
@@ -65,8 +65,27 @@ class IncomeController extends Controller
         $query = Income::where('company_id', Auth::user()->primary_company);
 
 
-        if ($category) {
-            $query = $query->where('category_id', $category);
+        if ($sectorIDS) {
+
+            $sectorSlugs = explode(',', $sectorIDS);
+            $sectorIDS = DB::table('sectors')
+                ->whereIn('slug', $sectorSlugs)
+                ->get(['id'])->toArray();
+
+            $ids  = array_map(function ($item){
+                return $item->id;
+            }, $sectorIDS); // these are sectors ids
+
+            $categories = DB::table('categories')
+                ->whereIn('sector_id', $ids)
+                ->where(["type"=>"income"])
+                ->get(['id'])->toArray();
+
+            $categoryIds = array_map(function ($item){
+                return $item->id;
+            }, $categories);
+
+            $query = $query->wherein('category_id', $categoryIds);
         }
         if ($account_id) {
             $query = $query->where('account_id', $category);
