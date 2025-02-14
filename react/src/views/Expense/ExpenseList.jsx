@@ -270,6 +270,7 @@ export default function ExpenseList() {
                     />
                 </div>
             </div>
+
             <div className="row mb-2">
                 <FilteredParameters queries={query}
                 setQuery={setQuery}/>

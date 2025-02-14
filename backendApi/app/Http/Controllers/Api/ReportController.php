@@ -182,11 +182,11 @@ class ReportController extends Controller {
 			$endDate = Carbon::now()->toDateString();
 		}
 
-		$investments = DB::table( 'investments' )->selectRaw( 'sum(amount) as amount, investor_id, name' )
+		$investments = DB::table( 'investments' )->selectRaw( 'sum(amount) as amount, investor_id, username' )
 		                 ->where( 'company_id', Auth::user()->primary_company )
 		                 ->join( 'users', 'investments.investor_id', '=', 'users.id' )
 		                 ->whereNull( 'investments.deleted_at' )
-		                 ->groupBy( [ 'investor_id', 'name' ] );
+		                 ->groupBy( [ 'investor_id', 'username' ] );
 
 		$totalInvestment = DB::table( 'investments' )->where('company_id',Auth::user()->primary_company);
 		//filter investments

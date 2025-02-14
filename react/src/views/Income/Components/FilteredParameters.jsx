@@ -24,6 +24,13 @@ export default function FilteredParameters({queries,setQuery}){
             sectorNames = sectorNames.filter(sectorName=> sectorName !== name);
             setQuery({...queries, sectorIDS: sectorIDS,sectorNames: sectorNames})
         }
+        if (parameter==='category'){
+            let categoryID = queries.categoryIDS;
+            let categoryNames = queries.categoryNames;
+            categoryID = categoryID.filter(catID=> catID !== slug)
+            categoryNames = categoryNames.filter(catName=> catName !== name)
+            setQuery({...queries, categoryID: categoryID,categoryNames: categoryNames})
+        }
     };
 
     return (
@@ -40,7 +47,16 @@ export default function FilteredParameters({queries,setQuery}){
                         })}
                     </>
                 }
-
+                    {
+                        queries.categoryNames &&
+                        <>
+                            { queries.categoryNames.map((name,index)=>{
+                                return(<Badge bg="secondary m-1" key={`badge-category-${index}`}>{name}
+                                    <FontAwesomeIcon icon={faClose} className={"badge-cursor float-end ml-2"} onClick={()=>updateQuery('category',name,queries.categoryIDS[index])}/>
+                                </Badge>)
+                            })}
+                        </>
+                    }
                     {
                         queries.limit &&
                         <>

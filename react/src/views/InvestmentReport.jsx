@@ -9,6 +9,8 @@ import InvestmentReportChart from "../components/InvestmentReportChart.jsx";
 import MainLoader from "../components/MainLoader.jsx";
 import ReactToPrint from "react-to-print";
 import { Box, Button } from "@mui/material";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faDownload, faFilter} from "@fortawesome/free-solid-svg-icons";
 
 export default function InvestmentReport() {
     const componentRef  = useRef()
@@ -51,7 +53,21 @@ export default function InvestmentReport() {
 
     return (
         <>
-         <MainLoader loaderVisible={loading} />
+            <MainLoader loaderVisible={loading}/>
+            <div className={"row mb-2"}>
+                <div className={"col-md-4"}>
+                    <span className={"page-title-header"}>Investments</span>
+                </div>
+                <div className={"col-md-8 text-end"}>
+                    <button className={'btn btn-secondary btn-sm mr-2'}>
+                        <FontAwesomeIcon icon={faDownload}/>{' Download CSV'}
+                    </button>
+                    <button className={'btn-sm btn-add'} >
+                        <FontAwesomeIcon icon={faFilter}/>{' Add Expense'}
+                    </button>
+                </div>
+            </div>
+
             <div className="col-md-8">
                 <WizCard className="animated fadeInDown">
                     <div className="row">
@@ -108,8 +124,8 @@ export default function InvestmentReport() {
                                     <tbody>
                                     {investments.map(investment => (
                                         <tr key={investment.investor_id} className={'text-center'}>
-                                            <td>{investment.name}</td>
-                                            <td>{default_currency +' ' + investment.amount}</td>
+                                            <td>{investment.username}</td>
+                                            <td>{default_currency + ' ' + investment.amount}</td>
                                         </tr>
                                     ))}
                                     </tbody>
@@ -122,8 +138,9 @@ export default function InvestmentReport() {
             <div className="col-md-4">
                 <div className="row">
                     <div className="mb-4">
-                        <SummeryCard value={getTotalInvestments} summary="Total Investments" icon={<AttachMoneyIcon/>} iconClassName="icon-success" currency={default_currency}/>
-                        
+                        <SummeryCard value={getTotalInvestments} summary="Total Investments" icon={<AttachMoneyIcon/>}
+                                     iconClassName="icon-success" currency={default_currency}/>
+
                     </div>
 
                     <div>
@@ -134,11 +151,11 @@ export default function InvestmentReport() {
                                                    title="Investment chart"/>
                         </WizCard>
 
-                        <Box sx={{mt:1}} display={'flex'} justifyContent={'center'} alignItems={'center'} >
-                         <ReactToPrint
-                             trigger={() => <Button sx={{ml:1}} variant="outlined">Print</Button>}
-                             content={()=> componentRef.current}
-                         />
+                        <Box sx={{mt: 1}} display={'flex'} justifyContent={'center'} alignItems={'center'}>
+                            <ReactToPrint
+                                trigger={() => <Button sx={{ml: 1}} variant="outlined">Print</Button>}
+                                content={() => componentRef.current}
+                            />
                         </Box>
                     </div>
                 </div>

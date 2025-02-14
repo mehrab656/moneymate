@@ -7,7 +7,7 @@ import {notification} from "../../components/ToastNotification.jsx";
 
 import Iconify from "../../components/Iconify.jsx";
 import CommonTable from "../../helper/CommonTable.jsx";
-import IncomeFilter from "./IncomeFilter.jsx";
+import IncomeFilter from "./Components/IncomeFilter.jsx";
 import {
     useGetIncomeDataQuery,
     useDeleteIncomeMutation
@@ -15,9 +15,14 @@ import {
 import ShowDetails from "./IncomeShow.jsx";
 import IncomeForm from "./IncomeForm.jsx";
 import IncomeShow from "./IncomeShow.jsx";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faDownload, faFilter} from "@fortawesome/free-solid-svg-icons";
+import {Form} from "react-bootstrap";
+import FilteredParameters from "../Expense/Components/FilteredParameters.jsx";
+import ExpenseFilter from "../Expense/ExpenseFilter.jsx";
+import ListTable from "./Components/ListTable.jsx";
 
 const defaultQuery = {
-    category: "",
     type: "",
     income_type: "",
     orderBy: "",
@@ -26,9 +31,14 @@ const defaultQuery = {
     to_date: "",
     from_date: "",
     account_id: "",
+    start_date: "",
+    end_date: "",
+    sectorIDS: [],
+    sectorNames: [],
 };
 
 export default function IncomeList() {
+    const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [searchTerm, setSearchTerm] = useState("");
@@ -42,15 +52,20 @@ export default function IncomeList() {
     const {num_data_per_page,default_currency} = applicationSettings;
     const [isPaginate, setIsPaginate] = useState(false);
     const [subTitle,setSubTitle] = useState('');
+    const [showFilterModal, setShowFilterModal] = useState(false);//important
+    const [hasFilter, setHasFilter] = useState(true);
+    const [searchTerms, setSearchTerms] = useState("");
 
-    const [hasFilter, setHasFilter] = useState(false);
     const TABLE_HEAD = [
         {id: "date", label: "Date", align: "left"},
         {id: "description", label: "Description", align: "left"},
         {id: "category_name", label: "Source", align: "left"},
         {id: "amount", label: "Amount", align: "right"},
     ];
-
+    const toggleFilterModal = () => {
+        setShowFilterModal(!showFilterModal);
+        setHasFilter(false);
+    }
     const pageSize =
         Number(query.limit) > 0
             ? Number(query.limit)
@@ -120,10 +135,7 @@ export default function IncomeList() {
         setCurrentPage(value);
         setIsPaginate(true);
     };
-    const resetFilterParameter = () => {
-        setQuery(defaultQuery);
-        setHasFilter(!hasFilter);
-    };
+
     const handelFilter = () => {
         setHasFilter(!hasFilter);
     };
@@ -190,10 +202,69 @@ export default function IncomeList() {
         },
 
     ];
-
+    const submitFilter = ()=>{
+        setHasFilter(true);
+        setShowFilterModal(false);
+    }
+    const resetFilterParameter = () => {
+        setQuery(defaultQuery);
+        setHasFilter(!hasFilter);
+    };
+    const closeFilterModal = ()=>{
+        setShowFilterModal(false);
+    }
     return (
         <div>
             <MainLoader loaderVisible={showMainLoader}/>
+            <div className={"row mb-2"}>
+                <div className={"col-md-4"}>
+                    <span className={"page-title-header"}>Incomes</span>
+                </div>
+                <div className={"col-md-8 text-end"}>
+                    <button className={'btn btn-secondary btn-sm mr-2'}>
+                        <FontAwesomeIcon icon={faDownload}/>{' Download CSV'}
+                    </button>
+                    <button className={'btn-sm btn-add'}>
+                        <FontAwesomeIcon icon={faFilter}/>{' Add Income'}
+                    </button>
+                </div>
+            </div>
+            <div className={"row mb-2"}>
+                <div className={"col-md-8"}>
+                    <button className={'btn btn-secondary btn-sm mr-2'} onClick={toggleFilterModal}>
+                        <FontAwesomeIcon icon={faFilter}/>{' Filter'}</button>
+                </div>
+
+                <div className={"col-md-4"}>
+                    <Form.Control
+                        type="text"
+                        size="sm"
+                        value={searchTerms}
+                        onChange={(e) => setSearchTerms(e.target.value)}
+                        placeholder={"search by key wards..."}
+                        style={{textTransform: "capitalize"}}
+                    />
+                </div>
+            </div>
+            <div className="row mb-2">
+                <FilteredParameters queries={query}
+                                    setQuery={setQuery}/>
+            </div>
+            <ListTable incomes={filteredIncomes}
+                       tableColumns={TABLE_HEAD}
+                       actionBtns={actionParams}
+                       loading={loading}
+                       paginations={{
+                           totalPages: totalPages??0,
+                           totalCount: totalCount,
+                           currentPage: currentPage,
+                           handlePageChange: handlePageChange,
+                       }}
+                       // cardSubTitle={`Page-${currentPage} (showing ${filteredIncomes.length} results from ${totalCount})`}
+                       cardSubTitle={subTitle}
+                       isFetching={incomeDataFetching}
+                       hasError={incomeDataError}
+            />
             <CommonTable
                 cardTitle={"List of Incomes"}
                 cardSubTitle={subTitle}
@@ -241,6 +312,17 @@ export default function IncomeList() {
                             currency={default_currency}
                 />
             )}
+
+            {showFilterModal && (
+                <IncomeFilter
+                    showModal={showFilterModal}
+                    closeModal={closeFilterModal}
+                    resetFilter={resetFilterParameter}
+                    submitFilter={submitFilter}
+                    queryParams={query}
+                    setQueryParams={setQuery}
+                    setHasFilter={setHasFilter}
+                />)}
         </div>
     );
 }
