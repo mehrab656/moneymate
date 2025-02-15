@@ -2,6 +2,7 @@ import Table from 'react-bootstrap/Table';
 import ActionButtonHelpers from "../../../helper/ActionButtonHelpers.jsx";
 import * as React from "react";
 import Pagination from "@mui/material/Pagination";
+import { Tooltip } from "react-tooltip";
 
 function ListTable({incomes,isFetching,hasError,tableColumns,actionBtns,paginations,cardSubTitle}) {
     const tableRows=()=>{
@@ -20,7 +21,12 @@ function ListTable({incomes,isFetching,hasError,tableColumns,actionBtns,paginati
                     <tr key={`expense-row-${index}`}>
                         <td>{expense?.date}</td>
                         {/*<td className={"custom-table-cell"}>{expense?.descriptions}</td>*/}
-                        <td>{expense?.descriptions}</td>
+                        <td><div className={"custom-table-cell"}
+                                 data-tooltip-id="income-description"
+                                 data-tooltip-content={expense?.description}>
+                            <Tooltip id={'income-description'} className={"income-description-tooltip"}/>{expense?.description}</div></td>
+                        <td>{expense?.category_name}</td>
+                        <td>{expense?.reference.value}</td>
                         <td>{expense?.amount}</td>
                         {/*<td>{expense?.refundable_amount}</td>*/}
                         {/*<td>{expense?.refunded_amount}</td>*/}
@@ -44,7 +50,7 @@ function ListTable({incomes,isFetching,hasError,tableColumns,actionBtns,paginati
                 <tr>
                     {
                         tableColumns.map(column => (
-                            <th align={column.align} key={column.id}>{column.label}</th>
+                            <th align={column.align} key={column.id} >{column.label}</th>
                         ))
                     }
                     <th>Actions</th>

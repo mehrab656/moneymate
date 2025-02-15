@@ -37,7 +37,6 @@ class IncomeController extends Controller
         $page = $request->query('page', 1);
         $pageSize = $request->query('pageSize', 1000);
         $sectorIDS = $request->query('sectorIDS');
-        $category = $request->query('sectorIDS');
         $order = $request->query('order', 'DESC');
         $orderBy = $request->query('orderBy', 'id');
         $limit = $request->query('limit');
@@ -66,7 +65,6 @@ class IncomeController extends Controller
 
 
         if ($sectorIDS) {
-
             $sectorSlugs = explode(',', $sectorIDS);
             $sectorIDS = DB::table('sectors')
                 ->whereIn('slug', $sectorSlugs)
@@ -99,12 +97,12 @@ class IncomeController extends Controller
         if ($limit) {
             $query = $query->limit($limit);
         }
-        $query = $query->skip(($page - 1) * $pageSize)->take($pageSize)->get();
-        $totalCount = Income::where('company_id', Auth::user()->primary_company)->count();
+        $incomes = IncomeResource::collection($query->skip(($page - 1) * $pageSize)->take($pageSize)->get());
 
         return response()->json([
-            'data' => IncomeResource::collection($query),
-            'total' => $totalCount,
+            'data' => $incomes,
+            'total' => Income::where('company_id', Auth::user()->primary_company)->count(),
+            'totalFound'=>$incomes->count()
         ]);
     }
 

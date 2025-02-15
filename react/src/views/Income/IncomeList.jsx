@@ -2,24 +2,18 @@ import React, {useEffect, useState, useContext} from "react";
 import Swal from "sweetalert2";
 import {SettingsContext} from "../../contexts/SettingsContext.jsx";
 import MainLoader from "../../components/MainLoader.jsx";
-import {checkPermission} from "../../helper/HelperFunctions.js";
 import {notification} from "../../components/ToastNotification.jsx";
-
-import Iconify from "../../components/Iconify.jsx";
-import CommonTable from "../../helper/CommonTable.jsx";
 import IncomeFilter from "./Components/IncomeFilter.jsx";
 import {
     useGetIncomeDataQuery,
     useDeleteIncomeMutation
 } from "../../api/slices/incomeSlice.js";
-import ShowDetails from "./IncomeShow.jsx";
 import IncomeForm from "./IncomeForm.jsx";
 import IncomeShow from "./IncomeShow.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faDownload, faFilter} from "@fortawesome/free-solid-svg-icons";
 import {Form} from "react-bootstrap";
 import FilteredParameters from "../Expense/Components/FilteredParameters.jsx";
-import ExpenseFilter from "../Expense/ExpenseFilter.jsx";
 import ListTable from "./Components/ListTable.jsx";
 
 const defaultQuery = {
@@ -59,6 +53,7 @@ export default function IncomeList() {
     const TABLE_HEAD = [
         {id: "date", label: "Date", align: "left"},
         {id: "description", label: "Description", align: "left"},
+        {id: "sector", label: "Sector", align: "left"},
         {id: "category_name", label: "Source", align: "left"},
         {id: "amount", label: "Amount", align: "right"},
     ];
@@ -264,39 +259,6 @@ export default function IncomeList() {
                        cardSubTitle={subTitle}
                        isFetching={incomeDataFetching}
                        hasError={incomeDataError}
-            />
-            <CommonTable
-                cardTitle={"List of Incomes"}
-                cardSubTitle={subTitle}
-                addBTN={{
-                    permission: checkPermission("income_create"),
-                    txt: "New Income",
-                    icon: <Iconify icon={"eva:plus-fill"}/>, //"faBuildingFlag",
-                    linkTo: "modal",
-                    link: showIncomeFormFunc,
-                }}
-                paginations={{
-                    totalPages: totalPages,
-                    totalCount: totalCount,
-                    currentPage: currentPage,
-                    handlePageChange: handlePageChange,
-                }}
-                table={{
-                    size: "small",
-                    ariaLabel: "income table",
-                    showIdColumn: userRole === "admin" ?? false,
-                    tableColumns: TABLE_HEAD,
-                    tableBody: {
-                        loading: incomeDataFetching,
-                        loadingColSpan: 4,
-                        rows: filteredIncomes, //rendering data
-                    },
-                    actionButtons: actionParams,
-                }}
-                filter={filters}
-                loading={incomeDataFetching}
-                loaderRow={query?.limit}
-                loaderCol={4}
             />
 
             {showIncomeForm && (
