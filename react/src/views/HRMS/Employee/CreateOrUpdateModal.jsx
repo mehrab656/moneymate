@@ -128,7 +128,6 @@ export default function CreateOrUpdateModal({show, closeFunc}) {
                                         <Form.Control type="text" value={employee.first_name}
                                                       name={'first_name'}
                                                       onChange={(e) => {
-                                                          console.log(e.target.value)
                                                           setEmployee({...employee, first_name: e.target.value});
                                                       }}
                                         />

@@ -7,7 +7,6 @@ export default function Filter(props){
     const {search, query, setQuery, resetFilterParameter, handelFilter} = props;
     const {placeHolderTxt, searchBoxValue, handelSearch} = search;
     const [accounts, setAccounts] = useState([]);
-    console.log(query);
     const {
         data: getBankData,
         isFetching: bankIsFetching,

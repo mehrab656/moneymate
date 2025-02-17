@@ -51,7 +51,6 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
   const reFetchSector = ()=>{
     setReloadSectors(true);
   }
-  console.log(queryParams);
   const showCurrentPan = (currentTab) => {
     if (currentTab === 'filter-report-by-sector') {
       return (
@@ -191,7 +190,7 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
             backdrop="static"
             keyboard={false}
         >
-          <Modal.Header closeButton>
+          <Modal.Header closeButton onClick={resetFilter}>
             <Modal.Title>Filters</Modal.Title>
           </Modal.Header>
           <Modal.Body className={"filter-modal-body"}>

@@ -6,12 +6,16 @@
   <component name="ChangeListManager">
     <list default="true" id="eb82f29d-a946-4d7c-af4f-355ea30ae3ce" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/IncomeController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/IncomeController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/public/custom.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/public/custom.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Income/Components/ListTable.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Income/Components/ListTable.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/helper/SummeryCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/helper/SummeryCard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/CompanyAssets/AssetViewModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/CompanyAssets/AssetViewModal.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/CompanyAssets/AssetsList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/CompanyAssets/AssetsList.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Debts/DebtCreate.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Debts/DebtCreate.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Expense/Components/FilteredParameters.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Expense/Components/FilteredParameters.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/HRMS/Employee/CreateOrUpdateModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/HRMS/Employee/CreateOrUpdateModal.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Income/Components/IncomeFilter.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Income/Components/IncomeFilter.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/views/Income/IncomeList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Income/IncomeList.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Sectors/Filter.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Sectors/Filter.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -253,7 +257,8 @@
       <workItem from="1732958813148" duration="6900000" />
       <workItem from="1734462041039" duration="24013000" />
       <workItem from="1734721119047" duration="156229000" />
-      <workItem from="1738752696141" duration="25663000" />
+      <workItem from="1738752696141" duration="28518000" />
+      <workItem from="1739783748014" duration="3666000" />
     </task>
     <servers />
   </component>

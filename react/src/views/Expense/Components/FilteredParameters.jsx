@@ -34,7 +34,7 @@ export default function FilteredParameters({queries,setQuery}){
                         queries.sectorNames &&
                     <>
                         { queries.sectorNames.map((name,index)=>{
-                            return(<Badge bg="secondary m-1" key={`badge-sector-${index}`}>{name}
+                            return(<Badge bg="secondary ml-1" key={`badge-sector-${index}`}>{name}
                                 <FontAwesomeIcon icon={faClose} className={"badge-cursor float-end ml-2"} onClick={()=>updateQuery('sector',name,queries.sectorIDS[index])}/>
                             </Badge>)
                         })}

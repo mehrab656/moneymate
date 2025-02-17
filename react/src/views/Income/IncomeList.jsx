@@ -21,7 +21,7 @@ const defaultQuery = {
     income_type: "",
     orderBy: "",
     order: "",
-    limit: 10,
+    limit: "",
     to_date: "",
     from_date: "",
     account_id: "",
@@ -30,7 +30,13 @@ const defaultQuery = {
     sectorIDS: [],
     sectorNames: [],
 };
-
+const TABLE_HEAD = [
+    {id: "date", label: "Date", align: "left"},
+    {id: "description", label: "Description", align: "left"},
+    {id: "sector", label: "Sector", align: "left"},
+    {id: "category_name", label: "Source", align: "left"},
+    {id: "amount", label: "Amount", align: "right"},
+];
 export default function IncomeList() {
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
@@ -45,18 +51,16 @@ export default function IncomeList() {
     const [query, setQuery] = useState(defaultQuery);
     const {num_data_per_page,default_currency} = applicationSettings;
     const [isPaginate, setIsPaginate] = useState(false);
-    const [subTitle,setSubTitle] = useState('');
     const [showFilterModal, setShowFilterModal] = useState(false);//important
     const [hasFilter, setHasFilter] = useState(true);
     const [searchTerms, setSearchTerms] = useState("");
 
-    const TABLE_HEAD = [
-        {id: "date", label: "Date", align: "left"},
-        {id: "description", label: "Description", align: "left"},
-        {id: "sector", label: "Sector", align: "left"},
-        {id: "category_name", label: "Source", align: "left"},
-        {id: "amount", label: "Amount", align: "right"},
-    ];
+
+    useEffect(() => {
+        if (num_data_per_page>0){
+            setQuery({...query,limit: num_data_per_page})
+        }
+    }, []);
     const toggleFilterModal = () => {
         setShowFilterModal(!showFilterModal);
         setHasFilter(false);
@@ -69,6 +73,7 @@ export default function IncomeList() {
                 : 10;
     const totalPages = Math.ceil(totalCount / pageSize);
 
+
     // api call
     const {
         data: getIncomeData,
@@ -76,6 +81,7 @@ export default function IncomeList() {
         isError: incomeDataError,
     } = useGetIncomeDataQuery(
         {currentPage, pageSize, query: query},
+        {skip: !hasFilter},
         {refetchOnMountOrArgChange: isPaginate}
     );
     const [deleteIncome] = useDeleteIncomeMutation();
@@ -141,7 +147,6 @@ export default function IncomeList() {
             setIncomes(getIncomeData.data);
             setTotalCount(getIncomeData.total);
             setShowMainLoader(false);
-            setSubTitle(`Showing ${getIncomeData?.data.length} results of ${getIncomeData.total}`)
 
         } else {
             setShowMainLoader(true);
@@ -149,26 +154,9 @@ export default function IncomeList() {
         setIsPaginate(false);
     }, [getIncomeData, currentPage]);
 
-    const filteredIncomes = incomes.filter(
-        (income) => income.description.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    const filters = () => {
-        return (
-            <IncomeFilter
-                search={{
-                    filterByText: true,
-                    placeHolderTxt: "Search by name...",
-                    searchBoxValue: searchTerm,
-                    handelSearch: setSearchTerm,
-                }}
-                query={query}
-                setQuery={setQuery}
-                resetFilterParameter={resetFilterParameter}
-                handelFilter={handelFilter}
-            />
-        );
-    };
+    const filteredIncomes = incomes.filter((income) =>{
+        return (income.description.toLowerCase().includes(searchTerms.toLowerCase()));
+        });
 
     const actionParams = [
         {
@@ -206,7 +194,9 @@ export default function IncomeList() {
         setHasFilter(!hasFilter);
     };
     const closeFilterModal = ()=>{
+        setHasFilter(!hasFilter);
         setShowFilterModal(false);
+
     }
     return (
         <div>
@@ -219,7 +209,7 @@ export default function IncomeList() {
                     <button className={'btn btn-secondary btn-sm mr-2'}>
                         <FontAwesomeIcon icon={faDownload}/>{' Download CSV'}
                     </button>
-                    <button className={'btn-sm btn-add'}>
+                    <button className={'btn btn-sm btn-primary'}>
                         <FontAwesomeIcon icon={faFilter}/>{' Add Income'}
                     </button>
                 </div>
@@ -255,8 +245,7 @@ export default function IncomeList() {
                            currentPage: currentPage,
                            handlePageChange: handlePageChange,
                        }}
-                       // cardSubTitle={`Page-${currentPage} (showing ${filteredIncomes.length} results from ${totalCount})`}
-                       cardSubTitle={subTitle}
+                       cardSubTitle={`Page-${currentPage} (showing ${filteredIncomes.length} results from ${totalCount})`}
                        isFetching={incomeDataFetching}
                        hasError={incomeDataError}
             />

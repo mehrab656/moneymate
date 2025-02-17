@@ -136,7 +136,6 @@ export default function AssetsList() {
     setAsset(asset);
   };
   const showAsset = (asset) => {
-    console.log('asset', asset);
     setAsset(asset);
     setShowModal(true);
   };

@@ -222,7 +222,6 @@ export default function DebtCreate({show, closeFunc}) {
             setAccounts(modifiedAccounts);
         }
     }, [getBankData]);
-console.log(debt)
     return (
         <>
             <MainLoader loaderVisible={loading}/>

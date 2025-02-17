@@ -2,7 +2,6 @@ import React, { memo } from "react";
 import { Col, Container, Modal, Row } from "react-bootstrap";
 
 const AssetViewModal = ({ showModal, handelCloseModal, title, data:asset }) => {
-    console.log('sdsds', asset)
   return (
     <>
       <Modal
