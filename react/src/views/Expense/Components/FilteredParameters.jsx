@@ -24,6 +24,16 @@ export default function FilteredParameters({queries,setQuery}){
             sectorNames = sectorNames.filter(sectorName=> sectorName !== name);
             setQuery({...queries, sectorIDS: sectorIDS,sectorNames: sectorNames})
         }
+        if (parameter==='reference'){
+            let references = queries.reference;
+            references = references.filter(ref=> ref !== name);
+            setQuery({...queries, reference: references})
+        }
+        if (parameter==='incomeType'){
+            let incomeType = queries.income_type;
+            incomeType = incomeType.filter(type=> type !== name);
+            setQuery({...queries, income_type: incomeType})
+        }
     };
 
     return (
@@ -39,7 +49,27 @@ export default function FilteredParameters({queries,setQuery}){
                             </Badge>)
                         })}
                     </>
-                }
+                    }
+                    {
+                        queries.reference &&
+                        <>
+                            { queries.reference.map((ref,index)=>{
+                                return(<Badge bg="secondary ml-1" key={`badge-reference-${index}`}>{ref}
+                                    <FontAwesomeIcon icon={faClose} className={"badge-cursor float-end ml-2"} onClick={()=>updateQuery('reference',ref,queries.reference[index])}/>
+                                </Badge>)
+                            })}
+                        </>
+                    }
+                    {
+                        queries.income_type &&
+                        <>
+                            { queries.income_type.map((type,index)=>{
+                                return(<Badge bg="secondary ml-1" key={`badge-income-type-${index}`}>{type}
+                                    <FontAwesomeIcon icon={faClose} className={"badge-cursor float-end ml-2"} onClick={()=>updateQuery('incomeType',type,queries.income_type[index])}/>
+                                </Badge>)
+                            })}
+                        </>
+                    }
 
                     {
                         queries.limit &&

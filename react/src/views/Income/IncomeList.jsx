@@ -18,7 +18,7 @@ import ListTable from "./Components/ListTable.jsx";
 
 const defaultQuery = {
     type: "",
-    income_type: "",
+    income_type: [],
     orderBy: "",
     order: "",
     limit: "",
@@ -29,6 +29,11 @@ const defaultQuery = {
     end_date: "",
     sectorIDS: [],
     sectorNames: [],
+    check_in_date:"",
+    check_out_date:"",
+    reference:[],
+
+
 };
 const TABLE_HEAD = [
     {id: "date", label: "Date", align: "left"},

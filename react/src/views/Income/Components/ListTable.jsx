@@ -7,13 +7,13 @@ import { Tooltip } from "react-tooltip";
 function ListTable({incomes,isFetching,hasError,tableColumns,actionBtns,paginations,cardSubTitle}) {
     const tableRows=()=>{
         if (isFetching){
-            return <><tr><td colSpan={4} className={'text-center'}>Loading...</td></tr></>
+            return <><tr><td colSpan={6} className={'text-center'}>Loading...</td></tr></>
         }
         if(hasError){
-            return <tr><td colSpan={4} className={'text-center'}>Expense Loading Error...</td></tr>
+            return <tr><td colSpan={6} className={'text-center'}>Expense Loading Error...</td></tr>
         }
         if (incomes.length===0){
-            return <tr><td colSpan={4} className={'text-center'}>No data found...</td></tr>
+            return <tr><td colSpan={6} className={'text-center'}>No data found...</td></tr>
         }
         if (incomes.length>0){
             return (

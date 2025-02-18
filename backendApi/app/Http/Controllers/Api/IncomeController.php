@@ -44,6 +44,8 @@ class IncomeController extends Controller
         $to_date = $request->query('to_date');
         $type = $request->query('type');
         $account_id = $request->query('account_id');
+        $incomeType = $request->query('incomeType');
+        $reference = $request->query('reference');
 
 
         if ($from_date) {
@@ -85,9 +87,17 @@ class IncomeController extends Controller
 
             $query = $query->wherein('category_id', $categoryIds);
         }
-        if ($account_id) {
-            $query = $query->where('account_id', $category);
+        if ($incomeType){
+            $types = explode(',', $incomeType);
+            $query = $query->wherein('income_type', $types);
         }
+        if ($reference){
+            $references = explode(',', $reference);
+            $query = $query->wherein('reference', $references);
+        }
+//        if ($account_id) {
+//            $query = $query->where('account_id', $category);
+//        }
         if ($type) {
             $query = $query->where('income_type', $type);
         }
