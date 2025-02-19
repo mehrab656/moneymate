@@ -11,6 +11,7 @@ const navItems = [
   {key: 'filter-report-by-income-types', name: 'Income Type'},
   {key: 'filter-report-by-date', name: 'Date'},
   {key: 'filter-report-by-others', name: 'Others'},
+  {key: 'filter-report-by-check-status', name: 'Online Check Status'},
 ]
 const incomeReferences = [
   {value: 'air-bnb', label: 'Airbnb'},
@@ -249,6 +250,38 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
 
       </Tab.Pane>)
     }
+    if (currentTab === 'filter-report-by-check-status') {
+      return (<Tab.Pane eventKey={"filter-report-by-check-status"}>
+        <div className="form-group">
+          <Form.Label style={{marginBottom: '0px'}} className="custom-form-label">Dates</Form.Label>
+          <Form.Select size={"sm"} aria-label="Default select example" id="order"
+                       name="order"
+                       onChange={(event) => {
+                         const value = event.target.value || '';
+                         setQueryParams({...queryParams, check_for: value});
+                       }}>
+            <option>Select Date Options</option>
+            <option value={'checkinout'}>{'Checkin or Checkout'}</option>
+            <option value={'checkin'}>{'Checkin'}</option>
+            <option value={'checkout'}>{'Checkout'}</option>
+          </Form.Select>
+        </div>
+        <Form.Group controlId="start_date">
+          <Form.Label style={{marginBottom: '0px'}} className="custom-form-label">From</Form.Label>
+          <Form.Control size={"sm"} type="date" value={queryParams.check_from} onChange={(e) => {
+            setQueryParams({...queryParams, check_from: e.target.value});
+          }}/>
+        </Form.Group>
+        <Form.Group controlId="to_date">
+          <Form.Label style={{marginBottom: '0px'}} className="custom-form-label">To</Form.Label>
+          <Form.Control size={"sm"} type="date" value={queryParams.check_to} onChange={(e) => {
+            setQueryParams({...queryParams, check_to: e.target.value});
+          }}/>
+        </Form.Group>
+
+
+      </Tab.Pane>)
+    }
     if (currentTab === 'filter-report-by-others') {
       return (<Tab.Pane eventKey={"filter-report-by-others"}>
         <div className="form-group">
@@ -271,7 +304,6 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
             <option value={'refunded_amount'}>{'Refunded Amount'}</option>
           </select>
         </div>
-
         <div className="form-group">
           <label className="custom-form-label" htmlFor="income-filter-order">Order</label>
           <select
@@ -288,7 +320,6 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
             <option value={'ASC'}>{'ASCENDING'}</option>
           </select>
         </div>
-
         <div className="form-group">
           <label className="custom-form-label" htmlFor="income-filter-limit">
             Limit

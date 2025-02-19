@@ -8,6 +8,9 @@ export default function FilteredParameters({queries,setQuery}){
         if (parameter==='date'){
             setQuery({...queries,start_date:'',end_date:''})
         }
+        if (parameter==='check_for'||parameter==='check_from'||parameter==='check_to'){
+            setQuery({...queries, check_for: "",check_from: "",check_to:""})
+        }
         if (parameter==='order'){
             setQuery({...queries,order:''})
         }
@@ -76,6 +79,30 @@ export default function FilteredParameters({queries,setQuery}){
                         <>
                             <Badge bg="secondary m-1">Limit-{queries.limit}
                                 <FontAwesomeIcon icon={faClose} className={"badge-cursor float-end ml-2"} onClick={()=>updateQuery('limit')}/>
+                            </Badge>
+                        </>
+                    }
+                    {
+                        queries.check_for &&
+                        <>
+                            <Badge bg="secondary m-1">Online Check Status-{queries.check_for}
+                                <FontAwesomeIcon icon={faClose} className={"badge-cursor float-end ml-2"} onClick={()=>updateQuery('check_for')}/>
+                            </Badge>
+                        </>
+                    }
+                    {
+                        queries.check_from &&
+                        <>
+                            <Badge bg="secondary m-1">{queries.check_for==='checkinout'?'Check in from':(queries.check_for==='checkin'?'Check in from':'Check out from')}-{queries.check_from}
+                                <FontAwesomeIcon icon={faClose} className={"badge-cursor float-end ml-2"} onClick={()=>updateQuery('check_from')}/>
+                            </Badge>
+                        </>
+                    }
+                    {
+                        queries.check_to &&
+                        <>
+                            <Badge bg="secondary m-1">{queries.check_for==='checkinout'?'Check out to':(queries.check_for==='checkin'?'Check in to':'Check out to')} to-{queries.check_to}
+                                <FontAwesomeIcon icon={faClose} className={"badge-cursor float-end ml-2"} onClick={()=>updateQuery('check_to')}/>
                             </Badge>
                         </>
                     }

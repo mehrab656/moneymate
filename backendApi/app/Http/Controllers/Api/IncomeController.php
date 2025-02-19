@@ -47,6 +47,12 @@ class IncomeController extends Controller
         $incomeType = $request->query('incomeType');
         $reference = $request->query('reference');
 
+        $checkFor = $request->query('check_for');
+        $checkFrom = $request->query('check_from');
+        $checkTo = $request->query('check_to');
+
+
+
 
         if ($from_date) {
             $from_date = date('Y-m-d', strtotime($from_date));
@@ -98,6 +104,18 @@ class IncomeController extends Controller
 //        if ($account_id) {
 //            $query = $query->where('account_id', $category);
 //        }
+        if ($checkFor && $checkFrom && $checkTo) {
+
+            $from = date('Y-m-d', strtotime($checkFrom));
+            $to = date('Y-m-d', strtotime($checkTo));
+            if ($checkFor==='checkin'){
+                $query= $query->whereBetween('checkin_date', [$from, $to]);
+            }else if($checkFor === 'checkout') {
+                $query= $query->whereBetween('checkout_date', [$from, $to]);
+            }else{
+                $query= $query->whereColumn([['checkin_date', '>=', $from], ['checkout_date', '<=', $to]]);
+            }
+        }
         if ($type) {
             $query = $query->where('income_type', $type);
         }
@@ -107,6 +125,7 @@ class IncomeController extends Controller
         if ($limit) {
             $query = $query->limit($limit);
         }
+
         $incomes = IncomeResource::collection($query->skip(($page - 1) * $pageSize)->take($pageSize)->get());
 
         return response()->json([

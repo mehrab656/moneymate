@@ -29,8 +29,9 @@ const defaultQuery = {
     end_date: "",
     sectorIDS: [],
     sectorNames: [],
-    check_in_date:"",
-    check_out_date:"",
+    check_for:"checkinout",
+    check_from:"",
+    check_to:"",
     reference:[],
 
 
