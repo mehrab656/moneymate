@@ -234,7 +234,7 @@ class ReportController extends Controller {
 		            ->where( 'company_id', Auth::user()->primary_company )->where( 'refundable_amount', '>', 0 )
 		            ->whereNull( 'deleted_at' );
 
-		$investments = DB::table( 'investments' )->selectRaw( 'sum(amount) as amount, investor_id, name' )
+		$investments = DB::table( 'investments' )->selectRaw( 'sum(amount) as amount, investor_id,concat(first_name, " ", last_name) as name' )
 		                 ->join( 'users', 'investments.investor_id', '=', 'users.id' )
 		                 ->where( 'company_id', Auth::user()->primary_company )
 		                 ->whereNull( 'investments.deleted_at' )
@@ -245,12 +245,13 @@ class ReportController extends Controller {
 		             ->whereNull( 'incomes.deleted_at' )
 		             ->groupBy( [ 'category_id', 'name' ] );
 
-		$expense         = DB::table( 'expenses' )->selectRaw( 'COALESCE(sum(amount), 0) as amount, sector_id, sectors.name' )
-		                     ->where( 'sectors.company_id', Auth::user()->primary_company )
-		                     ->join( 'categories', 'expenses.category_id', '=', 'categories.id' )
-		                     ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
-		                     ->whereNull( 'expenses.deleted_at' )
-		                     ->groupBy( [ 'sector_id', 'sectors.name' ] );
+		$expense = DB::table( 'expenses' )->selectRaw( 'COALESCE(sum(amount), 0) as amount, sector_id, sectors.name' )
+            ->where( 'sectors.company_id', Auth::user()->primary_company )
+            ->join( 'categories', 'expenses.category_id', '=', 'categories.id' )
+            ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
+            ->whereNull( 'expenses.deleted_at' )
+            ->groupBy( [ 'sector_id', 'sectors.name' ] );
+
 		$totalInvestment = DB::table( 'investments' )->where( 'company_id', Auth::user()->primary_company )->whereNull( 'deleted_at' );
 		$totalIncome     = DB::table( 'incomes' )->where( 'company_id', Auth::user()->primary_company )->whereNull( 'deleted_at' );
 		$totalExpense    = DB::table( 'expenses' )->where( 'company_id', Auth::user()->primary_company )->whereNull( 'deleted_at' );

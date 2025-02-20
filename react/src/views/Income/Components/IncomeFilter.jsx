@@ -91,7 +91,6 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
     setReloadSectors(true);
   }
 
-  console.log(queryParams)
   const showCurrentPan = (currentTab) => {
     if (currentTab === 'filter-report-by-sector') {
       return (

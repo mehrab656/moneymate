@@ -566,7 +566,7 @@ class SectorModelController extends Controller
                 'reference' => 'Automated Payment for : ' . $sector->name . ' ' . strtoupper($request->type),
                 'date' => $date
             ]);
-            DB::table('payments')
+            $updatedPayment = DB::table('payments')
                 ->where('id', $id)
                 ->update([
                     'status' => 'paid',
@@ -605,8 +605,8 @@ class SectorModelController extends Controller
         }
 
         return response()->json([
-            'description' => 'Bill paid successfully!',
-            'message' => 'success'
+            'message' => sprintf("%s's bill has been paid successfully", $request->payment_number),
+            'status'=>200,
         ]);
     }
 
