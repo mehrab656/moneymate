@@ -164,7 +164,7 @@ const Header = ({
             </MenuItem>
             <MenuItem
               component={Link}
-              to="/application-settings"
+              to="/settings"
               onClick={handleClose}
             >
               Activity Log
@@ -173,10 +173,10 @@ const Header = ({
             {userRole === "admin" && (
               <MenuItem
                 component={Link}
-                to="/application-settings"
+                to="/settings"
                 onClick={handleClose}
               >
-                Application Settings
+                Settings
               </MenuItem>
             )}
 

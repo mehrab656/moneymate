@@ -333,9 +333,9 @@ const SideMenus = ({isActive,toggleSubmenu,handleCloseSidebar,user, submenuTrans
         subMenus: [
           {
             className: 'aside-menu-item',
-            link: { to: '/application-settings', className: isActive('/application-settings') ? 'active' : '' },
+            link: { to: '/settings', className: isActive('/settings') ? 'active' : '' },
             icon: faCog,
-            text: 'Appli... Settings',
+            text: 'Settings',
             permission: 'admin'
           },
           {

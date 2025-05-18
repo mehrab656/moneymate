@@ -12,7 +12,7 @@ import {
     useGetSingleIncomeDataQuery,
     useUploadCsvMutation
 } from "../../api/slices/incomeSlice.js";
-import { Box, FormControl, TextField} from "@mui/material";
+import {Box, FormControl, TextField} from "@mui/material";
 import FormLabel from "@mui/material/FormLabel";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -33,14 +33,14 @@ const defaultData = {
     reference: [],
     amount: "", // Set default value to an empty string
     description: "",
-    date: null,
-    checkin_date: null,
-    checkout_date: null,
-    deposit: null,
+    date: "",
+    checkin_date: "",
+    checkout_date: "",
+    deposit: "",
     note: "",
     attachment: "",
-
 }
+
 const defaultReference = [
     {value: 'air-bnb', label: 'Airbnb'},
     {value: 'booking', label: 'Booking.com'},
@@ -74,7 +74,7 @@ export default function IncomeForm({handelCloseModal, title, id}) {
     const [channel, setChannel] = useState('airbnb')
     const [csvFile, setCSVFile] = useState({});
     const [csvBtnTxt, setCsvBtnText] = useState("Upload");
-
+    const [csvBtnStatus, setCsvBtnStatus] = useState(false);
     const {
         data: getSingleIncomeData,
     } = useGetSingleIncomeDataQuery({
@@ -132,7 +132,8 @@ export default function IncomeForm({handelCloseModal, title, id}) {
     const submitCSVFile = async (e) => {
         e.preventDefault();
         // e.currentTarget.disabled = true;
-        setCsvBtnText("Uploading...")
+        setCsvBtnText("Uploading...");
+        setCsvBtnStatus(true);
         let csvFormData = new FormData();
         csvFormData.append("channel", channel);
         csvFormData.append("csvFile", csvFile);
@@ -143,17 +144,18 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                 url: '/income/add-csv', formData: {
                     channel: channel,
                     csvFile: csvFile,
-                    category_id: channel === 'booking' ? csvCategoryValue.value : 0
+                    category_id: csvCategoryValue.value
                 }
             }).unwrap();
             notification("success", data?.message, data?.description);
             handelCloseModal();
         } catch (err) {
+            setCsvBtnText("Upload");
+            setCsvBtnStatus(false);
             if (err.status === 406) {
                 setShowExistingTask(true);
                 setExistingTask(err?.errorData?.data);
             } else if (err.status === 422) {
-                setErrors(err.errorData?.errors);
                 notification("error", err?.message);
             } else {
                 notification(
@@ -161,7 +163,6 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                     err?.message || "An error occurred",
                     err?.description || "Please try again later."
                 );
-                setErrors({});
             }
         }
     }
@@ -192,15 +193,17 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                 setShowExistingTask(true);
                 setExistingTask(err?.errorData?.data);
             } else if (err.status === 422) {
-                setErrors(err.errorData?.errors);
-                notification("error", err?.message);
+                notification(
+                    "error",
+                    err?.message || "An error occurred",
+                    err?.description || "Please fill the required fields."
+                );
             } else {
                 notification(
                     "error",
                     err?.message || "An error occurred",
                     err?.description || "Please try again later."
                 );
-                setErrors({});
             }
         }
     };
@@ -258,31 +261,28 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                             </RadioGroup>
                                         </FormControl></div>
 
-                                    {
-                                        channel === 'booking' &&
-                                        <div className=''>
-                                            <Form.Group className="mb-3" controlId="category_id">
-                                                <Form.Label style={{marginBottom: '0px'}}
-                                                            className="custom-form-label">Category</Form.Label>
-                                                <Select
-                                                    className="basic-single"
-                                                    classNamePrefix="select"
-                                                    value={csvCategoryValue}
-                                                    isSearchable={true}
-                                                    name="category_id"
-                                                    isLoading={categoryIsFetching}
-                                                    options={categories}
-                                                    onChange={(event) => {
-                                                        setCsvCategoryValue(event)
-                                                    }}
-                                                />
-                                            </Form.Group>
-                                        </div>
-                                    }
+                                    <div className=''>
+                                        <Form.Group className="mb-1" controlId="category_id">
+                                            <Form.Label style={{marginBottom: '0px'}}
+                                                        className="custom-form-label">Category</Form.Label>
+                                            <Select
+                                                className="basic-single"
+                                                classNamePrefix="select"
+                                                value={csvCategoryValue}
+                                                isSearchable={true}
+                                                name="category_id"
+                                                isLoading={categoryIsFetching}
+                                                options={categories}
+                                                onChange={(event) => {
+                                                    setCsvCategoryValue(event)
+                                                }}
+                                            />
+                                        </Form.Group>
+                                    </div>
                                 </form>
                             </Modal.Body>
                             <Modal.Footer>
-                                <Button loading className="btn-sm load" variant="primary" onClick={submitCSVFile}>
+                                <Button loading className="btn-sm load" variant="primary" disabled={csvBtnStatus} onClick={submitCSVFile}>
                                     {csvBtnTxt}
                                 </Button>
                             </Modal.Footer>
@@ -300,7 +300,7 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                     }
                                     <Row>
                                         <Col xs={12} md={12} lg={12} sm={12}>
-                                            <Form.Group className="mb-3" controlId="description">
+                                            <Form.Group className="mb-1" controlId="description">
                                                 <Form.Label style={{marginBottom: '0px'}}
                                                             className="custom-form-label">Description</Form.Label>
                                                 <Form.Control
@@ -321,7 +321,7 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                     </Row>
                                     <Row>
                                         <Col xs={12} md={6} lg={6} sm={12}>
-                                            <Form.Group className="mb-3" controlId="amount">
+                                            <Form.Group className="mb-1" controlId="amount">
                                                 <Form.Label style={{marginBottom: '0px'}}
                                                             className="custom-form-label">Amount</Form.Label>
                                                 <Form.Control
@@ -335,11 +335,11 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                             </Form.Group>
                                         </Col>
                                         <Col xs={12} md={6} lg={6} sm={12}>
-                                            <Form.Group className="mb-3" controlId="account">
+                                            <Form.Group className="mb-1" controlId="account">
                                                 <Form.Label style={{marginBottom: '0px'}}
                                                             className="custom-form-label">Account</Form.Label>
                                                 <Select
-                                                    className="basic-single"
+                                                    className={"basic-single"}
                                                     classNamePrefix="select"
                                                     value={income.account}
                                                     isSearchable={true}
@@ -355,7 +355,7 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                     </Row>
                                     <Row>
                                         <Col xs={12} md={4} lg={4} sm={12}>
-                                            <Form.Group className="mb-3" controlId="category_id">
+                                            <Form.Group className="mb-1" controlId="category_id">
                                                 <Form.Label style={{marginBottom: '0px'}}
                                                             className="custom-form-label">Category</Form.Label>
                                                 <Select
@@ -373,7 +373,7 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                             </Form.Group>
                                         </Col>
                                         <Col xs={12} md={4} lg={4} sm={12}>
-                                            <Form.Group className="mb-3" controlId="refrence">
+                                            <Form.Group className="mb-1" controlId="refrence">
                                                 <Form.Label style={{marginBottom: '0px'}}
                                                             className="custom-form-label">Reference</Form.Label>
                                                 <Select
@@ -391,7 +391,7 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                             </Form.Group>
                                         </Col>
                                         <Col xs={12} md={4} lg={4} sm={12}>
-                                            <Form.Group className="mb-3" controlId="income_type">
+                                            <Form.Group className="mb-1" controlId="income_type">
                                                 <Form.Label style={{marginBottom: '0px'}}
                                                             className="custom-form-label">Income Type</Form.Label>
                                                 <Select
@@ -411,7 +411,7 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                     </Row>
                                     <Row>
                                         <Col xs={12} md={4} lg={4} sm={12}>
-                                            <Form.Group className="mb-3" controlId="date">
+                                            <Form.Group className="mb-1" controlId="date">
                                                 <Form.Label className="custom-form-label">Date</Form.Label>
                                                 <Form.Control
                                                     type="date"
@@ -426,7 +426,7 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                             income.income_type.value === 'reservation' &&
                                             <>
                                                 <Col xs={12} md={4} lg={4} sm={12}>
-                                                    <Form.Group className="mb-3" controlId="checkInDate">
+                                                    <Form.Group className="mb-1" controlId="checkInDate">
                                                         <Form.Label className="custom-form-label">Check in
                                                             date</Form.Label>
                                                         <Form.Control
@@ -439,7 +439,7 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                                     </Form.Group>
                                                 </Col>
                                                 <Col xs={12} md={4} lg={4} sm={12}>
-                                                    <Form.Group className="mb-3" controlId="checkOutDate">
+                                                    <Form.Group className="mb-1" controlId="checkOutDate">
                                                         <Form.Label className="custom-form-label">Checkout
                                                             Date</Form.Label>
                                                         <Form.Control
@@ -452,7 +452,8 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                                                 setReservationValidationClass(validation.class);
                                                             }}
                                                         />
-                                                        <span className={'text-' + reservationValidationClass}><small>{reservationValidation}</small></span>
+                                                        <span
+                                                            className={'text-' + reservationValidationClass}><small>{reservationValidation}</small></span>
                                                     </Form.Group>
                                                 </Col>
                                             </>
@@ -460,7 +461,7 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                     </Row>
                                     <Row>
                                         <Col xs={12} md={12} lg={12} sm={12}>
-                                            <Form.Group className="mb-3" controlId="note">
+                                            <Form.Group className="mb-1" controlId="note">
                                                 <Form.Label style={{marginBottom: '0px'}}
                                                             className="custom-form-label">Note</Form.Label>
                                                 <Form.Control
@@ -481,7 +482,7 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                     </Row>
                                     <Row>
                                         <Col xs={12} md={12} lg={12} sm={12}>
-                                            <Form.Group className="mb-3" controlId="attachment">
+                                            <Form.Group className="mb-1" controlId="attachment">
                                                 <Form.Label> Attachments</Form.Label>
                                                 <Form.Control
                                                     type="file"

@@ -38,6 +38,7 @@
     34 => 'App\\Providers\\AuthServiceProvider',
     35 => 'App\\Providers\\EventServiceProvider',
     36 => 'App\\Providers\\RouteServiceProvider',
+    37 => 'Berkayk\\OneSignal\\OneSignalServiceProvider',
   ),
   'eager' => 
   array (
@@ -63,6 +64,7 @@
     19 => 'App\\Providers\\AuthServiceProvider',
     20 => 'App\\Providers\\EventServiceProvider',
     21 => 'App\\Providers\\RouteServiceProvider',
+    22 => 'Berkayk\\OneSignal\\OneSignalServiceProvider',
   ),
   'deferred' => 
   array (

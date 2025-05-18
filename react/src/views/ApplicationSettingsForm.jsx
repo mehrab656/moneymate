@@ -7,21 +7,42 @@ import {SettingsContext} from "../contexts/SettingsContext";
 import MainLoader from "../components/MainLoader.jsx";
 import { Autocomplete, Box, Chip, TextField } from "@mui/material";
 import { notification } from "../components/ToastNotification.jsx";
+import Tab from 'react-bootstrap/Tab';
+import Tabs from 'react-bootstrap/Tabs';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Form from 'react-bootstrap/Form';
+
+const defaultApplicationSettings= {
+    company_name: "",
+    web_site: "",
+    default_currency: "",
+    phone: "",
+    landline_number: "",
+    address: "",
+    num_data_per_page: "",
+    public_key: "",
+    secret_key: "",
+    registration_type: "",
+    subscription_price: null,
+    product_api_id: "",
+    associative_categories:[],
+    host_away_api_key:"",
+    host_away_client_id:"",
+
+}
+
+const tabSections = [
+    {eventKey:"profile",title:"Profile"},
+    {eventKey:"company",title:"Company"},
+    {eventKey:"general",title:"General"},
+    {eventKey:"integration",title:"Integrations"},
+    {eventKey:"notification",title:"Notifications"},
+]
 export default function ApplicationSettingsForm() {
-    const [applicationSettings, setApplicationSettings] = useState({
-        company_name: "",
-        web_site: "",
-        default_currency: "",
-        phone: "",
-        address: "",
-        num_data_per_page: "",
-        public_key: "",
-        secret_key: "",
-        registration_type: "",
-        subscription_price: null,
-        product_api_id: "",
-        associative_categories:[]
-    });
+    const [applicationSettings, setApplicationSettings] = useState(defaultApplicationSettings);
+    const [settings, setSettings] = useState(defaultApplicationSettings);
     const [errors, setErrors] = useState(null);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -112,14 +133,34 @@ export default function ApplicationSettingsForm() {
         getCategories()
     },[])
 
+    const sectionBody = (eventKey)=>{
+        if (eventKey==="profile"){ return (<>
+        </>)}
+        if (eventKey==="company"){ return (<>this is {eventKey}</>)}
+        if (eventKey==="general"){ return (<>this is {eventKey}</>)}
+        if (eventKey==="integration"){ return (<>this is {eventKey}</>)}
+        if (eventKey==="notification"){ return (<> this is {eventKey}</>)}
+    }
 
 
     return (
         <>
         <MainLoader loaderVisible={loading} />
-            <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
-                <h1 className="title-text mb-0">Application settings</h1>
-            </div>
+            <Tabs
+                defaultActiveKey="profile"
+                id="settings-tab"
+                className="mb-3"
+                fill
+            >
+                {
+                    tabSections.map(section=>(
+                        <Tab eventKey={section.eventKey} title={section.title}>
+                            {sectionBody(section.eventKey)}
+                        </Tab>
+                    ))
+                }
+
+            </Tabs>
             <WizCard className="animated fadeInDown">
                 {saving && (
                     <div className="loading-container">
@@ -137,30 +178,7 @@ export default function ApplicationSettingsForm() {
                     <form className="custom-form" onSubmit={applicationSettingsSubmit}>
                         <div className="row">
                             <div className="col-6">
-                                <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="company_name">
-                                        Company Name
-                                    </label>
-                                    <input
-                                        className="custom-form-control"
-                                        name="company_name"
-                                        value={applicationSettings.company_name || ""}
-                                        onChange={handleChange}
-                                        placeholder="Company Name"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="web_site">
-                                        Web Site
-                                    </label>
-                                    <input
-                                        className="custom-form-control"
-                                        name="web_site"
-                                        value={applicationSettings.web_site || ""}
-                                        onChange={handleChange}
-                                        placeholder="Web Site"
-                                    />
-                                </div>
+
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="default_currency">
                                         Default Currency
@@ -190,30 +208,8 @@ export default function ApplicationSettingsForm() {
                                 </div>
                             </div>
                             <div className="col-6">
-                                <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="phone">
-                                        Company Phone
-                                    </label>
-                                    <input
-                                        className="custom-form-control"
-                                        name="phone"
-                                        value={applicationSettings.phone || ""}
-                                        onChange={handleChange}
-                                        placeholder="Phone"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label className="custom-form-label" htmlFor="address">
-                                        Company Address
-                                    </label>
-                                    <input
-                                        className="custom-form-control"
-                                        name="address"
-                                        value={applicationSettings.address || ""}
-                                        onChange={handleChange}
-                                        placeholder="Address"
-                                    />
-                                </div>
+
+
                                 <div className="form-group">
                                     <label className="custom-form-label" htmlFor="address">
                                         Number of data per page
@@ -241,7 +237,7 @@ export default function ApplicationSettingsForm() {
                                         data-role="tagsinput"
                                     />
                                 </div> */}
-                                <Box sx={{mt:4}}>
+                                <Box sx={{mt: 4}}>
                                     <Autocomplete
                                         name="associative_categories"
                                         defaultValue={applicationSettings?.associative_categories}
@@ -253,22 +249,23 @@ export default function ApplicationSettingsForm() {
                                                 ...applicationSettings,
                                                 ['associative_categories']: newValue || ""
                                             })
-                                            
+
                                         }}
                                         freeSolo
                                         renderTags={(value, getTagProps) =>
-                                        value.map((option, index) => (
-                                            <Chip variant="outlined"  name="associative_categories" label={option} {...getTagProps({ index })} />
-                                        ))
+                                            value.map((option, index) => (
+                                                <Chip variant="outlined" name="associative_categories"
+                                                      label={option} {...getTagProps({index})} />
+                                            ))
                                         }
                                         renderInput={(params) => (
-                                        <TextField
-                                        name="associative_categories"
-                                            {...params}
-                                            variant="filled"
-                                            label="Associative Categories"
-                                            placeholder="Associative Categories"
-                                        />
+                                            <TextField
+                                                name="associative_categories"
+                                                {...params}
+                                                variant="filled"
+                                                label="Associative Categories"
+                                                placeholder="Associative Categories"
+                                            />
                                         )}
                                     />
                                 </Box>
@@ -317,38 +314,67 @@ export default function ApplicationSettingsForm() {
                                         placeholder="Associative Categories"
                                     /> */}
 
-                                    <Box sx={{mt:4}}>
-                                    <Autocomplete
-                                        name="associative_categories"
-                                        multiple
-                                        options={[]}
-                                        onChange={(event, newValue) => {
-                                            setApplicationSettings({
-                                                ...applicationSettings,
-                                                ['associative_categories']: newValue || ""
-                                            })
-                                            
-                                        }}
-                                        freeSolo
-                                        renderTags={(value, getTagProps) =>
-                                        value.map((option, index) => (
-                                            <Chip variant="outlined"  name="associative_categories" label={option} {...getTagProps({ index })} />
-                                        ))
-                                        }
-                                        renderInput={(params) => (
-                                        <TextField
-                                        name="associative_categories"
-                                            {...params}
-                                            variant="filled"
-                                            label="Associative Categories"
-                                            placeholder="Associative Categories"
+                                    <Box sx={{mt: 4}}>
+                                        <Autocomplete
+                                            name="associative_categories"
+                                            multiple
+                                            options={[]}
+                                            onChange={(event, newValue) => {
+                                                setApplicationSettings({
+                                                    ...applicationSettings,
+                                                    ['associative_categories']: newValue || ""
+                                                })
+
+                                            }}
+                                            freeSolo
+                                            renderTags={(value, getTagProps) =>
+                                                value.map((option, index) => (
+                                                    <Chip variant="outlined" name="associative_categories"
+                                                          label={option} {...getTagProps({index})} />
+                                                ))
+                                            }
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    name="associative_categories"
+                                                    {...params}
+                                                    variant="filled"
+                                                    label="Associative Categories"
+                                                    placeholder="Associative Categories"
+                                                />
+                                            )}
                                         />
-                                        )}
-                                    />
-                                </Box>
-                                    
+                                    </Box>
+
                                 </div>
                             )}
+
+                            <p><b>Third Party Connection</b></p>
+                            <div className="form-group">
+                                <label className="custom-form-label" htmlFor="host_away_client_id">
+                                    Hostaway Client ID
+                                </label>
+                                <input
+                                    type="number"
+                                    className="custom-form-control"
+                                    name="host_away_client_id"
+                                    value={applicationSettings.host_away_client_id || ""}
+                                    onChange={handleChange}
+                                    placeholder="Hostaway client id"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="custom-form-label" htmlFor="host_away_api_key">
+                                    Hostaway Api Secret
+                                </label>
+                                <input
+                                    type="text"
+                                    className="custom-form-control"
+                                    name="host_away_api_key"
+                                    value={applicationSettings.host_away_api_key || ""}
+                                    onChange={handleChange}
+                                    placeholder="Hostaway Api Secret"
+                                />
+                            </div>
                         </div>
                         <br/>
                         <button className="custom-btn btn-add">Save Settings</button>

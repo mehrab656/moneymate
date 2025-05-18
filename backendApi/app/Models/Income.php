@@ -53,134 +53,81 @@ class Income extends Model
         return $this->belongsTo(Category::class, 'category_id', 'id');
     }
 
-    public function mapCSVWithAirbnb(array $file): array
+    public function buildIncomeDatesetFromCSV($data,$channel)
     {
-        $this->builtDataFromAirbnbCSV($file);
-        unset($file[0]);
 
-        foreach ($file as $inc) {
+        $incomeAmount = str_replace('"', '', $data[12]);
+        $incomeCurrency = trim($data[17]);
+        $incomeDataSet = [
+            'date' => date('Y-m-d', strtotime(str_replace("\"", '', $data[2]))), // actually booking date,
+            'checkin_date' => date('Y-m-d', strtotime(str_replace("\"", '', $data[3]))),
+            'checkout_date' => date('Y-m-d', strtotime(str_replace("\"", '', $data[4]))),
+            'description' => str_replace("\"", '', $data[6]),
+            'amount' => str_replace('"', '', $data[12]),
+        ];
 
-            $income = explode(',', $file[2]);
-
-            if ($income[2] == 'Reservation') {
-
-                if ($income[12] === 'USD') {
-                    $req_url = 'https://v6.exchangerate-api.com/v6/34613ea34951b619f1ff2fde/latest/USD';
-                    $response_json = file_get_contents($req_url);
-
-                    $response = json_decode($response_json);
-                    $conversion_rates = $response->conversion_rates;
-
-                    $amount = round($conversion_rates->AED * $income[13], 2); //Amount in AED
-                } else {
-                    $amount = $income[13];
-                }
-
-                $incomes[] = [
-                    'user_id' => Auth::user()->id,
-                    'type' => $income[2],
-//				'account_id',
-                    'amount' => $amount,
-//				'category_id'=>$income[],
-                    'description' => $income[8],
-                    'note' => "Imported From CSV File, income Reference :" . $income[3],
-                    'reference' => 'airbnb',
-                    'date' => $income[0],
-                    'income_type' => 'reservation',
-                    'checkin_date' => $income[5],
-                    'checkout_date' => $income[6],
-//				'attachment'=>$income[]
-                ];
-            }
-
+        if ($incomeCurrency === 'USD') {
+            $req_url = 'https://v6.exchangerate-api.com/v6/34613ea34951b619f1ff2fde/latest/USD';
+            $response_json = file_get_contents($req_url);
+            $response = json_decode($response_json);
+            $conversion_rates = $response->conversion_rates;
+            $incomeDataSet['amount'] = round($conversion_rates->AED * $incomeAmount, 2); //Amount in AED
         }
 
-        return $incomes;
 
-    }
-
-    public function builtDataFromAirbnbCSV($file)
-    {
-        $headers = explode(",", $file[0]);
-        unset($file[0]);
-//		$incomeSet = [];
-        foreach ($file as $inc) {
-            $income = explode(",", $inc);
-
-            foreach ($headers as $key => $header) {
-                $data[$header] = $income[$key];
-            }
-            $incomeSet[] = $data;
+        if ($channel==='airbnb'){
+            $incomeDataSet += [
+                'income_type'=>$data[10],
+                'reference' => sprintf("Airbnb booking reservation Number: %s",$data[1]),
+                'note' => sprintf("This income was imported by CSV where Listing id  is '%s' and reservation reference is '%s'", $data[0], $data[1]),
+            ];
+        }
+        if ($channel==='booking'){
+            $incomeDataSet += [
+                'income_type'=>'reservation',
+                'reference' => sprintf("Booking.com reservation Number: %s",$data[0]),
+                'note' => sprintf("This income was imported by CSV where reservation reference id '%s' and invoice number '%s'", $data[0], $data[1]),
+            ];
         }
 
-        echo '<pre>';
-        print_r($incomeSet);
-        echo '</pre>';
-        exit();
+
+        return $incomeDataSet;
     }
 
     /**
      * @throws Throwable
      */
-    public function mapCSVWithBooking(array $files, $category): array
+    public function extractIncomeFromCSV(array $files, $category,$channel='booking'): array
     {
         unset($files[0]);
-
         $sector = DB::table('sectors')->select('*')
             ->join('categories', 'categories.sector_id', '=', 'sectors.id')
             ->where('categories.id', '=', $category->id)
             ->first();
 
         foreach ($files as $file) {
-            $incomeData = explode(',', $file);
-            $incomeType = strtolower($incomeData[0]);
+            $incomeData = explode(',', str_replace('"', '', $file));
 
-            if ($incomeType == 'reservation') {
-                $incomeCurrency = $incomeData[6];
-                $incomeAmount = $incomeData[12];
-                $checkInDate = date('Y-m-d', strtotime(str_replace("\"", '', $incomeData[2])));
-                $checkOutDate = date('Y-m-d', strtotime(str_replace("\"", '', $incomeData[3])));
-                $paymentDate = date('Y-m-d', strtotime(str_replace("\"", '', $incomeData[13])));
+            $income = $this->buildIncomeDatesetFromCSV($incomeData,$channel);
+            $income += [
+                'user_id' => Auth::user()->id,
+                'account_id' => $sector->payment_account_id,
+                'category_id' => $category->id,
+                'attachment' => '',
+            ];
 
-                //@todo FIX me with API Paid ENDPOINTS
-                if ($incomeCurrency === 'USD') {
-                    $req_url = 'https://v6.exchangerate-api.com/v6/34613ea34951b619f1ff2fde/latest/USD';
-                    $response_json = file_get_contents($req_url);
-                    $response = json_decode($response_json);
-                    $conversion_rates = $response->conversion_rates;
-                    $amount = round($conversion_rates->AED * $incomeAmount, 2); //Amount in AED
-                }
-                $income = [
-                    'user_id' => Auth::user()->id,
-                    'account_id' => $sector->payment_account_id,
-                    'amount' => $incomeAmount,
-                    'category_id' => $category->id,
-                    'description' => str_replace("\"", '', $incomeData[4]),
-                    'note' => sprintf("This income was imported by CSV where reservation reference id '%s' and payout reference '%s'", $incomeData[1], $incomeData[14]),
-                    'reference' => 'booking',
-                    'date' => $paymentDate,
-                    'income_type' => $incomeType,
-                    'checkin_date' => $checkInDate,
-                    'checkout_date' => $checkOutDate,
-                    'attachment' => '',
+            $isAdded = $this->incomeAdd($income, $category);
+
+            if ($isAdded['status_code'] != 200) {
+                return [
+                    'status_code' => $isAdded['status_code'],
+                    'message' => $isAdded['message']
                 ];
-
-                $isAdded = $this->incomeAdd($income, $category);
-
-                if ($isAdded['status_code'] != 200) {
-                    return [
-                        'status_code' => $isAdded['status_code'],
-                        'message' => $isAdded['message']
-                    ];
-                }
             }
-
         }
-
         return [
             'status_code' => 200,
             'message' => 'CSV has been successfully imported!',
-            'payment_date' => $paymentDate
         ];
 
     }
@@ -197,7 +144,7 @@ class Income extends Model
 
             $total_reservation_days = $checkoutDate->diff($checkinDate)->format("%a");
 
-            $daily_rent = $income['amount'] / $total_reservation_days;
+            $daily_rent = floatval(str_replace('"','',$income['amount'])) / $total_reservation_days;
 
             try {
                 DB::beginTransaction();
@@ -414,19 +361,19 @@ class Income extends Model
             ];
         }
         $income->delete();
-        $bankAccount = BankAccount::find( $income->account_id );
-        if ( $income->amount > 0 ) {
+        $bankAccount = BankAccount::find($income->account_id);
+        if ($income->amount > 0) {
             $bankAccount->balance -= $income->amount;
             $bankAccount->save();
         }
 
-        storeActivityLog( [
-            'object_id'    => $income->id,
-            'log_type'     => 'delete',
-            'module'       => 'income',
+        storeActivityLog([
+            'object_id' => $income->id,
+            'log_type' => 'delete',
+            'module' => 'income',
             'descriptions' => "",
-            'data_records' => array_merge( json_decode( json_encode( $income ), true ), [ 'account_balance' => $bankAccount->balance ] ),
-        ] );
+            'data_records' => array_merge(json_decode(json_encode($income), true), ['account_balance' => $bankAccount->balance]),
+        ]);
 
         return [
             'message' => 'success',

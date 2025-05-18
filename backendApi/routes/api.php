@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\ExpenseController;
 use App\Http\Controllers\Api\FileDownloadController;
 use App\Http\Controllers\Api\FinanceController;
+use App\Http\Controllers\Api\HostAwayController;
 use App\Http\Controllers\Api\IncomeController;
 use App\Http\Controllers\Api\InvestmentController;
 use App\Http\Controllers\Api\LendController;
@@ -23,6 +24,7 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SectorModelController;
+use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\UserController;
@@ -122,7 +124,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Application Settings Api
 
-    Route::put('/store-application-setting', [ApplicationSettingsController::class, 'storeApplicationSetting']);
+    Route::put('/store-application-setting', [SettingsController::class, 'storeSettings']);
 
 
     // Budget Api
@@ -260,6 +262,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/employee/{id}', [EmployeeController::class, 'update']);
     Route::get('/employees', [EmployeeController::class, 'allEmployees']);
 
+    Route::get('upcoming-payments', [NotificationController::class, 'sendUpcomingPaymentsNotification']);
+
+    //HostAway Controllers
+    Route::get('/reservations', [HostAwayController::class, 'getReservations']);
+    Route::get('/getToken', [HostAwayController::class, 'getAccessTokes']);
+    Route::get('/getConnectionStatus', [HostAwayController::class, 'getConnectionStatus']);
+    Route::post('/connect-host-away', [HostAwayController::class, 'connectHostAway']);
+
 
 });
 
@@ -281,7 +291,6 @@ Route::get('migrate', function () {
     Artisan::call('migrate');
     dd('New Files has been Migrated');
 });
-Route::get('upcoming-payments', [NotificationController::class, 'sendUpcomingPaymentsNotification']);
 
 
 

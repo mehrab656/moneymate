@@ -16,13 +16,12 @@ export const taskSlice = createApi({
                 return {
                     url: `all-tasks?currentPage=${currentPage}&pageSize=${pageSize}&employee_id=${query?.employee_id}&status=${query?.status}&payment_status=${query?.payment_status}&orderBy=${query?.orderBy}&order=${query?.order}&limit=${query?.limit}&category_id=${query?.category_id}&end_date=${query?.end_date}&start_date=${query?.start_date}`,
                     method: "GET",
-                    headers: {
-                        Authorization: `Bearer ${globalToken}`,
-                    },
+                    headers: {Authorization: `Bearer ${globalToken}`},
                 };
             },
             providesTags: ["task"],
         }),
+
         myTaskData: builder.query({
             query: ({
                         query
@@ -30,9 +29,7 @@ export const taskSlice = createApi({
                 return {
                     url: `my-tasks?quickFilter=${query?.quickFilter}&status=${query?.status}&fromDate=${query?.toDate}&toDate=${query?.fromDate}`,
                     method: "GET",
-                    headers: {
-                        Authorization: `Bearer ${globalToken}`,
-                    },
+                    headers: {Authorization: `Bearer ${globalToken}`},
                 };
             },
             providesTags: ["task"],
@@ -48,7 +45,6 @@ export const taskSlice = createApi({
                         },
                     };
                 }
-
             },
             providesTags: ["task"],
         }),

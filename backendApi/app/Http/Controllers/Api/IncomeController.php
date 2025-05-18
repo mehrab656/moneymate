@@ -52,8 +52,6 @@ class IncomeController extends Controller
         $checkTo = $request->query('check_to');
 
 
-
-
         if ($from_date) {
             $from_date = date('Y-m-d', strtotime($from_date));
         }
@@ -78,26 +76,26 @@ class IncomeController extends Controller
                 ->whereIn('slug', $sectorSlugs)
                 ->get(['id'])->toArray();
 
-            $ids  = array_map(function ($item){
+            $ids = array_map(function ($item) {
                 return $item->id;
             }, $sectorIDS); // these are sectors ids
 
             $categories = DB::table('categories')
                 ->whereIn('sector_id', $ids)
-                ->where(["type"=>"income"])
+                ->where(["type" => "income"])
                 ->get(['id'])->toArray();
 
-            $categoryIds = array_map(function ($item){
+            $categoryIds = array_map(function ($item) {
                 return $item->id;
             }, $categories);
 
             $query = $query->wherein('category_id', $categoryIds);
         }
-        if ($incomeType){
+        if ($incomeType) {
             $types = explode(',', $incomeType);
             $query = $query->wherein('income_type', $types);
         }
-        if ($reference){
+        if ($reference) {
             $references = explode(',', $reference);
             $query = $query->wherein('reference', $references);
         }
@@ -108,12 +106,12 @@ class IncomeController extends Controller
 
             $from = date('Y-m-d', strtotime($checkFrom));
             $to = date('Y-m-d', strtotime($checkTo));
-            if ($checkFor==='checkin'){
-                $query= $query->whereBetween('checkin_date', [$from, $to]);
-            }else if($checkFor === 'checkout') {
-                $query= $query->whereBetween('checkout_date', [$from, $to]);
-            }else{
-                $query= $query->whereColumn([['checkin_date', '>=', $from], ['checkout_date', '<=', $to]]);
+            if ($checkFor === 'checkin') {
+                $query = $query->whereBetween('checkin_date', [$from, $to]);
+            } else if ($checkFor === 'checkout') {
+                $query = $query->whereBetween('checkout_date', [$from, $to]);
+            } else {
+                $query = $query->whereColumn([['checkin_date', '>=', $from], ['checkout_date', '<=', $to]]);
             }
         }
         if ($type) {
@@ -131,7 +129,7 @@ class IncomeController extends Controller
         return response()->json([
             'data' => $incomes,
             'total' => Income::where('company_id', Auth::user()->primary_company)->count(),
-            'totalFound'=>$incomes->count()
+            'totalFound' => $incomes->count()
         ]);
     }
 
@@ -143,7 +141,8 @@ class IncomeController extends Controller
      * @throws Exception
      * @throws Throwable
      */
-    public function add(IncomeRequest $request): JsonResponse {
+    public function add(IncomeRequest $request): JsonResponse
+    {
         $income = $request->validated();
 
 
@@ -218,7 +217,7 @@ class IncomeController extends Controller
                         'income_type' => strtolower($incomeType),
                         'checkin_date' => $checkinDate->format('Y-m-d'),
                         'checkout_date' => $checkoutDate->format('Y-m-d'),
-                        'attachment' => $income['attachment']??""
+                        'attachment' => $income['attachment'] ?? ""
                     ]);
 
                     storeActivityLog([
@@ -228,8 +227,7 @@ class IncomeController extends Controller
                         'descriptions' => "added income.",
                         'data_records' => json_encode(array_merge(['income' => $income], ['Sector Name' => $category->sector->name], ['account' => $account])),
                     ]);
-                }
-                else {
+                } else {
 
                     $end_date = $checkinDate->format('Y-m-t'); //end date from check in date. Format: "YYYY-mm-dd"
                     $first_month_days = (int)((new DateTime($end_date))->diff($checkinDate)->format("%a")) + 1;
@@ -257,7 +255,7 @@ class IncomeController extends Controller
                         'income_type' => $incomeType,
                         'checkin_date' => $checkinDate->format('Y-m-d'),
                         'checkout_date' => $second_month_startingDate,
-                        'attachment' => $income['attachment']??""
+                        'attachment' => $income['attachment'] ?? ""
                     ]);
                     storeActivityLog([
                         'object_id' => $income_first['id'],
@@ -294,7 +292,7 @@ class IncomeController extends Controller
                             'income_type' => $incomeType,
                             'checkin_date' => $second_month_startingDate,
                             'checkout_date' => $checkoutDate->format('Y-m-d'),
-                            'attachment' => $income['attachment']??""
+                            'attachment' => $income['attachment'] ?? ""
                         ]);
                         storeActivityLog([
                             'object_id' => $income_sec['id'],
@@ -315,15 +313,14 @@ class IncomeController extends Controller
                     'error' => 'error'
                 ], 400);
             }
-        }
-        else {
+        } else {
             try {
                 DB::beginTransaction();
                 // Update the balance of the bank account
 
                 $accountInfo = [
-                    'Previous Balance'=>$account->balance,
-                    'Account Name'=>sprintf("%s- %s (%s)",$account->bankName->bank_name,$account->account_name,$account->account_number)
+                    'Previous Balance' => $account->balance,
+                    'Account Name' => sprintf("%s- %s (%s)", $account->bankName->bank_name, $account->account_name, $account->account_number)
                 ];
 
 
@@ -351,8 +348,8 @@ class IncomeController extends Controller
                     'note' => $income['note'],
                     'reference' => $incomeReference,
                     'income_type' => $incomeType,
-                    'date' => date('Y-m-d',strtotime($income['date'])),
-                    'attachment' => $income['attachment']??"",
+                    'date' => date('Y-m-d', strtotime($income['date'])),
+                    'attachment' => $income['attachment'] ?? "",
                 ]);
 
                 storeActivityLog([
@@ -360,7 +357,7 @@ class IncomeController extends Controller
                     'log_type' => 'create',
                     'module' => 'income',
                     'descriptions' => "added income.",
-                    'data_records' => array_merge(json_decode(json_encode($income), true) ,$accountInfo),
+                    'data_records' => array_merge(json_decode(json_encode($income), true), $accountInfo),
                 ]);
 
                 DB::commit();
@@ -394,29 +391,29 @@ class IncomeController extends Controller
     {
         $newIncomeData = $request->validated();
 
-        $oldIncomeData = Income::where('slug',$id)->get()->first();
-        if (!$oldIncomeData){
+        $oldIncomeData = Income::where('slug', $id)->get()->first();
+        if (!$oldIncomeData) {
             return response()->json([
                 'message' => 'Not Found!',
                 'description' => "Associative income data was not found!",
             ], 400);
         }
         $oldBankAccount = BankAccount::find($oldIncomeData->account_id);
-        if (!$oldBankAccount){
+        if (!$oldBankAccount) {
             return response()->json([
                 'message' => 'Not Found!',
                 'description' => "Associated bank account was not found",
             ], 400);
         }
-        $newBankAccount = BankAccount::where('slug',$newIncomeData['account'])->first();
-        if (!$newBankAccount){
+        $newBankAccount = BankAccount::where('slug', $newIncomeData['account'])->first();
+        if (!$newBankAccount) {
             return response()->json([
                 'message' => 'Not Found!',
                 'description' => "Bank account was not found!",
             ], 400);
         }
-        $category = Category::where('slug',$newIncomeData['category'])->first();
-        if (!$category){
+        $category = Category::where('slug', $newIncomeData['category'])->first();
+        if (!$category) {
             return response()->json([
                 'message' => 'Not Found!',
                 'description' => "Category was not found!",
@@ -653,7 +650,6 @@ class IncomeController extends Controller
         }
         $file = $files['file'];
 
-
         //Fixme Sometimes it becomes confused and shows a csv file as a text file.
 //		if ( $file['file']->extension() !== 'csv' ) {
 //			return response()->json( [
@@ -672,41 +668,24 @@ class IncomeController extends Controller
         }
 
         $fileContents = file($file->getPathname());
-        if ($channel === 'airbnb') {
+        $category_id = $request->category_id;
+
+        $category = Category::where('slug', $category_id)->where('type', '=', 'income')->get()->first();
+        if (!$category) {
             return response()->json([
-                'message' => "Under Maintenance",
-                'description' => "This channel is under maintenance.",
+                'message' => 'Not Found!',
+                'description' => "Category was not Found!",
             ], 400);
-//			$incomes = ( new Income() )->mapCSVWithAirbnb( $fileContents );
         }
-        $status = [];
-        if ($channel === 'booking') {
-            $category_id = $request->category_id;
-            if (!$category_id) {
-                return response()->json([
-                    'message' => 'Missing Sector',
-                    'description' => "Please select Income Sector.",
-                ], 400);
-            }
+        $status = (new Income())->extractIncomeFromCSV($fileContents, $category,$channel);
 
-            $category = Category::where('slug', $category_id)->where('type', '=', 'income')->get()->first();
-            if (!$category) {
-                DB::rollBack();
-                return response()->json([
-                    'message' => 'Not Found!',
-                    'description' => "Category was not Found!",
-                ], 400);
-            }
-
-            $status = (new Income())->mapCSVWithBooking($fileContents, $category);
-        }
         if ($status['status_code'] != 200) {
             return response()->json([
                 'success' => $status['status_code'],
                 'message' => $status['message'],
             ], $status['status_code']);
         }
-        $filename = date("F j, Y", strtotime($status['payment_date'])) . ' ' . $channel . '.' . 'csv';
+        $filename = date("F j, Y") . ' ' . $channel . '.' . 'csv';
         $file->storeAs('files', $filename);
         return response()->json([
             'message' => "Imported!",

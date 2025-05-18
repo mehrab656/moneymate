@@ -5,11 +5,51 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb82f29d-a946-4d7c-af4f-355ea30ae3ce" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/assets/index-9674d705.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/react/OneSignalSDKWorker.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/react/public/hostaway.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/react/src/api/slices/settingsSlice.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/react/src/views/Settings/Components/CompanyTab.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/react/src/views/Settings/Components/GeneralTab.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/react/src/views/Settings/Components/IntegrationTab.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/react/src/views/Settings/Components/NotificationTab.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/react/src/views/Settings/Components/ProfileTab.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/react/src/views/Settings/Settings.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/moneymate.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/moneymate.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ReportController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ReportController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/OneSignalSDKWorker.js" beforeDir="false" afterPath="$PROJECT_DIR$/OneSignalSDKWorker.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/index-a2fb4e5e.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/index-f1fcdd60.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/index-9ceb1652.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/IncomeController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/IncomeController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/NotificationController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/NotificationController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Models/Income.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Models/Income.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/bootstrap/app.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/bootstrap/app.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/bootstrap/cache/services.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/bootstrap/cache/services.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/composer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/composer.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/config/app.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/config/app.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/routes/api.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/react/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/react/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/react/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/App.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/api/slices/taskSlice.js" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/api/slices/taskSlice.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/components/DefaultLayout/Header.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/components/DefaultLayout/Header.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/components/DefaultLayout/SideMenus.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/components/DefaultLayout/SideMenus.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/main.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/main.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/router.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/router.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/store/store.js" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/store/store.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/ApplicationSettingsForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/ApplicationSettingsForm.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/HRMS/Task/MyTasks.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/HRMS/Task/MyTasks.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/views/Income/Components/IncomeFilter.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Income/Components/IncomeFilter.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Income/IncomeForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Income/IncomeForm.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Income/IncomeList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Income/IncomeList.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/react/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,8 +63,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="JavaScript File" />
         <option value="JSX File" />
+        <option value="JavaScript File" />
       </list>
     </option>
   </component>
@@ -160,6 +200,8 @@
       <path value="$PROJECT_DIR$/backendApi/vendor/webmozart/assert" />
       <path value="$PROJECT_DIR$/backendApi/vendor/twilio/sdk" />
       <path value="$PROJECT_DIR$/backendApi/vendor/spatie/error-solutions" />
+      <path value="$PROJECT_DIR$/backendApi/vendor/berkayk/onesignal-laravel" />
+      <path value="$PROJECT_DIR$/backendApi/vendor/symfony/psr-http-message-bridge" />
     </include_path>
   </component>
   <component name="ProjectColorInfo">{
@@ -183,7 +225,7 @@
     &quot;WebServerToolWindowPanel.toolwindow.show.permissions&quot;: &quot;false&quot;,
     &quot;WebServerToolWindowPanel.toolwindow.show.size&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;saas&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Applications/XAMPP/xamppfiles/htdocs/moneymate/react/src/views/Income/Components&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Applications/XAMPP/xamppfiles/htdocs/moneymate/react/public&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -197,7 +239,10 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/react/src/views/Income/Components" />
+      <recent name="$PROJECT_DIR$/react/public" />
+      <recent name="$PROJECT_DIR$/react/src/views/Settings/Components" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/react" />
       <recent name="$PROJECT_DIR$/assets" />
     </key>
   </component>
@@ -252,7 +297,11 @@
       <workItem from="1734462041039" duration="24013000" />
       <workItem from="1734721119047" duration="156229000" />
       <workItem from="1738752696141" duration="28518000" />
-      <workItem from="1739783748014" duration="39342000" />
+      <workItem from="1739783748014" duration="57506000" />
+      <workItem from="1740212418312" duration="7654000" />
+      <workItem from="1740304522384" duration="64677000" />
+      <workItem from="1743932824974" duration="89000" />
+      <workItem from="1747221305963" duration="26488000" />
     </task>
     <servers />
   </component>
@@ -266,6 +315,17 @@
           <url>file://$PROJECT_DIR$/react/src/views/Sectors/SectorForm.jsx</url>
           <line>280</line>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/react/src/views/ApplicationSettingsForm.jsx</url>
+          <line>273</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/react/src/views/Income/IncomeForm.jsx</url>
+          <line>309</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

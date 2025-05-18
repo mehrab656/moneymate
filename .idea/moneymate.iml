@@ -133,6 +133,8 @@
       <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/vlucas/phpdotenv" />
       <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/voku/portable-ascii" />
       <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/webmozart/assert" />
+      <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/berkayk/onesignal-laravel" />
+      <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/symfony/psr-http-message-bridge" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

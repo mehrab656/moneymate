@@ -255,6 +255,7 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
           <Form.Label style={{marginBottom: '0px'}} className="custom-form-label">Dates</Form.Label>
           <Form.Select size={"sm"} aria-label="Default select example" id="order"
                        name="order"
+                       value={queryParams.check_for}
                        onChange={(event) => {
                          const value = event.target.value || '';
                          setQueryParams({...queryParams, check_for: value});

@@ -94,9 +94,7 @@ export default function Sectors() {
       setSectors(getSectorsData.data);
       setTotalCount(getSectorsData.total);
       setShowMainLoader(false);
-      setSubTitle(
-        `Showing ${getSectorsData?.data.length} results of ${getSectorsData.total}`
-      );
+      setSubTitle(`Showing ${getSectorsData?.data.length} results of ${getSectorsData.total}`);
     } else {
       setShowMainLoader(true);
     }

@@ -46,7 +46,7 @@ import ExpenseList from "./views/Expense/ExpenseList.jsx";
 import Dashboard from "./views/Dashboard/Dashboard.jsx";
 import DefaultLayout from "./components/DefaultLayout/index.jsx";
 import Categories from "./views/Categories/Categories.jsx";
-
+import Settings from "./views/Settings/Settings.jsx";
 const router = createBrowserRouter([
 
     {
@@ -200,8 +200,8 @@ const router = createBrowserRouter([
                 element: <ActivityLogs />
             },
             {
-                path: 'application-settings',
-                element: <ApplicationSettingsForm key="applicationSettings"/>
+                path: 'settings',
+                element: <Settings key="settings"/>
             },
             {
                 path: '/roles',

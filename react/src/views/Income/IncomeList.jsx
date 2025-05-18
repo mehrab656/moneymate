@@ -215,7 +215,7 @@ export default function IncomeList() {
                     <button className={'btn btn-secondary btn-sm mr-2'}>
                         <FontAwesomeIcon icon={faDownload}/>{' Download CSV'}
                     </button>
-                    <button className={'btn btn-sm btn-primary'}>
+                    <button className={'btn btn-sm btn-primary'} onClick={showIncomeFormFunc}>
                         <FontAwesomeIcon icon={faFilter}/>{' Add Income'}
                     </button>
                 </div>

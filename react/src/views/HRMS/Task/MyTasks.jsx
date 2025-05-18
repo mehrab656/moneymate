@@ -104,10 +104,8 @@ export default function MyTasks() {
     const {
         data: myTaskData,
         isFetching: taskDataIsFetching,
-        isError: taskDataError,
-    } = useMyTaskDataQuery(
-        {query: query},
-    );
+        isError: taskDataError} = useMyTaskDataQuery({query: query});
+
 
     useEffect(() => {
         document.title = "My Tasks";
