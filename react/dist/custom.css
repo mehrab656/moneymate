@@ -522,3 +522,139 @@ footer {
       padding: 12px;
     }
   }
+.upload-box > p{
+    text-align: center;
+    font-weight: 500;
+    margin-top: 10px;
+}
+img {
+    width: 100%;
+}
+.icon{
+    height: 90px;
+    width: 90px;
+}
+.upload-box{
+    width: 100%;
+    background: #fff;
+    border-radius: 5px;
+    padding: 15px;
+    box-shadow: 7px 7px 12px rgba(0,0,0,0.25);
+}
+.upload-box form{
+    height: 170px;
+    display: flex;
+    cursor: pointer;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 5px;
+    border:2px dashed #0086fe;
+}
+
+.upload-box form :where(i,p){
+    color: #0086fe;
+}
+.upload-box form p{
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+section .row{
+    margin-bottom: 10px;
+    background: #d5ebff;
+    list-style: none;
+    padding: 10px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.fileIcon{
+    color: #0086fe;
+    font-size: 30px;
+}
+section .details span{
+    font-size: 12px;
+}
+.loading-area .row .content{
+    width: 100%;
+    margin-left: 15px;
+}
+.loading-area .details{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 7px;
+}
+
+.loading-area .content .loading-bar{
+    height: 6px;
+    width: 100%;
+    margin-bottom: 4px;
+    background: #fff;
+    border-radius: 30px;
+}
+
+.content .loading-bar .loading {
+    height: 100%;
+    width: 10%;
+    background: #0086fe;
+    border-radius: inherit;
+}
+.upload-area{
+    overflow-y: scroll;
+}
+.upload-area.onprogress{
+    max-height: 150px;
+}
+.upload-area::-webkit-scrollbar{
+    width: 0px;
+}
+.upload-area .row .content{
+    display: flex;
+    align-items: center;
+}
+.upload-area .row .details{
+    display: flex;
+    margin-left: 15px;
+    flex-direction: column;
+}
+.upload-area .row .details{
+    color: #404040;
+    font-size: 11px;
+}
+.upload-area i.fa-check{
+    font-size: 16px;
+}
+
+.welcome-screen-left-div{
+    color: #fff;
+    background-color: rgba(197,167,135,0.4);
+}
+.welcome-screen-main-div{
+    background-size: cover;
+    background-repeat: no-repeat ;
+}
+.welcome-screen-footer{
+    background-color: #022536;
+    color: #fff;
+}
+.welcome-screen-footer-right{
+    display: flex;
+    justify-content: flex-end;
+}
+.welcome-screen-footer-left{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.welcome-text{
+    text-align: justify;
+}
+.slider-image img{
+    width: 390px;
+    height: 256px;
+}

@@ -370,6 +370,13 @@ export default function Sectors() {
       actionFunction: onDelete,
       permission: "sector_delete",
       textClass: "text-danger",
+    },{
+      actionName: "WelcomeScreen",
+      type: "route",
+      route: "/manage-welcome-screen/",
+      actionFunction:"",
+      permission: "view_welcome_screen",
+      textClass: "text-danger",
     },
   ];
   const showSectorFormFunc = () => {

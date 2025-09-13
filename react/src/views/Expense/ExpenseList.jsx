@@ -18,6 +18,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faDownload, faFilter} from "@fortawesome/free-solid-svg-icons";
 import FilteredParameters from "./Components/FilteredParameters.jsx";
 import ListTable from "./Components/ListTable.jsx";
+import ExpenseExportButton from "../../components/ExpenseExportButton.jsx";
 
 const defaultQuery = {
     start_date: "",
@@ -247,6 +248,7 @@ export default function ExpenseList() {
                     <button className={'btn btn-secondary btn-sm mr-2'}>
                         <FontAwesomeIcon icon={faDownload}/>{' Download CSV'}
                     </button>
+                    <ExpenseExportButton />
                     <button className={'btn-sm btn-add'} onClick={showExpenseFormFunc}>
                         <FontAwesomeIcon icon={faFilter}/>{' Add Expense'}
                     </button>

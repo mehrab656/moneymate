@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
 use Throwable;
+use Illuminate\Support\Facades\Cookie;
 
 /**
  * @property mixed $account_id
@@ -105,7 +106,8 @@ class Income extends Model
             ->where('categories.id', '=', $category->id)
             ->first();
 
-        foreach ($files as $file) {
+        foreach ($files as $iteration=>$file) {
+
             $incomeData = explode(',', str_replace('"', '', $file));
 
             $income = $this->buildIncomeDatesetFromCSV($incomeData,$channel);
@@ -117,6 +119,7 @@ class Income extends Model
             ];
 
             $isAdded = $this->incomeAdd($income, $category);
+            Cookie::queue('test', 55, 1);
 
             if ($isAdded['status_code'] != 200) {
                 return [

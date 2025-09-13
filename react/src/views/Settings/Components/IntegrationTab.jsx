@@ -7,43 +7,50 @@ import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import Image from 'react-bootstrap/Image';
-import axiosClient from "../../../axios-client.js";
 import {notification} from "../../../components/ToastNotification.jsx";
-import {useConnectHostAwayMutation,useGetHostAwayStatusDataQuery} from "../../../api/slices/settingsSlice.js";
+import {useGetConnectPmsDataMutation,useGetPmsStatusDataQuery} from "../../../api/slices/settingsSlice.js";
+import Select from 'react-select'
 
 const defaultData = {
-    host_away_client_id:'',
-    host_away_api_key:''
+    pmsName:'',
+    pmsClientID:'',
+    pmsApiKey:''
 }
+const pmsNames = [
+    { value: 'hostaway', label: 'HostAway' },
+    { value: 'lodgify', label: 'Lodgify' },
+    { value: 'guesty', label: 'Guesty' }
+]
 export default function IntegrationTab({settings,handleFunc,submit}){
-const [hostAwayCanvas,setHostAwayCanvas]=useState(false);
-const [hostAwyConnectionStatus,setHostAwayConnectionStatus]=useState(false);
+const [pmsCanvas,setPmsCanvas]=useState(false);
+const [hostAwyConnectionStatus,setPmsConnectionStatus]=useState(false);
 const [integrationData,setIntegrationData]=useState(defaultData);
-const [hostAwayActionBtn,setHostAwayActionBtn] = useState({
+const [pmsActionBtn,setPmsActionBtn] = useState({
     text:'Active',
     bg:'primary',
     disable:false
 });
-const [hostAwayConnectBtn,setHostAwayConnectBtn] = useState({
+const [pmsConnectBtn,setPmsConnectBtn] = useState({
     text:'Connect',
     bg:'primary',
     disable:false
 });
+const [pmsData,setPmsData] = useState(defaultData);
 
-    const [hostAwayConnection] = useConnectHostAwayMutation();
-    const {data:hostaway} = useGetHostAwayStatusDataQuery({});
+    const [pmsConnection] = useGetConnectPmsDataMutation();
+    const {data:hostaway} = useGetPmsStatusDataQuery({});
 
-    const getHostAwayConnection = async (e) =>{
+    const getPmsConnection = async (e) =>{
     e.preventDefault();
     let formData = new FormData();
     formData.append("host_away_client_id", integrationData.host_away_client_id);
     formData.append("host_away_api_key", integrationData.host_away_api_key);
 
     try {
-        const data = await hostAwayConnection({ formData }).unwrap();
+        const data = await pmsConnection({ formData }).unwrap();
         notification('success', data?.message, data?.description);
-        setHostAwayConnectBtn({text: "Connected",disable: true,bg:'success'})
-        setHostAwayActionBtn({text: "Disconnect",disable: false,bg:'danger'})
+        setPmsConnectBtn({text: "Connected",disable: true,bg:'success'})
+        setPmsActionBtn({text: "Disconnect",disable: false,bg:'danger'})
     }catch (err){
         notification(
             "error",
@@ -52,17 +59,19 @@ const [hostAwayConnectBtn,setHostAwayConnectBtn] = useState({
         );
     }
 }
-    useEffect(()=> {
-    },[]);
+
+const changePMSName = pmsName => {
+        set
+}
 
     return (
         <>
             <Container >
                 <Stack className="animated fadeInDown mb-3" direction="horizontal" gap={3}>
                     <div className="p-2">{hostAwyConnectionStatus?'Connected':'Not Connected'}</div>
-                    <div className="p-2 ms-auto">Hostaway</div>
+                    <div className="p-2 ms-auto">Property Management System</div>
                     <div className="vr"/>
-                    <Button ize={"sm"} variant={hostAwayActionBtn.bg} onClick={()=>{setHostAwayCanvas(!hostAwayCanvas)}}>{hostAwayActionBtn.text}</Button>
+                    <Button ize={"sm"} variant={pmsActionBtn.bg} onClick={()=>{setPmsCanvas(!pmsCanvas)}}>{pmsActionBtn.text}</Button>
                 </Stack>
                 <Stack className="animated fadeInDown mb-3" direction="horizontal" gap={3}>
                     <div className="p-2">not connected</div>
@@ -83,17 +92,23 @@ const [hostAwayConnectBtn,setHostAwayConnectBtn] = useState({
                     <Button variant="primary">Connect</Button>
                 </Stack>
 
-                <Offcanvas show={hostAwayCanvas}
-                           onHide={()=>{setHostAwayCanvas(!hostAwayCanvas)}} backdrop="static"
+                <Offcanvas show={pmsCanvas}
+                           onHide={()=>{setPmsCanvas(!pmsCanvas)}} backdrop="static"
                 placement={"end"}>
                     <Offcanvas.Header closeButton>
                         <Image src="hostaway.png" rounded style={{height:"100px",width:"100px"}} />
-                        <Offcanvas.Title>HostAway</Offcanvas.Title>
+                        <Offcanvas.Title>Pms</Offcanvas.Title>
                     </Offcanvas.Header>
                     <Offcanvas.Body>
-                        <span>Provide the api key and secret key to connect with HostAway.</span>
+                        <span>Provide the api key and secret key to connect with Pms.</span>
 
                         <Form>
+                            <Row>
+                                <Col>
+                                    <Select placeholder={'Name of PMS'} options={pmsNames} onChange={(e)=>changePMSName(e.value)} />
+                                </Col>
+                            </Row>
+
                             <Row>
                                 <Col>
                                     <Form.Group className="mb-3" controlId="company.hostawayClient">
@@ -123,7 +138,7 @@ const [hostAwayConnectBtn,setHostAwayConnectBtn] = useState({
                             </Row>
                             <Row>
                                 <Col>
-                                    <Button ize={"sm"} variant={hostAwayConnectBtn.bg} disabled={hostAwayConnectBtn.disable} onClick={(event)=>{getHostAwayConnection(event)}} >{hostAwayConnectBtn.text}</Button>
+                                    <Button ize={"sm"} variant={pmsConnectBtn.bg} disabled={pmsConnectBtn.disable} onClick={(event)=>{getPmsConnection(event)}} >{pmsConnectBtn.text}</Button>
                                 </Col>
                             </Row>
                         </Form>

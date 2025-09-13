@@ -10,14 +10,17 @@ import {notification} from "../../components/ToastNotification.jsx";
 import {
     useCreateIncomeMutation,
     useGetSingleIncomeDataQuery,
-    useUploadCsvMutation
+    useUploadCsvMutation,
+    useGetCsvUploadStatusDataQuery
 } from "../../api/slices/incomeSlice.js";
 import {Box, FormControl, TextField} from "@mui/material";
 import FormLabel from "@mui/material/FormLabel";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
-
+import {ProgressBar} from "react-bootstrap";
+import axiosClient from "../../axios-client.js";
+import {useFormAction} from "react-router-dom";
 const useStyles = makeStyles({
     option: {
         "&:hover": {
@@ -75,6 +78,7 @@ export default function IncomeForm({handelCloseModal, title, id}) {
     const [csvFile, setCSVFile] = useState({});
     const [csvBtnTxt, setCsvBtnText] = useState("Upload");
     const [csvBtnStatus, setCsvBtnStatus] = useState(false);
+    const [csvProgressStatus,setCsvProgressStatus] = useState(0);
     const {
         data: getSingleIncomeData,
     } = useGetSingleIncomeDataQuery({
@@ -139,6 +143,8 @@ export default function IncomeForm({handelCloseModal, title, id}) {
         csvFormData.append("csvFile", csvFile);
         csvFormData.append("category_id", channel === 'booking' ? csvCategoryValue.id : 0);
 
+
+        setCsvProgressStatus(0);
         try {
             const data = await uploadCSV({
                 url: '/income/add-csv', formData: {
@@ -147,11 +153,11 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                     category_id: csvCategoryValue.value
                 }
             }).unwrap();
-            notification("success", data?.message, data?.description);
-            handelCloseModal();
+            console.log(data);
+            // notification("success", data?.message, data?.description);
+
+            // handelCloseModal();
         } catch (err) {
-            setCsvBtnText("Upload");
-            setCsvBtnStatus(false);
             if (err.status === 406) {
                 setShowExistingTask(true);
                 setExistingTask(err?.errorData?.data);
@@ -165,7 +171,10 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                 );
             }
         }
+        setCsvBtnText("Upload");
+        setCsvBtnStatus(false);
     }
+
     const [createIncome] = useCreateIncomeMutation();
     const submit = async (e) => {
         e.preventDefault();
@@ -280,6 +289,7 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                         </Form.Group>
                                     </div>
                                 </form>
+                                <ProgressBar striped variant={"success"} now={csvProgressStatus} label={`${csvProgressStatus}%`} />
                             </Modal.Body>
                             <Modal.Footer>
                                 <Button loading className="btn-sm load" variant="primary" disabled={csvBtnStatus} onClick={submitCSVFile}>
@@ -498,7 +508,7 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                                     Close
                                 </Button>
                                 <Button variant="primary" onClick={(e) => submit(e)}>
-                                    Add Task
+                                    Add Income
                                 </Button>
                             </Modal.Footer>
                         </>

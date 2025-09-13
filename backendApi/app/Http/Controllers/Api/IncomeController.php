@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Storage;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Throwable;
+use Illuminate\Support\Facades\Session;
 
 class IncomeController extends Controller
 {
@@ -704,4 +705,8 @@ class IncomeController extends Controller
         ]);
     }
 
+    public function getCsvProgress(Request $request): JsonResponse{
+        $progress = Session::get('progress');
+        return response()->json(['progress' =>$request->cookie('test') ]);
+    }
 }

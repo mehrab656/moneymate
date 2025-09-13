@@ -15,6 +15,7 @@ import {faDownload, faFilter} from "@fortawesome/free-solid-svg-icons";
 import {Form} from "react-bootstrap";
 import FilteredParameters from "../Expense/Components/FilteredParameters.jsx";
 import ListTable from "./Components/ListTable.jsx";
+import CsvFileUpload from "./Components/CsvFileUpload.jsx";
 
 const defaultQuery = {
     type: "",
@@ -52,6 +53,7 @@ export default function IncomeList() {
     const [incomes, setIncomes] = useState([]);
     const [income, setIncome] = useState({});
     const [showIncomeForm, setShowIncomeForm] = useState(false);
+    const [showCsvForm, setShowCsvForm] = useState(false)
     const [showIncomeDetails, setShowIncomeDetails] = useState(false);
     const [showMainLoader, setShowMainLoader] = useState(false);
     const [query, setQuery] = useState(defaultQuery);
@@ -118,8 +120,15 @@ export default function IncomeList() {
     const showIncomeFormFunc = () => {
         setShowIncomeForm(true);
     };
+    const showCsvIncomeFormFunc = () => {
+        setShowCsvForm(true);
+    };
     const closeCreateModalFunc = () => {
         setShowIncomeForm(false);
+        setIncome({});
+    };
+    const closeCsvFileUploadModalFunc = () => {
+        setShowCsvForm(false);
         setIncome({});
     };
     const showEditModalFunc = (income) => {
@@ -215,8 +224,11 @@ export default function IncomeList() {
                     <button className={'btn btn-secondary btn-sm mr-2'}>
                         <FontAwesomeIcon icon={faDownload}/>{' Download CSV'}
                     </button>
-                    <button className={'btn btn-sm btn-primary'} onClick={showIncomeFormFunc}>
+                    <button className={'btn btn-sm btn-primary mr-2'} onClick={showIncomeFormFunc}>
                         <FontAwesomeIcon icon={faFilter}/>{' Add Income'}
+                    </button>
+                    <button className={'btn btn-sm btn-success'} onClick={showCsvIncomeFormFunc}>
+                        <FontAwesomeIcon icon={faFilter}/>{' Upload CSV'}
                     </button>
                 </div>
             </div>
@@ -261,6 +273,12 @@ export default function IncomeList() {
                     handelCloseModal={closeCreateModalFunc}
                     title={"Create New Income"}
                     id={income.id}
+                />
+            )}
+            {showCsvForm && (
+                <CsvFileUpload
+                    handelCloseModal={closeCsvFileUploadModalFunc}
+                    title={"Upload Csv Income File"}
                 />
             )}
             {showIncomeDetails && (

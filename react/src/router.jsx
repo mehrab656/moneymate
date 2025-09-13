@@ -47,6 +47,7 @@ import Dashboard from "./views/Dashboard/Dashboard.jsx";
 import DefaultLayout from "./components/DefaultLayout/index.jsx";
 import Categories from "./views/Categories/Categories.jsx";
 import Settings from "./views/Settings/Settings.jsx";
+import WelcomeScreen from "./views/Sectors/WelcomeScreen.jsx";
 const router = createBrowserRouter([
 
     {
@@ -72,6 +73,11 @@ const router = createBrowserRouter([
             {
                 path: '/sectors',
                 element: <Sectors/>
+            },
+            {
+                path: '/manage-welcome-screen/:id',
+                element: <WelcomeScreen key="WelcomeScreen"/>
+
             },
             {
                 path: '/all-assets',

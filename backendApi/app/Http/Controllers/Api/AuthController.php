@@ -12,7 +12,6 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 use Ramsey\Uuid\Uuid;
 use Stripe\Exception\ApiErrorException;
 use Illuminate\Support\Facades\Hash;

@@ -104,7 +104,7 @@ export default function InvestmentPlan() {
                 {userRole ==='admin' && <Link className="btn-add align-right mr-3" to="/investment-plan/new"><FontAwesomeIcon icon={faDollar}/> Add New
                     Plan</Link>}
               
-                {/* <IncomeExportButton/> */}
+                 {/*<IncomeExportButton/>*/}
             </div>
 
             <WizCard className="animated fadeInDown">

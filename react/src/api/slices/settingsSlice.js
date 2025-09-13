@@ -12,7 +12,7 @@ export const settingsSlice = createApi({
     }),
     tagTypes: ["settings"],
     endpoints: (builder) => ({
-        connectHostAway: builder.mutation({
+        getConnectPmsData: builder.mutation({
             queryFn: async ({  formData }) => {
                 try {
                     const response = await axiosClient.post("connect-host-away", formData, {
@@ -38,7 +38,7 @@ export const settingsSlice = createApi({
 
             invalidatesTags: ["income"],
         }),
-        getHostAwayStatusData: builder.query({
+        getPmsStatusData: builder.query({
             query: ({currentPage}) => {
                 return {
                     url: `getConnectionStatus`,
@@ -50,7 +50,7 @@ export const settingsSlice = createApi({
             },
             providesTags: ["settings"],
         }),
-        disconnectHostAwayConnection: builder.mutation({
+        disconnectPms: builder.mutation({
             query: ({id}) => ({
                 url: `income/${id}`,
                 method: 'DELETE',
@@ -64,6 +64,6 @@ export const settingsSlice = createApi({
 });
 
 export const {
-    useConnectHostAwayMutation,
-    useGetHostAwayStatusDataQuery,
+    useGetConnectPmsDataMutation,
+    useGetPmsStatusDataQuery,
 } = settingsSlice;

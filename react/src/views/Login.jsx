@@ -103,6 +103,7 @@ export default function Login() {
         }
     };
 
+    console.log({subscriptionStatus});
 
     const payNow = async (e) => {
         e.preventDefault();
@@ -112,7 +113,6 @@ export default function Login() {
             email: emailRef.current.value,
             password: passwordRef.current.value,
         };
-
         if (registration_type === 'subscription') {
             // Create a payment method with Stripe
             try {

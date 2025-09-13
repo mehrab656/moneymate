@@ -40,6 +40,18 @@ export const incomeSlice = createApi({
             },
             providesTags: ["income"],
         }),
+        getCsvUploadStatusData: builder.query({
+            query: () => {
+                return {
+                    url: `/csv-upload-progress`,
+                    method: "GET",
+                    headers:{
+                        Authorization: `Bearer ${globalToken}`
+                    }
+                };
+            },
+            providesTags: ["income"],
+        }),
         createIncome: builder.mutation({
             queryFn: async ({ url, formData }) => {
                 try {
@@ -123,6 +135,7 @@ export const incomeSlice = createApi({
 export const {
     useGetIncomeDataQuery,
     useGetIncomeTypesDataQuery,
+    useGetCsvUploadStatusDataQuery,
     useCreateIncomeMutation,
     useUploadCsvMutation,
     useUpdateIncomeMutation,
