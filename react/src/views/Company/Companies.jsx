@@ -2,7 +2,7 @@ import * as React from "react";
 import { useContext, useEffect, useState } from "react";
 import { SettingsContext } from "../../contexts/SettingsContext.jsx";
 import Swal from "sweetalert2";
-import MainLoader from "../../components/MainLoader.jsx";
+import MainLoader from "../../components/loader/MainLoader.jsx";
 import { faBuildingFlag } from "@fortawesome/free-solid-svg-icons";
 import CompanyViewModal from "../Company/CompanyViewModal.jsx";
 import { checkPermission } from "../../helper/HelperFunctions.js";

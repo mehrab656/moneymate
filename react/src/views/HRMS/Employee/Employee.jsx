@@ -2,7 +2,7 @@ import React, {useEffect, useState, useContext} from "react";
 import axiosClient from "../../../axios-client.js";
 import Swal from "sweetalert2";
 import {SettingsContext} from "../../../contexts/SettingsContext.jsx";
-import MainLoader from "../../../components/MainLoader.jsx";
+import MainLoader from "../../../components/loader/MainLoader.jsx";
 import {checkPermission} from "../../../helper/HelperFunctions.js";
 import {notification} from "../../../components/ToastNotification.jsx";
 import Iconify from "../../../components/Iconify.jsx";

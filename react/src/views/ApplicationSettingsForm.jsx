@@ -9,10 +9,6 @@ import { Autocomplete, Box, Chip, TextField } from "@mui/material";
 import { notification } from "../components/ToastNotification.jsx";
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Form from 'react-bootstrap/Form';
 
 const defaultApplicationSettings= {
     company_name: "",

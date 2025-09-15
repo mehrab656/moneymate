@@ -8,7 +8,7 @@ import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import axiosClient from "../../../axios-client.js";
 import {notification} from "../../../components/ToastNotification.jsx";
-import MainLoader from "../../../components/MainLoader.jsx";
+import MainLoader from "../../../components/loader/MainLoader.jsx";
 
 const defaultEmployee = {
     first_name: '',

@@ -17,7 +17,7 @@ import Select from "@mui/material/Select";
 import Checkbox from "@mui/material/Checkbox";
 import {Link, useNavigate, useParams} from "react-router-dom";
 import axiosClient from "../../axios-client";
-import MainLoader from "../../components/MainLoader";
+import MainLoader from "../../components/loader/MainLoader.jsx";
 import { useStateContext } from "../../contexts/ContextProvider.jsx";
 import { SettingsContext } from "../../contexts/SettingsContext.jsx";
 import { getType } from "@reduxjs/toolkit";

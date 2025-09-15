@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import axiosClient from "../../../axios-client.js";
 import Swal from "sweetalert2";
 import { SettingsContext } from "../../../contexts/SettingsContext.jsx";
-import MainLoader from "../../../components/MainLoader.jsx";
+import MainLoader from "../../../components/loader/MainLoader.jsx";
 import { checkPermission } from "../../../helper/HelperFunctions.js";
 import { notification } from "../../../components/ToastNotification.jsx";
 
@@ -22,7 +22,7 @@ import {
   useDeleteTaskMutation,
   useGetTaskDataQuery,
 } from "../../../api/slices/taskSlice.js";
-import { TableLoader } from "../../../components/SkeletonLoader/TableLoader.jsx";
+import { TableLoader } from "../../../components/loader/TableLoader.jsx";
 
 const defaultTaskData = {
   description: "",

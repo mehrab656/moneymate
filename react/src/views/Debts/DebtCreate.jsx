@@ -7,7 +7,7 @@ import Button from "react-bootstrap/Button";
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import {notification} from "../../components/ToastNotification.jsx";
-import MainLoader from "../../components/MainLoader.jsx";
+import MainLoader from "../../components/loader/MainLoader.jsx";
 import {useGetBankDataQuery} from "../../api/slices/bankSlice.js";
 import Select from "react-select";
 import {genRand} from "../../helper/HelperFunctions.js";

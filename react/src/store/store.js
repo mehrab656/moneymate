@@ -1,62 +1,60 @@
-import {configureStore} from "@reduxjs/toolkit";
-import {setupListeners} from "@reduxjs/toolkit/query";
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
 
-import {userSlice} from "../api/slices/userSlice";
-import {sectorSlice} from "../api/slices/sectorSlice";
-import {accountSlice} from "../api/slices/accountSlice";
-import {companySlice} from "../api/slices/companySlice";
-import {categorySlice} from "../api/slices/categorySlice";
-import {taskSlice} from "../api/slices/taskSlice";
-import {employeeSlice} from "../api/slices/employeeSlice";
-import {investmentSlice} from "../api/slices/investmentSlice.js";
-import {bankSlice} from "../api/slices/bankSlice.js";
-import {incomeSlice} from "../api/slices/incomeSlice.js";
-import { expenseSlice } from "../api/slices/expenseSlice.js";
-import { dashboardSlice } from "../api/slices/dashBoardSlice.js";
-import { assetSlice } from "../api/slices/assetSlice.js";
-import {debtSlice} from "../api/slices/debtSlice.js";
-import {reportSlice} from "../api/slices/reportSlice.js";
-import {settingsSlice} from "../api/slices/settingsSlice.js";
+// Import all your RTK Query slices
+import { dashboardSlice } from "../api/slices/dashBoardSlice";
+import { userSlice } from "../api/slices/userSlice";
+import { sectorSlice } from "../api/slices/sectorSlice";
+import { assetSlice } from "../api/slices/assetSlice";
+import { accountSlice } from "../api/slices/accountSlice";
+import { companySlice } from "../api/slices/companySlice";
+import { categorySlice } from "../api/slices/categorySlice";
+import { taskSlice } from "../api/slices/taskSlice";
+import { employeeSlice } from "../api/slices/employeeSlice";
+import { investmentSlice } from "../api/slices/investmentSlice";
+import { bankSlice } from "../api/slices/bankSlice";
+import { incomeSlice } from "../api/slices/incomeSlice";
+import { expenseSlice } from "../api/slices/expenseSlice";
+import { debtSlice } from "../api/slices/debtSlice";
+import { reportSlice } from "../api/slices/reportSlice";
+import { settingsSlice } from "../api/slices/settingsSlice";
 
+// Create store dynamically based on authentication
+export const createStore = (isAuthenticated = false) => {
+  const reducers = {};
+  let middleware = (getDefaultMiddleware) => getDefaultMiddleware();
 
-export const store = configureStore({
-    reducer: {
-        [dashboardSlice.reducerPath]: dashboardSlice.reducer,
-        [userSlice.reducerPath]: userSlice.reducer,
-        [sectorSlice.reducerPath]: sectorSlice.reducer,
-        [assetSlice.reducerPath]: assetSlice.reducer,
-        [accountSlice.reducerPath]: accountSlice.reducer,
-        [companySlice.reducerPath]: companySlice.reducer,
-        [categorySlice.reducerPath]: categorySlice.reducer,
-        [taskSlice.reducerPath]: taskSlice.reducer,
-        [employeeSlice.reducerPath]: employeeSlice.reducer,
-        [investmentSlice.reducerPath]: investmentSlice.reducer,
-        [bankSlice.reducerPath]: bankSlice.reducer,
-        [incomeSlice.reducerPath]: incomeSlice.reducer,
-        [expenseSlice.reducerPath]: expenseSlice.reducer,
-        [debtSlice.reducerPath]: debtSlice.reducer,
-        [reportSlice.reducerPath]: reportSlice.reducer,
-        [settingsSlice.reducerPath]: reportSlice.reducer,
-    },
-    middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(
-            dashboardSlice.middleware,
-            userSlice.middleware,
-            assetSlice.middleware,
-            sectorSlice.middleware,
-            accountSlice.middleware,
-            companySlice.middleware,
-            categorySlice.middleware,
-            taskSlice.middleware,
-            employeeSlice.middleware,
-            investmentSlice.middleware,
-            bankSlice.middleware,
-            incomeSlice.middleware,
-            expenseSlice.middleware,
-            debtSlice.middleware,
-            reportSlice.middleware,
-            settingsSlice.middleware,
-        ),
-});
+  if (isAuthenticated) {
+    // Add all reducers for authenticated slices
+    const slices = [
+      accountSlice,
+      dashboardSlice,
+      userSlice,
+      sectorSlice,
+      assetSlice,
+      companySlice,
+      categorySlice,
+      taskSlice,
+      employeeSlice,
+      investmentSlice,
+      bankSlice,
+      incomeSlice,
+      expenseSlice,
+      debtSlice,
+      reportSlice,
+      settingsSlice,
+    ];
 
-setupListeners(store.dispatch);
+    slices.forEach((slice) => {
+      reducers[slice.reducerPath] = slice.reducer;
+    });
+
+    // Include all RTK Query middleware
+    middleware = (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(slices.map((slice) => slice.middleware));
+  }
+
+  return configureStore({
+    reducer: combineReducers(reducers),
+    middleware,
+  });
+};

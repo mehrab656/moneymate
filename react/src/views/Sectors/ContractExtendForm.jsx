@@ -1,4 +1,4 @@
-import MainLoader from "../../components/MainLoader.jsx";
+import MainLoader from "../../components/loader/MainLoader.jsx";
 import Modal from "react-bootstrap/Modal";
 import Container from "react-bootstrap/Container";
 import { Form, InputGroup, TabContainer } from "react-bootstrap";

@@ -3,7 +3,7 @@ import axiosClient from "../../axios-client.js";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { SettingsContext } from "../../contexts/SettingsContext.jsx";
-import MainLoader from "../../components/MainLoader.jsx";
+import MainLoader from "../../components/loader/MainLoader.jsx";
 import { checkPermission, compareDates } from "../../helper/HelperFunctions.js";
 import SummeryCard from "../../helper/SummeryCard.jsx";
 import { notification } from "../../components/ToastNotification.jsx";

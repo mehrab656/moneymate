@@ -1,5 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react';
 import axiosClient from '../axios-client.js'; // Import your axios client instance
+import { useStateContext } from './ContextProvider.jsx';
 
 // Create a new context
 const SettingsContext = createContext({
@@ -15,11 +16,14 @@ const SettingsProvider = ({ children }) => {
     const [applicationSettings, setApplicationSettings] = useState({});
     const [userRole, setUserRole] = useState({});
     const [userPermission, setUserPermission] = useState({});
-    const [isSettingsFetched, setIsSettingsFetched] = useState(false); // Flag to prevent double API calls
+    const [isSettingsFetched, setIsSettingsFetched] = useState(false); // Flag
+    //  to prevent double API calls
+  const { token } = useStateContext();
+
 
     useEffect(() => {
         // Ensure settings are fetched only once
-        if (!isSettingsFetched) {
+        if (token) {
             axiosClient
                 .get('/get-application-settings')
                 .then(({ data }) => {
@@ -33,8 +37,7 @@ const SettingsProvider = ({ children }) => {
                 });
         }
 
-        const access_token = localStorage.getItem('ACCESS_TOKEN');
-        if (access_token) {
+        if (token) {
             axiosClient
                 .get('/get-user-role')
                 .then(({ data }) => {
@@ -45,7 +48,7 @@ const SettingsProvider = ({ children }) => {
                     // Handle error if needed
                 });
         }
-    }, [isSettingsFetched]); // Dependency ensures fetch only if flag is false
+    }, [token]); // Dependency ensures fetch only if flag is false
 
     const checkPermission = (permission, limit = 0) => {
         if (userRole === 'admin' || permission) {
