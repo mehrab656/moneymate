@@ -5,38 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb82f29d-a946-4d7c-af4f-355ea30ae3ce" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/assets/index-acca69ac.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/react/public/malinstay-logo.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/react/public/qr-code.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/react/public/room-image.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/react/public/slider-image.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/react/src/views/Income/Components/CsvFileUpload.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/react/src/views/Sectors/WelcomeScreen.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/index-9674d705.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/index-9ceb1652.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/index-416fe090.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/AuthController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/AuthController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/CompanyController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/CompanyController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/IncomeController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/IncomeController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Models/Income.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Models/Income.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/routes/api.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/dist/assets/index-9674d705.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/dist/assets/index-9ceb1652.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/dist/custom.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/dist/custom.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/dist/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/react/dist/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/public/custom.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/public/custom.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/api/slices/incomeSlice.js" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/api/slices/incomeSlice.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/api/slices/settingsSlice.js" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/api/slices/settingsSlice.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/router.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/router.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Expense/ExpenseList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Expense/ExpenseList.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Income/IncomeForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Income/IncomeForm.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Income/IncomeList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Income/IncomeList.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/InvestmentPlan.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/InvestmentPlan.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Login.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Login.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Settings/Components/IntegrationTab.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Settings/Components/IntegrationTab.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -293,7 +263,7 @@
       <workItem from="1743932824974" duration="89000" />
       <workItem from="1747221305963" duration="70817000" />
       <workItem from="1749659574060" duration="55309000" />
-      <workItem from="1755799534883" duration="13158000" />
+      <workItem from="1755799534883" duration="20542000" />
     </task>
     <servers />
   </component>
