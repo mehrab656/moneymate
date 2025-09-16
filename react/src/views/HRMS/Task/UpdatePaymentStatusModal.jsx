@@ -7,7 +7,7 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import axiosClient from "../../../axios-client.js";
 import {notification} from "../../../components/ToastNotification.jsx";
-import MainLoader from "../../../components/MainLoader.jsx";
+import MainLoader from "../../../components/loader/MainLoader.jsx";
 import { useCreateTaskMutation, useUpdateTaskPaymentMutation } from '../../../api/slices/taskSlice.js';
 
 

@@ -1,14 +1,11 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 
-import { baseUrl } from "../baseUrl";
-import { globalToken } from "../globalToken.js";
 import axiosClient from "../../axios-client.js";
+import { customBaseQuery } from "../../store/customBaseQuery.js";
 
 export const sectorSlice = createApi({
   reducerPath: "sectors",
-  baseQuery: fetchBaseQuery({
-    baseUrl: baseUrl,
-  }),
+  baseQuery: customBaseQuery,
   tagTypes: ["sectors"],
   endpoints: (builder) => ({
     getSectorsData: builder.query({
@@ -16,9 +13,6 @@ export const sectorSlice = createApi({
         return {
           url: `/sectors?currentPage=${currentPage}&pageSize=${pageSize}&account_id=${query?.payment_account_id}&contract_start_date=${query?.contract_start_date}&contract_end_date=${query?.contract_end_date}&orderBy=${query?.orderBy}&order=${query?.order}&limit=${query?.limit}`,
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${globalToken}`,
-          },
         };
       },
       providesTags: ["sectors"],
@@ -28,9 +22,6 @@ export const sectorSlice = createApi({
         return {
           url: `/sectors-list`,
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${globalToken}`,
-          },
         };
       },
       providesTags: ["sectors"],
@@ -41,9 +32,6 @@ export const sectorSlice = createApi({
           return {
             url: `/sectorsIncomeExpense/${id}`,
             method: "GET",
-            headers: {
-              Authorization: `Bearer ${globalToken}`,
-            },
           };
         }
       },
@@ -55,9 +43,6 @@ export const sectorSlice = createApi({
           return {
             url: `sector/${id}`,
             method: "GET",
-            headers: {
-              Authorization: `Bearer ${globalToken}`,
-            },
           };
         }
       },
@@ -67,9 +52,6 @@ export const sectorSlice = createApi({
       query: ({ id }) => ({
         url: `sector/${id}`,
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${globalToken}`,
-        },
       }),
       invalidatesTags: ["sectors"],
     }),

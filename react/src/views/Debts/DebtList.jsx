@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from "react";
 import Swal from "sweetalert2";
 import {SettingsContext} from "../../contexts/SettingsContext";
-import MainLoader from "../../components/MainLoader.jsx";
+import MainLoader from "../../components/loader/MainLoader.jsx";
 import { notification } from "../../components/ToastNotification.jsx";
 import {useGetDebtDataQuery,useDeleteDebtMutation} from "../../api/slices/debtSlice.js";
 import {checkPermission} from "../../helper/HelperFunctions.js";

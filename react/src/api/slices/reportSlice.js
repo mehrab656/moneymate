@@ -1,31 +1,21 @@
-import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
-import {baseUrl} from "../baseUrl";
-import {globalToken} from "../globalToken"
-import axiosClient from "../../axios-client";
-
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { customBaseQuery } from "../../store/customBaseQuery";
 
 export const reportSlice = createApi({
-    reducerPath: "report",
-    baseQuery: fetchBaseQuery({
-        baseUrl: baseUrl,
+  reducerPath: "report",
+  baseQuery: customBaseQuery,
+  tagTypes: ["report"],
+  endpoints: (builder) => ({
+    getExpenseReportData: builder.query({
+      query: ({ query }) => {
+        return {
+          url: `/report/expense?startDate${query?.start_date}&endDate=${query?.end_date}&categoryIDS=${query?.categoryIDS}&orderBy=${query?.orderBy}&order=${query?.order}&limit=${query?.limit}&sectorIDS=${query?.sectorIDS}&quickFilter=${query?.quickFilterSectorID}`,
+          method: "GET",
+        };
+      },
+      providesTags: ["report"],
     }),
-    tagTypes: ["report"],
-    endpoints: (builder) => ({
-        getExpenseReportData: builder.query({
-            query: ({ query}) => {
-                return {
-                    url: `/report/expense?startDate${query?.start_date}&endDate=${query?.end_date}&categoryIDS=${query?.categoryIDS}&orderBy=${query?.orderBy}&order=${query?.order}&limit=${query?.limit}&sectorIDS=${query?.sectorIDS}&quickFilter=${query?.quickFilterSectorID}`,
-                    method: "GET",
-                    headers: {
-                        Authorization: `Bearer ${globalToken}`,
-                    },
-                };
-            },
-            providesTags: ["report"],
-        }),
-    }),
+  }),
 });
 
-export const {
-    useGetExpenseReportDataQuery,
-} = reportSlice;
+export const { useGetExpenseReportDataQuery } = reportSlice;

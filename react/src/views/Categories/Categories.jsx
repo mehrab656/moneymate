@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 import { Modal } from "react-bootstrap";
 import { useStateContext } from "../../contexts/ContextProvider.jsx";
 import { SettingsContext } from "../../contexts/SettingsContext.jsx";
-import MainLoader from "../../components/MainLoader.jsx";
+import MainLoader from "../../components/loader/MainLoader.jsx";
 import { notification } from "../../components/ToastNotification.jsx";
 import { faBuildingFlag } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

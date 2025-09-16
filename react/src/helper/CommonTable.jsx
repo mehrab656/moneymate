@@ -26,7 +26,7 @@ import Typography from "@mui/material/Typography";
 import Collapse from "@mui/material/Collapse";
 import { Col, Row } from "react-bootstrap";
 import { checkPermission } from "./HelperFunctions.js";
-import { TableLoader } from "../components/SkeletonLoader/TableLoader.jsx";
+import { TableLoader } from "../components/loader/TableLoader.jsx";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import Accordion from 'react-bootstrap/Accordion'
 const useStyles = makeStyles(() => ({

@@ -33,10 +33,7 @@ export const ContextProvider = ({children}) => {
         _setToken(token)
         if (token) {
             localStorage.setItem('ACCESS_TOKEN', token);
-        } else {
-            localStorage.removeItem('ACCESS_TOKEN');
-
-        }
+        } 
     }
 
     useEffect(()=>{

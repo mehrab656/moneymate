@@ -10,7 +10,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCoins, faEdit, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
-import MainLoader from "../components/MainLoader.jsx";
+import MainLoader from "../components/loader/MainLoader.jsx";
 
 export default function Return() {
     const [loading, setLoading] = useState(false);

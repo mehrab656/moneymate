@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import MonthlyExpenseChart from "../../components/MonthlyExpenseChart.jsx";
+import MonthlyExpenseChart from "../../components/chart/MonthlyExpenseChart.jsx";
 import SummeryCard from "../../components/SummeryCard.jsx";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
@@ -7,15 +7,15 @@ import AddCardTwoToneIcon from "@mui/icons-material/AddCardTwoTone";
 import RemoveTwoToneIcon from "@mui/icons-material/RemoveTwoTone";
 import WizCard from "../../components/WizCard.jsx";
 import { AccountBalanceRounded, AddTwoTone } from "@mui/icons-material";
-import BudgetExpensesChart from "../../components/BudgetExpensesChart.jsx";
+import BudgetExpensesChart from "../../components/chart/BudgetExpensesChart.jsx";
 import { SettingsContext } from "../../contexts/SettingsContext.jsx";
-import MainLoader from "../../components/MainLoader.jsx";
+import MainLoader from "../../components/loader/MainLoader.jsx";
 import {
   useGetBudgetPieDataQuery,
   useGetDashboardDataQuery,
   useGetExpenseGraphDataQuery,
 } from "../../api/slices/dashBoardSlice.js";
-import DashboardCardLoader from "../../components/SkeletonLoader/dashboardCardLoader.jsx";
+import DashboardCardLoader from "../../components/loader/DashboardCardLoader.jsx";
 
 export default function Dashboard() {
   const { applicationSettings, userRole } = useContext(SettingsContext);

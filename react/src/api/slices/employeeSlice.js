@@ -1,24 +1,17 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 
-import { baseUrl } from "../baseUrl";
-import { globalToken } from "../globalToken"
-
+import { customBaseQuery } from "../../store/customBaseQuery";
 
 export const employeeSlice = createApi({
   reducerPath: "employee",
-  baseQuery: fetchBaseQuery({
-    baseUrl: baseUrl,
-  }),
+  baseQuery: customBaseQuery,
   tagTypes: ["employee"],
   endpoints: (builder) => ({
     getAllEmployeeData: builder.query({
-      query: ({currentPage,pageSize}) => {
+      query: ({ currentPage, pageSize }) => {
         return {
           url: `/employees?page=${currentPage}&pageSize=${pageSize}`,
           method: "GET",
-          headers:{
-            Authorization: `Bearer ${globalToken}`
-          }
         };
       },
       providesTags: ["employee"],
@@ -28,9 +21,6 @@ export const employeeSlice = createApi({
         return {
           url: `/employees`,
           method: "GET",
-          headers:{
-            Authorization: `Bearer ${globalToken}`
-          }
         };
       },
       providesTags: ["employee"],
@@ -38,7 +28,5 @@ export const employeeSlice = createApi({
   }),
 });
 
-export const {
- useGetAllEmployeeDataQuery,
- useGetEmployeeListQuery,
-  } = employeeSlice;
+export const { useGetAllEmployeeDataQuery, useGetEmployeeListQuery } =
+  employeeSlice;

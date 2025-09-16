@@ -1,13 +1,9 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { baseUrl } from "../baseUrl";
-import { globalToken } from "../globalToken"
-
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { customBaseQuery } from "../../store/customBaseQuery";
 
 export const dashboardSlice = createApi({
   reducerPath: "dashboard",
-  baseQuery: fetchBaseQuery({
-    baseUrl: baseUrl,
-  }),
+  baseQuery: customBaseQuery,
   tagTypes: ["dashboard"],
   endpoints: (builder) => ({
     getDashboardData: builder.query({
@@ -15,9 +11,6 @@ export const dashboardSlice = createApi({
         return {
           url: `/dashboard-data`,
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${globalToken}`,
-          },
         };
       },
       providesTags: ["dashboard"],
@@ -27,9 +20,6 @@ export const dashboardSlice = createApi({
         return {
           url: `/expenses/graph`,
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${globalToken}`,
-          },
         };
       },
       providesTags: ["dashboard"],
@@ -39,9 +29,6 @@ export const dashboardSlice = createApi({
         return {
           url: `/budget/pie-data`,
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${globalToken}`,
-          },
         };
       },
       providesTags: ["dashboard"],
@@ -51,21 +38,15 @@ export const dashboardSlice = createApi({
         return {
           url: `companies`,
           method: "GET",
-          headers:{
-            Authorization: `Bearer ${globalToken}`
-          }
         };
       },
       providesTags: ["dashboard"],
     }),
     getCurrentCompanyData: builder.query({
-      query: ({id}) => {
+      query: ({ id }) => {
         return {
           url: `/getCurrentCompany/${id}`,
           method: "GET",
-          headers:{
-            Authorization: `Bearer ${globalToken}`
-          }
         };
       },
       providesTags: ["dashboard"],
@@ -75,8 +56,8 @@ export const dashboardSlice = createApi({
 
 export const {
   useGetDashboardDataQuery,
-  useGetExpenseGraphDataQuery, 
+  useGetExpenseGraphDataQuery,
   useGetBudgetPieDataQuery,
   useGetSideBarCompanyListsDataQuery,
-  useGetCurrentCompanyDataQuery
+  useGetCurrentCompanyDataQuery,
 } = dashboardSlice;

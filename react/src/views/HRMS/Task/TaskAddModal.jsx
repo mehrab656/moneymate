@@ -7,7 +7,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Select from "react-select";
 import {notification} from "../../../components/ToastNotification.jsx";
-import MainLoader from "../../../components/MainLoader.jsx";
+import MainLoader from "../../../components/loader/MainLoader.jsx";
 import {useGetEmployeeListQuery} from "../../../api/slices/employeeSlice.js";
 import {useCreateTaskMutation, useGetSingleTaskDataQuery} from "../../../api/slices/taskSlice.js";
 import {useGetCategoryListDataQuery} from "../../../api/slices/categorySlice.js";
