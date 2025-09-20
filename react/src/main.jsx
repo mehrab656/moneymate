@@ -11,7 +11,6 @@ import {SettingsProvider} from "./contexts/SettingsContext.jsx";
 import 'react-tooltip/dist/react-tooltip.css';
 
 import { Provider } from "react-redux";
-import { createStore  } from "./store/store";
 
 import OneSignal from 'react-onesignal';
 import AppRouter from './router/AppRouter.jsx';

@@ -668,6 +668,7 @@ section .details span{
 .scrollable-dropdown {
   max-height: 300px;
   overflow-y: auto;
+    z-index: 111111;
 }
 .scrollable-submenu {
   max-height: 180px;
