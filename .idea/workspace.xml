@@ -6,7 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="eb82f29d-a946-4d7c-af4f-355ea30ae3ce" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/public/custom.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/public/custom.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/main.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/main.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -263,7 +264,7 @@
       <workItem from="1743932824974" duration="89000" />
       <workItem from="1747221305963" duration="70817000" />
       <workItem from="1749659574060" duration="55309000" />
-      <workItem from="1755799534883" duration="20542000" />
+      <workItem from="1755799534883" duration="22353000" />
     </task>
     <servers />
   </component>
@@ -280,7 +281,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/react/src/views/ApplicationSettingsForm.jsx</url>
-          <line>273</line>
+          <line>269</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
