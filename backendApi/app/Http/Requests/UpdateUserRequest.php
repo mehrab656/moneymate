@@ -29,14 +29,22 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:55',
-            'email' => 'required|email|unique:users,email,' . $this->id,
-            'password' => [
-                'confirmed',
-                Password::min(8)
-                    //->letters()
-                    //->symbols(),
-            ]
+            'first_name' => 'required|string|max:55',
+            'last_name' => 'required|string|max:55',
+            'phone' => 'required|string|max:15',
+            'gender' => 'required',
+            'role' => 'required',
+            'attachment' => 'nullable',
+            'email' => 'required|email|unique:users,email,' . $this->slug . ',slug,deleted_at,NULL',
+//            'password' => [
+//                'confirmed',
+//                Password::min(8)
+//                    //->letters()
+//                    //->symbols(),
+//            ]
+
+
+
         ];
     }
 }

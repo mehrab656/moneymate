@@ -1,126 +1,281 @@
-import NavDropdown from "react-bootstrap/NavDropdown";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faFilter} from "@fortawesome/free-solid-svg-icons";
-import DatePicker from "react-datepicker";
-import React, {memo} from "react";
-import {Row} from "react-bootstrap";
+import React, { memo, useEffect, useState } from "react";
+import {
+  Col,
+  Tab,
+  Row,
+  Button,
+  Nav,
+  Modal,
+  InputGroup,
+  Form,
+} from "react-bootstrap";
+import Container from "react-bootstrap/Container";
+import { useGetSectorListDataQuery } from "../../api/slices/sectorSlice.js";
+import { useGetCategoryListDataQuery } from "../../api/slices/categorySlice.js";
+import {  faFilter } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+const navItems = [
+  { key: "filter-report-by-sector", name: "Sector" },
+  { key: "filter-report-by-categories", name: "Categories" },
+  { key: "filter-report-by-others", name: "Others" },
+];
 
 const ExpenseFilter = ({
-                           handleSubmit,
-                           selectedSectorId,
-                           setSelectedSectorId,
-                           sectors,
-                           selectedCategoryId,
-                           setSelectedCategoryId,
-                           expenseCategories,
-                           startDate,
-                           setStartDate,
-                           endDate,
-                           setEndDate,
-                           searchParoms,
-                           setSearchParoms,
-                           resetFilterParameter,
-                           hasFilter
-                       }) => {
-    return (
-        <NavDropdown className={'filter-icon'}
-                     title={<FontAwesomeIcon icon={faFilter} title={'Filter'} color={hasFilter ? 'green' : 'red'}
-                     />}>
-            <form className={"p-2"} onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label className="custom-form-label" htmlFor="expense_category"><small>Filter by
-                        Sectors</small></label>
-                    <select
-                        className="custom-form-control"
-                        value={selectedSectorId}
-                        id="sector"
-                        name="sector"
-                        onChange={(event) => {
-                            const value = event.target.value || '';
-                            setSelectedSectorId(value);
-                        }}>
-                        <option defaultValue>Filter By Sectors</option>
-                        {sectors.map(sector => (
-                            <option key={"sec-" + sector.id} value={sector.id}>
-                                {sector.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div className="form-group">
-                    <label className="custom-form-label" htmlFor="expense_category"><small>Filter by Expense
-                        Category</small></label>
-                    <select
-                        className="custom-form-control"
-                        value={selectedCategoryId}
-                        id="expense-category"
-                        name="expense-category"
-                        onChange={(event) => {
-                            const value = event.target.value || '';
-                            setSelectedCategoryId(value);
-                        }}>
-                        <option defaultValue>Filter By Category</option>
-                        {expenseCategories.map(category => (
-                            <option key={'cat-' + category.id} value={category.id}>
-                                {category.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div className="row">
-                    <div className="col-5">
-                        <div className="form-group">
-                            <label className="custom-form-label" htmlFor="start_date"><small>Filter by
-                                date</small></label>
-                            <DatePicker
-                                className="custom-form-control"
-                                id="start_date"
-                                selected={startDate}
-                                onChange={(date) => setStartDate(date)}
-                                dateFormat="yyyy-MM-dd"
-                                placeholderText='Start Date'
-                            />
-                        </div>
-                    </div>
-                    <div className="col-2 d-flex justify-content-sm-center align-items-center">To</div>
-                    <div className="col-5">
-                        <div className="form-group">
-                            <label className="custom-form-label" htmlFor="end_date"
-                                   style={{marginBottom: "32px"}}></label>
-                            <DatePicker
-                                className="custom-form-control"
-                                id="end_date"
-                                selected={endDate}
-                                onChange={(date) => setEndDate(date)}
-                                dateFormat="yyyy-MM-dd"
-                                placeholderText='End Date'
-                            />
-                        </div>
-                    </div>
-                </div>
-                <div className='form-group'>
-                    <label className='custom-form-label' htmlFor='search'>
-                        Search by keywords
-                    </label>
-                    <input
-                        className='custom-form-control'
-                        placeholder='search by keywards'
-                        value={searchParoms}
-                        onChange={(ev) =>
-                            setSearchParoms(ev.target.value)
-                        }
+  queryParams,
+  setQueryParams,
+  setHasFilter,
+  defaultQueryParoms,
+}) => {
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [currentTab, setCurrentTab] = useState(navItems[0].key);
+  const [sectors, setSectors] = useState([]);
+  const [searchSectors, setSearchSector] = useState("");
+  const [searchCategories, setSearchCategories] = useState("");
+  const [categories, setCategories] = useState([]);
+
+  const { data: getSectorListData } = useGetSectorListDataQuery();
+  const { data: getCategoryListData } = useGetCategoryListDataQuery({
+    categoryType: "expense",
+  });
+  const toggleFilterModal = () => {
+    setShowFilterModal(!showFilterModal);
+    setHasFilter(false)
+  };
+  useEffect(() => {
+    if (getSectorListData?.data) {
+      setSectors(getSectorListData.data);
+    }
+    if (getCategoryListData?.data) {
+      setCategories(getCategoryListData.data);
+    }
+  }, [getSectorListData?.data, getCategoryListData?.data]);
+
+  const filteredSectors = sectors.filter((sector) =>
+    sector.label.toLowerCase().includes(searchSectors.toLowerCase())
+  );
+
+  const filteredCategories = categories.filter((category) =>
+    category.label.toLowerCase().includes(searchCategories.toLowerCase())
+  );
+  const handelSectorIds = (e, slug) => {
+    let secList = queryParams.sectorIDS;
+    if (e.target.checked) {
+      secList = secList.concat(slug);
+    } else {
+      secList = secList.filter((sectorID) => sectorID !== slug);
+    }
+    setQueryParams({ ...queryParams, sectorIDS: secList });
+  };
+
+  const handleFilterSubmit = () => {
+    setHasFilter(true);
+    setShowFilterModal(false)
+  };
+  const resetFilterParameter = () => {
+    setQueryParams(defaultQueryParoms);
+    setHasFilter(false);
+  };
+  const handelCategoryIDS = (e, slug) => {
+    let categoryList = queryParams.categoryIDS;
+    if (e.target.checked) {
+      categoryList = categoryList.concat(slug);
+    } else {
+      categoryList = categoryList.filter((catID) => catID !== slug);
+    }
+    setQueryParams({ ...queryParams, categoryIDS: categoryList });
+  };
+
+  const showCurrentPan = (currentTab) => {
+    if (currentTab === "filter-report-by-sector") {
+      return (
+        <Tab.Pane eventKey={"filter-report-by-sector"}>
+          <label className="custom-form-label" htmlFor="filter-by-sector">
+            Filter By Sectors
+          </label>
+          <div className="form-group">
+            <input
+              className="custom-form-control"
+              placeholder="search by keywards"
+              value={searchSectors}
+              onChange={(ev) => setSearchSector(ev.target.value)}
+            />
+          </div>
+          <div className={"report-filter-list"}>
+            {filteredSectors.length > 0
+              ? filteredSectors.map((sector,index) => (
+                  <InputGroup className="mb-3" size={"sm"} key={`sector-report-${index}`}>
+                    <InputGroup.Checkbox
+                      aria-label={`Checkbox for ${sector.label}`}
+                      id={sector.value}
+                      onChange={(e) => {
+                        handelSectorIds(e, sector.value);
+                      }}
                     />
-                </div>
-                <NavDropdown.Divider/>
-                <div className={"text-end"}>
-                    <button className={'btn btn-success btn-sm mr-2'} type="submit">Filter</button>
-                    <button className="btn btn-warning btn-sm" type="reset" onClick={resetFilterParameter}>Reset</button>
-                </div>
-            </form>
-        </NavDropdown>
+                    <Form.Control
+                      type="text"
+                      value={sector.label}
+                      disabled={true}
+                      aria-describedby="basic-addon3"
+                    />
+                  </InputGroup>
+                ))
+              : "Nothing found"}
+          </div>
+        </Tab.Pane>
+      );
+    }
+    if (currentTab === "filter-report-by-categories") {
+      return (
+        <Tab.Pane eventKey={"filter-report-by-categories"}>
+          <label className="custom-form-label" htmlFor="filter-by-sector">
+            Filter By Categories
+          </label>
+          <div className="form-group">
+            <input
+              className="custom-form-control"
+              placeholder="search by keywards"
+              value={searchCategories}
+              onChange={(ev) => setSearchCategories(ev.target.value)}
+            />
+          </div>
+          <div className={"report-filter-list"}>
+            {filteredCategories.length > 0
+              ? filteredCategories.map((category,index) => (
+                  <InputGroup className="mb-3" size={"sm"} key={`category-report-${index}`}>
+                    <InputGroup.Checkbox
+                      aria-label={`Checkbox for ${category.label}`}
+                      id={category.value}
+                      onChange={(e) => {
+                        handelCategoryIDS(e, category.value);
+                      }}
+                    />
+                    <Form.Control
+                      type="text"
+                      value={category.label}
+                      disabled={true}
+                      aria-describedby="basic-addon3"
+                    />
+                  </InputGroup>
+                ))
+              : "Nothing found"}
+          </div>
+        </Tab.Pane>
+      );
+    }
+    if (currentTab === "filter-report-by-others") {
+      return (
+        <Tab.Pane eventKey={"filter-report-by-others"}>
+          <div className="form-group">
+            <label
+              className="custom-form-label"
+              htmlFor="expense-filter-order-by"
+            >
+              Order By
+            </label>
+            <select
+              className="form-control"
+              name="expense-filter-order-by"
+              value={queryParams.orderBy}
+              onChange={(event) => {
+                const value = event.target.value || "";
+                setQueryParams({ ...queryParams, orderBy: value });
+              }}
+            >
+              <option defaultValue>Filter By Order Column</option>
+              <option value={"id"}>{"Id"}</option>
+              <option value={"date"}>{"Date"}</option>
+              <option value={"amount"}>{"Amount"}</option>
+              <option value={"refundable_amount"}>{"Refundable Amount"}</option>
+              <option value={"refunded_amount"}>{"Refunded Amount"}</option>
+            </select>
+          </div>
 
-    )
-        ;
-}
+          <div className="form-group">
+            <label className="custom-form-label" htmlFor="expense-filter-order">
+              Order
+            </label>
+            <select
+              className="form-control"
+              value={queryParams.order}
+              id="order"
+              name="order"
+              onChange={(event) => {
+                const value = event.target.value || "";
+                setQueryParams({ ...queryParams, order: value });
+              }}
+            >
+              <option defaultValue>Filter By Order</option>
+              <option value={"DESC"}>{"DESCENDING"}</option>
+              <option value={"ASC"}>{"ASCENDING"}</option>
+            </select>
+          </div>
+        </Tab.Pane>
+      );
+    }
+  };
 
-export default memo(ExpenseFilter)
+  return (
+    <>
+      <button
+        className={"btn btn-secondary btn-sm mr-2"}
+        onClick={toggleFilterModal}
+      >
+        <FontAwesomeIcon icon={faFilter} />
+        {" More Filter"}
+      </button>
+      <Modal
+        show={showFilterModal}
+        onHide={toggleFilterModal}
+        backdrop="static"
+        keyboard={false}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Filters</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className={"filter-modal-body"}>
+          <Container>
+            <Tab.Container
+              id="left-tabs-example"
+              defaultActiveKey="filter-report-by-sector"
+            >
+              <Row className={"filter-modal-row"}>
+                <Col md={6} xs={6} className={"filter-column"}>
+                  <Nav variant="pills" className="flex-column">
+                    {navItems.map((item) => {
+                      return (
+                        <Nav.Item key={item.key}>
+                          <Nav.Link
+                            eventKey={item.key}
+                            onClick={() => {
+                              setCurrentTab(item.key);
+                            }}
+                          >
+                            {item.name}
+                          </Nav.Link>
+                        </Nav.Item>
+                      );
+                    })}
+                  </Nav>
+                </Col>
+                <Col md={6} xs={6} className={"filter-column"}>
+                  <Tab.Content>{showCurrentPan(currentTab)}</Tab.Content>
+                </Col>
+              </Row>
+            </Tab.Container>
+          </Container>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={resetFilterParameter}>
+            Reset
+          </Button>
+          <Button variant="info" onClick={handleFilterSubmit}>
+            Filter
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  );
+};
+
+export default memo(ExpenseFilter);

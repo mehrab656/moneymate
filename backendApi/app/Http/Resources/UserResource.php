@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\Subscription;
+use Auth;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -17,29 +18,40 @@ class UserResource extends JsonResource
      * @param Request $request
      * @return array
      */
-    public function toArray($request): array
+    public function toArray(Request $request): array
     {
-        $is_active_membership = 'no';
-        $registrationType = get_option('registration_type');
-
-        if ($registrationType === 'subscription') {
-            $subscription = Subscription::where('status', 'active')
-                ->where('current_period_end', '>', now())
-                ->first();
-            if ($subscription)
-            {
-                $is_active_membership = 'yes';
-            }
-        }
+//        $is_active_membership = 'no';
+//        $registrationType = get_option('registration_type');
+//
+//        if ($registrationType === 'subscription') {
+//            $subscription = Subscription::where('status', 'active')
+//                ->where('current_period_end', '>', now())
+//                ->first();
+//            if ($subscription)
+//            {
+//                $is_active_membership = 'yes';
+//            }
+//
+//    }
 
         return [
-            'id' => $this->id,
-            'name' => $this->name,
+            'id' => $this->slug,
+            'slug' => $this->slug,
+            'first_name'=>$this->first_name,
+            'last_name'=>$this->last_name,
+            'username' => $this->username,
             'email' => $this->email,
-            'subscriptions' => $this->subscriptions,
-            'role_as' => $this->role_as,
-            'is_active_membership' => $is_active_membership,
-            'created_at' => $this->created_at->format('Y-m-d H:i:s')
+            'phone'=>$this->phone,
+            'emergency_contract'=>$this->emergency_contract,
+            'dob'=>$this->dob,
+            'gender'=>$this->gender,
+            'avatar' => asset('avatars/'.$this->profile_picture),
+//            'primary_company' => $this->primary_company,
+            'role' => $this->role,
+            'is_active_membership' => 'yes',
+            'created_at' => $this->created_at,
+            'active'=>$this->active?'Active':'Inactive',
+            'options'=>$this->options,
         ];
     }
 }

@@ -1,23 +1,16 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-import { baseUrl } from "../baseUrl";
-
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { customBaseQuery } from "../../store/customBaseQuery";
 
 export const accountSlice = createApi({
   reducerPath: "accounts",
-  baseQuery: fetchBaseQuery({
-    baseUrl: baseUrl,
-  }),
+  baseQuery: customBaseQuery,
   tagTypes: ["accounts"],
   endpoints: (builder) => ({
     getFinancialReportData: builder.query({
-      query: ({token}) => {
+      query: () => {
         return {
           url: `/getFinanceReport`,
           method: "GET",
-          headers:{
-            Authorization: `Bearer ${token}`
-          }
         };
       },
       providesTags: ["accounts"],
@@ -25,6 +18,4 @@ export const accountSlice = createApi({
   }),
 });
 
-export const {
- useGetFinancialReportDataQuery
-  } = accountSlice;
+export const { useGetFinancialReportDataQuery } = accountSlice;

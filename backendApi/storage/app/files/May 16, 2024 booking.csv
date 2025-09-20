@@ -1,0 +1,3 @@
+Type,"Reference number",Check-in,Checkout,"Guest name","Reservation status",Currency,"Payment status",Amount,Commission,"Payment charge",,Net,"Payout date","Payout ID"
+Reservation,4960443051,"9 May 2024","11 May 2024","Ronoah Vivas",ok,AED,by_booking,450.91,-64.42,-11.27,,375.22,"16 May 2024",yfEaqbWGzfPmeavD
+Reservation,4570091002,"6 May 2024","9 May 2024","Vadim Lebedev",ok,AED,by_booking,566.05,-80.86,-14.15,,471.04,"16 May 2024",yfEaqbWGzfPmeavD

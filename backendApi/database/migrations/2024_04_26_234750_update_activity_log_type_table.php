@@ -10,7 +10,7 @@ return new class extends Migration {
 	 */
 	public function up(): void {
 		Schema::table( 'activity_logs', function ( Blueprint $table ) {
-			$table->string( 'object' )->nullable( true )->default( null )->after( 'object_id' );
+//			$table->string( 'object' )->nullable( true )->default( null )->after( 'object_id' );
 			$table->boolean( 'view_status' )->default( false )->after( 'descriptions' );
 			$table->json( 'view_by' )->nullable( true )->default( null )->after( 'view_status' );
 		} );

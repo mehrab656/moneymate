@@ -1,9 +1,0 @@
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(function(OneSignal) {
-    OneSignal.init({
-      appId: "7f5bdd3e-d95c-41ba-9c16-a1423b7dad89",
-    });
-  });
-</script>

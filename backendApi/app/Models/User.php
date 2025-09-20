@@ -3,12 +3,19 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Composer\Autoload\ClassLoader;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
+use mysql_xdevapi\DatabaseObject;
 
 /**
  * @property mixed $id
@@ -23,10 +30,27 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'slug',
+        'username',
+        'primary_company',
+        'profile_picture',
         'email',
         'password',
         'role_as',
+        'first_name',
+        'last_name',
+        'phone',
+        'emergency_contract',
+        'dob',
+        'last_ip_address',
+        'ip_address',
+        'activation_code',
+        'forgotten_password_code',
+        'forgotten_password_time',
+        'remember_code',
+        'active',
+        'gender',
+        'options',
     ];
 
     /**
@@ -120,4 +144,141 @@ class User extends Authenticatable
         return $this->hasMany(Subscription::class)->orderBy('id', 'DESC');
     }
 
+    public function companies()
+    {
+        return $this->belongsToMany(Company::class);
+    }
+
+    public function current_company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'primary_company', 'id');
+    }
+
+    public function permissions(): BelongsTo
+    {
+        return $this->belongsTo(Role::class, 'company_user', 'role_id', 'id');
+    }
+
+    /**
+     * @throws \Exception
+     * @throws \Throwable
+     */
+    public function addNewUser($data)
+    {
+
+        if (isset($data['password']) && $data['password']) {
+            $password = bcrypt($data['password']);
+        } else {
+            $password = bcrypt('12345678');
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $user = $this->create([
+                'slug' => $data['slug'],
+                'username' => $data['user_name'],
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
+                'phone' => $data['phone'],
+                'emergency_contact' => $data['emergency_contact'],
+                'dob' => $data['dob'] ?? null,
+                'gender' => $data['gender'] ?? null,
+                'activation_code' => $data['slug'],
+                'email' => $data['email'],
+                'profile_picture' => $data['profile_picture'], //$data['role_id'],//admin role.
+                'password' => $password,
+                'role_as' => $data['role_as'],
+                'primary_company' => $data['primary_company'],
+            ]);
+
+            storeActivityLog([
+                'object_id' => $user['id'],
+                'object' => 'user',
+                'log_type' => 'create',
+                'module' => 'user',
+                'descriptions' => "",
+                'data_records' => json_encode($user),
+            ]);
+            DB::table('company_user')->insert([
+                'company_id' => $data['primary_company'],
+                'user_id' => $user['id'],
+                'role_id' => $data['role_id'],
+//                'role_as' => $data['role_as'],
+                'status' => true,
+                'created_by' => Auth::user()->id,
+                'updated_by' => Auth::user()->id,
+                'created_at' => date('y-m-d'),
+                'updated_at' => date('y-m-d'),
+            ]);
+            DB::commit();
+            return [
+                'message' => 'User Added',
+                'status_code' => 200,
+                'user' => $user
+            ];
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            return [
+                'message' => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
+                'status_code' => 400
+            ];
+        }
+
+    }
+
+    /**
+     * @throws \Throwable
+     */
+    public function updateUser($data, $slug): array
+    {
+        $user = (new User())->where('slug', $slug)->first();
+        if (!$user) {
+            return [
+                'status_code' => 404,
+                'message' => 'User not found!',
+                'data' => []
+            ];
+        }
+
+        try {
+            DB::beginTransaction();
+            DB::table('company_user')
+                ->where('user_id', $user['id'])
+                ->where('company_id', Auth::user()->primary_company)
+                ->update(['role_id' => $data['role']]);
+
+            $updateColumnsArray = [
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
+                'phone' => $data['phone'],
+                'dob' => $data['dob'],
+                'gender' => $data['gender'],
+            ];
+
+            if (isset($data['profile_picture'])) {
+                $updateColumnsArray['profile_picture'] = $data['profile_picture'];
+            }
+            if (isset($data['emergency_contract'])) {
+                $updateColumnsArray['emergency_contract'] = $data['emergency_contract'];
+            }
+            $user->update($updateColumnsArray);
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return [
+                'message' => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
+                'status_code' => 400
+            ];
+        }
+
+        return
+            [
+                'status_code' => 200,
+                'message' => 'User updated!',
+                'data' => $data
+            ];
+    }
 }

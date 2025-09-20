@@ -6,8 +6,12 @@ use App\Http\Controllers\Api\Interfaces\CategoryRepositoryInterface;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Resources\BankAccountResource;
+use App\Http\Resources\CategoryFilterResource;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
+use Illuminate\Support\Facades\DB;
+use Exception;
 use Hamcrest\Description;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,29 +27,43 @@ class CategoryController extends Controller {
 	}
 
 	public function index( Request $request ): JsonResponse {
-		$page     = $request->query( 'page', 1 );
-		$pageSize = $request->query( 'pageSize', 10 );
-
-		$categories = Category::skip( ( $page - 1 ) * $pageSize )
-		                      ->take( $pageSize )
-		                      ->get();
-
-		$totalCount = Category::count();
+		$page       = $request->query( 'page', 1 );
+		$pageSize   = $request->query( 'pageSize', 10 );
+		$sectorID   = $request->query( 'selectedSectorId', null );
+		$type   = $request->query( 'categoryType', null );
+		$categories = DB::table( 'categories' )->select( 'categories.*' )
+		                ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
+		                ->where( 'sectors.company_id', '=', Auth::user()->primary_company );
+        if ($sectorID){
+            $categories = $categories->where('sectors.id','=',$sectorID);
+        }
+        if ($type){
+            $categories = $categories->where('type','=',$type);
+        }
+//        if ($page){
+//            $categories = $categories->skip( ( $page - 1 ) * $pageSize );
+//        }
+//        if ($pageSize){
+//            $categories = $categories->take( $pageSize );
+//        }
+        $categories = $categories->skip( ( $page - 1 ) * $pageSize )->take( $pageSize )->get();
 
 		return response()->json( [
 			'data'  => CategoryResource::collection( $categories ),
-			'total' => $totalCount,
+			'total' => Category::count(),
 		] );
 	}
 
+	/**
+	 * @throws Exception
+	 */
 	public function create( CategoryRequest $request ): JsonResponse {
-		$categoryData            = $request->validated();
-		$categoryData['user_id'] = auth()->user()->id;
+		$categoryData               = $request->validated();
+		$categoryData['user_id']    = auth()->user()->id;
 
 		$category = $this->categoryRepository->create( $categoryData );
 		storeActivityLog( [
-			'user_id'      => Auth::user()->id,
-			'object_id'     => $category->id,
+			'object_id'    => $category->id,
 			'log_type'     => 'create',
 			'module'       => 'Category',
 			'descriptions' => "",
@@ -64,14 +82,16 @@ class CategoryController extends Controller {
 		return new CategoryResource( $category );
 	}
 
-	public function update( UpdateCategoryRequest $request, Category $category ): CategoryResource {
+	/**
+	 * @throws Exception
+	 */
+	public function update( UpdateCategoryRequest $request, Category $category ): JsonResponse {
 		$data     = $request->validated();
 		$oldData  = $category;
 		$category = $this->categoryRepository->update( $category, $data );
 
 		storeActivityLog( [
-			'user_id'      => Auth::user()->id,
-			'object_id'     => $category->id,
+			'object_id'    => $category->id,
 			'log_type'     => 'edit',
 			'module'       => 'Category',
 			'descriptions' => "",
@@ -95,12 +115,12 @@ class CategoryController extends Controller {
 	 * @param Category $category
 	 *
 	 * @return JsonResponse
+	 * @throws Exception
 	 */
 	public function destroy( Category $category ): JsonResponse {
 		$this->categoryRepository->delete( $category );
 		storeActivityLog( [
-			'user_id'      => Auth::user()->id,
-			'object_id'     => $category->id,
+			'object_id'    => $category->id,
 			'log_type'     => 'delete',
 			'module'       => 'Category',
 			'descriptions' => "",
@@ -115,5 +135,27 @@ class CategoryController extends Controller {
 			'description' => 'Category successfully deleted!.',
 		] );
 	}
+
+    /**
+     * Get the list of this company categories based on types.
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function categories(Request $request): JsonResponse
+    {
+
+        $type = $request->type;
+        $query = DB::table( 'categories' )->select( 'categories.*' )
+            ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
+            ->where( 'sectors.company_id', '=', Auth::user()->primary_company );
+
+        if ($type){
+            $query= $query->where('type',$type);
+        }
+
+        return response()->json([
+            'data'=> CategoryFilterResource::collection($query->get()),
+        ]);
+    }
 
 }

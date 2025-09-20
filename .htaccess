@@ -1,4 +1,6 @@
 <IfModule mod_rewrite.c>
+ Header set Access-Control-Allow-Origin "*"
+
   RewriteEngine On
   RewriteBase /
   RewriteRule ^index\.html$ - [L]
