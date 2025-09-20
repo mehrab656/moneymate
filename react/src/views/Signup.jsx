@@ -1,10 +1,9 @@
-import {CardElement, useElements, useStripe} from '@stripe/react-stripe-js';
 import {Link} from "react-router-dom";
 import {useContext, useEffect, useRef, useState} from "react";
 import axiosClient from "../axios-client.js";
 import {useStateContext} from "../contexts/ContextProvider.jsx";
 import {SettingsContext} from "../contexts/SettingsContext.jsx";
-import MainLoader from '../components/MainLoader.jsx';
+import MainLoader from '../components/loader/MainLoader.jsx';
 
 export default function Signup() {
 
@@ -24,9 +23,7 @@ export default function Signup() {
     const [loading, setLoading] = useState(false);
     const loadingRef = useRef(null);
 
-    // Stripe-related variables and hooks
-    const stripe = useStripe();
-    const elements = useElements();
+
 
     useEffect(() => {
         document.title = "Signup";
@@ -35,7 +32,7 @@ export default function Signup() {
 
     const formSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true); // Show loading effect
+        setLoading(true); // IncomeShow loading effect
 
         const payLoad = {
             name: nameRef.current.value,
@@ -43,29 +40,6 @@ export default function Signup() {
             password: passwordRef.current.value,
             password_confirmation: passwordConfirmRef.current.value,
         };
-
-        if (registration_type === 'subscription') {
-            // Create a payment method with Stripe
-            try {
-                const {error, paymentMethod} = await stripe.createPaymentMethod({
-                    type: 'card',
-                    card: elements.getElement(CardElement),
-                });
-
-                if (error) {
-                    // Handle any errors from Stripe
-                    console.warn(error);
-                    setLoading(false); // Hide loading effect
-                    return;
-                }
-                payLoad.paymentMethodId = paymentMethod.id;
-                setLoading(false);
-            } catch (error) {
-                console.warn(error);
-                setLoading(false); // Hide loading effect
-                return;
-            }
-        }
 
         try {
             // Send the user data to your server
@@ -141,19 +115,6 @@ export default function Signup() {
                             <p className="error-message mt-2">{errors.password_confirmation[0]}</p>}
                     </div>
 
-                    {registration_type === 'subscription' && (
-                        // CardElement component from Stripe
-                        <div className="form-group">
-                            <label className="custom-form-label" htmlFor="card_element">
-                                Card Details
-                            </label>
-                            <CardElement className="custom-form-control"/>
-                            {/* Display any card errors */}
-                            {errors && errors.card && (
-                                <p className="error-message mt-2">{errors.card[0]}</p>
-                            )}
-                        </div>
-                    )}
                     <button className="btn-add btn-block">{loading ? 'Signing up...' : 'Sign up'}</button>
                     <p className="message">
                         Already registered ? <Link to="/login">Sign in</Link>

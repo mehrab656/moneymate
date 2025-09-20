@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class BankNameController extends Controller {
 
@@ -23,34 +24,34 @@ class BankNameController extends Controller {
 
 		$page       = $request->query( 'page', 1 );
 		$pageSize   = $request->query( 'pageSize', 10 );
-		$bankNames  = BankName::skip( ( $page - 1 ) * $pageSize )
+		$bankNames  = BankName::where('company_id',Auth::user()->primary_company)->skip( ( $page - 1 ) * $pageSize )
 		                      ->take( $pageSize )
 		                      ->orderBy( 'id', 'desc' )
 		                      ->get();
-		$totalCount = BankName::count();
+		$totalCount = BankName::where('company_id',Auth::user()->primary_company)->count();
 
 		return response()->json( [
 			'data'  => BankNameResource::collection( $bankNames ),
 			'total' => $totalCount,
 		] );
-
 	}
 
 	public function allBank(): JsonResponse {
-		$bankNames = BankName::get();
+		$bankNames = BankName::where('company_id',Auth::user()->primary_company)->get();
 
 		return response()->json( [
 			'data' => BankNameResource::collection( $bankNames )
 		] );
 	}
 
-	/**
-	 * Store a newly created resource in storage.
-	 */
+    /**
+     * Store a newly created resource in storage.
+     * @throws Throwable
+     */
 	public function store( BankNameRequest $request ): JsonResponse {
 		$bankName = $request->validated();
 
-		$existingBankName = BankName::where( 'bank_name', $bankName['bank_name'] )
+		$existingBankName = BankName::where('company_id',Auth::user()->primary_company)->where( 'bank_name', $bankName['bank_name'] )
 		                            ->where( 'user_id', auth()->user()->id )
 		                            ->first();
 
@@ -58,16 +59,14 @@ class BankNameController extends Controller {
 			// A bank name with the same name already exists for the user, return a response
 			return response()->json( [ 'message' => 'Bank name already exists' ], 409 );
 		}
-
 		$bank = [
 			'user_id'   => auth()->user()->id,
+			'company_id'   => auth()->user()->primary_company,
 			'bank_name' => $bankName['bank_name']
 		];
 		try {
 			$bankName = BankName::create( $bank );
-
-			storeActivityLog( [
-				'user_id'      => Auth::user()->id,
+            storeActivityLog( [
 				'object_id'     => $bankName->id,
 				'log_type'     => 'create',
 				'module'       => 'sectors',
@@ -76,7 +75,7 @@ class BankNameController extends Controller {
 			] );
 			DB::commit();
 
-		} catch ( \Throwable $e ) {
+		} catch ( Throwable $e ) {
 			DB::rollBack();
 
 			return response()->json( [
@@ -91,7 +90,6 @@ class BankNameController extends Controller {
 		] );
 	}
 
-
 	/**
 	 * Display the specified resource.
 	 */
@@ -103,14 +101,11 @@ class BankNameController extends Controller {
 	 * Update the specified resource in storage.
 	 * @throws Exception
 	 */
-	public function update( BankNameUpdateRequest $request, BankName $bankName ): BankNameResource {
+	public function update( BankNameUpdateRequest $request, BankName $bankName ): JsonResponse {
 		$data = $request->validated();
-
 		$prevData = $bankName;
-
 		$bankName->update( $data );
 		storeActivityLog( [
-			'user_id'      => Auth::user()->id,
 			'object_id'     => $bankName->id,
 			'log_type'     => 'edit',
 			'module'       => 'bank',
@@ -122,20 +117,19 @@ class BankNameController extends Controller {
 		] );
 
 		// return new BankNameResource( $bankName );
-
 		return response()->json( [
 			'message'     => 'Success!',
 			'description' => 'New Bank name updated!',
 		] );
 	}
 
-	/**
-	 * Remove the specified resource from storage.
-	 */
+    /**
+     * Remove the specified resource from storage.
+     * @throws Exception
+     */
 	public function destroy( BankName $bankName ): JsonResponse {
 		$bankName->delete();
 		storeActivityLog( [
-			'user_id'      => Auth::user()->id,
 			'object_id'     => $bankName->id,
 			'log_type'     => 'delete',
 			'module'       => 'bank',

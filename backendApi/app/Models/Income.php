@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use DateTime;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,368 +10,380 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use Ramsey\Uuid\Uuid;
 use Throwable;
+use Illuminate\Support\Facades\Cookie;
 
 /**
  * @property mixed $account_id
  * @property mixed $amount
- * @method static create( array $array )
+ * @method static create(array $array)
  */
-class Income extends Model {
-	use HasFactory, SoftDeletes;
+class Income extends Model
+{
+    use HasFactory, SoftDeletes;
 
-	protected $table = 'incomes';
-	protected $primaryKey = 'id';
-	protected $guarded = [];
-
-
-	/**
-	 * @return BelongsTo
-	 */
-	public function person(): BelongsTo {
-		return $this->belongsTo( User::class, 'user_id', 'id' );
-	}
+    protected $table = 'incomes';
+    protected $primaryKey = 'id';
+    protected $guarded = [];
 
 
-	/**
-	 * @return BelongsTo
-	 */
-	public function bankAccount(): BelongsTo {
-		return $this->belongsTo( BankAccount::class, 'account_id', 'id' );
-	}
+    /**
+     * @return BelongsTo
+     */
+    public function person(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 
 
-	/**
-	 * @return BelongsTo
-	 */
-	public function category(): BelongsTo {
-		return $this->belongsTo( Category::class, 'category_id', 'id' );
-	}
+    /**
+     * @return BelongsTo
+     */
+    public function bankAccount(): BelongsTo
+    {
+        return $this->belongsTo(BankAccount::class, 'account_id', 'id');
+    }
 
-	public function mapCSVWithAirbnb( array $file ): array {
-		$this->builtDataFromAirbnbCSV($file);
-		unset( $file[0] );
 
-		foreach ( $file as $inc ) {
+    /**
+     * @return BelongsTo
+     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class, 'category_id', 'id');
+    }
 
-			$income = explode( ',', $file[2] );
+    public function buildIncomeDatesetFromCSV($data,$channel)
+    {
 
-			echo '<pre>';
-			print_r($income);
-			echo '</pre>';
-			exit();
-			if ( $income[2] == 'Reservation' ) {
+        $incomeAmount = str_replace('"', '', $data[12]);
+        $incomeCurrency = trim($data[17]);
+        $incomeDataSet = [
+            'date' => date('Y-m-d', strtotime(str_replace("\"", '', $data[2]))), // actually booking date,
+            'checkin_date' => date('Y-m-d', strtotime(str_replace("\"", '', $data[3]))),
+            'checkout_date' => date('Y-m-d', strtotime(str_replace("\"", '', $data[4]))),
+            'description' => str_replace("\"", '', $data[6]),
+            'amount' => str_replace('"', '', $data[12]),
+        ];
 
-				if ( $income[12] === 'USD' ) {
-					$req_url       = 'https://v6.exchangerate-api.com/v6/34613ea34951b619f1ff2fde/latest/USD';
-					$response_json = file_get_contents( $req_url );
+        if ($incomeCurrency === 'USD') {
+            $req_url = 'https://v6.exchangerate-api.com/v6/34613ea34951b619f1ff2fde/latest/USD';
+            $response_json = file_get_contents($req_url);
+            $response = json_decode($response_json);
+            $conversion_rates = $response->conversion_rates;
+            $incomeDataSet['amount'] = round($conversion_rates->AED * $incomeAmount, 2); //Amount in AED
+        }
 
-					$response         = json_decode( $response_json );
-					$conversion_rates = $response->conversion_rates;
 
-					$amount = round( $conversion_rates->AED * $income[13], 2 ); //Amount in AED
-				} else {
-					$amount = $income[13];
-				}
+        if ($channel==='airbnb'){
+            $incomeDataSet += [
+                'income_type'=>$data[10],
+                'reference' => sprintf("Airbnb booking reservation Number: %s",$data[1]),
+                'note' => sprintf("This income was imported by CSV where Listing id  is '%s' and reservation reference is '%s'", $data[0], $data[1]),
+            ];
+        }
+        if ($channel==='booking'){
+            $incomeDataSet += [
+                'income_type'=>'reservation',
+                'reference' => sprintf("Booking.com reservation Number: %s",$data[0]),
+                'note' => sprintf("This income was imported by CSV where reservation reference id '%s' and invoice number '%s'", $data[0], $data[1]),
+            ];
+        }
 
-				$incomes[] = [
-					'user_id'       => Auth::user()->id,
-					'type'          => $income[2],
-//				'account_id',
-					'amount'        => $amount,
-//				'category_id'=>$income[],
-					'description'   => $income[8],
-					'note'          => "Imported From CSV File, income Reference :" . $income[3],
-					'reference'     => 'airbnb',
-					'date'          => $income[0],
-					'income_type'   => 'reservation',
-					'checkin_date'  => $income[5],
-					'checkout_date' => $income[6],
-//				'attachment'=>$income[]
-				];
-			}
 
-		}
+        return $incomeDataSet;
+    }
 
-		return $incomes;
+    /**
+     * @throws Throwable
+     */
+    public function extractIncomeFromCSV(array $files, $category,$channel='booking'): array
+    {
+        unset($files[0]);
+        $sector = DB::table('sectors')->select('*')
+            ->join('categories', 'categories.sector_id', '=', 'sectors.id')
+            ->where('categories.id', '=', $category->id)
+            ->first();
 
-	}
+        foreach ($files as $iteration=>$file) {
 
-	/**
-	 * @throws Throwable
-	 */
-	public function mapCSVWithBooking( array $files, int $category_id ): array {
-		unset( $files[0] );
+            $incomeData = explode(',', str_replace('"', '', $file));
 
-		$sector = DB::table( 'sectors' )->select( '*' )
-		            ->join( 'categories', 'categories.sector_id', '=', 'sectors.id' )
-		            ->where( 'categories.id', '=', $category_id )
-		            ->first();
+            $income = $this->buildIncomeDatesetFromCSV($incomeData,$channel);
+            $income += [
+                'user_id' => Auth::user()->id,
+                'account_id' => $sector->payment_account_id,
+                'category_id' => $category->id,
+                'attachment' => '',
+            ];
 
-		foreach ( $files as $file ) {
-			$incomeData = explode( ',', $file );
-			$incomeType = strtolower( $incomeData[0] );
+            $isAdded = $this->incomeAdd($income, $category);
+            Cookie::queue('test', 55, 1);
 
-			if ( $incomeType == 'reservation' ) {
-				$incomeCurrency = $incomeData[6];
-				$incomeAmount   = $incomeData[12];
-				$checkInDate    = date( 'Y-m-d', strtotime( str_replace( "\"", '', $incomeData[2] ) ) );
-				$checkOutDate   = date( 'Y-m-d', strtotime( str_replace( "\"", '', $incomeData[3] ) ) );
-				$paymentDate    = date( 'Y-m-d', strtotime( str_replace( "\"", '', $incomeData[13] ) ) );
+            if ($isAdded['status_code'] != 200) {
+                return [
+                    'status_code' => $isAdded['status_code'],
+                    'message' => $isAdded['message']
+                ];
+            }
+        }
+        return [
+            'status_code' => 200,
+            'message' => 'CSV has been successfully imported!',
+        ];
 
-				//@todo FIX me with API Paid ENDPOINTS
-				if ( $incomeCurrency === 'USD' ) {
-					$req_url          = 'https://v6.exchangerate-api.com/v6/34613ea34951b619f1ff2fde/latest/USD';
-					$response_json    = file_get_contents( $req_url );
-					$response         = json_decode( $response_json );
-					$conversion_rates = $response->conversion_rates;
-					$amount           = round( $conversion_rates->AED * $incomeAmount, 2 ); //Amount in AED
-				}
-				$income = [
-					'user_id'       => Auth::user()->id,
-					'account_id'    => $sector->payment_account_id,
-					'amount'        => $incomeAmount,
-					'category_id'   => $category_id,
-					'description'   => str_replace( "\"", '', $incomeData[4] ),
-					'note'          => sprintf( "This income was imported by CSV where reservation reference id '%s' and payout reference '%s'", $incomeData[1], $incomeData[14] ),
-					'reference'     => 'booking',
-					'date'          => $paymentDate,
-					'income_type'   => $incomeType,
-					'checkin_date'  => $checkInDate,
-					'checkout_date' => $checkOutDate,
-					'attachment'    => '',
-				];
+    }
 
-				$isAdded = $this->incomeAdd( $income );
+    /**
+     * @throws Throwable
+     */
+    public function incomeAdd($income, $category, $slug = ''): array
+    {
 
-				if ( $isAdded['status_code'] != 200 ) {
-					return [
-						'status_code' => $isAdded['status_code'],
-						'message'     => $isAdded['message']
-					];
-				}
-			}
+        if ($income['income_type'] === 'reservation') {
+            $checkinDate = new DateTime($income['checkin_date']);
+            $checkoutDate = new DateTime($income['checkout_date']);
 
-		}
+            $total_reservation_days = $checkoutDate->diff($checkinDate)->format("%a");
 
-		return [
-			'status_code'  => 200,
-			'message'      => 'CSV has been successfully imported!',
-			'payment_date' => $paymentDate
-		];
+            $daily_rent = floatval(str_replace('"','',$income['amount'])) / $total_reservation_days;
 
-	}
+            try {
+                DB::beginTransaction();
+                $account = (new BankAccount)->updateBalance($income['account_id'], $income['amount']);
+                if (!$account['status']) {
+                    DB::rollBack();
 
-	/**
-	 * @throws Throwable
-	 */
-	public function incomeAdd( $income ): array {
+                    return [
+                        'message' => 'Failed to update Bank Account!',
+                        'status_code' => 400
+                    ];
+                }
 
-		if ( $income['income_type'] === 'reservation' ) {
-			$checkinDate  = new DateTime( $income['checkin_date'] );
-			$checkoutDate = new DateTime( $income['checkout_date'] );
+                if ($checkinDate->format('Y-m') === $checkoutDate->format('Y-m')) {
+                    $description = buildIncomeDescription($income['description'],
+                        $total_reservation_days,
+                        $checkinDate->format('Y-m-d'),
+                        $checkoutDate->format('Y-m-d'));
+                    $income = Income::create([
+                        'slug' => $slug ?: Uuid::uuid4(),
+                        'user_id' => $income['user_id'],
+                        'company_id' => Auth::user()->primary_company,
+                        'account_id' => $income['account_id'],
+                        'amount' => $income['amount'],
+                        'category_id' => $income['category_id'],
+                        'description' => $description,
+                        'note' => $income['note'],
+                        'reference' => $income['reference'],
+                        'date' => $income['date'],
+                        'income_type' => $income['income_type'],
+                        'checkin_date' => $checkinDate->format('Y-m-d'),
+                        'checkout_date' => $checkoutDate->format('Y-m-d'),
+                        'attachment' => $income['attachment']
+                    ]);
+                    unset($income['user_id']);
+                    unset($income['company_id']);
+                    unset($income['account_id']);
+                    unset($income['category_id']);
 
-			$total_reservation_days = $checkoutDate->diff( $checkinDate )->format( "%a" );
 
-			$daily_rent = $income['amount'] / $total_reservation_days;
+                    storeActivityLog([
+                        'object_id' => $income['id'],
+                        'log_type' => 'create',
+                        'module' => 'income',
+                        'descriptions' => "added new income on " . Auth::user()->current_company->name . ".",
+                        'data_records' => array_merge(json_decode(json_encode($income), true), ['Sector Name' => $category->sector->name], $account),
+                    ]);
+                } else {
 
-			try {
-				DB::beginTransaction();
-				$account = ( new BankAccount )->updateBalance( $income['account_id'], $income['amount'] );
-				if ( ! $account['status'] ) {
-					DB::rollBack();
+                    $end_date = $checkinDate->format('Y-m-t'); //end date from check in date. Format: "YYYY-mm-dd"
+                    $first_month_days = (int)((new DateTime($end_date))->diff($checkinDate)->format("%a")) + 1;
+                    $first_month_amount = $daily_rent * $first_month_days;
+                    $second_month_startingDate = $checkoutDate->format('Y-m-01'); //next month starting date;
 
-					return [
-						'message'     => 'Failed to update Bank Account!',
-						'status_code' => 400
-					];
-				}
+                    $description_1 = sprintf('%s reservation of %d days from %s to %s',
+                        $income['description'],
+                        $first_month_days,
+                        $checkinDate->format("y-m-d"),
+                        $second_month_startingDate,
+                    );
 
-				if ( $checkinDate->format( 'Y-m' ) === $checkoutDate->format( 'Y-m' ) ) {
-					$description = buildIncomeDescription( $income['description'],
-						$total_reservation_days,
-						$checkinDate->format( 'Y-m-d' ),
-						$checkoutDate->format( 'Y-m-d' ) );
-					$income      = Income::create( [
-						'user_id'       => $income['user_id'],
-						'account_id'    => $income['account_id'],
-						'amount'        => $income['amount'],
-						'category_id'   => $income['category_id'],
-						'description'   => $description,
-						'note'          => $income['note'],
-						'reference'     => $income['reference'],
-						'date'          => $income['date'],
-						'income_type'   => $income['income_type'],
-						'checkin_date'  => $checkinDate->format( 'Y-m-d' ),
-						'checkout_date' => $checkoutDate->format( 'Y-m-d' ),
-						'attachment'    => $income['attachment']
-					] );
+                    $income_first = Income::create([
+                        'slug' => $slug ?: Uuid::uuid4(),
+                        'user_id' => Auth::user()->id,
+                        'company_id' => Auth::user()->primary_company,
+                        'account_id' => $income['account_id'],
+                        'amount' => $first_month_amount,
+                        'category_id' => $income['category_id'],
+                        'description' => $description_1,
+                        'note' => $income['note'],
+                        'reference' => $income['reference'],
+                        'date' => $end_date,
+                        'income_type' => $income['income_type'],
+                        'checkin_date' => $checkinDate->format('Y-m-d'),
+                        'checkout_date' => $second_month_startingDate,
+                        'attachment' => $income['attachment']
+                    ]);
+                    unset($income_first['user_id']);
+                    unset($income_first['company_id']);
+                    unset($income_first['account_id']);
+                    unset($income_first['category_id']);
 
-					storeActivityLog( [
-						'user_id'      => Auth::user()->id,
-						'object_id'    => $income['id'],
-						'log_type'     => 'create',
-						'module'       => 'income',
-						'descriptions' => "added new income.",
-						'data_records' => array_merge( json_decode( json_encode( [] ), true ), $account ),
-					] );
-				} else {
+                    storeActivityLog([
+                        'object_id' => $income_first['id'],
+                        'log_type' => 'create',
+                        'module' => 'income',
+                        'descriptions' => "added new income on " . Auth::user()->current_company->name . ".",
+                        'data_records' => array_merge(json_decode(json_encode($income_first), true), ['Sector Name' => $category->sector->name], $account),
+                    ]);
 
-					$end_date                  = $checkinDate->format( 'Y-m-t' ); //end date from check in date. Format: "YYYY-mm-dd"
-					$first_month_days          = (int) ( ( new DateTime( $end_date ) )->diff( $checkinDate )->format( "%a" ) ) + 1;
-					$first_month_amount        = $daily_rent * $first_month_days;
-					$second_month_startingDate = $checkoutDate->format( 'Y-m-01' ); //next month starting date;
+                    $second_month_startingDate = $checkoutDate->format('Y-m-01'); //next month starting date;
 
-					$description_1 = sprintf( '%s reservation of %d days from %s to %s',
-						$income['description'],
-						$first_month_days,
-						$checkinDate->format( "y-m-d" ),
-						$second_month_startingDate,
-					);
+                    $second_month_days = $checkoutDate->diff(new DateTime($second_month_startingDate))->format('%a');
 
-					$income_first = Income::create( [
-						'user_id'       => Auth::user()->id,
-						'account_id'    => $income['account_id'],
-						'amount'        => $first_month_amount,
-						'category_id'   => $income['category_id'],
-						'description'   => $description_1,
-						'note'          => $income['note'],
-						'reference'     => $income['reference'],
-						'date'          => $end_date,
-						'income_type'   => $income['income_type'],
-						'checkin_date'  => $checkinDate->format( 'Y-m-d' ),
-						'checkout_date' => $second_month_startingDate,
-						'attachment'    => $income['attachment']
-					] );
-					storeActivityLog( [
-						'user_id'      => Auth::user()->id,
-						'object_id'    => $income_first['id'],
-						'log_type'     => 'create',
-						'module'       => 'income',
-						'descriptions' => "added new income.",
-						'data_records' => array_merge( json_decode( json_encode( $income_first ), true ), $account ),
-					] );
+                    if ($second_month_days > 0) {
+                        $description_2 = sprintf('%s reservation of %d days from %s to %s',
+                            $income['description'],
+                            $second_month_days,
+                            $second_month_startingDate,
+                            $checkoutDate->format('Y-m-d'),
+                        );
+                        $second_month_amount = $daily_rent * $second_month_days;
 
-					$second_month_startingDate = $checkoutDate->format( 'Y-m-01' ); //next month starting date;
+                        $income_sec = Income::create([
+                            'slug' => $slug ?: Uuid::uuid4(),
+                            'user_id' => Auth::user()->id,
+                            'company_id' => Auth::user()->primary_company,
+                            'account_id' => $income['account_id'],
+                            'amount' => $second_month_amount,
+                            'category_id' => $income['category_id'],
+                            'description' => $description_2,
+                            'note' => $income['note'],
+                            'reference' => $income['reference'],
+                            'date' => $second_month_startingDate,
+                            'income_type' => $income['income_type'],
+                            'checkin_date' => $second_month_startingDate,
+                            'checkout_date' => $checkoutDate->format('Y-m-d'),
+                            'attachment' => $income['attachment']
+                        ]);
+                        unset($income_sec['user_id']);
+                        unset($income_sec['company_id']);
+                        unset($income_sec['account_id']);
+                        unset($income_sec['category_id']);
+                        storeActivityLog([
+                            'object_id' => $income_sec['id'],
+                            'log_type' => 'create',
+                            'module' => 'income',
+                            'descriptions' => "added new income on " . Auth::user()->current_company->name . ".",
+                            'data_records' => array_merge(json_decode(json_encode($income_sec), true), ['Sector Name' => $category->sector->name], $account),
+                        ]);
+                    }
+                }
+                DB::commit();
 
-					$second_month_days = $checkoutDate->diff( new DateTime( $second_month_startingDate ) )->format( '%a' );
+            } catch (Exception $e) {
+                DB::rollBack();
 
-					if ( $second_month_days > 0 ) {
-						$description_2       = sprintf( '%s reservation of %d days from %s to %s',
-							$income['description'],
-							$second_month_days,
-							$second_month_startingDate,
-							$checkoutDate->format( 'Y-m-d' ),
-						);
-						$second_month_amount = $daily_rent * $second_month_days;
+                return [
+                    'message' => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
+                    'status_code' => 400
+                ];
+            }
+        } else {
 
-						$income_sec = Income::create( [
-							'user_id'       => Auth::user()->id,
-							'account_id'    => $income['account_id'],
-							'amount'        => $second_month_amount,
-							'category_id'   => $income['category_id'],
-							'description'   => $description_2,
-							'note'          => $income['note'],
-							'reference'     => $income['reference'],
-							'date'          => $second_month_startingDate,
-							'income_type'   => $income['income_type'],
-							'checkin_date'  => $second_month_startingDate,
-							'checkout_date' => $checkoutDate->format( 'Y-m-d' ),
-							'attachment'    => $income['attachment']
-						] );
-						storeActivityLog( [
-							'user_id'      => Auth::user()->id,
-							'object_id'    => $income_sec['id'],
-							'log_type'     => 'create',
-							'module'       => 'income',
-							'descriptions' => "added new income.",
-							'data_records' => array_merge( json_decode( json_encode( $income_sec ), true ), $account ),
-						] );
-					}
-				}
-				DB::commit();
+            try {
+                DB::beginTransaction();
+                // Update the balance of the bank account
 
-			} catch ( Exception $e ) {
-				DB::rollBack();
+                $account = (new BankAccount)->updateBalance($income['account_id'], $income['amount']);
 
-				return [
-					'message'     => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
-					'status_code' => 400
-				];
-			}
-		} else {
+                if (!$account['status']) {
+                    DB::rollBack();
 
-			try {
-				DB::beginTransaction();
-				// Update the balance of the bank account
+                    return [
+                        'message' => "Failed to update Bank Account!",
+                        'status_code' => 400
+                    ];
+                }
 
-				$account = ( new BankAccount )->updateBalance( $income['account_id'], $income['amount'] );
-				if ( ! $account['status'] ) {
-					DB::rollBack();
+                $income = Income::create([
+                    'slug' => $slug ?: Uuid::uuid4(),
+                    'user_id' => Auth::user()->id,
+                    'company_id' => Auth::user()->primary_company,
+                    'account_id' => $income['account_id'],
+                    'amount' => $income['amount'],
+                    'category_id' => $income['category_id'],
+                    'description' => $income['description'],
+                    'note' => $income['note'],
+                    'reference' => $income['reference'],
+                    'income_type' => $income['income_type'],
+                    'date' => $income['date'],
+                    'attachment' => $income['attachment']
+                ]);
 
-					return [
-						'message'     => "Failed to update Bank Account!",
-						'status_code' => 400
-					];
-				}
+                storeActivityLog([
+                    'object_id' => $income['id'],
+                    'object' => 'income',
+                    'log_type' => 'create',
+                    'module' => 'income',
+                    'descriptions' => "added new income.",
+                    'data_records' => array_merge(json_decode(json_encode($income), true), $account),
+                ]);
 
-				$income = Income::create( [
-					'user_id'     => Auth::user()->id,
-					'account_id'  => $income['account_id'],
-					'amount'      => $income['amount'],
-					'category_id' => $income['category_id'],
-					'description' => $income['description'],
-					'note'        => $income['note'],
-					'reference'   => $income['reference'],
-					'income_type' => $income['income_type'],
-					'date'        => $income['date'],
-					'attachment'  => $income['attachment']
-				] );
-				storeActivityLog( [
-					'user_id'      => Auth::user()->id,
-					'object_id'    => $income['id'],
-					'log_type'     => 'create',
-					'module'       => 'income',
-					'descriptions' => "added new income.",
-					'data_records' => array_merge( json_decode( json_encode( $income ), true ), $account ),
-				] );
+                DB::commit();
 
-				DB::commit();
+            } catch (Exception $e) {
+                DB::rollBack();
 
-			} catch ( Exception $e ) {
-				DB::rollBack();
+                return [
+                    'message' => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
+                    'status_code' => 400
+                ];
+            }
+        }
 
-				return [
-					'message'     => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
-					'status_code' => 400
-				];
-			}
-		}
+        return [
+            'message' => 'Income Added',
+            'status_code' => 200
+        ];
+    }
 
-		return [
-			'message'     => 'Income Added',
-			'status_code' => 200
-		];
-	}
+    /**
+     * @throws Exception
+     */
+    public function deleteIncome($slug): array
+    {
 
-	public function builtDataFromAirbnbCSV( $file ) {
-		$headers = explode(",",$file[0]);
-		unset($file[0]);
-//		$incomeSet = [];
-		foreach ($file as $inc){
-			$income = explode(",",$inc);
+        $income = Income::where('slug', $slug)->first();
+        if (!$income) {
+            return [
+                'message' => 'Not Found',
+                'description' => 'Income not found',
+                'status_code' => 404
+            ];
+        }
+        $income->delete();
+        $bankAccount = BankAccount::find($income->account_id);
+        if ($income->amount > 0) {
+            $bankAccount->balance -= $income->amount;
+            $bankAccount->save();
+        }
 
-			foreach ($headers as $key=>$header){
-				$data[$header] = $income[$key];
-			}
-			$incomeSet[] = $data;
-		}
+        storeActivityLog([
+            'object_id' => $income->id,
+            'log_type' => 'delete',
+            'module' => 'income',
+            'descriptions' => "",
+            'data_records' => array_merge(json_decode(json_encode($income), true), ['account_balance' => $bankAccount->balance]),
+        ]);
 
-		echo '<pre>';
-		print_r($incomeSet);
-		echo '</pre>';
-		exit();
-	}
+        return [
+            'message' => 'success',
+            'description' => 'Income Deleted',
+            'status_code' => 200
+        ];
+    }
 
 
 }

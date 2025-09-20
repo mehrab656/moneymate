@@ -7,12 +7,15 @@ use App\Http\Resources\ExpenseReportResource;
 use App\Http\Resources\ExpenseResource;
 use App\Http\Resources\IncomeReportResource;
 use App\Http\Resources\IncomeResource;
+use App\Models\Category;
 use App\Models\Expense;
 use App\Models\Income;
+use App\Models\SectorModel;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use function Laravel\Prompts\table;
 
@@ -43,7 +46,7 @@ class ReportController extends Controller {
 
 
 		// Query the incomes based on the date range
-		$query = Income::whereNull( 'deleted_at' )
+		$query = Income::where( 'company_id', Auth::user()->primary_company )->whereNull( 'deleted_at' )
 		               ->whereHas( 'category', function ( $query ) {
 			               $query->where( 'type', 'income' );
 		               } );
@@ -72,8 +75,6 @@ class ReportController extends Controller {
 			'category_id' => $cat_id ?: null
 		] );
 	}
-
-
 	/**
 	 * @param Request $request
 	 *
@@ -82,54 +83,90 @@ class ReportController extends Controller {
 	 */
 
 	public function expenseReport( Request $request ): JsonResponse {
-		$startDate = $request->start_date;
-		$endDate   = $request->end_date;
-		$cat_id    = $request->cat_id;
-		$sec_id    = $request->sec_id;
-
-		if ( $startDate ) {
-			$startDate = date( 'Y-m-d', strtotime( $startDate ) );
-		}
-		if ( $endDate ) {
-			$endDate = date( 'Y-m-d', strtotime( $endDate ) );
-		}
-
-		if ( $startDate && empty( $endDate ) ) {
-			$endDate = Carbon::now()->toDateString();
-		}
-
-		if ( $endDate && empty( $startDate ) ) {
-			$startDate = ( new DateTime( $endDate ) )->format( 'Y-m-01' );
-		}
-
-		$query = Expense::select( 'expenses.*' )->join( 'categories', 'categories.id', '=', 'expenses.category_id' )
-		                ->where( 'type', 'expense' )
-		                ->whereNull( 'expenses.deleted_at' );
-
-		if ( $startDate || $endDate ) {
-			$query = $query->whereBetween( 'date', [ $startDate, $endDate ] );
-		}
-
-		if ( $sec_id ) {
-			$query = $query->where( 'sector_id', $sec_id );
-		}
-		if ( $cat_id ) {
-			$query = $query->where( 'category_id', $cat_id );
-		}
-		if ( ! $sec_id && ! $cat_id ) {
-			$query = $query->limit( 50 );
-		}
+		$startDate = $request->startDate;
+		$endDate   = $request->endDate;
+		$categorySlugs   = $request->categoryIDS;
+		$sectorSlugs    = $request->sectorIDS;
+		$order    = $request->order;
+        $orderBy = $request->orderBy;
+        $limit = $request->limit;
+        $quickFilter = $request->quickFilter; //filter by sectors only
 
 
-		$expensesRes = ExpenseReportResource::collection( $query->orderBy( 'date', 'DESC' )->get() );
+
+        $query = Expense::select( 'expenses.*' )
+            ->where( 'company_id', Auth::user()->primary_company )
+            ->join( 'categories', 'categories.id', '=', 'expenses.category_id' )
+            ->where( 'type', 'expense' )
+            ->whereNull( 'expenses.deleted_at' );
+
+
+
+        if( $quickFilter){
+            $categoryIDS=[];
+            $sector= SectorModel::where('slug', $quickFilter)->get()->first();
+
+            if ($sector){
+                $categoryIDS = Category::where(['sector_id'=>$sector->id,'type'=>'expense'])->pluck('id')->toArray();
+            }
+            $query = $query->whereIn( 'category_id', $categoryIDS );
+
+        }else{
+            if ( $startDate ) {
+                $startDate = date( 'Y-m-d', strtotime( $startDate ) );
+            }
+            if ( $endDate ) {
+                $endDate = date( 'Y-m-d', strtotime( $endDate ) );
+            }
+
+            if ( $startDate && empty( $endDate ) ) {
+                $endDate = Carbon::now()->toDateString();
+            }
+
+            if ( $endDate && empty( $startDate ) ) {
+                $startDate = ( new DateTime( $endDate ) )->format( 'Y-m-01' );
+            }
+            if ( $startDate || $endDate ) {
+                $query = $query->whereBetween( 'date', [ $startDate, $endDate ] );
+            }
+            if ( $sectorSlugs ) {
+                $sectorSlugs = explode( ',', $sectorSlugs );
+                $sectors= SectorModel::whereIn('slug', $sectorSlugs)->get();
+                if (!$sectors){
+                    return response()->json( [
+                        'message' => 'Not Found',
+                        'description'     => 'No sector was not found.',
+                    ],400 );
+                }
+                $catIDS = [];
+                foreach ( $sectors as $sector ) {
+                    $category = Category::where('sector_id',$sector['id'])->first();
+                    if ($category){
+                        $catIDS[] = $category->id;
+                    }
+                }
+
+                $query = $query->whereIn( 'category_id', $catIDS );
+            }
+            if ( $categorySlugs ) {
+                $categorySlugs = explode( ',', $categorySlugs );
+                $catIDS =[];
+                foreach ( $categorySlugs as $categorySlug ) {
+                    $category = Category::where('slug', $categorySlug)->first();
+                    if ($category){
+                        $catIDS[]= $category->id;
+                    }
+                }
+                $query = $query->whereIn( 'category_id', $catIDS );
+            }
+        }
+
+
+		$expensesRes = ExpenseReportResource::collection( $query->orderBy( $orderBy??'date', $order??'DESC' )->limit(50)->get() );
 
 		return response()->json( [
 			'totalExpense' => fix_number_format( $query->get()->sum( 'amount' ) ),
 			'expenses'     => $expensesRes,
-			'start_date'   => $startDate ?: null,
-			'end_date'     => $endDate ?: null,
-			'sector_id'    => $sec_id ?: null,
-			'category_id'  => $cat_id ?: null,
 		] );
 	}
 
@@ -144,24 +181,26 @@ class ReportController extends Controller {
 		if ( $startDate && ! $endDate ) {
 			$endDate = Carbon::now()->toDateString();
 		}
-		$investments = DB::table( 'investments' )->selectRaw( 'sum(amount) as amount, investor_id, name' )
+
+		$investments = DB::table( 'investments' )->selectRaw( 'sum(amount) as amount, investor_id, username' )
+		                 ->where( 'company_id', Auth::user()->primary_company )
 		                 ->join( 'users', 'investments.investor_id', '=', 'users.id' )
 		                 ->whereNull( 'investments.deleted_at' )
-		                 ->groupBy( [ 'investor_id', 'name' ] );
+		                 ->groupBy( [ 'investor_id', 'username' ] );
 
-		$totalInvestment = DB::table( 'investments' );
+		$totalInvestment = DB::table( 'investments' )->where('company_id',Auth::user()->primary_company);
 		//filter investments
 		if ( $startDate || $endDate ) {
 			$investments     = $investments->whereBetween( 'investment_date', [ $startDate, $endDate ] );
 			$totalInvestment = $totalInvestment->whereBetween( 'investment_date', [ $startDate, $endDate ] );
 		}
+
 		$totalInvestment = $totalInvestment->sum( 'amount' );
 
 		return response()->json( [
 			'investments'     => $investments->get(),
 			'totalInvestment' => $totalInvestment //fix_number_format($totalInvestment),
 		] );
-
 	}
 
 	/**
@@ -186,33 +225,36 @@ class ReportController extends Controller {
 			$startDate = ( new DateTime( $endDate ) )->format( 'Y-m-01' );
 		}
 
-		$lends  = DB::table( 'debts' )->where( 'type', '=', 'lend' )
+		$lends  = DB::table( 'debts' )->where( 'company_id', Auth::user()->primary_company )->where( 'type', '=', 'lend' )
 		            ->whereNull( 'debts.deleted_at' );
-		$borrow = DB::table( 'debts' )->where( 'type', '=', 'borrow' )
+		$borrow = DB::table( 'debts' )->where( 'company_id', Auth::user()->primary_company )->where( 'type', '=', 'borrow' )
 		            ->whereNull( 'debts.deleted_at' );
 
 		$refund = DB::table( 'expenses' )
-		            ->where( 'refundable_amount', '>', 0 )
+		            ->where( 'company_id', Auth::user()->primary_company )->where( 'refundable_amount', '>', 0 )
 		            ->whereNull( 'deleted_at' );
 
-		$investments = DB::table( 'investments' )->selectRaw( 'sum(amount) as amount, investor_id, name' )
+		$investments = DB::table( 'investments' )->selectRaw( 'sum(amount) as amount, investor_id,concat(first_name, " ", last_name) as name' )
 		                 ->join( 'users', 'investments.investor_id', '=', 'users.id' )
+		                 ->where( 'company_id', Auth::user()->primary_company )
 		                 ->whereNull( 'investments.deleted_at' )
 		                 ->groupBy( [ 'investor_id', 'name' ] );
 
 		$incomes = DB::table( 'incomes' )->selectRaw( 'sum(amount) as amount, category_id, name' )
-		             ->join( 'categories', 'incomes.category_id', '=', 'categories.id' )
+		             ->where( 'company_id', Auth::user()->primary_company )->join( 'categories', 'incomes.category_id', '=', 'categories.id' )
 		             ->whereNull( 'incomes.deleted_at' )
 		             ->groupBy( [ 'category_id', 'name' ] );
 
-		$expense         = DB::table( 'expenses' )->selectRaw( 'COALESCE(sum(amount), 0) as amount, sector_id, sectors.name' )
-		                     ->join( 'categories', 'expenses.category_id', '=', 'categories.id' )
-		                     ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
-		                     ->whereNull( 'expenses.deleted_at' )
-		                     ->groupBy( [ 'sector_id', 'sectors.name' ] );
-		$totalInvestment = DB::table( 'investments' )->whereNull( 'deleted_at' );
-		$totalIncome     = DB::table( 'incomes' )->whereNull( 'deleted_at' );
-		$totalExpense    = DB::table( 'expenses' )->whereNull( 'deleted_at' );
+		$expense = DB::table( 'expenses' )->selectRaw( 'COALESCE(sum(amount), 0) as amount, sector_id, sectors.name' )
+            ->where( 'sectors.company_id', Auth::user()->primary_company )
+            ->join( 'categories', 'expenses.category_id', '=', 'categories.id' )
+            ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
+            ->whereNull( 'expenses.deleted_at' )
+            ->groupBy( [ 'sector_id', 'sectors.name' ] );
+
+		$totalInvestment = DB::table( 'investments' )->where( 'company_id', Auth::user()->primary_company )->whereNull( 'deleted_at' );
+		$totalIncome     = DB::table( 'incomes' )->where( 'company_id', Auth::user()->primary_company )->whereNull( 'deleted_at' );
+		$totalExpense    = DB::table( 'expenses' )->where( 'company_id', Auth::user()->primary_company )->whereNull( 'deleted_at' );
 
 		if ( $startDate && $endDate ) {
 			$lends           = $lends->whereBetween( 'date', [ $startDate, $endDate ] );
@@ -235,7 +277,6 @@ class ReportController extends Controller {
 		$totalInvestment = $totalInvestment->sum( 'amount' );
 		$totalIncome     = $totalIncome->sum( 'amount' );
 		$totalExpense    = $totalExpense->sum( 'amount' );
-
 		$refundable_amount = $refund->sum( 'refundable_amount' );
 		$refunded_amount   = $refund->sum( 'refunded_amount' );
 
@@ -275,7 +316,6 @@ class ReportController extends Controller {
 		$fromDate         = date( 'Y-m-d', strtotime( $request->from_date ) );
 		$toDate           = ( new DateTime( $fromDate ) )->format( 'Y-m-t' );
 
-
 		if ( ! $incomeCategoryId || ! $fromDate ) {
 			return response()->json( [
 				'message' => "Select Income sector or Month."
@@ -288,8 +328,8 @@ class ReportController extends Controller {
 				'message' => "Income Category not Found!",
 			], 404 );
 		}
-		$sector = DB::table( 'sectors' )->find( $category->sector_id );
 
+		$sector = DB::table( 'sectors' )->find( $category->sector_id );
 		if ( ! $sector ) {
 			return response()->json( [
 				'message' => "This income Category is not associated with any sector!",
@@ -310,6 +350,7 @@ class ReportController extends Controller {
 
 		$incomes = DB::table( 'incomes' )->selectRaw( 'amount,income_type,checkin_date,checkout_date,reference,date as income_date, description' )
 		             ->where( 'category_id', '=', $incomeCategoryId )
+		             ->where( 'company_id', Auth::user()->primary_company )
 		             ->whereBetween( 'date', [
 			             $fromDate,
 			             $toDate
@@ -323,6 +364,7 @@ class ReportController extends Controller {
 		$expense = DB::table( 'expenses' )->selectRaw( 'COALESCE(sum(amount), 0) as amount, categories.name' )
 		             ->join( 'categories', 'expenses.category_id', '=', 'categories.id' )
 		             ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
+		             ->where( 'expenses.company_id', Auth::user()->primary_company )
 		             ->whereBetween( 'date', [ $fromDate, $toDate ] )
 		             ->whereNot( 'categories.name', 'LIKE', '%rent%' )
 		             ->where( 'sector_id', '=', $category->sector_id )
@@ -368,12 +410,16 @@ class ReportController extends Controller {
 		];
 	}
 
-	public function calenderReport() {
-		$incomeQuery  = Income::whereNull( 'deleted_at' )->orderBy( 'date', 'desc' )->get();
-		$expenseQuery = Expense::whereNull( 'deleted_at' )->orderBy( 'date', 'desc' )->get();
-		$payments     = DB::table( 'payments' )->where( [
-			'status' => 'unpaid',
-		] )->whereNull( 'deleted_at' )->get();
+	public function calenderReport(): JsonResponse
+    {
+		$incomeQuery  = Income::where( 'company_id', Auth::user()->primary_company )->whereNull( 'deleted_at' )->orderBy( 'date', 'desc' )->get();
+		$expenseQuery = Expense::where( 'company_id', Auth::user()->primary_company )->whereNull( 'deleted_at' )->orderBy( 'date', 'desc' )->get();
+		$payments     = DB::table( 'payments' )->select( 'payments.*' )
+		                  ->join( 'sectors', 'payments.sector_id', '=', 'sectors.id' )
+		                  ->where( 'sectors.company_id', Auth::user()->primary_company )
+		                  ->where( [
+			                  'status' => 'unpaid',
+		                  ] )->whereNull( 'payments.deleted_at' )->get();
 
 
 		$incomes      = IncomeResource::collection( $incomeQuery );

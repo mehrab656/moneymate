@@ -26,15 +26,21 @@ class InvestmentResource extends JsonResource {
 	 * @return array<string, mixed>
 	 */
 	public function toArray( Request $request ): array {
+        $investor = [
+            'value'=>$this->investor->slug,
+            'label'=>sprintf("%s %s (%s)", strtoupper($this->investor->first_name), strtoupper($this->investor->last_name), $this->investor->username),
+        ];
+
 		return [
 			'id'              => $this->id,
-			'investor_id'     => $this->investor_id,
+			'investor'     => $investor,
 			'account_id'      => $this->account_id,
-			'investor_name'   => $this->investor->name,
-			'added_by_name'   => $this->added->name,
+			'investor_name'   => $this->investor->username,
+			'added_by_name'   => $this->added->username,
 			'amount'          => $this->amount,
 			'investment_date' => $this->investment_date,
 			'note'            => $this->note,
+			"company"         => $this->companies
 		];
 	}
 }

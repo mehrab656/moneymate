@@ -1,0 +1,2 @@
+Type,"Reference number",Check-in,Checkout,"Guest name","Reservation status",Currency,"Payment status",Amount,Commission,"Payment charge",,Net,"Payout date","Payout ID"
+Reservation,4345273814,"29 May 2024","2 Jun 2024","Abdelhakim Harras",ok,AED,by_booking,714.42,-102.06,-17.86,,594.50,"6 Jun 2024",giwmgTDZ2M9jd9YW

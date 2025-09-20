@@ -1,0 +1,195 @@
+import { createApi } from "@reduxjs/toolkit/query/react";
+import axiosClient from "../../axios-client";
+import { customBaseQuery } from "../../store/customBaseQuery";
+
+export const taskSlice = createApi({
+  reducerPath: "task",
+  baseQuery: customBaseQuery,
+  tagTypes: ["task"],
+  endpoints: (builder) => ({
+    getTaskData: builder.query({
+      query: ({ currentPage, pageSize, query }) => {
+        return {
+          url: `all-tasks?currentPage=${currentPage}&pageSize=${pageSize}&employee_id=${query?.employee_id}&status=${query?.status}&payment_status=${query?.payment_status}&orderBy=${query?.orderBy}&order=${query?.order}&limit=${query?.limit}&category_id=${query?.category_id}&end_date=${query?.end_date}&start_date=${query?.start_date}`,
+          method: "GET",
+        };
+      },
+      providesTags: ["task"],
+    }),
+
+    myTaskData: builder.query({
+      query: ({ query }) => {
+        return {
+          url: `my-tasks?quickFilter=${query?.quickFilter}&status=${query?.status}&fromDate=${query?.toDate}&toDate=${query?.fromDate}`,
+          method: "GET",
+        };
+      },
+      providesTags: ["task"],
+    }),
+    getSingleTaskData: builder.query({
+      query: ({ id }) => {
+        if (typeof id !== "undefined") {
+          return {
+            url: `task/${id}`,
+            method: "GET",
+          };
+        }
+      },
+      providesTags: ["task"],
+    }),
+
+    createTask: builder.mutation({
+      queryFn: async ({ url, formData }) => {
+        try {
+          const response = await axiosClient.post(url, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          const { message, description, data } = response.data;
+          return { data: { message, description, data } };
+        } catch (error) {
+          const status = error?.response?.status || 500;
+          const message =
+            error?.response?.data?.message || "An unexpected error occurred.";
+          const description = error?.response?.data?.description || "";
+          const errorData = error?.response?.data || {};
+          return {
+            error: {
+              status,
+              message,
+              description,
+              errorData: errorData,
+            },
+          };
+        }
+      },
+
+      invalidatesTags: ["task"],
+    }),
+    updateTaskPayment: builder.mutation({
+      queryFn: async ({ url, formData }) => {
+        try {
+          const response = await axiosClient.post(url, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          const { message, description, data } = response.data;
+          return { data: { message, description, data } };
+        } catch (error) {
+          const status = error?.response?.status || 500;
+          const message =
+            error?.response?.data?.message || "An unexpected error occurred.";
+          const description = error?.response?.data?.description || "";
+          const errorData = error?.response?.data || {};
+          return {
+            error: {
+              status,
+              message,
+              description,
+              errorData: errorData,
+            },
+          };
+        }
+      },
+
+      invalidatesTags: ["task"],
+    }),
+    updateTaskStatus: builder.mutation({
+      queryFn: async ({ url, formData }) => {
+        try {
+          const response = await axiosClient.post(url, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          const { message, description, data } = response.data;
+          return { data: { message, description, data } };
+        } catch (error) {
+          const status = error?.response?.status || 500;
+          const message =
+            error?.response?.data?.message || "An unexpected error occurred.";
+          const description = error?.response?.data?.description || "";
+          const errorData = error?.response?.data || {};
+          return {
+            error: {
+              status,
+              message,
+              description,
+              errorData: errorData,
+            },
+          };
+        }
+      },
+
+      invalidatesTags: ["task"],
+    }),
+    deleteTask: builder.mutation({
+      query: ({ id }) => ({
+        url: `delete-task/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["task"],
+    }),
+    startTask: builder.mutation({
+      queryFn: async ({ id }) => {
+        try {
+          const response = await axiosClient.post(`task-has-started/${id}`);
+          const { message, description, data } = response.data;
+          return { data: { message, description, data } };
+        } catch (error) {
+          const status = error?.response?.status || 500;
+          const message =
+            error?.response?.data?.message || "An unexpected error occurred.";
+          const description = error?.response?.data?.description || "";
+          const errorData = error?.response?.data || {};
+          return {
+            error: {
+              status,
+              message,
+              description,
+              errorData: errorData,
+            },
+          };
+        }
+      },
+
+      invalidatesTags: ["task"],
+    }),
+    endTask: builder.mutation({
+      queryFn: async ({ id, formData }) => {
+        try {
+          const response = await axiosClient.post(
+            `task-has-ended/${id}`,
+            formData
+          );
+          const { message, description, data } = response.data;
+          return { data: { message, description, data } };
+        } catch (error) {
+          const status = error?.response?.status || 500;
+          const message =
+            error?.response?.data?.message || "An unexpected error occurred.";
+          const description = error?.response?.data?.description || "";
+          const errorData = error?.response?.data || {};
+          return {
+            error: {
+              status,
+              message,
+              description,
+              errorData: errorData,
+            },
+          };
+        }
+      },
+
+      invalidatesTags: ["task"],
+    }),
+  }),
+});
+
+export const {
+  useGetTaskDataQuery,
+  useMyTaskDataQuery,
+  useCreateTaskMutation,
+  useDeleteTaskMutation,
+  useUpdateTaskPaymentMutation,
+  useUpdateTaskStatusMutation,
+  useGetSingleTaskDataQuery,
+  useStartTaskMutation,
+  useEndTaskMutation,
+} = taskSlice;

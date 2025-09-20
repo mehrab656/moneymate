@@ -3,7 +3,10 @@
 namespace App\Providers;
 
 use App\Models\Option;
+use App\Models\User;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\ServiceProvider;
+use Validator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+
         try {
             $allOptions = [];
             $allOptions['options'] = Option::all()->pluck('value', 'key')->toArray();

@@ -10,7 +10,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCoins, faEdit, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../contexts/SettingsContext";
 import ActionButtonHelpers from "../helper/ActionButtonHelpers.jsx";
-import MainLoader from "../components/MainLoader.jsx";
+import MainLoader from "../components/loader/MainLoader.jsx";
 
 export default function Return() {
     const [loading, setLoading] = useState(false);
@@ -65,7 +65,15 @@ export default function Return() {
     const submitForUpdate = (event) => {
         event.preventDefault();
         setLoading(true);
-        axiosClient.post(`/return/${marketReturn.id}`, marketReturn)
+
+        const formData = new FormData();
+        formData.append("account_id", marketReturn.account.value);
+        formData.append("amount", marketReturn.amount);
+        formData.append("id", marketReturn.id);
+        formData.append("return_amount", marketReturn.return_amount);
+        formData.append("amount", marketReturn.amount);
+
+        axiosClient.post(`/return/${marketReturn.id}`, formData)
             .then(({data}) => {
                 setShowModal(false);
                 getMarketReturns(currentPage, pageSize);
@@ -76,7 +84,6 @@ export default function Return() {
                     text: data.description,
                 });
                 setLoading(false)
-
             }).catch(error => {
             if (error.response) {
                 Toast.fire({
@@ -133,13 +140,25 @@ export default function Return() {
         );
     }
 
-    const actionParams = {
-        route: {
-            viewRoute: '',
-            deleteRoute: ''
+ 
+    const actionParams = [
+        {
+            actionName: 'Edit',
+            type: "modal",
+            route: "",
+            actionFunction: edit,
+            permission: 'return_edit',
+            textClass:'text-info',
         },
-    }
-
+        {
+            actionName: 'View',
+            type: "modal",
+            route: "",
+            actionFunction: edit,
+            permission: 'return_view',
+            textClass:'text-warning'
+        }
+    ];
     return (
         <div>
             <MainLoader loaderVisible={loading}/>
@@ -163,10 +182,14 @@ export default function Return() {
                             </div>
                         </div>
                     </div>
-                    <div className="table-responsive-sm my-custom-scrollbar table-wrapper-scroll-y">
-                        <table className="table table-bordered custom-table">
+                    <div className="table-responsive-sm">
+                        <table className="table table-bordered table-responsive" >
                             <thead>
                             <tr>
+                                {
+                                    userRole === 'admin'&&
+                                    <th>id</th>
+                                }
                                 <th className="text-center">Date</th>
                                 <th className="text-center">Description</th>
                                 <th className="text-center">Refundable Amount</th>
@@ -204,6 +227,10 @@ export default function Return() {
 
                                         return (
                                             <tr key={marketReturn.id}>
+                                                {
+                                                    userRole === 'admin'&&
+                                                    <td>{marketReturn.id}</td>
+                                                }
                                                 <td>{marketReturn.date}</td>
                                                 <td>{marketReturn.description}</td>
                                                 <td className="text-right">{default_currency + ' ' + + marketReturn.refundable_amount}</td>
@@ -212,11 +239,9 @@ export default function Return() {
                                                 {userRole === 'admin' &&
                                                     <td>
                                                         <ActionButtonHelpers
-                                                            module={marketReturn}
-                                                            // deleteFunc={onDelete}
-                                                            showEditDropdown={edit}
-                                                            editDropdown={true}
-                                                            params={actionParams}
+                                                            element={marketReturn}
+                                                            actionBtn={actionParams}
+
                                                         />
                                                     </td>}
                                             </tr>

@@ -1,12 +1,12 @@
 #--------------------------
 # Assets Files
 ---------------------------
-assets
 
 #--------------------------
 # Backend Api Files
 ---------------------------
 backendApi/vendor
+backendApi/storage
 backendApi/tests
 backendApi/.env
 backendApi/_ide_helper.php
@@ -14,8 +14,12 @@ backendApi/composer.lock
 backendApi/vite.config.js
 backendApi/package-lock.json
 
-
-
+test.sql
+unnecessary.json
+moneymate.sql
+CSV Formates.txt
+Api request Insomnia
+config.js
 #-------------------------
 # React Folder
 #-------------------------
@@ -30,4 +34,4 @@ react/yarn.lock
 LICENSE
 vite.svg
 package-lock.json
-
+.idea/workspace.xml

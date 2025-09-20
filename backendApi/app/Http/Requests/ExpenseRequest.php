@@ -28,7 +28,6 @@ class ExpenseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required',
             'account_id' => 'required',
             'amount' => 'required|numeric',
             'category_id' => 'required',
@@ -48,7 +47,6 @@ class ExpenseRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'user_id.required' => 'Please select an expense by user',
             'account_id.required' => 'Please select a bank account',
             'amount.required' => 'Please add the expense amount',
             'category_id.required' => 'Please select an expense category',

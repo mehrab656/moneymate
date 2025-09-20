@@ -28,15 +28,15 @@ class DebtController extends Controller {
 		$page     = $request->query( 'page', 1 );
 		$pageSize = $request->query( 'pageSize', 10 );
 
-		$debts = Debt::skip( ( $page - 1 ) * $pageSize )
+		$debts = Debt::where('company_id',Auth::user()->primary_company)->skip( ( $page - 1 ) * $pageSize )
 		             ->take( $pageSize )
 		             ->orderBy( 'id', 'desc' )
 		             ->get();
 
-		$totalCount = Debt::count();
+		$totalCount = Debt::where('company_id',Auth::user()->primary_company)->count();
 
 		return response()->json( [
-			'debts' => DebtResource::collection( $debts ),
+			'data' => DebtResource::collection( $debts ),
 			'total' => $totalCount,
 		] );
 	}
@@ -48,19 +48,16 @@ class DebtController extends Controller {
 	 * @return JsonResponse
 	 */
 	public function store( DebtRequest $request ): JsonResponse {
-		$selectedBankAccount = BankAccount::find( $request->account_id );
 
 		$debt = $request->validated();
-		if ( $debt['type'] === 'borrow' ) {
+
+        $selectedBankAccount = BankAccount::where('slug',$request->account_id)->first();
+
+        if ( $debt['type'] === 'borrow' ) {
 			$debtAmount   = - $debt['amount'];
 			$borrowAmount = $debt['amount'];
 		} else {
 			if ( $debt['amount'] > $selectedBankAccount->balance ) {
-				// return response()->json( [
-				// 	'status'            => 'insufficient_balance',
-				// 	'message'           => 'Insufficient balance in the selected bank account. Please use another bank account to repay.',
-				// 	'available_balance' => $selectedBankAccount->balance
-				// ] );
 				return response()->json( [
 					'message'     => 'Insufficient_balance',
 					'description' => 'Insufficient balance in the selected bank account. Please use another bank account to repay.',
@@ -71,11 +68,11 @@ class DebtController extends Controller {
 		}
 
 		$person = $debt['person'];
-		/** @var TYPE_NAME $debtAmount */
 		$debt = Debt::firstOrCreate( [
 			'user_id'    => auth()->user()->id,
+			'company_id'    => auth()->user()->primary_company,
 			'amount'     => $debtAmount,
-			'account_id' => $debt['account_id'],
+			'account_id' => $selectedBankAccount->id,
 			'type'       => $debt['type'],
 			'person'     => $person,
 			'date'       => $debt['date'],
@@ -88,6 +85,7 @@ class DebtController extends Controller {
 		if ( $debt['type'] === 'lend' ) {
 			$lendData = Lend::create( [
 				'amount'     => $debt->amount,
+				'company_id'    => auth()->user()->primary_company,
 				'account_id' => $debt->account_id,
 				'date'       => $debt['date'],
 				'debt_id'    => $debt->id,
@@ -99,7 +97,6 @@ class DebtController extends Controller {
 			$bankAccount->save();
 
 			storeActivityLog( [
-				'user_id'      => Auth::user()->id,
 				'object_id'     => $debt['id'],
 				'log_type'     => 'create',
 				'module'       => 'Debt',
@@ -109,13 +106,6 @@ class DebtController extends Controller {
 					'accountBalance' => $bankAccount->balance
 				],
 			] );
-
-			// return response()->json( [
-			// 	'status'          => 'success',
-			// 	'message'         => 'Lend created successfully',
-			// 	'debt'            => $debt,
-			// 	'bankAccountInfo' => $bankAccount
-			// ] );
 
 			return response()->json( [
 				'message'     => 'Success!',
@@ -153,24 +143,13 @@ class DebtController extends Controller {
 				],
 			] );
 
-			// return response()->json( [
-			// 	'status'          => 'success',
-			// 	'message'         => 'Borrow created successfully',
-			// 	'debt'            => $debt,
-			// 	'bankAccountInfo' => $bankAccount
-			// ] );
 			return response()->json( [
 				'message'     => 'Success!',
 				'description' => 'Borrow created successfully',
 			] );
-			
+
 		}
 
-
-		// return response()->json( [
-		// 	'status'  => 'fail',
-		// 	'message' => 'Something went wrong'
-		// ] );
 
 		return response()->json( [
 			'message'  => 'Error',
@@ -201,16 +180,16 @@ class DebtController extends Controller {
 		$debt = Debt::find( $debt_id );
 
 		if ( $debt->type == 'borrow' ) {
-			$borrows          = collect( Borrow::where( 'debt_id', $debt_id )->get() );
-			$repayments       = collect( Repayment::where( 'debt_id', $debt_id )->get() );
+			$borrows          = collect( Borrow::where('company_id',Auth::user()->primary_company)->where( 'debt_id', $debt_id )->get() );
+			$repayments       = collect( Repayment::where('company_id',Auth::user()->primary_company)->where( 'debt_id', $debt_id )->get() );
 			$borrowRepayments = $borrows->merge( $repayments )->sortByDesc( 'created_at' );
 
 			return response()->json( [
 				'infos' => DebtHistory::collection( $borrowRepayments )
 			] );
 		} else {
-			$lends                = collect( Lend::where( 'debt_id', $debt_id )->get() );
-			$debtCollections      = collect( DebtCollection::where( 'debt_id', $debt_id )->get() );
+			$lends                = collect( Lend::where('company_id',Auth::user()->primary_company)->where( 'debt_id', $debt_id )->get() );
+			$debtCollections      = collect( DebtCollection::where('company_id',Auth::user()->primary_company)->where( 'debt_id', $debt_id )->get() );
 			$lendsDebtCollections = $lends->merge( $debtCollections )->sortByDesc( 'created_at' );
 
 			return response()->json( [
@@ -237,7 +216,6 @@ class DebtController extends Controller {
 	public function destroy( $id ): JsonResponse {
 		Debt::where( 'id', $id )->delete();
 		storeActivityLog( [
-			'user_id'      => Auth::user()->id,
 			'object_id'     => $id,
 			'log_type'     => 'delete',
 			'module'       => 'Debt',

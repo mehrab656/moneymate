@@ -24,6 +24,16 @@ const ActivityLogRows = (row) => {
     let viewList = [];
 
 
+    const results = _records.filter((rec) => !rec[0].includes('id') && !rec[0].includes('slug'));
+
+    const modifiedResults = results.map(res=>{
+        if(res.includes('date') || res.includes("created_at")||res.includes('deleted_at') || res.includes("updated_at") ){
+            const date = new Date(res[1]);
+            res[1] = date.toDateString();
+
+        }
+        return res;
+    });
     const [rowColor, setRowColor] = useState('#f5dfdf');
     const [rowStatus, setRowStatus] = useState(0);
     const showDetails = (uid) => {
@@ -90,13 +100,14 @@ const ActivityLogRows = (row) => {
                             </Typography>
                             <Table size="small" aria-label="purchases">
                                 <TableBody>
-                                    {_records.map(record => (
+                                    {modifiedResults.map(res =>(
                                         <TableRow key={Math.random().toString(36).substring(2)}>
+
                                             <TableCell component="th" scope="row">
-                                                <b>{(record[0]).replace("_", " ").toUpperCase()}</b>
+                                                <b>{(res[0]).replaceAll("_", " ").toUpperCase()}</b>
                                                 {' : '}
                                             </TableCell>
-                                            <TableCell><span>{record[1]}</span></TableCell>
+                                            <TableCell><span>{res[1]}</span></TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
