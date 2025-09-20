@@ -29,6 +29,7 @@ const defaultApplicationSettings = {
   associative_categories: [],
   host_away_api_key: "",
   host_away_client_id: "",
+  
 };
 
 const tabSections = [
