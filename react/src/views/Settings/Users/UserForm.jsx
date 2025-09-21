@@ -109,10 +109,10 @@ export default function UserForm() {
             return <ContactInfo user={user} />;
         }
         else if(tab==='employment'){
-            return <EmploymentInfo />;
+            return <EmploymentInfo user={user} />;
         }
         else if(tab==='security'){
-            return <SecurityInfo />;
+            return <SecurityInfo user={user} />;
         }else{
             return <TwoFactAuthentication />;
         }
