@@ -109,6 +109,7 @@ class AuthController extends Controller {
 		} else {
 			$token = $user->createToken( $user->email_ . 'UserToken', [ 'user' ] )->plainTextToken;
 		}
+        $user->avatars = asset('avatars/'.$user->profile_picture);
 
 		return response( compact( 'user', 'token' ) );
 	}

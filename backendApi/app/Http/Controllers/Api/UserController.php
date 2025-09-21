@@ -18,6 +18,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Ramsey\Uuid\Uuid;
 
@@ -135,6 +136,14 @@ class UserController extends Controller
     public function show(User $user): UserResource
     {
         return new UserResource($user);
+    }
+    public function getSingleUser($slug): UserResource
+    {
+
+        $user = User::where('slug',$slug)->first();
+
+        return new UserResource($user);
+
     }
 
     /**
@@ -325,5 +334,144 @@ class UserController extends Controller
 
     }
 
+    /**
+     * @throws \Throwable
+     */
+    public function updateBasicInfo(Request $request, $slug):JsonResponse
+    {
 
+        $data = $request->input();
+        if (!$data){
+            return response()->json([
+                'message' => "Missing Form Data",
+                'description' => "Missing Form Data",
+            ],400);
+        }
+        $user = User::where('slug', $slug)->first();
+
+        if (!$user){
+            return response()->json([
+                'message' => "Not Found!",
+                'description' => "User Not Found",
+            ],404);
+        }
+
+        $validator = Validator::make($data, [
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'dob' => 'required',
+            'gender' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Please fill the required fields!',
+                'description' => $validator->errors()->first()
+            ],400);
+        }
+
+        $update = (new User())->updateUser($data, $slug,'basicInfo');
+        return response()->json($update, $update['status_code']);
+    }
+    public function updateContacts(Request $request, $slug):JsonResponse
+    {
+
+        $data = $request->input();
+        if (!$data){
+            return response()->json([
+                'message' => "Missing Form Data",
+                'description' => "Missing Form Data",
+            ],400);
+        }
+        $user = User::where('slug', $slug)->first();
+
+        if (!$user){
+            return response()->json([
+                'message' => "Not Found!",
+                'description' => "User Not Found",
+            ],404);
+        }
+
+        $validator = Validator::make($data, [
+            'phone' => 'required',
+            'emergency_contract' => 'required',
+            'email' => 'required|email',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => true,
+                'message' => $validator->errors()
+            ]);
+        }
+        if ($request->hasFile('profile_picture')) {
+            $path = public_path('avatars');
+            if (!File::exists($path)) {
+                File::makeDirectory($path, 0755, true);
+            }
+            $attachment = $request->file('profile_picture');
+            $filename = str_replace(' ', '_', sprintf("%s avatar %s.%s",$user['first_name'], time(),$attachment->getClientOriginalExtension()));
+            $attachment->move('avatars', $filename);
+            $data['profile_picture'] = $filename; // Store only the filename
+        }
+
+        $update = (new User())->updateUser($data, $slug,'contacts');
+        return response()->json($update, $update['status_code']);
+    }
+    public function updateEmploymentDetails(Request $request, $slug):JsonResponse
+    {
+
+        $data = $request->input();
+        if (!$data){
+            return response()->json([
+                'message' => "Missing Form Data",
+                'description' => "Missing Form Data",
+            ],400);
+        }
+        $user = User::where('slug', $slug)->first();
+
+        if (!$user){
+            return response()->json([
+                'message' => "Not Found!",
+                'description' => "User Not Found",
+            ],404);
+        }
+
+        $validator = Validator::make($data, [
+            'designation' => 'required',
+            'date_of_joining' => 'required',
+            'employment_type' => 'required',
+            'salary' => 'required',
+            'national_id' => 'required',
+            'emirates_id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => true,
+                'message' => $validator->errors()
+            ]);
+        }
+        if ($request->hasFile('passport_copy')) {
+            $path = public_path('passports');
+            if (!File::exists($path)) {
+                File::makeDirectory($path, 0755, true);
+                // 0755 = permissions, true = recursive
+            }
+
+            $attachment = $request->file('passport_copy');
+            $filename = str_replace(' ', '_', sprintf("%s passport %s.%s",$user['first_name'], time(),$attachment->getClientOriginalExtension()));
+            $attachment->move('passports', $filename);
+            $data['passport_copy'] = $filename; // Store only the filename
+        }
+        if ($request->hasFile('emirate_id_copy')) {
+            $path = public_path('ids');
+            if (!File::exists($path)) {
+                File::makeDirectory($path, 0755, true);
+            }
+            $attachment = $request->file('emirate_id_copy');
+            $filename = str_replace(' ', '_', sprintf("%s Emirate Id %s.%s",$user['first_name'], time(),$attachment->getClientOriginalExtension()));
+            $attachment->move('ids', $filename);
+            $data['emirate_id_copy'] = $filename; // Store only the filename
+        }
+        $update = (new User())->updateUser($data, $slug,'employmentDetails');
+        return response()->json($update, $update['status_code']);
+    }
 }

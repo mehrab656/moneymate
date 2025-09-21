@@ -55,9 +55,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/users/delete/{id}', [UserController::class, 'delete']);
     Route::apiResource('/users', UserController::class);
     Route::get('/get-all-users', [UserController::class, 'getUsers']);
+    Route::get('/get-single-user/{slug}', [UserController::class, 'getSingleUser']);
     Route::get('/get-investors', [UserController::class, 'getInvestors']);
     Route::get('/dashboard-data', [DashboardController::class, 'dashboardData']);
     Route::post('/update-profile/{slug}', [UserController::class, 'updateProfile']);
+    Route::post('/update-basic-info/{slug}', [UserController::class, 'updateBasicInfo']);
+    Route::post('/update-contacts/{slug}', [UserController::class, 'updateContacts']);
+    Route::post('/update-employment-details/{slug}', [UserController::class, 'updateEmploymentDetails']);
+    Route::post('/update-authentication/{slug}', [UserController::class, 'updateAuthentication']);
 //    Route::post('/user/add', [UserController::class, 'store']);
 
 
