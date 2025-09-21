@@ -87,13 +87,10 @@ export default function SecurityInfo({ user }) {
     const formData = new FormData();
     formData.append("current_password", data.current_password);
     formData.append("new_password", data.new_password);
-    formData.append("confirm_password", data.confirm_password);
+    formData.append("new_password_confirmation", data.confirm_password);
 
     try {
-      await updateSecurityInfo({
-        url: `/update-authentication/${user.slug}`,
-        formData,
-      }).unwrap();
+      await updateSecurityInfo(formData).unwrap();
       notification("success", "Security information updated successfully!");
       setData(_initials); // Reset form
     } catch (error) {

@@ -171,30 +171,11 @@ export const userSlice = createApi({
       invalidatesTags: ["user"],
     }),
     updateSecurityInfo: builder.mutation({
-      queryFn: async ({ url, formData }) => {
-        try {
-          const response = await axiosClient.post(url, formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-          const { message, description, data } = response.data;
-          return { data: { message, description, data } };
-        } catch (error) {
-          const status = error?.response?.status || 500;
-          const message =
-            error?.response?.data?.message || "An unexpected error occurred.";
-          const description = error?.response?.data?.description || "";
-          const errorData = error?.response?.data || {};
-          return {
-            error: {
-              status,
-              message,
-              description,
-              errorData: errorData,
-            },
-          };
-        }
-      },
-
+      query: (data) => ({
+        url: "/user/update-security",
+        method: "POST",
+        body: data,
+      }),
       invalidatesTags: ["user"],
     }),
   }),
