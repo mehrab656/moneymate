@@ -59,7 +59,6 @@ export default function UserList() {
         num_data_per_page,
     } = applicationSettings;
 
-
     const [hasFilter, setHasFilter] = useState(false)
     const TABLE_HEAD = [
         {id: "profile", label: "Avatar", align: "center"},

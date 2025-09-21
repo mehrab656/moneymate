@@ -1,12 +1,26 @@
 import {Link, useNavigate, useParams} from "react-router-dom";
 import React, {useContext, useEffect, useState} from "react";
-import axiosClient from "../../axios-client.js";
-import {useStateContext} from "../../contexts/ContextProvider.jsx";
-import WizCard from "../../components/WizCard.jsx";
-import {SettingsContext} from "../../contexts/SettingsContext.jsx";
+import axiosClient from "../../../axios-client.js";
+import {useStateContext} from "../../../contexts/ContextProvider.jsx";
+import WizCard from "../../../components/WizCard.jsx";
+import {SettingsContext} from "../../../contexts/SettingsContext.jsx";
 import Badge from "react-bootstrap/Badge";
-import MainLoader from "../../components/loader/MainLoader.jsx";
+import MainLoader from "../../../components/loader/MainLoader.jsx";
+import {Col, Nav, Form, Card, Row,Button,Tab} from "react-bootstrap";
+import BasicInfo from "./ProfileTabs/BasicInfo.jsx";
+import ContactInfo from "./ProfileTabs/ContactInfo.jsx";
+import EmploymentInfo from "./ProfileTabs/EmploymentInfo.jsx";
+import SecurityInfo from "./ProfileTabs/SecurityInfo.jsx";
+import TwoFactAuthentication from "./ProfileTabs/TwoFactAuthentication.jsx";
+import {Avatar} from "@mui/material";
 
+const navItems = [
+    {eventKey:'basic', tabName:'Basic'},
+    {eventKey:'contacts', tabName:'Contacts'},
+    {eventKey:'employment', tabName:'Employment Details'},
+    {eventKey:'security', tabName:'Security'},
+    {eventKey:'authentication', tabName:'2F Authentication'},
+]
 export default function UserForm() {
     const navigate = useNavigate();
     let {id} = useParams();
@@ -21,6 +35,7 @@ export default function UserForm() {
     const [loading, setLoading] = useState(false);
     const [subscriptions, setSubscriptions] = useState([]);
     const {setNotification} = useStateContext();
+    const [activeTab, setActiveTab] = useState('basic')
 
     const {applicationSettings, userRole} = useContext(SettingsContext);
     const {
@@ -33,7 +48,7 @@ export default function UserForm() {
             document.title = 'View User';
             setLoading(true);
             axiosClient
-                .get(`/users/${id}`)
+                .get(`/get-single-user/${id}`)
                 .then(({data}) => {
                     setLoading(false);
                     setUser(data);
@@ -83,6 +98,25 @@ export default function UserForm() {
         }
     };
 
+    const setCurrentTab = (eventKey)=>{
+        setActiveTab(eventKey)
+    }
+    const renderTabContent = (tab)=>{
+        if (tab==='basic'){
+            return <BasicInfo user={user}/>;
+        }
+        else if(tab==='contacts'){
+            return <ContactInfo user={user} />;
+        }
+        else if(tab==='employment'){
+            return <EmploymentInfo />;
+        }
+        else if(tab==='security'){
+            return <SecurityInfo />;
+        }else{
+            return <TwoFactAuthentication />;
+        }
+    }
     return (
         <>
           <MainLoader loaderVisible={loading} />
@@ -90,147 +124,38 @@ export default function UserForm() {
             {!user.id && <h1 className="title-text">New User</h1>}
             <WizCard className="animated fadeInDown wiz-card-mh">
                 {loading && <div className="text-center">Loading...</div>}
-                {!loading && (
-                    <form onSubmit={onSubmit} className="custom-form">
-                        <div className="form-group">
-                            <label htmlFor="user_name" className="custom-form-label">
-                                User Name
-                            </label>
-                            <input
-                                className="custom-form-control"
-                                value={user.username}
-                                onChange={(ev) =>
-                                    setUser({...user, name: ev.target.value})
-                                }
-                                placeholder="Name"
-                            />
-                            {errors && errors.name && (
-                                <div className="text-danger">{errors.name[0]}</div>
-                            )}
-                        </div>
+                <Row>
+                    <Tab.Container id="left-tabs-example" defaultActiveKey={activeTab}>
+                        <Row>
+                            <Col sm={3}>
+                                <Card>
+                                    <div className={"user-avatar"}>
+                                        <Avatar sx={{width: 100, height: 100}} alt={user?.username ?? "User"} src={user?.avatar}/>
+                                        <span><h1>{user?.username}</h1></span>
+                                    </div>
+                                    <Nav variant="pills" className="flex-column">
+                                        {
+                                            navItems.map((item,index,tab)=>(
+                                                <Nav.Item key={index}>
+                                                    <Nav.Link  eventKey={item.eventKey} onClick={()=>setCurrentTab(item.eventKey)}>{item.tabName}</Nav.Link>
+                                                </Nav.Item>
+                                            ))
+                                        }
+                                    </Nav>
+                                </Card>
+                            </Col>
 
-                        <div className="form-group">
-                            <label htmlFor="user_email" className="custom-form-label">
-                                User Email
-                            </label>
-                            <input
-                                className="custom-form-control"
-                                value={user.email}
-                                onChange={(ev) =>
-                                    setUser({...user, email: ev.target.value})
-                                }
-                                placeholder="Email"
-                            />
-                            {errors && errors.email && (
-                                <div className="text-danger">{errors.email[0]}</div>
-                            )}
-                        </div>
+                            <Col sm={9}>
+                                <Tab.Content>
 
-                        <div className="text-danger mb-2">
-                            <div className="alert alert-warning" role="alert">Leave both password field blank, if you do
-                                not want to change your account password
-                            </div>
-                        </div>
-
-
-                        <div className="form-group">
-                            <label htmlFor="password" className="custom-form-label">
-                                Password
-                            </label>
-                            <input
-                                className="custom-form-control"
-                                type="password"
-                                onChange={(ev) =>
-                                    setUser({...user, password: ev.target.value})
-                                }
-                                placeholder="Password"
-                            />
-                            {errors && errors.password && (
-                                <div className="text-danger">{errors.password[0]}</div>
-                            )}
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="confirm_password" className="custom-form-label">
-                                Confirm Password
-                            </label>
-                            <input
-                                className="custom-form-control"
-                                type="password"
-                                onChange={(ev) =>
-                                    setUser({...user, password_confirmation: ev.target.value})
-                                }
-                                placeholder="Password Confirmation"
-                            />
-                            {errors && errors.password_confirmation && (
-                                <div className="text-danger">{errors.password_confirmation[0]}</div>
-                            )}
-                        </div>
-
-                        <div className="text-end mt-4">
-                            <button className="custom-btn btn-brand-primary btn-edit px-5">
-                                Save
-                            </button>
-                        </div>
-                    </form>
-                )}
-
-
-                {registration_type === 'subscription' && (
-
-                    <div className="table-responsive-sm mt-4">
-                        <div className="text-danger mb-2">
-                            <div className="alert alert-info" role="alert">Subscription History
-                            </div>
-                        </div>
-                        <table className="table table-bordered custom-table">
-                            <thead>
-                            <tr className={'text-center'}>
-                                <th>Start Date</th>
-                                <th>End Date</th>
-                                <th>Status</th>
-                                <th>Amount</th>
-                            </tr>
-                            </thead>
-                            {loading && (
-                                <tbody>
-                                <tr>
-                                    <td colSpan={4} className="text-center">
-                                        Loading...
-                                    </td>
-                                </tr>
-                                </tbody>
-                            )}
-                            {!loading && (
-                                <tbody>
-                                {subscriptions.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={4} className="text-center">
-                                            No Subscription found
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    subscriptions.map((subscription) => (
-                                        <tr className={'text-center'} key={subscription.id}>
-                                            <td>{subscription.current_period_start}</td>
-                                            <td>{subscription.current_period_end}</td>
-                                            <td>
-
-                                                <Badge
-                                                    className={subscription.status === "active" ? "badge-active" : "badge-inactive"}>
-                                                    {subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1) }
-                                                </Badge>
-                                            </td>
-                                            <td> {default_currency + subscription.amount}</td>
-                                        </tr>
-                                    ))
-                                )}
-                                </tbody>
-                            )}
-                        </table>
-                    </div>
-                )}
-
+                                    {
+                                        renderTabContent(activeTab)
+                                    }
+                                </Tab.Content>
+                            </Col>
+                        </Row>
+                    </Tab.Container>
+                </Row>
 
 
             </WizCard>

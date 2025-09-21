@@ -74,7 +74,6 @@ export default function CsvFileUpload({handelCloseModal}) {
                     category_id: csvCategoryValue.value
                 }
             }).unwrap();
-            console.log(data);
             // notification("success", data?.message, data?.description);
 
             // handelCloseModal();
