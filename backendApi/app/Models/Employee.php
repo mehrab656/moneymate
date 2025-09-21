@@ -16,11 +16,14 @@ class Employee extends Model
     protected $primaryKey = 'id';
     protected $guarded = [];
 
-    public function user(): HasOne
+//    public function user(): HasOne
+//    {
+//        return $this->hasOne(User::class,'id','user_id');
+//    }
+    public function user()
     {
-        return $this->hasOne(User::class,'id','user_id');
+        return $this->belongsTo(User::class,'slug','slug');
     }
-
     /**
      * @throws \Throwable
      */

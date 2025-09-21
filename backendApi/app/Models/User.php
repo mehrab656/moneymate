@@ -263,7 +263,7 @@ class User extends Authenticatable
 //                DB::table('company_user')
 //                    ->where('user_id', $user['id'])
 //                    ->where('company_id', Auth::user()->primary_company)
-//                    ->update(['role_id' => $data['role']]);  @@important
+//                    ->update(['role_id' => $data['role']]);
 
                 $updateColumnsArray['role_as'] = $data['role_as'];
                 $employeeDetails = [
@@ -288,8 +288,8 @@ class User extends Authenticatable
                         'emirates_id'=>$data['emirates_id'],
                         'visa_status'=>$data['visa_status'],
                         'status'=>$data['status'],
-                        'passport_copy'=>$data['passport_copy'],
-                        'emirate_id_copy'=>$data['emirate_id_copy'],
+                        'passport_copy'=>$data['passport_copy']??null,
+                        'emirate_id_copy'=>$data['emirate_id_copy']??null,
                     ]),
                 ];
 
@@ -351,5 +351,10 @@ class User extends Authenticatable
                 'message' => 'User updated!',
                 'data' => $data
             ];
+    }
+
+    public function employee()
+    {
+        return $this->hasOne(Employee::class,'slug','slug');
     }
 }

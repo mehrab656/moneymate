@@ -140,7 +140,8 @@ class UserController extends Controller
     public function getSingleUser($slug): UserResource
     {
 
-        $user = User::where('slug',$slug)->first();
+//        $user = User::where('slug',$slug)->first();
+        $user = User::with('employee')->where('slug', $slug)->firstOrFail();
 
         return new UserResource($user);
 

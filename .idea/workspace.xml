@@ -5,24 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb82f29d-a946-4d7c-af4f-355ea30ae3ce" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/custom.css" beforeDir="false" afterPath="$PROJECT_DIR$/custom.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/public/custom.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/public/custom.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/Layout/DefaultLayout/Header.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/Layout/DefaultLayout/Header.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/api/slices/userSlice.js" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/api/slices/userSlice.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Login.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Login.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/BasicInfo.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/BasicInfo.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/ContactInfo.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/ContactInfo.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/EmploymentInfo.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/EmploymentInfo.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/SecurityInfo.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/SecurityInfo.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/TwoFactAuthentication.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/TwoFactAuthentication.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Settings/Users/UserForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Settings/Users/UserForm.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Settings/Users/UserList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Settings/Users/UserList.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Transactions/Income/Components/CsvFileUpload.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Transactions/Income/Components/CsvFileUpload.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Transactions/Income/IncomeForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Transactions/Income/IncomeForm.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/react/yarn.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/UserController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/UserController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Models/Employee.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Models/Employee.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Models/User.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Models/User.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -192,27 +178,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowPanel.toolwindow.highlight.mappings": "true",
-    "WebServerToolWindowPanel.toolwindow.highlight.symlinks": "true",
-    "WebServerToolWindowPanel.toolwindow.show.date": "false",
-    "WebServerToolWindowPanel.toolwindow.show.permissions": "false",
-    "WebServerToolWindowPanel.toolwindow.show.size": "false",
-    "git-widget-placeholder": "saas",
-    "last_opened_file_path": "/Applications/XAMPP/xamppfiles/htdocs/moneymate/react/src/views/Settings/Users/ProfileTabs",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "npm.dev.executor": "Run",
-    "settings.editor.selected.configurable": "advanced.settings",
-    "ts.external.directory.path": "/Applications/PhpStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.highlight.mappings&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.highlight.symlinks&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.show.date&quot;: &quot;false&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.show.permissions&quot;: &quot;false&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.show.size&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;saas&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Applications/XAMPP/xamppfiles/htdocs/moneymate/react/src/views/Settings/Users/ProfileTabs&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;npm.dev.executor&quot;: &quot;Run&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Applications/PhpStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs" />

@@ -49,6 +49,15 @@ class UserResource extends JsonResource
             'created_at' => $this->created_at,
             'active'=>$this->active?'Active':'Inactive',
             'options'=>$this->options,
+            'employeeData'=>[
+                'salary'=>$this->employee->basic_salary,
+                'accommodation_cost'=>$this->employee->accommodation_cost,
+                'joining_date'=>$this->employee->joining_date,
+                'phone'=>$this->employee->phone,
+                'emergency_contact'=>$this->employee->emergency_contact,
+                'position'=>$this->employee->position,
+                'extras'=>json_decode($this->employee->extras),
+            ]
         ];
     }
 
