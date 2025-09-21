@@ -131,7 +131,7 @@ export default function UserForm() {
                                 <Card>
                                     <div className={"user-avatar"}>
                                         <Avatar sx={{width: 100, height: 100}} alt={user?.username ?? "User"} src={user?.avatar}/>
-                                        <span><h1>{user?.username}</h1></span>
+                                        <span><h3>{user?.username}</h3></span>
                                     </div>
                                     <Nav variant="pills" className="flex-column">
                                         {

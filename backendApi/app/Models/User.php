@@ -252,12 +252,16 @@ class User extends Authenticatable
                     'dob' => $data['dob'],
                     'gender' => $data['gender'],
                 ];
+                $user->update($updateColumnsArray);
+
             }
             else if ( $token==='contacts'){
                 $updateColumnsArray['phone'] = $data['phone'];
                 $updateColumnsArray['emergency_contract'] = $data['emergency_contract'];
                 $updateColumnsArray['email'] = $data['email'];
                 $updateColumnsArray['profile_picture'] = $data['profile_picture'];
+                $user->update($updateColumnsArray);
+
             }
             else if ( $token==='employmentDetails'){
 //                DB::table('company_user')
@@ -308,7 +312,8 @@ class User extends Authenticatable
                     ]);
 
 
-                }else{
+                }
+                else{
                     $employee->update($employeeDetails);
                     storeActivityLog([
                         'object_id' => $employee['id'],
@@ -325,6 +330,8 @@ class User extends Authenticatable
                     'descriptions' => __('messages.update_job_profile', ['name' => $user->first_name . ' ' . $user->last_name]),
                     'data_records' => json_encode($employeeDetails),
                 ]);
+                $user->update($updateColumnsArray);
+
             }
 
             else{
@@ -336,7 +343,6 @@ class User extends Authenticatable
                     $updateColumnsArray['emergency_contract'] = $data['emergency_contract'];
                 }
             }
-            $user->update($updateColumnsArray);
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();

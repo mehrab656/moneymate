@@ -36,7 +36,7 @@ export default function EmploymentInfo({ user }) {
         ...data,
         id: user.id,
         employee_code: user.employee_code || "MH15081996",
-        designation: user.designation || "Operational Manage",
+          designation: user.designation || "Operational Manage",
         department: user.department || "HR",
         date_of_joining: user.date_of_joining || "2024-01-10",
         employment_type: user.employment_type || "full-time",

@@ -4,7 +4,6 @@ import {useUpdateBasicInfoMutation} from "../../../../api/slices/userSlice.js";
 import {notification} from "../../../../components/ToastNotification.jsx";
 
 const _initials={
-    id: null,
     phone: "",
     emergency_contract: "",
     avatar: "",
@@ -28,14 +27,13 @@ export default function ContactInfo({user}){
         event.preventDefault();
         setBtnText("Updating...");
         // event.currentTarget.disabled = true;
-
         const formData = new FormData();
-        formData.append("first_name", data.first_name);
-        formData.append("last_name", data.last_name);
-        formData.append("dob", data.dob);
-        formData.append("gender", data.gender);
+        formData.append("phone", data.phone);
+        formData.append("profile_picture", data.avatar);
+        formData.append("emergency_contract", data.emergency_contract);
+        formData.append("email", data.email);
         try {
-            const data = await updateBasicData({ url: `/update-basic-info/${user.slug}`, formData }).unwrap();
+            const data = await updateBasicData({ url: `/update-contacts/${user.slug}`, formData }).unwrap();
             notification("success", data?.message, data?.description);
             setBtnText("Update");
 
@@ -55,6 +53,7 @@ export default function ContactInfo({user}){
         const file = e.target.files[0];
         if (file) {
             setImage(URL.createObjectURL(file));
+            data.avatar = file;
         }
     };
 
