@@ -12,6 +12,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Ramsey\Uuid\Uuid;
 use Stripe\Exception\ApiErrorException;
 use Illuminate\Support\Facades\Hash;
@@ -127,4 +128,37 @@ class AuthController extends Controller {
 
 		return response( '', 204 );
 	}
+
+    public function changePassword( Request $request ): Application|ResponseFactory|\Illuminate\Foundation\Application|Response
+    {
+
+        $data = $request->input();
+
+
+        $validator = Validator::make($data, [
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|confirmed', // new_password_confirmation field required
+        ]);
+        if ( $validator->fails() ) {
+            return response( [
+                'message' => $validator->errors()
+            ],404);
+        }
+
+        $user = Auth::user();
+
+        // Check current password
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response( [
+                'message' => "Current password does not match."
+            ],404);
+        }
+        $user->update([
+            'password' => Hash::make($request->new_password),
+        ]);
+
+        return response( [
+            'message' => "Password successfully updated."
+        ]);
+    }
 }

@@ -2,11 +2,7 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Subscription;
-use App\Models\User;
-use Auth;
-use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Database\Eloquent\Casts\Json;
+
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
