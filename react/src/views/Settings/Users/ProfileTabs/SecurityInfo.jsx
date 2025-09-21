@@ -90,7 +90,10 @@ export default function SecurityInfo({ user }) {
     formData.append("confirm_password", data.confirm_password);
 
     try {
-      await updateSecurityInfo(formData).unwrap();
+      await updateSecurityInfo({
+        url: `/update-authentication/${user.slug}`,
+        formData,
+      }).unwrap();
       notification("success", "Security information updated successfully!");
       setData(_initials); // Reset form
     } catch (error) {
