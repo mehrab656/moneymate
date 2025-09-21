@@ -62,6 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/update-basic-info/{slug}', [UserController::class, 'updateBasicInfo']);
     Route::post('/update-contacts/{slug}', [UserController::class, 'updateContacts']);
     Route::post('/update-employment-details/{slug}', [UserController::class, 'updateEmploymentDetails']);
+    Route::post('/update-security', [AuthController::class, 'changePassword']);
     Route::post('/update-authentication/{slug}', [UserController::class, 'updateAuthentication']);
 //    Route::post('/user/add', [UserController::class, 'store']);
 
