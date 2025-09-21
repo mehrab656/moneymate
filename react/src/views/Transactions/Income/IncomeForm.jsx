@@ -152,7 +152,6 @@ export default function IncomeForm({handelCloseModal, title, id}) {
                     category_id: csvCategoryValue.value
                 }
             }).unwrap();
-            console.log(data);
             // notification("success", data?.message, data?.description);
 
             // handelCloseModal();

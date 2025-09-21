@@ -11,7 +11,7 @@
     --white: #ffffff;
     --muted: #625f6e;
     --light-muted: #9896a0;
-
+    --fundamental-color: #022534;
 
 }
 
@@ -157,6 +157,14 @@ h1, h2, h3, h4, h5, h6 {
     display: inline-block;
     padding: 0.45rem 1.5rem;
     box-shadow: 0 8px 9px -4px rgba(0, 0, 0, 0.15), 0 4px 18px 0 rgba(0, 0, 0, 0.1);
+    float: right;
+    background-color: var(--fundamental-color);
+    outline: none;
+    margin-top: 5px;
+
+}
+.custom-btn:hover {
+    background-color: var(--fundamental-color);
 }
 
 .custom-btn.btn-sm {
@@ -208,7 +216,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .wrapper > .wrapping-aside {
     width: 245px;
-    background-color: #1E1E2D;
+    background-color: var(--fundamental-color);
     min-height: 100vh;
     position: fixed;
     top: 0;
@@ -702,4 +710,23 @@ section .details span{
 
 .aside-menu-item .aside-link, .aside-menu-item a {
     padding: 6px 10px !important;
+}
+.nav-pills .nav-link.active {
+    background-color: var(--fundamental-color); /* e.g., #007bff for blue */
+}
+.user-avatar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10%;
+    border-bottom: 2px solid var(--fundamental-color);
+}
+.profile-avatar{
+width: 100px;
+    height: 100px;
+}
+.user-profile-section {
+    text-align: center;
+    margin-top: 20px;
+    /*border: var(--bs-card-border-width) solid var(--bs-card-border-color);*/
 }

@@ -103,107 +103,108 @@ const Header = ({
         <Col xs="auto" className="d-flex align-items-center ms-auto">
           {/* Notifications Dropdown */}
           <NavDropdown
-            title={
-              <DropDownProperties
-                icon={faBell}
-                totalNotification={notifications.length || 0}
-              />
-            }
-            id="notification-dropdown"
-            align="end"
-            className="notification-dropdown"
+              title={
+                <DropDownProperties
+                    icon={faBell}
+                    totalNotification={notifications.length || 0}
+                />
+              }
+              id="notification-dropdown"
+              align="end"
+              className="notification-dropdown"
           >
             <NavDropdown.Header className="bg-primary p-1 text-white">
               Notifications
             </NavDropdown.Header>
             {notifications.length > 0 ? (
-              notifications.map((item) => (
-                <NavDropdown.Item
-                  key={`${item.type}-${item.id}`}
-                  className="notification-item"
-                >
-                  {item.name} {item.type} bill date{" "}
-                  {item.type === "internet"
-                    ? item.internet_billing_date
-                    : item.el_billing_date}
-                </NavDropdown.Item>
-              ))
+                notifications.map((item) => (
+                    <NavDropdown.Item
+                        key={`${item.type}-${item.id}`}
+                        className="notification-item"
+                    >
+                      {item.name} {item.type} bill date{" "}
+                      {item.type === "internet"
+                          ? item.internet_billing_date
+                          : item.el_billing_date}
+                    </NavDropdown.Item>
+                ))
             ) : (
-              <NavDropdown.Item className="text-muted">
-                No notifications
-              </NavDropdown.Item>
+                <NavDropdown.Item className="text-muted">
+                  No notifications
+                </NavDropdown.Item>
             )}
           </NavDropdown>
-
+        </Col>
+        <Col xs="auto" className="d-flex align-items-center ms-auto">
+         <small> {user.username}</small>
           <IconButton
-            aria-controls="user-menu"
-            aria-haspopup="true"
-            onClick={handleClick}
-            className="user-dropdown ms-3"
-            sx={{mt:-1}}
+              aria-controls="user-menu"
+              aria-haspopup="true"
+              onClick={handleClick}
+              className="user-dropdown ms-3"
+              sx={{mt: -1}}
           >
-            <Avatar  sx={{ width: 28, height: 28 }} alt={user?.username ?? "User"} src={user?.profile_picture} />
+            <Avatar sx={{width: 35, height: 35}} alt={user?.username ?? "User"} src={user?.avatars}/>
           </IconButton>
-
           <Menu
-            id="user-menu"
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "right",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
+              id="user-menu"
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
           >
-            <MenuItem component={Link} to={`/users/${user.id}`} onClick={handleClose}>
+            <MenuItem component={Link} to={`/users/${user.slug}`} onClick={handleClose}>
               Profile
             </MenuItem>
             <MenuItem
-              component={Link}
-              to="/settings"
-              onClick={handleClose}
+                component={Link}
+                to="/settings"
+                onClick={handleClose}
             >
               Activity Log
             </MenuItem>
 
             {userRole === "admin" && (
-              <MenuItem
-                component={Link}
-                to="/settings"
-                onClick={handleClose}
-              >
-                Settings
-              </MenuItem>
+                <MenuItem
+                    component={Link}
+                    to="/settings"
+                    onClick={handleClose}
+                >
+                  Settings
+                </MenuItem>
             )}
 
-            <Divider />
+            <Divider/>
 
             <MenuItem onClick={onLogout}>Logout</MenuItem>
           </Menu>
 
           {/* Finance Section Toggle Icon for Small Screens */}
           {!isLargeScreen && (
-            <FontAwesomeIcon
-              icon={open ? faChevronUp : faChevronDown}
-              onClick={() => setOpen(!open)}
-              aria-controls="finance-collapse"
-              aria-expanded={open}
-              className="d-md-none ms-3 mb-2"
-              style={{ cursor: "pointer" }}
-            />
+              <FontAwesomeIcon
+                  icon={open ? faChevronUp : faChevronDown}
+                  onClick={() => setOpen(!open)}
+                  aria-controls="finance-collapse"
+                  aria-expanded={open}
+                  className="d-md-none ms-3 mb-2"
+                  style={{cursor: "pointer"}}
+              />
           )}
 
           {/* Sidebar Toggle Button */}
           <FontAwesomeIcon
-            icon={faBars}
-            onClick={toggleSidebar}
-            aria-label="Toggle sidebar"
-            className="d-lg-none ms-3 mb-2"
-            style={{ cursor: "pointer" }}
+              icon={faBars}
+              onClick={toggleSidebar}
+              aria-label="Toggle sidebar"
+              className="d-lg-none ms-3 mb-2"
+              style={{cursor: "pointer"}}
           />
         </Col>
       </Row>

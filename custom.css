@@ -206,7 +206,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .wrapper > .wrapping-aside {
     width: 245px;
-    background-color: #1E1E2D;
+    background-color: var(--fundamental-color);
     min-height: 100vh;
     position: fixed;
     top: 0;
@@ -520,4 +520,3 @@ footer {
       padding: 12px;
     }
   }
-    
