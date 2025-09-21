@@ -1,0 +1,1 @@
+import{u as m,r as n}from"./AuthRoutes-2e952a6b.js";import{r as c,j as l}from"./index-8e1ee696.js";const s=c.forwardRef(({bsPrefix:e,bg:r="primary",pill:o=!1,text:a,className:t,as:p="span",...d},f)=>{const i=m(e,"badge");return l(p,{ref:f,...d,className:n(t,i,o&&"rounded-pill",a&&`text-${a}`,r&&`bg-${r}`)})});s.displayName="Badge";const g=s;export{g as B};

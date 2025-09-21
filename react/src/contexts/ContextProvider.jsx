@@ -1,5 +1,4 @@
 import {createContext, useContext, useEffect, useState} from "react";
-import axiosClient from "../axios-client.js";
 import Swal from "sweetalert2";
 
 const StateContext = createContext({

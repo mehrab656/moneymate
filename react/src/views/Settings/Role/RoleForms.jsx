@@ -1,17 +1,13 @@
 import {Link, useLocation, useNavigate, useParams} from "react-router-dom";
 import React, {useContext, useEffect, useState} from "react";
-import axiosClient from "../../axios-client.js";
-import {useStateContext} from "../../contexts/ContextProvider.jsx";
-import WizCard from "../../components/WizCard";
-import {SettingsContext} from "../../contexts/SettingsContext";
+import {useStateContext} from "../../../contexts/ContextProvider.jsx";
+import WizCard from "../../../components/WizCard";
+import {SettingsContext} from "../../../contexts/SettingsContext";
 import Badge from "react-bootstrap/Badge";
-import MainLoader from "../../components/loader/MainLoader.jsx";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import {Box, FormControl, FormGroup} from "@mui/material";
-import Checkbox from "@mui/material/Checkbox";
-import FormLabel from "@mui/material/FormLabel";
+import MainLoader from "../../../components/loader/MainLoader.jsx";
 import RoleLists from "./RoleLists.jsx";
-import {notification} from "../../components/ToastNotification.jsx";
+import {notification} from "../../../components/ToastNotification.jsx";
+import axiosClient from "../../../axios-client.js";
 
 export default function RoleForms() {
     const navigate = useNavigate();
