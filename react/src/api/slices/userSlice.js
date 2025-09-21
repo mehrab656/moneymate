@@ -172,7 +172,7 @@ export const userSlice = createApi({
     }),
     updateSecurityInfo: builder.mutation({
       query: (data) => ({
-        url: "/user/update-security",
+        url: "/update-security",
         method: "POST",
         body: data,
       }),
