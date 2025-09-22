@@ -231,7 +231,7 @@ class User extends Authenticatable
     /**
      * @throws \Throwable
      */
-    public function updateUser($data, $slug, $token='basicInfo'): array
+    public function updateUser($data, $slug, $token = 'basicInfo'): array
     {
         $user = (new User())->where('slug', $slug)->first();
         if (!$user) {
@@ -241,11 +241,12 @@ class User extends Authenticatable
                 'data' => []
             ];
         }
+        $message  ="User Updated";
         $updateColumnsArray = [];
         try {
             DB::beginTransaction();
 
-            if ($token==='basicInfo'){
+            if ($token === 'basicInfo') {
                 $updateColumnsArray = [
                     'first_name' => $data['first_name'],
                     'last_name' => $data['last_name'],
@@ -253,54 +254,73 @@ class User extends Authenticatable
                     'gender' => $data['gender'],
                 ];
                 $user->update($updateColumnsArray);
+                $message = __("messages.basic_data_update",['name'=>$user->first_name]);
 
-            }
-            else if ( $token==='contacts'){
+            } else if ($token === 'contacts') {
                 $updateColumnsArray['phone'] = $data['phone'];
                 $updateColumnsArray['emergency_contract'] = $data['emergency_contract'];
                 $updateColumnsArray['email'] = $data['email'];
-                $updateColumnsArray['profile_picture'] = $data['profile_picture'];
+                if (isset($data['profile_picture']) && $data['profile_picture']) {
+                    $updateColumnsArray['profile_picture'] = $data['profile_picture'];
+                }
                 $user->update($updateColumnsArray);
+                $message = __("messages.contact_data_update",['name'=>$user->first_name]);
 
-            }
-            else if ( $token==='employmentDetails'){
+            } else if ($token === 'employmentDetails') {
 //                DB::table('company_user')
 //                    ->where('user_id', $user['id'])
 //                    ->where('company_id', Auth::user()->primary_company)
 //                    ->update(['role_id' => $data['role']]);
 
                 $updateColumnsArray['role_as'] = $data['role_as'];
-                $employeeDetails = [
-                    'basic_salary'=> $data['salary'],
-                    'accommodation_cost'=>$data['accommodation_cost'],
-                    'phone'=>$user['phone'],
-                    'emergency_contact'=>$user['emergency_contract'],
-                    'joining_date'=>$data['date_of_joining'],
-//                    'attachment'=>,
-                    'extras'=>json_encode([
-                        'employee_code'=>$data['employee_code'],
-                        'designation'=>$data['designation'],
-                        'department'=>$data['department'],
-                        'date_of_joining'=>$data['date_of_joining'],
-                        'employment_type'=>$data['employment_type'],
-                        'address'=>$data['address'],
-                        'city'=>$data['city'],
-                        'state'=>$data['state'],
-                        'country'=>$data['country'],
-                        'national_id'=>$data['national_id'],
-                        'passport_no'=>$data['passport_no'],
-                        'emirates_id'=>$data['emirates_id'],
-                        'visa_status'=>$data['visa_status'],
-                        'status'=>$data['status'],
-                        'passport_copy'=>$data['passport_copy']??null,
-                        'emirate_id_copy'=>$data['emirate_id_copy']??null,
-                    ]),
+                $employee = Employee::where('slug', $user->slug)->first();
+
+                $newExtras = [
+                    'employee_code' => $data['employee_code'] ?? null,
+                    'designation' => $data['designation'] ?? null,
+                    'department' => $data['department'] ?? null,
+                    'date_of_joining' => $data['date_of_joining'] ?? null,
+                    'employment_type' => $data['employment_type'] ?? null,
+                    'address' => $data['address'] ?? null,
+                    'city' => $data['city'] ?? null,
+                    'state' => $data['state'] ?? null,
+                    'country' => $data['country'] ?? null,
+                    'national_id' => $data['national_id'] ?? null,
+                    'passport_no' => $data['passport_no'] ?? null,
+                    'emirates_id' => $data['emirates_id'] ?? null,
+                    'visa_status' => $data['visa_status'] ?? null,
+                    'status' => $data['status']?? null,
                 ];
 
-                $employee = Employee::where('slug', $user->slug)->first();
+                if (isset($data['passport_copy'])) {
+                    $newExtras['passport_copy'] = $data['passport_copy'];
+                }
+                if (isset($data['emirate_id_copy'])) {
+                    $newExtras['emirate_id_copy'] = $data['emirate_id_copy'];
+                }
+                $extra = $newExtras;
+
+                if ($employee) {
+                    $prevExtras = json_decode($employee['extras'], true);
+                    foreach ($prevExtras as $key => $value) {
+                        if (!array_key_exists($key, $extra) || $extra[$key] === null) {
+                            $extra[$key] = $value;
+                        }
+                    }
+
+                }
+                $employeeDetails = [
+                    'basic_salary' => $data['salary'],
+                    'accommodation_cost' => $data['accommodation_cost'],
+                    'phone' => $user['phone'],
+                    'emergency_contact' => $user['emergency_contract'],
+                    'joining_date' => $data['date_of_joining'],
+                    'extras' => json_encode($extra),
+                ];
+
                 if (!$employee) {
-                    $employeeDetails['slug']=$user->slug;
-                    $employeeDetails['company_id']=$user->primary_company;
+                    $employeeDetails['slug'] = $user->slug;
+                    $employeeDetails['company_id'] = $user->primary_company;
 
                     $employee = Employee::create($employeeDetails);
                     storeActivityLog([
@@ -310,10 +330,8 @@ class User extends Authenticatable
                         'descriptions' => __('messages.add_employee', ['name' => $user->first_name . ' ' . $user->last_name]),
                         'data_records' => json_encode($employee),
                     ]);
+                } else {
 
-
-                }
-                else{
                     $employee->update($employeeDetails);
                     storeActivityLog([
                         'object_id' => $employee['id'],
@@ -331,10 +349,9 @@ class User extends Authenticatable
                     'data_records' => json_encode($employeeDetails),
                 ]);
                 $user->update($updateColumnsArray);
+                $message = __("messages.employee_data_update",['name'=>$user->first_name]);
 
-            }
-
-            else{
+            } else {
 
                 if (isset($data['profile_picture'])) {
                     $updateColumnsArray['profile_picture'] = $data['profile_picture'];
@@ -354,13 +371,13 @@ class User extends Authenticatable
         return
             [
                 'status_code' => 200,
-                'message' => 'User updated!',
+                'message' => $message,
                 'data' => $data
             ];
     }
 
     public function employee()
     {
-        return $this->hasOne(Employee::class,'slug','slug');
+        return $this->hasOne(Employee::class, 'slug', 'slug');
     }
 }

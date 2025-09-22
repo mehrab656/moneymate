@@ -452,7 +452,8 @@ class UserController extends Controller
         }
         if ($request->hasFile('passport_copy')) {
             $path = public_path('passports');
-            if (!File::exists($path)) {
+
+            if (!File::exists($path)) {     //check if the dir is present. if not, create a dir with permission
                 File::makeDirectory($path, 0755, true);
                 // 0755 = permissions, true = recursive
             }
@@ -464,7 +465,7 @@ class UserController extends Controller
         }
         if ($request->hasFile('emirate_id_copy')) {
             $path = public_path('ids');
-            if (!File::exists($path)) {
+            if (!File::exists($path)) {  //check if the dir is present. if not, create a dir with permission
                 File::makeDirectory($path, 0755, true);
             }
             $attachment = $request->file('emirate_id_copy');

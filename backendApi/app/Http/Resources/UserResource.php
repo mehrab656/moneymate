@@ -31,6 +31,8 @@ class UserResource extends JsonResource
 //            }
 //
 //    }
+        $extraData = json_decode($this->employee->extras,true);
+
 
         return [
             'slug' => $this->slug,
@@ -57,7 +59,9 @@ class UserResource extends JsonResource
                 'emergency_contact'=>$this->employee->emergency_contact,
                 'position'=>$this->employee->position,
                 'extras'=>json_decode($this->employee->extras),
-            ]
+                'passport_file_name' => isset($extraData['passport_copy'])? asset('passports/'.$extraData['passport_copy']):'',
+                'emirate_file_name' => isset($extraData['emirate_id_copy'])? asset('ids/'.$extraData['emirate_id_copy']):'',
+            ],
         ];
     }
 }
