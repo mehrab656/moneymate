@@ -1,28 +1,32 @@
 import {Tab, Form, Card, Row, Col,Button} from "react-bootstrap";
 import React, {useEffect, useState} from "react";
-import {useUpdateBasicInfoMutation} from "../../../../api/slices/userSlice.js";
+import {useGetSingleUserDataQuery, useUpdateBasicInfoMutation} from "../../../../api/slices/userSlice.js";
 import {notification} from "../../../../components/ToastNotification.jsx";
+import {useParams} from "react-router-dom";
 
 const _initials={
     phone: "",
     emergency_contract: "",
-    avatar: "",
     email: "",
+    profile_picture:"",
+    avatar:""
 }
-export default function ContactInfo({user}){
+export default function ContactInfo(){
     const [data, setData] = useState(_initials);
-    const [btnText, setBtnText] = useState('Update')
+    const [btnText, setBtnText] = useState('Update');
+    let {id} = useParams();
+    const {data: getUserData } = useGetSingleUserDataQuery({ id:id});
+    const [currentProfilePicture, setCurrentProfilePicture] = useState(null)
 
     useEffect(() => {
-        if (user){
-            data.phone = user.phone;
-            data.avatar = user.avatar;
-            data.emergency_contract = user.emergency_contract;
-            data.email = user.email;
+        if (id && getUserData){
+            data.phone = getUserData.phone;
+            data.emergency_contract = getUserData.emergency_contract;
+            data.email = getUserData.email;
+            setCurrentProfilePicture(getUserData.avatar)
         }
-    }, [user]);
+    }, [getUserData]);
     const [updateBasicData] = useUpdateBasicInfoMutation();
-
     const updateBasicInfo = async (event) => {
         event.preventDefault();
         setBtnText("Updating...");
@@ -33,7 +37,7 @@ export default function ContactInfo({user}){
         formData.append("emergency_contract", data.emergency_contract);
         formData.append("email", data.email);
         try {
-            const data = await updateBasicData({ url: `/update-contacts/${user.slug}`, formData }).unwrap();
+            const data = await updateBasicData({ url: `/update-contacts/${id}`, formData }).unwrap();
             notification("success", data?.message, data?.description);
             setBtnText("Update");
 
@@ -47,12 +51,10 @@ export default function ContactInfo({user}){
         }
     };
 
-    const [image, setImage] = useState(null);
-
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setImage(URL.createObjectURL(file));
+            setCurrentProfilePicture(URL.createObjectURL(file));
             data.avatar = file;
         }
     };
@@ -107,10 +109,9 @@ export default function ContactInfo({user}){
                             </Col>
                             <Col xs={4} sm={4}>
                                 <div className={"user-profile-section"}>
-                                    {image && (
                                         <div style={{marginTop: "20px"}}>
                                             <img
-                                                src={image}
+                                                src={currentProfilePicture}
                                                 alt="Uploaded"
                                                 style={{
                                                     width: "200px",
@@ -120,7 +121,6 @@ export default function ContactInfo({user}){
                                                 }}
                                             />
                                         </div>
-                                    )}
                                     <input type="file" accept="image/*" onChange={handleImageChange}/>
 
                                 </div>

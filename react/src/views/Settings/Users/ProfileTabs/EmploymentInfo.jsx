@@ -1,58 +1,71 @@
 import { Tab, Form, Card, Row, Col, Button } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
-import { useUpdateEmploymentInfoMutation } from "../../../../api/slices/userSlice.js";
+import {useGetSingleUserDataQuery, useUpdateEmploymentInfoMutation} from "../../../../api/slices/userSlice.js";
 import { notification } from "../../../../components/ToastNotification.jsx";
+import {useParams} from "react-router-dom";
 
 const _initials = {
-  id: null,
-  role_as: "admin",
-  employee_code: "",
-  designation: "",
-  department: "",
-  date_of_joining: "",
-  employment_type: "",
-  salary: "",
-  address: "",
-  city: "",
-  state: "",
-  country: "",
-  national_id: "",
-  passport_no: "",
-  emirates_id: "",
-  visa_status: "",
-  status: "active",
-  passport_copy: null,
-  emirate_id_copy: null,
-  accommodation_cost: "",
+  date_of_joining:"",
+  phone:"",
+  position:"",
+  salary:"",
+  accommodation_cost:"",
+  emergency_contact:"",
+  employee_code:"",
+  designation:"",
+  department:"",
+  employment_type:"",
+  address:"",
+  city:"",
+  state:"",
+  country:"",
+  national_id:"",
+  passport_no:"",
+  emirates_id:"",
+  visa_status:"",
+  emirate_id_copy:"",
+  passport_copy:"",
+  status:"",
 };
 
 export default function EmploymentInfo({ user }) {
   const [data, setData] = useState(_initials);
   const [btnText, setBtnText] = useState("Update");
+  let {id} = useParams();
+  const {data: getUserData } = useGetSingleUserDataQuery({ id:id});
+ const [previewPassport, setPreviewPassport]= useState(null);
+ const [previewEmirateId, setPreviewEmirateId]= useState(null);
+
 
   useEffect(() => {
-    if (user) {
+    if (getUserData) {
+      const employmentData= user.employeeData;
       setData({
         ...data,
-        id: user.id,
-        employee_code: user.employee_code || "MH15081996",
-          designation: user.designation || "Operational Manage",
-        department: user.department || "HR",
-        date_of_joining: user.date_of_joining || "2024-01-10",
-        employment_type: user.employment_type || "full-time",
-        salary: user.salary || "12000",
-        address: user.address || "Ajyad Properties, Block A, Apartment 402",
-        city: user.city || "Dubai",
-        state: user.state || "Jumeirah Village Circle",
-        country: user.country || "UAE",
-        national_id: user.national_id || "88128923",
-        passport_no: user.passport_no || "A02049652",
-        emirates_id: user.emirates_id || "784-1996-11615982",
-        visa_status: user.visa_status || "residence",
-        accommodation_cost: user.accommodation_cost || "2000",
+        date_of_joining: employmentData.joining_date,
+        phone: employmentData.phone,
+        position: employmentData.position,
+        salary: employmentData.salary ,
+        accommodation_cost: employmentData.accommodation_cost ,
+        emergency_contact: employmentData.emergency_contact ,
+        employee_code: employmentData.extras.employee_code,
+        designation: employmentData.extras.designation,
+        department: employmentData.extras.department,
+        employment_type: employmentData.extras.employment_type,
+        address: employmentData.extras.address ,
+        city: employmentData.extras.city ,
+        state: employmentData.extras.state ,
+        country: employmentData.extras.country ,
+        national_id: employmentData.extras.national_id ,
+        passport_no: employmentData.extras.passport_no ,
+        emirates_id: employmentData.extras.emirates_id ,
+        visa_status: employmentData.extras.visa_status ,
+        status: employmentData.extras.status ,
       });
+      setPreviewPassport(employmentData.passport_file_name);
+      setPreviewEmirateId(employmentData.emirate_file_name);
     }
-  }, [user]);
+  }, [getUserData]);
 
   const [updateEmploymentData] = useUpdateEmploymentInfoMutation();
 
@@ -78,13 +91,14 @@ export default function EmploymentInfo({ user }) {
     formData.append("visa_status", data.visa_status);
     formData.append("status", data.status);
     formData.append("accommodation_cost", data.accommodation_cost);
-    
-    if (data.passport_copy) {
-      formData.append("passport_copy", data.passport_copy);
-    }
-    if (data.emirate_id_copy) {
+
+    if (data.emirate_id_copy){
       formData.append("emirate_id_copy", data.emirate_id_copy);
     }
+    if (data.passport_copy){
+      formData.append("passport_copy", data.passport_copy);
+    }
+
 
     try {
       const response = await updateEmploymentData({
@@ -97,12 +111,21 @@ export default function EmploymentInfo({ user }) {
       setBtnText("Try again");
       notification(
         "error",
-        err?.message || "An error occurred",
-        err?.description || "Please try again later."
+        err?.message ,
+        err?.description ,
       );
     }
   };
-
+  const handleFileInputChange = (event, name) => {
+    const file = event.target.files[0];
+    if (name==='passport'){
+      setData({ ...data, passport_copy: file });
+      setPreviewPassport(URL.createObjectURL(file));
+    } else{
+      setData({...data, emirate_id_copy: file});
+      setPreviewEmirateId(URL.createObjectURL(file));
+    }
+  };
   return (
     <>
       <Tab.Pane eventKey="employment">
@@ -430,35 +453,55 @@ export default function EmploymentInfo({ user }) {
               <Col xs={6} sm={6}>
                 <Form.Group className="mb-3" controlId="passport_copy">
                   <Form.Label
-                    style={{ marginBottom: "0px" }}
-                    className="custom-form-label"
+                      style={{marginBottom: "0px"}}
+                      className="custom-form-label"
                   >
-                    Passport 
+                    Passport
                   </Form.Label>
-                  <Form.Control
-                    type="file"
-                    accept="image/*,.pdf"
-                    onChange={(e) => {
-                      setData({ ...data, passport_copy: e.target.files[0] });
-                    }}
-                  />
+                  <div className={"user-profile-section"}>
+                        <div className={"image-preview"}>
+                          <img
+                              src={previewPassport}
+                              alt="Uploaded"
+                              style={{
+                                width: "200px",
+                                height: "200px",
+                                borderRadius: "10px",
+                                objectFit: "cover"
+                              }}
+                          />
+                        </div>
+
+                    <input type="file" accept="image/*" onChange={e=>{handleFileInputChange(e,'passport')}}/>
+                  </div>
                 </Form.Group>
               </Col>
               <Col xs={6} sm={6}>
                 <Form.Group className="mb-3" controlId="emirate_id_copy">
                   <Form.Label
-                    style={{ marginBottom: "0px" }}
-                    className="custom-form-label"
+                      style={{marginBottom: "0px"}}
+                      className="custom-form-label"
                   >
-                    Emirates ID 
+                    Emirates ID
                   </Form.Label>
-                  <Form.Control
-                    type="file"
-                    accept="image/*,.pdf"
-                    onChange={(e) => {
-                      setData({ ...data, emirate_id_copy: e.target.files[0] });
-                    }}
-                  />
+                  <div className={"user-profile-section"}>
+                        <div className={"image-preview"}>
+                          <img
+                              src={previewEmirateId}
+                              alt="Uploaded"
+                              style={{
+                                width: "200px",
+                                height: "200px",
+                                borderRadius: "10px",
+                                objectFit: "cover"
+                              }}
+                          />
+                        </div>
+                    <input type="file" accept="image/*" onChange={e => {
+                      handleFileInputChange(e, 'emirateId')
+                    }}/>
+                  </div>
+
                 </Form.Group>
               </Col>
             </Row>

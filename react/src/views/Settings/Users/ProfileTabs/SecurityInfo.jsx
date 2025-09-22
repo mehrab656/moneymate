@@ -2,8 +2,9 @@ import { Tab, Form, Card, Row, Col, Button, Alert } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import { useUpdateSecurityInfoMutation } from "../../../../api/slices/userSlice.js";
+import {useGetSingleUserDataQuery, useUpdateSecurityInfoMutation} from "../../../../api/slices/userSlice.js";
 import { notification } from "../../../../components/ToastNotification.jsx";
+import {useParams} from "react-router-dom";
 
 const _initials = {
   current_password: "",
@@ -19,16 +20,6 @@ export default function SecurityInfo({ user }) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [passwordMatch, setPasswordMatch] = useState(null);
-
-  useEffect(() => {
-    if (user) {
-      setData({
-        current_password: "",
-        new_password: "",
-        confirm_password: "",
-      });
-    }
-  }, [user]);
 
   // Password strength calculation
   useEffect(() => {

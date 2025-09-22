@@ -1,0 +1,5 @@
+Type,"Reference number",Check-in,Checkout,"Guest name","Reservation status",Currency,"Payment status",Amount,Commission,"Payment charge",,Net,"Payout date","Payout ID"
+Reservation,4975362273,"24 Sept 2024","14 Oct 2024","Rama Bshr",ok,AED,by_booking,4909.94,-701.42,-122.75,,4085.77,"17 Oct 2024",fVTG4zysEMXzM5PS
+Reservation,4387611696,"20 Oct 2024","23 Oct 2024","Sanja Banjanac",ok,AED,by_booking,844.55,-120.65,-21.11,,702.79,"24 Oct 2024",HgzbFHeQSj9lo8Tw
+Reservation,4579040024,"17 Oct 2024","20 Oct 2024","Goga Ogbaidze",ok,AED,by_booking,891.48,-127.35,-22.29,,741.84,"24 Oct 2024",HgzbFHeQSj9lo8Tw
+Reservation,4611691870,"23 Oct 2024","29 Oct 2024","ABU ABIED NIDAL",ok,AED,by_booking,1689.09,-241.30,-42.23,,1405.56,"31 Oct 2024",vLQkb2WpvwMqm8Yh

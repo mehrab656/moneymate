@@ -2,10 +2,12 @@ import { Backdrop, Grid } from "@mui/material";
 import React from "react";
 import { Circles } from  'react-loader-spinner'
 const MainLoader = ({loaderVisible}) => {
+
+  const loading = loaderVisible === undefined?false:loaderVisible;
   return (
     <Backdrop
       sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-      open={loaderVisible}
+      open={loading}
     >
       <Circles
         height="80"
@@ -14,7 +16,7 @@ const MainLoader = ({loaderVisible}) => {
         ariaLabel="circles-loading"
         wrapperStyle={{}}
         wrapperClass=""
-        visible={loaderVisible}
+        visible={loading}
         />
     </Backdrop>
   );

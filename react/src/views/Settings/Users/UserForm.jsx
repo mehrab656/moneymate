@@ -1,12 +1,11 @@
-import {Link, useNavigate, useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import React, {useContext, useEffect, useState} from "react";
 import axiosClient from "../../../axios-client.js";
 import {useStateContext} from "../../../contexts/ContextProvider.jsx";
 import WizCard from "../../../components/WizCard.jsx";
 import {SettingsContext} from "../../../contexts/SettingsContext.jsx";
-import Badge from "react-bootstrap/Badge";
 import MainLoader from "../../../components/loader/MainLoader.jsx";
-import {Col, Nav, Form, Card, Row,Button,Tab} from "react-bootstrap";
+import {Col, Nav, Card, Row,Tab} from "react-bootstrap";
 import BasicInfo from "./ProfileTabs/BasicInfo.jsx";
 import ContactInfo from "./ProfileTabs/ContactInfo.jsx";
 import EmploymentInfo from "./ProfileTabs/EmploymentInfo.jsx";
@@ -31,17 +30,8 @@ export default function UserForm() {
         password: "",
         password_confirmation: ""
     });
-    const [errors, setErrors] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [subscriptions, setSubscriptions] = useState([]);
-    const {setNotification} = useStateContext();
     const [activeTab, setActiveTab] = useState('basic')
-
-    const {applicationSettings, userRole} = useContext(SettingsContext);
-    const {
-        default_currency,
-        registration_type,
-    } = applicationSettings;
 
     if (id) {
         useEffect(() => {
@@ -60,50 +50,12 @@ export default function UserForm() {
     }
 
 
-    const onSubmit = (ev) => {
-        ev.preventDefault();
-        setLoading(true);
-        if (user.id) {
-            axiosClient
-                .put(`/users/${user.id}`, user)
-                .then(() => {
-                    setNotification("User was successfully updated");
-                    if (userRole === 'admin'){
-                        navigate("/users");
-                    }
-                    setLoading(false);
-                })
-                .catch((err) => {
-                    const response = err.response;
-                    if (response && response.status === 422) {
-                        setErrors(response.data.errors);
-                    }
-                    setLoading(false);
-                });
-        } else {
-            axiosClient
-                .post("/users", user)
-                .then(() => {
-                    setNotification("User was successfully created");
-                    navigate("/users");
-                    setLoading(false);
-                })
-                .catch((err) => {
-                    const response = err.response;
-                    if (response && response.status === 422) {
-                        setErrors(response.data.errors);
-                    }
-                    setLoading(false);
-                });
-        }
-    };
-
     const setCurrentTab = (eventKey)=>{
         setActiveTab(eventKey)
     }
     const renderTabContent = (tab)=>{
         if (tab==='basic'){
-            return <BasicInfo user={user}/>;
+            return <BasicInfo />;
         }
         else if(tab==='contacts'){
             return <ContactInfo user={user} />;
@@ -120,8 +72,6 @@ export default function UserForm() {
     return (
         <>
           <MainLoader loaderVisible={loading} />
-            {user.id && <h1 className="title-text">Update User: {user.username}</h1>}
-            {!user.id && <h1 className="title-text">New User</h1>}
             <WizCard className="animated fadeInDown wiz-card-mh">
                 {loading && <div className="text-center">Loading...</div>}
                 <Row>

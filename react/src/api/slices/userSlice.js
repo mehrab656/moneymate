@@ -16,6 +16,15 @@ export const userSlice = createApi({
       },
       providesTags: ["users"],
     }),
+    getSingleUserData: builder.query({
+      query: ({ id }) => {
+        return {
+          url: `/get-single-user/${id}`,
+          method: "GET",
+        };
+      },
+      providesTags: ["users"],
+    }),
     getInvestorData: builder.query({
       query: ({ currentPage, pageSize, query }) => {
         return {

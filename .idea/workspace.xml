@@ -5,37 +5,75 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb82f29d-a946-4d7c-af4f-355ea30ae3ce" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/HospitableController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/app/Models/Hospitable.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/database/migrations/2025_09_22_164034_create_hospitables_table.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/avatars/Mehrab_Hossain_avatar_1758540592.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/avatars/Mehrab_Hossain_avatar_1758540926.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/avatars/Mehrab_Hossain_avatar_1758541090.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/avatars/Mehrab_Hossain_avatar_1758541122.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758531842.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758532381.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534189.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534239.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534279.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534292.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534366.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534393.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534404.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534532.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534544.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534564.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534693.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534743.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534891.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534957.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758535112.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758535683.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758535718.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758535732.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758481732.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758531842.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758532197.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758532381.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534143.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534159.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534181.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534189.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534239.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534279.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534292.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534366.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534393.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534404.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534532.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534544.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534564.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534693.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534743.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534891.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534957.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758535112.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758535683.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758535718.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758535732.jpeg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/UserController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/UserController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Resources/UserResource.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Resources/UserResource.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backendApi/app/Models/User.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Models/User.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/Mehrab Hossain_profile_picture_1728943069.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/Mehrab Hossain_profile_picture_1728943173.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/Mehrab Hossain_profile_picture_1728943192.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/Sunita Pokhrel_profile_picture_1731676411.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/Sunita Pokhrel_profile_picture_1731676423.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/Sunita Pokhrel_profile_picture_1731676484.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/Sunita Pokhrel_profile_picture_1731676520.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/foo2_profile_picture_1732874499.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/foo_bar_profile_picture_1732829951.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/foo_bar_profile_picture_1732830040.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/foo_bar_profile_picture_1732830356.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/foo_bar_profile_picture_1732831797.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/foo_bar_profile_picture_1732831885.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/foo_bar_profile_picture_1732831904.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/foo_bar_profile_picture_1732831924.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/sunita_profile_picture_1731682292.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/sunita_profile_picture_1731682321.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/sunita_profile_picture_1731682370.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/sunita_profile_picture_1731682445.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/sunitapokhrel_profile_picture_1731678455.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/undefined_profile_picture_1731678858.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/undefined_profile_picture_1731679083.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/undefined_profile_picture_1731679111.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/undefined_profile_picture_1731679151.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/public/avatars/undefined_profile_picture_1731679496.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/lang/en/messages.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/lang/en/messages.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/react/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/react/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/Layout/DefaultLayout/Header.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/Layout/DefaultLayout/Header.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/api/slices/userSlice.js" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/api/slices/userSlice.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/components/loader/MainLoader.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/components/loader/MainLoader.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/BasicInfo.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/BasicInfo.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/ContactInfo.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/ContactInfo.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/EmploymentInfo.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/EmploymentInfo.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/SecurityInfo.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/SecurityInfo.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/views/Settings/Users/UserForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Settings/Users/UserForm.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/react/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

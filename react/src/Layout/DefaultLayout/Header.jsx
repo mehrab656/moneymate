@@ -137,34 +137,34 @@ const Header = ({
         </Col>
         <Col xs="auto" className="d-flex align-items-center ms-auto">
          <small> {user.username}</small>
-          <IconButton
-              aria-controls="user-menu"
-              aria-haspopup="true"
-              onClick={handleClick}
-              className="user-dropdown ms-3"
-              sx={{mt: -1}}
-          >
-            <Avatar sx={{width: 35, height: 35}} alt={user?.username ?? "User"} src={user?.avatars}/>
-          </IconButton>
-          <Menu
-              id="user-menu"
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "right",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-          >
-            <MenuItem component={Link} to={`/users/${user.slug}`} onClick={handleClose}>
-              Profile
-            </MenuItem>
-            <MenuItem
-                component={Link}
+            <IconButton
+                aria-controls="user-menu"
+                aria-haspopup="true"
+                onClick={handleClick}
+                className="user-dropdown ms-3"
+                sx={{mt: -1}}
+            >
+                <Avatar sx={{width: 35, height: 35}} alt={user?.username ?? "User"} src={user?.avatars}/>
+            </IconButton>
+            <Menu
+                id="user-menu"
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+                anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "right",
+                }}
+                transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                }}
+            >
+                <MenuItem component={Link} to={`/users/${user.slug}`} onClick={handleClose}>
+                    Profile
+                </MenuItem>
+                <MenuItem
+                    component={Link}
                 to="/settings"
                 onClick={handleClose}
             >

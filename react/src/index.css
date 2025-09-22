@@ -1272,3 +1272,7 @@ taskList {
 .income-description-tooltip{
     background-color: rgb(0, 247, 255);
 }
+.image-preview{
+    padding: 10px;
+    border: 1px solid var(--fundamental-color);
+}
