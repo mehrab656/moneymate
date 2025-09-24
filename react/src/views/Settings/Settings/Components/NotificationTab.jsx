@@ -3,11 +3,15 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import React from "react";
+import {Button} from "@mui/material";
 
 export default function ProfileTab({ settings, handleFunc, submit }) {
+
+
   return (
     <>
       <Container>
+
         <Form>
           <Row>
             <Col>
@@ -71,6 +75,8 @@ export default function ProfileTab({ settings, handleFunc, submit }) {
             </Col>
           </Row>
         </Form>
+
+
       </Container>
     </>
   );

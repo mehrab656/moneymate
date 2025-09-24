@@ -100,4 +100,12 @@ class Company extends Model {
 	public function users() {
 		return $this->belongsToMany(User::class);
 	}
+    public function sectors()
+    {
+        return $this->hasMany(SectorModel::class);
+    }
+    public function payments()
+    {
+        return $this->hasManyThrough(PaymentModel::class, SectorModel::class,'company_id','sector_id','id','id');
+    }
 }

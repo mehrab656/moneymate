@@ -5,75 +5,226 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb82f29d-a946-4d7c-af4f-355ea30ae3ce" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/HospitableController.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/app/Models/Hospitable.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/database/migrations/2025_09_22_164034_create_hospitables_table.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/avatars/Mehrab_Hossain_avatar_1758540592.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/avatars/Mehrab_Hossain_avatar_1758540926.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/avatars/Mehrab_Hossain_avatar_1758541090.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/avatars/Mehrab_Hossain_avatar_1758541122.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758531842.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758532381.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534189.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534239.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534279.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534292.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534366.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534393.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534404.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534532.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534544.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534564.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534693.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534743.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534891.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758534957.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758535112.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758535683.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758535718.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/ids/Mehrab_Hossain_Emirate_Id_1758535732.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758481732.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758531842.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758532197.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758532381.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534143.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534159.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534181.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534189.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534239.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534279.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534292.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534366.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534393.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534404.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534532.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534544.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534564.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534693.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534743.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534891.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758534957.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758535112.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758535683.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758535718.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backendApi/public/passports/Mehrab_Hossain_passport_1758535732.jpeg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/UserController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/UserController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Resources/UserResource.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Resources/UserResource.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Models/User.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Models/User.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/.env" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/NotificationController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/NotificationController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/HospitableController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/HospitableController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Models/Company.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Models/Company.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Models/PaymentModel.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Models/PaymentModel.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Models/SectorModel.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Models/SectorModel.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/bootstrap/cache/config.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/config/services.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/config/services.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backendApi/lang/en/messages.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/lang/en/messages.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/react/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/react/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/Layout/DefaultLayout/Header.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/Layout/DefaultLayout/Header.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/api/slices/userSlice.js" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/api/slices/userSlice.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/components/loader/MainLoader.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/components/loader/MainLoader.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/BasicInfo.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/BasicInfo.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/ContactInfo.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/ContactInfo.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/EmploymentInfo.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/EmploymentInfo.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/SecurityInfo.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs/SecurityInfo.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Settings/Users/UserForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Settings/Users/UserForm.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/react/yarn.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/routes/api.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/52/ac/52acebe9de48b9434598fa65d2ec8d0e111e90b0" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/52/ac/52acebe9de48b9434598fa65d2ec8d0e111e90b0" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/70/d5/70d5789fb8fa04f157e2f175d8e9158bc3d2b5c6" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/70/d5/70d5789fb8fa04f157e2f175d8e9158bc3d2b5c6" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/c0/71/c071422490d526a8aada046adf3a9c9fa0593468" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/c0/71/c071422490d526a8aada046adf3a9c9fa0593468" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/ec/c4/ecc49f49f4da6b940dcde13f0571e79c299871e6" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/ec/c4/ecc49f49f4da6b940dcde13f0571e79c299871e6" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/0qIjSttuNC2cpzqIiKthXRejkc1Goa6QGeXNXEKg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/0vRqX8vGobQiRZk9nNk6W1VegpjXIeIEWQxOZRpG" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/12xvbBs4Qp3SOlc8IJyX0rk10uhqOzA1nKcRsVFc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/1T0UvFZx1IjRX9WOk9jX0MHBPNqpyogGchd9tkPy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/1c2PEAz59wsqByD51aKwmvtV50b8wav3uMOcDiVF" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/1oW9DlhMcW4hJv8S4JKYT720l2Sb4p8YN1Sn4IbK" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/26skM6Na9mVnUBf7g51mRPYubyGBr25xPBn6WYAj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/2DSExrEwRX7HE9V7g0SLtU3kt1Qp6a3V3xl7X7VA" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/2SI5RkwrFqJstnL7vmxmoGhG7hDUPd655cm3cin3" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/2cVSk5hSgVbbw0woTqz5C2cmQHAmCCAE8yEVgtc1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/2yiCJq0OxCAKbfvgG2adQzACM8tw4AANN3iidnxN" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/3L7dj5sgkLyTNYGkcn2Wib8NNyphsg2hljY55ZFF" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/3h7p3lMB5If4JdkUc1aBGlSPZV1Dhd8UtN8xXg7Y" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/3s7U9al5wzaYWfBt6xiXmhCLai0m8tFMldsn72Ou" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/43oRxJa2wDDMdr6zaF61psEwbRuOwmaaudKENGw4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/4DAVjdlOIKpfPsHgns6UwBZvJYMfGdPpNZUT8Tzm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/4GzCqH0W0bkoZsMBcm5qSAmWHGlyNCy9iYwaoHxf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/4LtiwKTZaJfWB1rE7ccIjZEJWT4cSAEl4SgccFD6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/5D9TtZiJUkskslKZ1IehvU5qVD5BSabQ4i5bboLT" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/5E7SRUO8M0IOkgY8kcJVStQPydOjmQqYBHB1WcnD" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/5menjdAax7Y2llvpQXmTTkFic615jJBJpeeoBcUp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/5rVg5zqNFRK85QWuCWwlimbkqAaCfTEtOYUlXpqN" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/5xZOwrWgM8sGo0E2D2G7GgwEA39rf52CozMmvorJ" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/6xM5UaiPfp7Cq3q3FK0CFwNbr2T23Q3XfS70B8PK" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/74dJBaFpEpZ0T203oOVGbVZUdUCpvafrkaWy4Eia" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/76PuN09KN8zQ8c2si3zzVmJ2khNHCuPk3bxq0NfQ" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/7NkPmSn363z16QcsXmVgrctckgZjqEQMrHli4EMj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/7XEOpHH0pYA0WBxjyzZeF66ox8W4Dvg7BhcgYnHG" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/7XZa7coKZTULhuAsDrxjuY5Pj2Yk5v7TTVRzgOdW" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/7b0zW8ycqiAMrnHmTt54DLcbxevFx02f4p5LW2XY" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/7dgXnbstJoSAFAxEbPxaZfXhp9U8x6kECt2jgKTm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/80ENcocsOYd3S9GvCYwRnOrhPycpqG37dR6t5DWg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/87tLfGv7zqjKqhYVNNpATm3lk2V6dtduWi7XJUiu" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/8QSbvUem6HMzhNscrNG3ZCczp2Hxq9lQMV4BKiF5" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/8e3u4sKru5f7ZA2PrtI9QYUNODGe93nsR1IPHeP5" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/8fyoDrsxkRT9WflrU0CkGy2FM8OzEYI0MGXLa297" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/8ug2UcgSA3PfsFHuht2Av3yFMO0OtXtG1Q05JKXc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/8wFzrNPdXI1aBS6Sm6kC2lZt23P9qNViLW3Y6L2b" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/A6muFeyvVuvblUdDtwytuDqGQlwcl62ENe1lSkLQ" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/AUW99CXGBGnUwlCjEGHJ6FdvqANu0yj1CsNOT1yg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/Aa579UosOOkvd2ZHYHoY4DkBT7IegiSnBajyA9fM" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/AiymaUC92qXHOdRM4rK3XMpAss9dhIAhvY0t9PQ8" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/AvsRt5t2RDO7YEQQKJFkFoDoElW5cUjNP7trTlhX" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/BLZpS1PEqQxgcT5IDvu8uBa35vMt7GPUqTfG8rNm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/BRY2vTHlM3hpCACq4xQLktUKufzweFGDyH72zCyN" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/Bdi2iOjvmy02o62gRpR5NEbUDTL9b8sxjL6OXrsN" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/BtRqgXxLz8L6iabTu7ROligxMfpgysDpPpQQ1seY" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/CQrdx8sjW5c0E55IZD7LRVPeUg0ZNODRgm9UkUOF" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/CdZE3HwxhP0lJoVuDM2J2Sb1MEO3b9PwKbuM85nG" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/DDALoIlE1vrMgWTQr5CagA8QbZHLuVK15QHpzSFU" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/DFh3OHvlz1ixlG2GbBcJ6TColCHUIrSEeleSgeJO" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/DV2dE4roiOay2XVotSBnjDKH5PJ87glVjkXi7XXw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/DjOHtd2NDf7s8nTvro7UceTlfdhr945O7Avu2ObP" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/DoAJN9AK2ARqHCVxmnQdLG4VnfX3jiYmlqgxIhTg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/E5h2grRIs8A2ybJZ5OLtVTSsSJQxhhcVXz0ytciC" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/E7HRCLioL6gbO7SoN0c8wPsREGbyBNoqZtuQuIPQ" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/F5gyi5jDkwGj1Y5IuHO4QLLoelYNjj0a1lprlH4M" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/FAHnoQdJtXhDe1xVgbjJzLnxhoHO7yyu9mEBHsW8" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/FSm54UeFNeHO5jsAWxIOkPZGMOLWpcjFl6YztRud" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/FTFdduKI4YTnaCf3Ukw9OJHyLEyv1x3k6vHURdoK" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/FbO5WrVnb9cYGK0T5sTPAVGHgPXD37nSA5fkC9pC" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/GNlJQ2EHbiZxIDhrocZFQjmIgfLrpqcFc6FIm7tv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/GRJHVS0lvrIoncdZsW591I0Wfl7H7CRoSSZSYmMI" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/Gqpws3xeJrIpvWTc1YUn0cJ6Xx5aV5ck9q1E5WRm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/H3gqhcEchMv3cHEg6V1NAuX27E1jhiF3f4seJvDQ" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/HE7g16QuT1nNF2pWf8J3oIfAPK4xBLhdtLxh1Qx0" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/HbYj45kWybeQ0Y6UaEvI6D2F2C0ckueF6h39WsyK" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/J17hJf7gGvZYUUP2xD9voUbqtGIGXFOQHaTNWNiZ" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/JArhbBXTnfgIQM2BAyqiQXYEc3WZktyPxjp4xeyx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/JFWB7kEKVaxpP6hoNcdNRYlg6Oa7DGIwnABwSsUo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/JptQ3QReL3py5hc4oyjvVlMJMeQDuC0dVUOZMlH0" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/KVW7gL94ttZuWcNaQ0r6ssFpf3AJRP34XmNkLEKa" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/KYENJVTXHPT0H9CUVIsmm6dbKtFiASqdSy4m0MHu" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/KcJhmfzaGQ1I1nF3kQDcrqnuQF58kefM1yqK2rOB" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/L4zLmjxf2nA00ZOTapblJPiIZ9uMcPnsuT46hJqB" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/LLhmdkvVT3ISAH3hM6jjOmrxyHFFocW1QtABRhCR" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/LQLhU9jdhKQxuJ5iUvNL7YyOGYAgzGXWA3KJS02M" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/LZToxxrXe2yl1XYXdRp0SsotlTMJARpHBx6GRFT4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/M0qoJFUrbS1aw2rlQwxQnRVnuXkT9qHVtiBsKwMl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/MQX3tcZzZ9vzm10LyiWBaTrDenmU7Hn6rQlkIXFF" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/NhVtAoWoRjrxiS5uuZGOpLnlOVaHO0hiBDGELoGU" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/OLxkbxvPRsyknlibGKflxeCMwUOpXsjVEa0Sr6iM" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/ON4pRPOdA1ze1HwZHAXXQ9ENNtv3qdBTWkcdMWZX" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/OSWYCGIywlAZLxmNkIHJYNSsBGLVsrLJYh1116UF" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/Or9u16dNjL7YS7PrEkTzygQYWyCwG18kk3RsOgkG" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/OyW8xFosO2I7ihdTA8SSdtA4nr7F2OWbnMa4HDUQ" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/PCzN1fMkbP2A28NxfbZ6L2MaS0k0kjxeHcErjhEZ" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/PiH0rIf1aaRUwj9tGHdbuhB2h5pFIpoSUkaY2NdV" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/PkmlDvqL186NnLJuuti43wORPT3sbVh00YTn2ere" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/QAX58CphNa1shGIvSreaR6Um6IFQvfREz0yW7bJl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/QC2nZQfv8bf0VKdOw6fFwzwm9OUXosNEeayqqUNH" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/QIsg1kSYINVcewtdOqEcltpmuILgeT7BYVagzoeB" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/QSaGmrDXtPj9DamktiaBzDo6HrdQIpnL9rGVjaHE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/RJK1Lh4XYbeuHoOn0vOlShGn8Je0PdUWuG69lREN" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/RU2LIBfMqVEoKcFYlpBmq4BvaxP4eKv3ZwD5lt98" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/RsqdNFeXnWMXgRQn05JaKAeJLfTx9I6hg2Q3pRC9" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/S2h5l0yeV7jbdyPDcE3LFCCX8CnOhuveKg5Rtx3n" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/SiT7TrK6HuBTGVLOval3i3d8eqL4wwNF12Xf8RYO" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/T76nJTdkYzEtMv0XV0UIsxZBWuMqkapiydpWGymH" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/TBFDDkTVW5NItKjbaiFl67S2f9HoBZfL8xswHRFm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/TvcKl5dF1kv021QsNUUCoTi6afqvDV0AUJyyedxI" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/U2fMfAbUwovcmZjQxDQGmHE9CAlmY3ERKMdH9hTH" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/UKJ7JJc0QMXYVwJ8q0Zx41L4iDltdMxXXi6Bl0AN" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/Ul0I49tdnwTBS7ltuAl0H4Ylrz2g9yUk6ZcJQS9z" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/Upbt8aj4zusFKicQJBwkQm5KEE0rcM4YNhT8MUf1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/VI89ufH5SXyVqt40ELBGt5Bn83z79ulFecDTKazi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/VXlfh1zE3Gw1fR1xWQIbARG5KTSu0veGqM5ESrHy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/Vdbujt9OPvWcQoN4Z0Upqf5jzoDuDoWNHEORvJid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/VlxBkgoS8OnI6I7uM0zmdpxqAPpX3covylt4p0XS" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/VyWUrTcMfVhdvp11aItq89S9aZ32adxkFtwL4GBn" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/W0kLnS0iKusO8KmqFXqjHeDjbgGFPtcNv08U2Spz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/W6zxpzme4bbkEZwG56CkDudlYXKRZb7MexBNTqmM" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/WPLAZjoave7QJB64g3U0u7SsqU5UEiNQfxTEAGHe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/WS0fBkSW9czz3KghtlIeTlNWUuIKmlH9tMPv5Pxq" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/WVdXfJrtJO1KGd1zJF6eRmZaWkWFIWc9nDKeiQlu" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/Wkfu8Z73K06S1DGygy2U0wTc2RpM38a4mZGRrP9N" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/WkqCccijzPIdJu5C7Hv9KVij8zCKvF5nDJ0vGhRj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/XDV8FKVvURop7qH8p3cgqGjS3yAOnROwYNR6pTKq" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/Xh96bDYcCHWG0dv51dXYbvrJUnsvB0DlmMF1Ub9Y" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/XjLi9hpe0hq7L268wjAmZqDmTVO0uOUHUMvc5qON" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/Xq5XbdWaUuFyUBR67L04p9sDYwZCbDPSkUZWc4j8" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/Y01VfOJUPAsIkv7fk6QOsDeRGLxh3TFgrbyjR9gY" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/YsLE7uqgZQnnvqRctXtaQPUh8gEvli8j9O6tIQkK" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/YwHkMtYheCSu5lVw3MtyLDRj9ovQEbuDW99T2LF5" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/ZHmp8DY2BIHXhlRuXIxkh2DrpDOZjSTWpmrNv3Y0" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/ZNRArUpjsgqQT2cr50xp18j8OivkTmMWwAQZBw0u" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/Zr2Sr8KhE5oLBsqMHRlAxecBSY5W208Uw1bj0K7s" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/Zx9Qi4ImEFncLLl5F45whimoQZvYHmGyl7HkxLFm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/a8K65h4azfpWZJsdTRNRbx1jQRif1TVoHaTgSFXx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/aD2Okhx3mag2Q3ciBHHA2lhb1au9DdmSYX9PuWfQ" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/aHdAyWyqOW4DsSSYJWfWyStTblAFELUDhN2y4A7B" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/abK7WgH7LfU3iw1qUWWadOc4aUM42MiDiHYQ4aR0" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/adecIZqG3ImopHIHqixMocoqajKELyfC5Z84DiVh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/bZeRMAzmJWfiaEYtkwCZFHBEMgDM1yGtlxdC73ps" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/cN68BDm9g8Womm8kK0ZoyyKReCTA2rCZFEL9t7vc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/cy8Qqg08F3BPtrqLSfF1D1PeP6lwPAvmWu6MpcfJ" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/dAzp5eZQPrRIdMKCxG53VBdXEEQZGVjmjrsG1yFe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/dJKVyovjGjpumdPmxz3tiHwKULqhCRewb4fb5Yhr" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/dS4jiRYAmRH5MvW9mQJG5TYAcFRfp8pMW1XBE503" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/dXQmPXXsZQzAO5TEnuhGIskznG2ofgkzJJ1C8CAi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/dgTWnLFeOofAYLmKpBaS7dQ6kNgzB0jyyML8m363" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/dtUatIrHNcJqobntZEroD1O5peIez9r9XJ8oQlVa" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/f7PylfzrNMZy9d9KpeDYUXIaMUT2KkT39sKp3Mfc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/fZvV6DMXuCH4kCitTK5amoqd5cV0hRvoUXArFj5C" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/g63dnqSw7Mgp5T8S3oguQ5SA3bCo6JzU70y6xrxG" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/gKJ2LleeWgoBJv1xOUclTJfTJSMnC3BOmGoci6VR" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/gMtxHh3x9gQKrKoaevc2kdrbqm5UVdPYWzzYw9VX" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/hTKLVNen1KfSYp9VWTbh8QtgYbeeTAdyn9tMmnMk" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/ha6gRj5QOADOwxHkItJW5uRaERxxGMjQAuMOmSma" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/iC9RPEFJ6jTmHp6HGHE3Zgt9jsCWpphCc9y1o0AG" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/ijjuYi5pDMWjcDiekCFpOGZtnP8ALRHRywNcgXbb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/jPdCHqlsyqs48DCY8RIXWIr9tYpYEhZvXCPPUcUW" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/k0SI7XBv4M3VGFj5T86zAbDj9LighJaxO6f3WkYF" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/kM4fXPMVqIEcqf7AHLtobS23aLUNS1pLsy4Btl4a" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/kV44MgsiHmRMJ9G1W9r9u4CW02J7C42I8YuuofS8" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/ls6qNs7L5jzzRcLg6M3DqVGqKui4oNPhZ8Gtvw3O" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/n2MTQU3wwBLhFtXloXK1As3MOByIdyEoOW4nSp2c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/n5TQAfXPiAOCv2L7bqYPsLWU6vdKQTdJFtFAEWMR" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/nZ4ULuMKRjTpMDBcFMknffwN7UzF0woiz1BdJeJ7" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/nuYz6eK9ciGhZMVIL8umZ1VRwmi82cEIIjHnuiiO" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/o4a1l2YyV03WUyPEzHqY7d1RyDzUrK47SO64VsQK" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/pJRhdEg1bWyMiA4Mk9BbWH79fuOGiWHMb9xsq08Q" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/pp7nRgs8hjVYtvBcIDkkkaCUtN3JCmphNcSIDxVz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/pr57KSkaCPLAYyhjfL8alnKoABDGbwkvcGIRnpsM" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/qVjL3WB3Tf38uRAy0tqWX05Olqb2kKjlY64L4jRo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/qmZV9qHEFX7a6bKjIdgk0bT9GfGdogxPOR8uNVVA" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/qxVk7AUEuzhDF0DTCJvFG4mD1gvnEwpxeMhfYYaA" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/r49y4SiDwsGoBrDElNR1yOc5jCrufaprWFJ3YCQD" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/rLE790ju4Vp2pR2V12Y4ra0wbs0vduNzsoCSRYW4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/rYjbzqRBfM4PIpl5tpe66vgZCQWFSpx1hGCOxdxX" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/rf45ydEAkFqRK1BUMoYt7pWUcwpCcgQP4MNRrPhb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/rikz8ukdE7bt19drv9FwF44z9BdJTxxQDLESKKui" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/rk39mgrkqfRQyIMWMsiAOPsRfKFwYdGg4laZ5Maq" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/s6hsiPi5pJ5KEzfZUkqP6AMQWnxlrqpr03ryVRWu" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/s7zGNeYe8myP5OZckvzLHGkHYvQ1bVmAcKgvDY1K" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/sfeY4MefQp2lUczkJi1VnMrlfBBiaou2ArsdhqNU" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/t3D6TBIwxhviSzKHAhrpGxENfGgSkmljnXvN8XhB" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/tnJ95BEulFYflVJFwol50WeEvfOVySvrNopAWJCf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/tnYDUlX6dVELQj6SpZaGifI8JOuQn6GearoESUxo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/uwOjVPGlwK3Jl0sGWfMOjq5mgR9yoxle1C3FN9QH" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/vD5ZOQqtuDmb8l1C82RB3FdAmPhTXFfcOfki1kFR" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/vUZPx1baBWHqsVqfJ9pYrUVNd9C4ZV5NPfSRy3g3" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/vq4y3r7168b3ro3KC1Z2xEa2kljQb3duupuiOY3t" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/vuQ7KqTVkjXDbjCQu4D0ARp5OGSG6KXbi2UiyNWz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/wUmhNws8d9l6LaBJ0SV3n3lEm9FYYG4f5GFdeCt0" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/wtsr74rl1oQ43RaXapvmEkU67fkr4vS13u0avIsE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/x3fuSPaGDcoiPIkSBB6Xe5fkwIZSvlA6np6ZGcPO" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/xUtMHOj3FpVvYaWgkyf4Klx3vTUvcfD6L1S7pdP6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/xXKx62CTPeh0UOLRChApuPK286IjpRo1ZQReNlme" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/xXdC2CBV8MfTnCwZu0nPiKlhKJnlBUAwVW7kPRKz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/xgl8r4h2KoQxOIMlJnxhFQz00vmCbwmWbxu7Fp8i" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/xqucAPiNm4aiFC1RzWW36t4cOg5cVopmOQ8tziAw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/xwIgTWacepCz8fIlQDhn2pcZ1G7Cq0t7GNFxezmQ" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/yIgVNz0koWzBgKcEVYjdEJxA1WhJtvPFvLVC94tr" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/ySpleBlmbtZmwiMs6TX1QcXSvHQPgfsi8NeePf6e" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/zFWP6ohS4hpFzesfSt6irramvhIBYJ4VkwIF89rr" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/zUkCY3wx2fnyYgOJ75S9GcVbTEXHJQa4G1RDpZ63" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/ziczKkiIMIFRwEJfXAdcAmTVAqmpoCb22XOQB8cG" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/zn4v5RRM89U3SSaOv3ttkES1BhP5hVJ7LiQ16gBz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/sessions/zuEByioUQ3yFrV5bgRSMjdgkB7xXMyXv24mHQ965" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/react/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/App.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Settings/Settings/Components/NotificationTab.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Settings/Settings/Components/NotificationTab.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Settings/Settings/Components/ProfileTab.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Settings/Settings/Components/ProfileTab.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

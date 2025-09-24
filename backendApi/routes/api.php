@@ -29,6 +29,7 @@ use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WalletController;
+use App\Http\Controllers\HospitableController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -299,8 +300,7 @@ Route::get('migrate', function () {
     dd('New Files has been Migrated');
 });
 
-
-
+Route::post('/hospitable/webhook', [HospitableController::class, 'handleWebhook']);
 
 
 

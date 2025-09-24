@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -23,41 +24,37 @@ class NotificationController extends Controller {
 			->whereNull( ['sectors.deleted_at','payments.deleted_at'] )
 			->get();
 
+        $company = Company::find(Auth::user()->primary_company);
+        $payments = $company->payments()->whereBetween( 'date', [ $minRange, $maxRange ] )->get();
+
+
 		if ( $payments ) {
 			$list = $this->makeList( $payments );
 
             $client = new \GuzzleHttp\Client();
-            $appID = env('ONESIGNAL_APP_ID');
-            $apiKey = env('ONESIGNAL_API_KEY');
+            $appID = config('services.onesignal.app_id');
+            $appKey = config('services.onesignal.api_key');
 
+            $content = __('messages.payment_reminder');
 
-            $response = $client->request('POST', 'https://api.onesignal.com/notifications?c=push', [
-                'body' => '{"app_id":"905b9270-0212-408e-829f-c6d15374291a","contents":{"en":"Hi mehrab Hossain."},"included_segments":["Active Subscriptions"]}',
-                'headers' => [
-                    'Authorization' => 'os_v2_app_sbnze4accjai5au7y3ivg5bjdkgvrpabgzsu75nlxpodyd7wna76phqp3d76q42ucu2wdtmhe5tb3zy3wfkggpqyoi6432lkhbb3yxq',
-                    'accept' => 'application/json',
-                    'content-type' => 'application/json',
-                ],
-            ]);
-            dd($response);
-
-
-
-//            $response =  OneSignal::sendNotificationToAll(
-//				$list,
-//				'http://localhost:3000/sectors',
-//				null,
-//				null,
-//				null,
-//				"Hey Heads Up! Payments are coming soon",
-//				"Subtitles",
-//			);
-//            dd($response);
+            $body = [
+                "app_id"=>$appID,
+//                "template_id"=>"1fb498d0-1441-4c4c-9c70-5cf85cb48e52",
+                "name"=>"Payment Reminder",
+                "headings"=>["en"=>"Payments Reminder"],
+                "contents"=>["en"=>$content],
+                "included_segments"=>["Active Subscriptions"],
+                "buttons"=>[
+                    ["id"=>'view',
+                    "text"=>'View More',
+                    "url"=>'https://documentation.onesignal.com/reference/push-notification',]
+                ]
+            ];
 
             $response = $client->request('POST', 'https://api.onesignal.com/notifications?c=push', [
-                'body' => '{"app_id":"22f95598-910b-441b-be03-36ec61d42475","contents":{"en":"Your message body here."},"included_segments":["Test Users"]}',
+                'body' => json_encode($body),
                 'headers' => [
-                    'Authorization' => 'os_v2_app_el4vlgerbncbxpqdg3wgdvbeoweqderbhrmeb3uubn2qwf2l6fvwxenz6olvg35e4wqn75zj2flpipud42l3tyvbqjfdwpupxkqtbva',
+                    'Authorization' => $appKey,
                     'accept' => 'application/json',
                     'content-type' => 'application/json',
                 ],

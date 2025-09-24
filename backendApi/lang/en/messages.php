@@ -16,7 +16,7 @@ return [
     'basic_data_update' => 'Basic Information was updated for :name',
     'contact_data_update' => 'Contact Information was updated for :name',
     'employee_data_update' => 'Employee Information was updated for :name',
-    '' => '',
+    'payment_reminder' => 'You have some upcoming payments to settle.',
     '' => '',
     '' => '',
     '' => '',

@@ -26,5 +26,8 @@ class SectorModel extends Model
     public function account():HasOne{
         return $this->hasOne(BankAccount::class,'id','payment_account_id');
     }
-
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 }
