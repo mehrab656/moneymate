@@ -13,4 +13,9 @@ class PaymentModel extends Model
 	protected $table = 'payments';
 	protected $primaryKey = 'id';
 	protected $guarded = [];
+
+    public function sector()
+    {
+        return $this->belongsTo(SectorModel::class);
+    }
 }

@@ -4,15 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\Hospitable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class HospitableController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function handleWebhook( Request $request )
     {
-        //
+        Log::info('Hospitable Webhook:', $request->all());
+        $data = $request->all();
+
+
+
+        return response()->json(['status' => 'success','data'=>$data], 200);
+
     }
 
     /**

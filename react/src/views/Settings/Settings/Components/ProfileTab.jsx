@@ -3,16 +3,36 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import React from "react";
+import {Button} from "@mui/material";
+import axiosClient from "../../../../axios-client.js";
 
 export default function ProfileTab({ settings, handleFunc, submit }) {
+  const testNotification = ()=>{
+
+
+    axiosClient
+        .get("/upcoming-payments")
+        .then(({ data }) => {
+          console.log(data)
+        })
+        .catch(() => {
+          setLoading(false);
+        });
+
+
+
+  }
   return (
     <>
       <Container>
+        <Button onClick={testNotification} className="custom-btn">
+          TEST
+        </Button>
         <Form>
           <Row>
             <Col>
               <Form.Group className="mb-3" controlId="company.name">
-                <Form.Label>{"Company Name"}</Form.Label>
+                <Form.Label>{"Company Nae"}</Form.Label>
                 <Form.Control
                   type="text"
                   placeholder="abc company"
