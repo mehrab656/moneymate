@@ -8,6 +8,7 @@ import "../public/custom.css";
 
 import {ContextProvider} from "./contexts/ContextProvider.jsx";
 import {SettingsProvider} from "./contexts/SettingsContext.jsx";
+import {SidebarProvider} from "./contexts/SidebarContext.jsx";
 import 'react-tooltip/dist/react-tooltip.css';
 
 import { Provider } from "react-redux";
@@ -20,7 +21,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
         <ContextProvider>
             <SettingsProvider>
-              <AppRouter />
+                <SidebarProvider>
+                    <AppRouter />
+                </SidebarProvider>
             </SettingsProvider>
         </ContextProvider>
     </React.StrictMode>,

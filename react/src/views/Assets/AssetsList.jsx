@@ -11,9 +11,13 @@ import {
   useDeleteAssetMutation,
   useGetAssetDataQuery,
 } from "../../api/slices/assetSlice.js";
-import AssetForm from "./AssetForm.jsx";
-import AssetViewModal from "./AssetViewModal.jsx";
 import AssetFilter from "./AssetFilter.jsx";
+import {
+  GlobalSidebar,
+  useSidebarActions,
+} from "../../components/GlobalSidebar";
+import AssetFormSidebar from "./AssetFormSidebar.jsx";
+import AssetDetails from "./AssetDetails.jsx";
 
 const _initialAssetData = {
   id: null,
@@ -42,12 +46,13 @@ export default function AssetsList() {
   const [isPaginate, setIsPaginate] = useState(false);
   const [showMainLoader, setShowMainLoader] = useState(false);
   const [asset, setAsset] = useState(_initialAssetData);
-  const [showAssetForm, setShowAssetForm] = useState(false);
   const [hasFilter, setHasFilter] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
 
   const { num_data_per_page, default_currency } = applicationSettings;
+  const { showQuickDetails, showLargeContent, showQuickForm } =
+    useSidebarActions();
 
   const TABLE_HEAD = [
     { id: "sector_name", label: "Sector Name", align: "left" },
@@ -131,14 +136,34 @@ export default function AssetsList() {
     });
   };
 
+  const showAssetFormFunc = () => {
+    showLargeContent(
+      "Create Asset",
+      <AssetFormSidebar
+        assetId={null}
+        onSuccess={() => {
+          // Refresh the assets list after successful creation
+          setIsPaginate(true);
+        }}
+      />
+    );
+  };
   const showEditModalFunc = (asset) => {
-    setShowAssetForm(true);
-    setAsset(asset);
+    showLargeContent(
+      "Edit Asset",
+      <AssetFormSidebar
+        assetId={asset.id}
+        onSuccess={() => {
+          // Refresh the assets list after successful update
+          setIsPaginate(true);
+        }}
+      />
+    );
   };
   const showAsset = (asset) => {
-    setAsset(asset);
-    setShowModal(true);
+    showLargeContent("Asset Details", <AssetDetails data={asset} />);
   };
+
   const handleCloseModal = () => {
     setShowModal(false);
   };
@@ -174,11 +199,7 @@ export default function AssetsList() {
     },
   ];
 
-  const showAssetFormFunc = () => {
-    setShowAssetForm(true);
-  };
   const closeCreateModalFunc = () => {
-    setShowAssetForm(false);
     setAsset({});
   };
 
@@ -232,22 +253,6 @@ export default function AssetsList() {
         loaderRow={query?.limit}
         loaderCol={8}
       />
-
-      {showModal && (
-        <AssetViewModal
-          handelCloseModal={handleCloseModal}
-          title={"Asset Details"}
-          data={asset}
-        />
-      )}
-
-      {showAssetForm && (
-        <AssetForm
-          handelCloseModal={closeCreateModalFunc}
-          title={"Create New Asset"}
-          id={asset.id}
-        />
-      )}
     </div>
   );
 }

@@ -19,6 +19,7 @@ import {
   useGetSideBarCompanyListsDataQuery,
 } from "../../api/slices/dashBoardSlice.js";
 import { SettingsContext } from "../../contexts/SettingsContext.jsx";
+import { SidebarContainer } from "../../components/GlobalSidebar/index.js";
 
 const defaultQuery = {
   searchTerm: "",
@@ -297,6 +298,9 @@ export default function AuthLayout() {
             </div>
           </Offcanvas.Body>
         </Offcanvas>
+        
+        {/* Global Sidebar */}
+        <SidebarContainer />
       </Container>
     </>
   );

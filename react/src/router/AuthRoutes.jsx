@@ -55,7 +55,6 @@ const HrmsReport = lazy(() => import("../views/HRMS/HrmsReport.jsx"));
 
 // Budgets
 const Budgets = lazy(() => import("../views/Budgets/Budgets.jsx"));
-const BudgetForm = lazy(() => import("../views/Budgets/BudgetForm.jsx"));
 
 // Investment Plan
 const InvestmentPlan = lazy(() => import("../views/InvestmentPlan/InvestmentPlan.jsx"));
@@ -134,8 +133,6 @@ export const createAuthRouter = () => {
 
         // Budgets
         { path: "/budgets", element: <LazyRoute><Budgets /></LazyRoute> },
-        { path: "/budget/add", element: <LazyRoute><BudgetForm key="budgetCreate" /></LazyRoute> },
-        { path: "/budget/:id", element: <LazyRoute><BudgetForm key="budgetUpdate" /></LazyRoute> },
 
         // Investment Plan
         { path: "/investment-plan", element: <LazyRoute><InvestmentPlan /></LazyRoute> },

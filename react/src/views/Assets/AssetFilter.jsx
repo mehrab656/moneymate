@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from "react";
 import { Card, Stack, Row, Col, Form, Button } from "react-bootstrap";
 
 export default function AssetFilter(props) {
   const { search, query, setQuery, resetFilterParameter,placeHolderTxt } = props;
   return (
     <>
-     <Card className="p-3" style={{ borderBottom: "1px solid" }}>
+     <Card className="p-3 asset-filter-card">
       <Stack gap={3}>
         {/* Form Inputs */}
         <Row className="g-3">
           <Col md={4}>
             <Form.Group controlId="search">
-              <Form.Label className="custom-form-label" style={{ marginBottom: "0px" }}>
+              <Form.Label className="custom-form-label asset-filter-label">
                 Search
               </Form.Label>
               <Form.Control
@@ -20,13 +19,13 @@ export default function AssetFilter(props) {
                 value={query?.searchTerm}
                 onChange={(e) => setQuery({ ...query, searchTerm: e.target.value })}
                 placeholder={placeHolderTxt}
-                style={{ textTransform: "capitalize" }}
+                className="asset-filter-input"
               />
             </Form.Group>
           </Col>
           <Col md={2}>
             <Form.Group controlId="order">
-              <Form.Label className="custom-form-label" style={{ marginBottom: "0px" }}>
+              <Form.Label className="custom-form-label asset-filter-label">
                 Order
               </Form.Label>
               <Form.Select
@@ -42,7 +41,7 @@ export default function AssetFilter(props) {
 
           <Col md={2}>
             <Form.Group controlId="limit">
-              <Form.Label className="custom-form-label" style={{ marginBottom: "0px" }}>
+              <Form.Label className="custom-form-label asset-filter-label">
                 Limit
               </Form.Label>
               <Form.Select

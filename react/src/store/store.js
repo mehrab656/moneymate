@@ -8,6 +8,7 @@ import { assetSlice } from "../api/slices/assetSlice";
 import { accountSlice } from "../api/slices/accountSlice";
 import { companySlice } from "../api/slices/companySlice";
 import { categorySlice } from "../api/slices/categorySlice";
+import { budgetSlice } from "../api/slices/budgetSlice";
 import { taskSlice } from "../api/slices/taskSlice";
 import { employeeSlice } from "../api/slices/employeeSlice";
 import { investmentSlice } from "../api/slices/investmentSlice";
@@ -33,6 +34,7 @@ export const createStore = (isAuthenticated = false) => {
       assetSlice,
       companySlice,
       categorySlice,
+      budgetSlice,
       taskSlice,
       employeeSlice,
       investmentSlice,
@@ -51,6 +53,9 @@ export const createStore = (isAuthenticated = false) => {
     // Include all RTK Query middleware
     middleware = (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(slices.map((slice) => slice.middleware));
+  } else {
+    // Add a dummy reducer for unauthenticated state to prevent empty reducer error
+    reducers.dummy = (state = {}, action) => state;
   }
 
   return configureStore({

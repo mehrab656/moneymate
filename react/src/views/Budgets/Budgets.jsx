@@ -14,8 +14,12 @@ import {SettingsContext} from "../../contexts/SettingsContext.jsx";
 import ActionButtonHelpers from "../../helper/ActionButtonHelpers.jsx";
 import MainLoader from "../../components/loader/MainLoader.jsx";
 import { notification } from "../../components/ToastNotification.jsx";
+import BudgetFormSidebar from "./BudgetFormSidebar.jsx";
+import { useSidebarActions } from "../../hooks/useSidebarActions";
 
 export default function Budgets() {
+
+    const { showQuickDetails } = useSidebarActions();
 
 
     const [loading, setLoading] = useState(false);
@@ -111,6 +115,23 @@ export default function Budgets() {
         setSelectedCategories([]);
         setErrors({});
         setShowModal(true);
+    };
+
+    const showCreateSidebar = () => {
+        showQuickDetails(
+            "Create New Budget",
+            <BudgetFormSidebar onSuccess={() => getBudgets(currentPage, pageSize)} />
+        );
+    };
+
+    const showEditSidebar = (budgetId) => {
+        showQuickDetails(
+            "Update Budget",
+            <BudgetFormSidebar 
+                budgetId={budgetId}
+                onSuccess={() => getBudgets(currentPage, pageSize)} 
+            />
+        );
     };
 
     const edit = (budget) => {
@@ -268,9 +289,9 @@ export default function Budgets() {
     const actionParams = [
         {
             actionName: 'Edit',
-            type: "route",
-            route: "/budget/",
-            actionFunction: "editModal",
+            type: "modal",
+            route: "",
+            actionFunction: (budget) => showEditSidebar(budget.id),
             permission: 'budget_edit',
             textClass:'text-info',
         },
@@ -296,7 +317,7 @@ export default function Budgets() {
         <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Budgets</h1>
-                <Link className="btn-add" onClick={showCreateModal}><FontAwesomeIcon icon={faMoneyBill}/> Add New Budget</Link>
+                <Link className="btn-add" onClick={showCreateSidebar}><FontAwesomeIcon icon={faMoneyBill}/> Add New Budget</Link>
             </div>
             <WizCard className="animated fadeInDown">
                 <div className="mb-4">

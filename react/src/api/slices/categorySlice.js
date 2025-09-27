@@ -48,6 +48,21 @@ export const categorySlice = createApi({
       }),
       invalidatesTags: ["category"],
     }),
+    getSingleCategoryData: builder.query({
+      query: ({ id, token }) => ({
+        url: `category/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["category"],
+    }),
+    updateCategory: builder.mutation({
+      query: ({ id, token, formData }) => ({
+        url: `category/${id}`,
+        method: "PUT",
+        body: formData,
+      }),
+      invalidatesTags: ["category"],
+    }),
   }),
 });
 
@@ -57,4 +72,6 @@ export const {
   useGetCategoryListDataQuery,
   useCreateCategoryMutation,
   useDeleteCategoryMutation,
+  useGetSingleCategoryDataQuery,
+  useUpdateCategoryMutation,
 } = categorySlice;

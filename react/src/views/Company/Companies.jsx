@@ -4,7 +4,6 @@ import { SettingsContext } from "../../contexts/SettingsContext.jsx";
 import Swal from "sweetalert2";
 import MainLoader from "../../components/loader/MainLoader.jsx";
 import { faBuildingFlag } from "@fortawesome/free-solid-svg-icons";
-import CompanyViewModal from "../Company/CompanyViewModal.jsx";
 import { checkPermission } from "../../helper/HelperFunctions.js";
 import CommonTable from "../../helper/CommonTable.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,7 +12,9 @@ import {
   useGetCompanyDataQuery,
 } from "../../api/slices/companySlice.js";
 import CompanyFilter from "./CompanyFilter.jsx";
-import CompanyForm from "./CompanyForm.jsx";
+import CompanyFormSidebar from "./CompanyFormSidebar.jsx";
+import { useSidebarActions } from "../../components/GlobalSidebar";
+import CompanyDetails from "./CompanyDetails.jsx";
 
 const _initialCompanyData = {
   id: null,
@@ -48,6 +49,7 @@ export default function companies() {
   const [hasFilter, setHasFilter] = useState(false);
   const [showCompanyForm, setShowCompanyForm] = useState(false);
   const { num_data_per_page, default_currency } = applicationSettings;
+  const { showQuickDetails, showQuickForm } = useSidebarActions();
   const TABLE_HEAD = [
     { id: "name", label: "Name", align: "left" },
     { id: "phone", label: "Phone", align: "left" },
@@ -64,6 +66,7 @@ export default function companies() {
     data: getCompanyData,
     isFetching: companyDataFetching,
     isError: companyDataError,
+    refetch,
   } = useGetCompanyDataQuery(
     { currentPage, pageSize, query },
     { skip: !pageSize, refetchOnMountOrArgChange: isPaginate }
@@ -109,23 +112,32 @@ export default function companies() {
   );
 
   const showCompany = (company) => {
-    setCompany(company);
-    setShowModal(true);
-  };
-  const [showModal, setShowModal] = useState(false);
-  const handleCloseModal = () => {
-    setShowModal(false);
+    console.log('showCompany called with company:', company);
+    
+    // Pass the component directly, not a function
+    showQuickDetails("Details", <CompanyDetails data={company} />);
   };
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
     setIsPaginate(true);
   };
   const showIncomeFormFunc = () => {
-    setShowCompanyForm(true);
+    showQuickDetails("Create Company", <CompanyFormSidebar 
+      companyId={null} 
+      onSuccess={() => {
+        // Refresh the companies list after successful creation
+        refetch();
+      }} 
+    />);
   };
   const showEditModalFunc = (company) => {
-    setShowCompanyForm(true);
-    setCompany(company);
+    showQuickDetails("Edit Company", <CompanyFormSidebar 
+      companyId={company.id} 
+      onSuccess={() => {
+        // Refresh the companies list after successful update
+        refetch();
+      }} 
+    />);
   };
   const closeCreateModalFunc = () => {
     setShowCompanyForm(false);
@@ -217,21 +229,8 @@ export default function companies() {
         loaderRow={query?.limit}
         loaderCol={5}
       />
-      {showModal && (
-        <CompanyViewModal
-          handelCloseModal={handleCloseModal}
-          title={"Company Details"}
-          data={company}
-        />
-      )}
 
-      {showCompanyForm && (
-        <CompanyForm
-          handelCloseModal={closeCreateModalFunc}
-          title={"Create New Company"}
-          id={company.id}
-        />
-      )}
+      {/* CompanyForm modal is no longer needed as it's handled by sidebar */}
     </div>
   );
 }
