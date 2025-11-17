@@ -28,7 +28,7 @@ const IncomeList = lazy(() => import("../views/Transactions/Income/IncomeList.js
 const ExpenseList = lazy(() => import("../views/Transactions/Expense/ExpenseList.jsx"));
 const InvestmentList = lazy(() => import("../views/Transactions/Investment/InvestmentList.jsx"));
 const ExpenseForm = lazy(() => import("../views/Transactions/Expense/ExpenseForm.jsx"));
-const Return = lazy(() => import("../views/Return"));
+const Return = lazy(() => import("../views/Transactions/Return.jsx"));
 
 // Reports
 const ExpenseReport = lazy(() => import("../views/Reports/ExpenseReport.jsx"));
@@ -38,11 +38,11 @@ const OverallReport = lazy(() => import("../views/Reports/OverAllReport/OverallR
 const MonthlyReport = lazy(() => import("../views/Reports/MonthlyReport/MonthlyReport.jsx"));
 
 // Bank & Accounts
-const Banks = lazy(() => import("../views/Bank&Acc/Banks.jsx"));
-const Accounts = lazy(() => import("../views/Bank&Acc/Accounts.jsx"));
-const BalanceTransfers = lazy(() => import("../views/Bank&Acc/BalanceTransfers.jsx"));
-const Debts = lazy(() => import("../views/Debts/DebtList.jsx"));
-const ManageDebt = lazy(() => import("../views/Debts/ManageDebt.jsx"));
+const Banks = lazy(() => import("../views/Bank&Acc/Banks/Banks.jsx"));
+const Accounts = lazy(() => import("../views/Bank&Acc/Accounts/Accounts.jsx"));
+const BalanceTransfers = lazy(() => import("../views/Bank&Acc/Balance Transfer/BalanceTransfers.jsx"));
+const Debts = lazy(() => import("../views/Bank&Acc/Debts/DebtList.jsx"));
+const ManageDebt = lazy(() => import("../views/Bank&Acc/Debts/ManageDebt.jsx"));
 const WalletForm = lazy(() => import("../views/Wallets/WalletForm.jsx"));
 
 // HRMS
@@ -58,7 +58,6 @@ const Budgets = lazy(() => import("../views/Budgets/Budgets.jsx"));
 
 // Investment Plan
 const InvestmentPlan = lazy(() => import("../views/InvestmentPlan/InvestmentPlan.jsx"));
-const InvestmentPlanForm = lazy(() => import("../views/InvestmentPlan/InvestmentPlanForm.jsx"));
 
 // Calendar
 const Calendar = lazy(() => import("../views/Calender/Calendar.jsx"));
@@ -136,8 +135,6 @@ export const createAuthRouter = () => {
 
         // Investment Plan
         { path: "/investment-plan", element: <LazyRoute><InvestmentPlan /></LazyRoute> },
-        { path: "/investment-plan/new", element: <LazyRoute><InvestmentPlanForm key="investmentPlanCreate" /></LazyRoute> },
-        { path: "/investment-plan/:id", element: <LazyRoute><InvestmentPlanForm key="investmentPlanUpdate" /></LazyRoute> },
 
         // Calendar
         { path: "/calendar", element: <LazyRoute><Calendar /></LazyRoute> },

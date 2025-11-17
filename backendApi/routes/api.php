@@ -159,6 +159,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/debts/store', [DebtController::class, 'store']);
     Route::get('/debts', [DebtController::class, 'index']);
     Route::get('/debts/{debt}', [DebtController::class, 'show']);
+    Route::post('/debts/{debt}', [DebtController::class, 'update']);
     Route::get('/get-debt-history/{debt_id}', [DebtController::class, 'getDebtHistory']);
     Route::delete('/debts/delete/{id}', [DebtController::class, 'destroy']);
 

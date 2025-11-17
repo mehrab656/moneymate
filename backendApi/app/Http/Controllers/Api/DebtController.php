@@ -202,8 +202,34 @@ class DebtController extends Controller {
 	/**
 	 * Update the specified resource in storage.
 	 */
-	public function update( Request $request, string $id ) {
-		//
+	public function update( Request $request, string $id ): JsonResponse {
+		$debt = Debt::findOrFail($id);
+
+		// Allow editing basic fields only to avoid balance inconsistencies
+		$validated = $request->validate([
+			'person' => 'sometimes|string|max:255',
+			'date' => 'sometimes|date',
+			'note' => 'nullable|string|max:500',
+		]);
+
+		$debt->fill($validated);
+		$debt->save();
+
+		storeActivityLog([
+			'object_id'     => $debt->id,
+			'log_type'     => 'update',
+			'module'       => 'Debt',
+			'descriptions' => 'Debt basic fields updated',
+			'data_records' => [
+				'id' => $debt->id,
+				'updated_fields' => $validated,
+			],
+		]);
+
+		return response()->json([
+			'message'     => 'Success!',
+			'description' => 'Debt updated',
+		]);
 	}
 
 

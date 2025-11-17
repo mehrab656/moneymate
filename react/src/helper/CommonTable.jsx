@@ -132,7 +132,7 @@ function CommonTable(props) {
 
       {!loading && (
         <CardContent>
-          <TableContainer component={Paper}>
+          <TableContainer component={Paper} sx={{ width: '100%', overflowX: 'auto' }}>
             <Table size={table.size} aria-label={table.ariaLabel}>
               <TableHead>
                 <TableRow>

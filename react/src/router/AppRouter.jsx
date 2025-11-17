@@ -26,6 +26,7 @@ const AppRouter = () => {
 
   if (!router) return <CenteredMessage text="Loading..." />;
 
+
   return (
     <Provider store={store}>
       <RouterProvider router={router} />

@@ -9,6 +9,9 @@ import Pagination from "react-bootstrap/Pagination";
 import {SettingsContext} from "../../contexts/SettingsContext.jsx";
 import MainLoader from "../../components/loader/MainLoader.jsx";
 import { notification } from "../../components/ToastNotification.jsx";
+import { useSidebarActions } from "../../components/GlobalSidebar";
+import InvestmentPlanFormSidebar from "./InvestmentPlanFormSidebar.jsx";
+import InvestmentPlanDetails from "./InvestmentPlanDetails.jsx";
 
 export default function InvestmentPlan() {
 
@@ -94,13 +97,51 @@ export default function InvestmentPlan() {
         });
     };
 
+    // Sidebar actions
+    const { showLargeContent, showQuickDetails } = useSidebarActions();
+
+    const openCreateForm = () => {
+        showLargeContent(
+            "Add New Investment Plan",
+            <InvestmentPlanFormSidebar
+                planId={null}
+                onSuccess={() => {
+                    // Refresh list when adding new
+                    getIncomes(currentPage, pageSize);
+                }}
+            />
+        );
+    };
+
+    const openEditForm = (plan) => {
+        showLargeContent(
+            "Edit Investment Plan",
+            <InvestmentPlanFormSidebar
+                planId={plan?.id}
+                onSuccess={() => {
+                    getIncomes(currentPage, pageSize);
+                }}
+            />
+        );
+    };
+
+    const openViewDetails = (plan) => {
+        showQuickDetails(
+            "Investment Plan Details",
+            <InvestmentPlanDetails planId={plan?.id} data={plan} />
+        );
+    };
+
     return (
         <div>
            <MainLoader loaderVisible={loading} />
             <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                 <h1 className="title-text mb-0">Investment Plan Histories</h1>
-                {userRole ==='admin' && <Link className="btn-add align-right mr-3" to="/investment-plan/new"><FontAwesomeIcon icon={faDollar}/> Add New
-                    Plan</Link>}
+                {userRole ==='admin' && (
+                    <button className="btn-add align-right mr-3" onClick={openCreateForm}>
+                        <FontAwesomeIcon icon={faDollar}/> Add New Plan
+                    </button>
+                )}
               
                  {/*<IncomeExportButton/>*/}
             </div>
@@ -115,7 +156,8 @@ export default function InvestmentPlan() {
 
                 </div>
 
-                {/* <div className="table-responsive">
+                {/*
+                <div className="table-responsive">
                     <table className="table table-bordered custom-table">
                         <thead>
                         <tr className={'text-center'}>
@@ -161,21 +203,27 @@ export default function InvestmentPlan() {
                                         <td>{income.date}</td>
                                         {userRole ==='admin' &&
                                             <td>
-                                                <Link className="btn-edit" to={"/income/" + income.id}> <FontAwesomeIcon
-                                                    icon={faEdit}/> Edit</Link>
+                                                <button className="btn-edit" onClick={() => openEditForm(income)}>
+                                                    <FontAwesomeIcon icon={faDollar}/> Edit Plan
+                                                </button>
                                                 &nbsp;
                                                 <a onClick={() => onDelete(income)} className="btn-delete"><FontAwesomeIcon
                                                     icon={faTrash}/> Delete</a>
+                                                &nbsp;
+                                                <button className="btn-view" onClick={() => openViewDetails(income)}>
+                                                    View Details
+                                                </button>
                                             </td>
                                         }
-                                       
+                                        
                                     </tr>
                                 ))
                             )}
                             </tbody>
                         )}
                     </table>
-                </div> */}
+                </div>
+                */}
 
                 {totalPages > 1 && (
                     <Pagination>

@@ -170,11 +170,44 @@ class EmployeeController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified employee details.
      */
-    public function show(Employee $employee)
+    public function show($id)
     {
-        //
+        $employee = Employee::where('slug', $id)->with('user')->first();
+        if (!$employee) {
+            return response()->json([
+                'message' => 'Error',
+                'description' => 'Employee not found',
+            ], 404);
+        }
+
+        $roleId = DB::table('company_user')
+            ->where('user_id', $employee->user_id)
+            ->where('company_id', Auth::user()->primary_company)
+            ->value('role_id');
+
+        return response()->json([
+            'data' => [
+                'id' => $employee->slug,
+                'first_name' => $employee->user->first_name,
+                'last_name' => $employee->user->last_name,
+                'user_name' => $employee->user->username,
+                'email' => $employee->user->email,
+                'phone' => $employee->phone,
+                'emergency_contact' => $employee->emergency_contact,
+                'dob' => $employee->user->dob,
+                'gender' => $employee->user->gender,
+                'joining_date' => $employee->joining_date,
+                'role_id' => $roleId,
+                'position' => $employee->position,
+                'basic_salary' => $employee->basic_salary,
+                'accommodation_cost' => $employee->accommodation_cost,
+                'profile_picture' => $employee->user->profile_picture,
+                'id_copy' => $employee->attachment,
+                'avatar' => asset('avatars/' . $employee->user->profile_picture),
+            ],
+        ]);
     }
 
     /**
@@ -186,11 +219,103 @@ class EmployeeController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified employee.
      */
-    public function update(Request $request, Employee $employee)
+    public function update(Request $request, $id)
     {
-        //
+        $employee = Employee::where('slug', $id)->with('user')->first();
+        if (!$employee) {
+            return response()->json([
+                'message' => 'Error',
+                'description' => 'Employee not found',
+            ], 404);
+        }
+
+        $validated = $request->validate([
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'user_name' => 'required',
+            'email' => ['required', 'email'],
+            'phone' => 'required',
+            'emergency_contact' => 'nullable',
+            'dob' => 'nullable',
+            'gender' => 'nullable',
+            'joining_date' => 'required',
+            'role_id' => 'required',
+            'position' => 'required',
+            'basic_salary' => 'required|numeric',
+            'accommodation_cost' => 'required|numeric',
+        ]);
+
+        // Handle uploads
+        if ($request->hasFile('profile_picture')) {
+            $attachment = $request->file('profile_picture');
+            $filename = $validated['user_name'] . '_' . 'profile_picture_' . time() . '.' . $attachment->getClientOriginalExtension();
+            $attachment->move('avatars', $filename);
+            $validated['profile_picture'] = $filename;
+        }
+
+        if ($request->hasFile('id_copy')) {
+            $attachment = $request->file('id_copy');
+            $filename = $validated['user_name'] . '_' . 'id_' . time() . '.' . $attachment->getClientOriginalExtension();
+            $attachment->move('ids', $filename);
+            $validated['id_copy'] = $filename;
+        }
+
+        try {
+            DB::beginTransaction();
+            // Update user
+            $employee->user->update([
+                'first_name' => $validated['first_name'],
+                'last_name' => $validated['last_name'],
+                'username' => $validated['user_name'],
+                'email' => $validated['email'],
+                'phone' => $validated['phone'],
+                'emergency_contact' => $validated['emergency_contact'] ?? null,
+                'dob' => $validated['dob'] ?? null,
+                'gender' => $validated['gender'] ?? null,
+                'profile_picture' => $validated['profile_picture'] ?? $employee->user->profile_picture,
+            ]);
+
+            // Update pivot role if exists
+            DB::table('company_user')
+                ->where('user_id', $employee->user_id)
+                ->where('company_id', Auth::user()->primary_company)
+                ->update(['role_id' => $validated['role_id']]);
+
+            // Update employee
+            $employee->update([
+                'phone' => $validated['phone'],
+                'basic_salary' => $validated['basic_salary'],
+                'accommodation_cost' => $validated['accommodation_cost'],
+                'joining_date' => $validated['joining_date'],
+                'position' => $validated['position'],
+                'attachment' => $validated['id_copy'] ?? $employee->attachment,
+                'emergency_contact' => $validated['emergency_contact'] ?? $employee->emergency_contact,
+            ]);
+
+            storeActivityLog([
+                'object_id' => $employee['id'],
+                'object' => 'employee',
+                'log_type' => 'update',
+                'module' => 'employee',
+                'descriptions' => 'Updated employee details',
+                'data_records' => json_encode($validated),
+            ]);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Error',
+                'description' => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
+            ], 400);
+        }
+
+        return response()->json([
+            'message' => 'Success!',
+            'description' => 'Employee was updated',
+        ]);
     }
 
     /**

@@ -69,6 +69,8 @@ const GlobalSidebar = ({
           width: responsiveWidth,
           maxWidth: '100vw',
           height: '100vh',
+          overflowX: 'hidden',
+          boxSizing: 'border-box',
           display: 'flex',
           flexDirection: 'column',
           backgroundColor: theme.palette.background.paper,
@@ -148,7 +150,7 @@ const GlobalSidebar = ({
             sx={{
               flex: 1,
               overflow: 'auto',
-              p: 0,
+              p: { xs: 2, sm: 3 },
               ...contentSx,
             }}
           >

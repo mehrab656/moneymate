@@ -1,5 +1,4 @@
-import { Navigate } from "react-router-dom";
-import Login from "../views/Login";
+import { Navigate, Outlet } from "react-router-dom";
 import { useStateContext } from "../contexts/ContextProvider";
 
 
@@ -42,7 +41,7 @@ export default function GuestLayout() {
 
   return (
     <div>
-      <Login />
+      <Outlet />
     </div>
   );
 }

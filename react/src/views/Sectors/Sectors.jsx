@@ -12,6 +12,7 @@ import { Box, Button } from "@mui/material";
 
 import Iconify from "../../components/Iconify.jsx";
 import CommonTable from "../../helper/CommonTable.jsx";
+import { useSidebarActions } from "../../components/GlobalSidebar";
 import {
   useChangePaymentStatusMutation,
   useDeleteSectorMutation,
@@ -19,7 +20,7 @@ import {
 } from "../../api/slices/sectorSlice.js";
 import ContractExtendForm from "./ContractExtendForm.jsx";
 import Show from "./Show.jsx";
-import SectorForm from "./SectorForm.jsx";
+import SectorFormSidebar from "./SectorFormSidebar.jsx";
 import SectorFilter from "./SectorFilter.jsx";
 
 const _initialSectorData = {
@@ -328,8 +329,16 @@ export default function Sectors() {
     }
   );
   const showEditModalFunc = (sector) => {
-    setShowSectorForm(true);
     setSector(sector);
+    showLargeContent(
+      "Edit Sector",
+      <SectorFormSidebar
+        sectorId={sector.id}
+        onSuccess={() => {
+          setIsPaginate(true);
+        }}
+      />
+    );
   };
   const showContractExtendFunc = (sector) => {
     setShowContractExtendModal(true);
@@ -338,6 +347,9 @@ export default function Sectors() {
   const closeContractExtendModal = () => {
     setShowContractExtendModal(false);
   };
+  
+  // Sidebar actions
+  const { showLargeContent } = useSidebarActions();
   const actionParams = [
     {
       actionName: "Edit",
@@ -380,7 +392,15 @@ export default function Sectors() {
     },
   ];
   const showSectorFormFunc = () => {
-    setShowSectorForm(true);
+    showLargeContent(
+      "Create Sector",
+      <SectorFormSidebar
+        sectorId={null}
+        onSuccess={() => {
+          setIsPaginate(true);
+        }}
+      />
+    );
   };
   const closeSectorModalFunc = () => {
     setShowSectorForm(false);
@@ -426,13 +446,7 @@ export default function Sectors() {
         loaderCol={3}
       />
 
-      {showSectorForm && (
-        <SectorForm
-          handelCloseModal={closeSectorModalFunc}
-          title={"Create New Sector"}
-          id={sector.id}
-        />
-      )}
+      {/* Sector creation/editing now handled in GlobalSidebar via SectorFormSidebar */}
 
       {showContractExtend && (
         <ContractExtendForm
