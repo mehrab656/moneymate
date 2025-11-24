@@ -209,9 +209,38 @@ export default function AuthLayout() {
                           data-tooltip-id="switch-company"
                           data-tooltip-content={"Switch to another company "}
                         >
-                          {getCurrentCompanyData?.data
-                            ? getCurrentCompanyData?.data.name
-                            : "company"}
+                          {(() => {
+                            const logo = getCurrentCompanyData?.data?.logo;
+                            let logoUrl = null;
+                            if (typeof logo === "string" && logo && logo !== "null") {
+                              const trimmed = logo.trim();
+                              if (
+                                trimmed.startsWith("http://") ||
+                                trimmed.startsWith("https://") ||
+                                trimmed.startsWith("/")
+                              ) {
+                                logoUrl = trimmed;
+                              } else {
+                                const base = window.__APP_CONFIG__?.VITE_APP_BASE_URL || "";
+                                logoUrl = `${base}/storage/files/company/${trimmed}`;
+                              }
+                            }
+                            return (
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                                {logoUrl && (
+                                  <img
+                                    src={logoUrl}
+                                    alt="Company Logo"
+                                    style={{ width: 22, height: 22, borderRadius: 4, objectFit: 'cover' }}
+                                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                  />
+                                )}
+                                <span>
+                                  {getCurrentCompanyData?.data ? getCurrentCompanyData?.data.name : "company"}
+                                </span>
+                              </span>
+                            );
+                          })()}
                         </Dropdown.Toggle>
                         <Tooltip id="switch-company" />
                         <Dropdown.Menu className="scrollable-dropdown">

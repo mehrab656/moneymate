@@ -6,15 +6,26 @@
       0 => 'Barryvdh\\LaravelIdeHelper\\IdeHelperServiceProvider',
     ),
   ),
-  'encore/laravel-admin' => 
+  'berkayk/onesignal-laravel' => 
   array (
+    'aliases' => 
+    array (
+      'OneSignal' => 'Berkayk\\OneSignal\\OneSignalFacade',
+    ),
     'providers' => 
     array (
-      0 => 'Encore\\Admin\\AdminServiceProvider',
+      0 => 'Berkayk\\OneSignal\\OneSignalServiceProvider',
     ),
+  ),
+  'encore/laravel-admin' => 
+  array (
     'aliases' => 
     array (
       'Admin' => 'Encore\\Admin\\Facades\\Admin',
+    ),
+    'providers' => 
+    array (
+      0 => 'Encore\\Admin\\AdminServiceProvider',
     ),
   ),
   'laravel-admin-ext/log-viewer' => 
@@ -68,13 +79,13 @@
   ),
   'spatie/laravel-ignition' => 
   array (
-    'providers' => 
-    array (
-      0 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
-    ),
     'aliases' => 
     array (
       'Flare' => 'Spatie\\LaravelIgnition\\Facades\\Flare',
+    ),
+    'providers' => 
+    array (
+      0 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
     ),
   ),
 );

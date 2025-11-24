@@ -36,23 +36,27 @@ class Company extends Model {
 
 		try {
 			DB::beginTransaction();
-			$company = Company::create( [
-                'slug'=>Uuid::uuid4(),
-				'name'                => $data['name'],
-				'phone'               => $data['phone'],
-				'email'               => $data['email'],
-				'uid'                 => $data['uid'],
-				'address'             => $data['address'],
-				'activity'            => $data['activity'],
-				'license_no'          => $data['license_no'],
-				'issue_date'          => $data['issue_date'] ? date( 'Y-m-d', strtotime( $data['issue_date'] ) ) : null,
-				'expiry_date'         => $data['expiry_date'] ? date( 'Y-m-d', strtotime( $data['expiry_date'] ) ) : null,
-				'registration_number' => $data['registration_number'],
-//				'extra'               => $data['extra'],
-				'logo'                => $data['filename'],
-				'created_by'          => $userID,
-				'updated_by'          => $userID,
-			] );
+            $company = Company::create( [
+                'slug'               => Uuid::uuid4(),
+                'name'               => $data['name'],
+                'phone'              => $data['phone'],
+                'email'              => $data['email'],
+                'uid'                => $data['uid'],
+                'address'            => $data['address'] ?? null,
+                'activity'           => $data['activity'] ?? null,
+                'license_no'         => $data['license_no'] ?? null,
+                'issue_date'         => isset($data['issue_date']) && $data['issue_date']
+                                          ? date('Y-m-d', strtotime($data['issue_date']))
+                                          : null,
+                'expiry_date'        => isset($data['expiry_date']) && $data['expiry_date']
+                                          ? date('Y-m-d', strtotime($data['expiry_date']))
+                                          : null,
+                'registration_number'=> $data['registration_number'] ?? null,
+                // 'extra'            => $data['extra'] ?? null,
+                'logo'               => $data['filename'] ?? null,
+                'created_by'         => $userID,
+                'updated_by'         => $userID,
+            ] );
 			//now make relation between this company and user. as the user has created this company, he will be the admin by default.
 			DB::table( 'company_user' )->insert( [
 				'company_id' => $company['id'],

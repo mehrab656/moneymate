@@ -3,6 +3,18 @@
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 
+Artisan::command('check:user {email}', function (string $email) {
+    $user = \Illuminate\Support\Facades\DB::table('users')
+        ->where('email', $email)
+        ->select('id', 'email', 'username', 'active')
+        ->first();
+    if ($user) {
+        $this->info('User found: ' . json_encode($user));
+    } else {
+        $this->warn('No user found for email: ' . $email);
+    }
+})->purpose('Quickly verify a user exists by email');
+
 /*
 |--------------------------------------------------------------------------
 | Console Routes

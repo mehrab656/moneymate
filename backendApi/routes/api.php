@@ -32,6 +32,7 @@ use App\Http\Controllers\Api\WalletController;
 use App\Http\Controllers\HospitableController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 
 
 /*
@@ -282,6 +283,16 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
+// Temporary env diagnostic endpoint to verify web context DB config
+Route::get('/env-check', function () {
+    return response()->json([
+        'db_database' => config('database.connections.mysql.database'),
+        'db_host' => config('database.connections.mysql.host'),
+        'app_url' => config('app.url'),
+        'app_env' => config('app.env'),
+        'config_cached' => app()->configurationIsCached(),
+    ]);
+});
 
 Route::get('/get-application-settings', [ApplicationSettingsController::class, 'getApplicationSettings']);
 Route::get('/get-associative-categories', [ApplicationSettingsController::class, 'getAssociativeCategories']);

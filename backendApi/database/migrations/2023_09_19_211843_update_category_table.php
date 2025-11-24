@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-	    Schema::table('categories', function($table) {
-		    $table->unsignedBigInteger('sector_id')->default(0)->after('id');
-	    });
+        if (Schema::hasTable('categories')) {
+            Schema::table('categories', function (Blueprint $table) {
+                $table->unsignedBigInteger('sector_id')->default(0)->after('id');
+            });
+        }
     }
 
     /**
@@ -21,8 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-	    Schema::table('categories', function(Blueprint $table) {
-		    $table->dropColumn('sector_id');
-	    });
+        if (Schema::hasTable('categories') && Schema::hasColumn('categories', 'sector_id')) {
+            Schema::table('categories', function (Blueprint $table) {
+                $table->dropColumn('sector_id');
+            });
+        }
     }
 };

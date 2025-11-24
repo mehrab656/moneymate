@@ -5,6 +5,7 @@ import { notification } from "../../components/ToastNotification.jsx";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import { useSidebarActions } from "../../components/GlobalSidebar";
 import { useCreateCompanyMutation, useGetSingleCompanyDataQuery } from "../../api/slices/companySlice.js";
+import { useMemo } from "react";
 
 const companyActivities = [
   "vacation homes rental",
@@ -48,24 +49,42 @@ export default function CompanyFormSidebar({ companyId = null, onSuccess }) {
   } = useGetSingleCompanyDataQuery({ id: companyId }, { skip: !companyId });
 
   useEffect(() => {
-    if (companyId && getSingleCompanyData) {
+    // RTK query returns the entire API response; our payload is under `data`
+    const payload = getSingleCompanyData?.data;
+    if (companyId && payload) {
       setCompanyData((prevCompany) => ({
         ...prevCompany,
-        ...getSingleCompanyData,
-        date: getSingleCompanyData.date || "", // Set to empty string if the value is null or undefined
+        ...payload,
       }));
     }
   }, [getSingleCompanyData]);
 
-  // set some default data
+  // Initialize required dates in state if missing to prevent validation errors during edit
   useEffect(() => {
-    if (companyData?.date === "") {
-      setCompanyData({
-        ...companyData,
-        date: new Date().toISOString().split("T")[0],
-      });
+    const todayStr = new Date().toISOString().split("T")[0];
+    const tomorrowStr = new Date(Date.now() + 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split("T")[0];
+    const normalize = (v) => (v && v !== "null" ? v : null);
+    const issue = normalize(companyData?.issue_date);
+    const expiry = normalize(companyData?.expiry_date);
+    const updates = {};
+    // If issue_date is missing (create or edit), set to today
+    if (!issue) {
+      updates.issue_date = todayStr;
     }
-  }, [companyData?.date]);
+    // If expiry_date is missing (create or edit), set to tomorrow
+    if (!expiry) {
+      updates.expiry_date = tomorrowStr;
+    }
+    // Keep legacy `date` default when it's an empty string
+    if (companyData?.date === "") {
+      updates.date = todayStr;
+    }
+    if (Object.keys(updates).length) {
+      setCompanyData((prev) => ({ ...prev, ...updates }));
+    }
+  }, [companyId, companyData?.issue_date, companyData?.expiry_date, companyData?.date]);
 
   const handleFileInputChange = (e) => {
     const file = e.target.files[0];
@@ -76,6 +95,32 @@ export default function CompanyFormSidebar({ companyId = null, onSuccess }) {
       });
     }
   };
+
+  // Determine logo preview URL from either File or stored filename/full URL
+  const logoPreviewUrl = useMemo(() => {
+    const logo = companyData?.logo;
+    if (!logo || logo === "null") return null;
+    try {
+      if (logo instanceof File) {
+        return URL.createObjectURL(logo);
+      }
+      if (typeof logo === "string") {
+        const trimmed = logo.trim();
+        if (
+          trimmed.startsWith("http://") ||
+          trimmed.startsWith("https://") ||
+          trimmed.startsWith("/")
+        ) {
+          return trimmed;
+        }
+        const base = window.__APP_CONFIG__?.VITE_APP_BASE_URL || "";
+        return `${base}/storage/files/company/${trimmed}`;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }, [companyData?.logo]);
 
   const companySubmit = async (event, stay) => {
     event.preventDefault();
@@ -94,20 +139,78 @@ export default function CompanyFormSidebar({ companyId = null, onSuccess }) {
       registration_number,
       logo,
     } = companyData;
+    // Frontend validations for required fields and normalization
+    const nameTrimmed = (name || "").trim();
+    const phoneTrimmed = (phone || "").trim();
+    const emailTrimmed = (email || "").trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const nextErrors = {};
+    if (!nameTrimmed) {
+      nextErrors.name = ["Company name is required."];
+    }
+    if (!phoneTrimmed) {
+      nextErrors.phone = ["A company phone number is required."];
+    }
+    if (!emailTrimmed) {
+      nextErrors.email = ["Valid company email is required"];
+    } else if (!emailRegex.test(emailTrimmed)) {
+      nextErrors.email = ["Email must be a valid email address."];
+    } else if (emailTrimmed.length > 32) {
+      nextErrors.email = ["Email may not be greater than 32 characters."];
+    }
+
+    if (Object.keys(nextErrors).length) {
+      setErrors(nextErrors);
+      notification("error", "Validation error", "Please review the highlighted fields.");
+      setLoading(false);
+      return;
+    }
     
     let formData = new FormData();
-    formData.append("name", name);
-    formData.append("phone", phone);
-    formData.append("email", email);
+    formData.append("name", nameTrimmed);
+    formData.append("phone", phoneTrimmed);
+    formData.append("email", emailTrimmed);
     formData.append("address", address);
     formData.append("activity", activity);
     formData.append("license_no", license_no);
+    // Validate required issue_date
+    if (!issue_date) {
+      const fieldErrors = { ...errors, issue_date: ["Issue date is required."] };
+      setErrors(fieldErrors);
+      notification("error", "Validation error", "Issue date is required.");
+      setLoading(false);
+      return;
+    }
     formData.append("issue_date", issue_date);
+    // Validate required expiry_date
+    if (!expiry_date) {
+      const fieldErrors = { ...errors, expiry_date: ["Expiry date is required."] };
+      setErrors(fieldErrors);
+      notification("error", "Validation error", "Expiry date is required.");
+      setLoading(false);
+      return;
+    }
+    // Extra validation: dates must not be the same
+    if (issue_date === expiry_date) {
+      const fieldErrors = {
+        ...errors,
+        expiry_date: ["Expiry date must be different from issue date."],
+      };
+      setErrors(fieldErrors);
+      notification("error", "Validation error", "Issue and expiry date cannot be the same.");
+      setLoading(false);
+      return;
+    }
     formData.append("expiry_date", expiry_date);
     formData.append("registration_number", registration_number);
-    formData.append("logo", logo);
+    if (logo instanceof File) {
+      formData.append("logo", logo);
+    }
 
-    const url = companyId? `/company/update/${companyId}` : "/addCompany";
+    // Update should target uid when available, otherwise fall back to numeric id
+    const updateKey = companyData?.uid || companyId;
+    const url = companyId ? `/company/update/${updateKey}` : "/addCompany";
     
     try {
       const data = await createCompany({ url: url, formData }).unwrap();
@@ -120,10 +223,16 @@ export default function CompanyFormSidebar({ companyId = null, onSuccess }) {
         setCompanyData(_initialCompany);
       }
     } catch (err) {
+      // Map backend validation errors to local state for field-level display
+      // Support both axios-shaped and fetchBaseQuery-shaped error payloads
+      const fieldErrors = (err?.errorData?.errors || err?.data?.errors || {});
+      setErrors(fieldErrors);
+
+      // Still show a toast for summary context
       notification(
         "error",
-        err?.message || "An error occurred",
-        err?.description || "Please try again later."
+        err?.message || "Validation error",
+        err?.description || "Please review the highlighted fields."
       );
     } finally {
       setLoading(false);
@@ -168,6 +277,7 @@ export default function CompanyFormSidebar({ companyId = null, onSuccess }) {
           <Form.Label>Phone *</Form.Label>
           <Form.Control
             type="text"
+            maxLength={16}
             value={companyData.phone || ""}
             onChange={(ev) =>
               setCompanyData({
@@ -295,7 +405,7 @@ export default function CompanyFormSidebar({ companyId = null, onSuccess }) {
 
         {/* Issue Date */}
         <Form.Group className="form-group">
-          <Form.Label>Issue Date</Form.Label>
+          <Form.Label>Issue Date *</Form.Label>
           <DatePicker
             className="form-control"
             selected={
@@ -313,7 +423,7 @@ export default function CompanyFormSidebar({ companyId = null, onSuccess }) {
                 ...companyData,
                 issue_date: updatedDate
                   ? updatedDate.toISOString().split("T")[0]
-                  : "",
+                  : null,
               });
             }}
             dateFormat="yyyy-MM-dd"
@@ -325,7 +435,7 @@ export default function CompanyFormSidebar({ companyId = null, onSuccess }) {
 
         {/* Expiry Date */}
         <Form.Group className="form-group">
-          <Form.Label>Expiry Date</Form.Label>
+          <Form.Label>Expiry Date *</Form.Label>
           <DatePicker
             className="form-control"
             selected={
@@ -343,7 +453,7 @@ export default function CompanyFormSidebar({ companyId = null, onSuccess }) {
                 ...companyData,
                 expiry_date: updatedDate
                   ? updatedDate.toISOString().split("T")[0]
-                  : "",
+                  : null,
               });
             }}
             dateFormat="yyyy-MM-dd"
@@ -361,6 +471,25 @@ export default function CompanyFormSidebar({ companyId = null, onSuccess }) {
             onChange={handleFileInputChange}
             accept="image/*"
           />
+          {logoPreviewUrl && (
+            <div className="mt-2">
+              <img
+                src={logoPreviewUrl}
+                alt="Company Logo Preview"
+                style={{ maxWidth: "160px", maxHeight: "160px", borderRadius: 8, border: "1px solid #eee" }}
+              />
+              <div>
+                <Button
+                  variant="outline-secondary"
+                  size="sm"
+                  className="mt-2"
+                  onClick={() => setCompanyData({ ...companyData, logo: null })}
+                >
+                  Remove Logo
+                </Button>
+              </div>
+            </div>
+          )}
           {errors.logo && (
             <p className="error-message">{errors.logo[0]}</p>
           )}

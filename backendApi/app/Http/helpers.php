@@ -4,6 +4,7 @@ use App\Libraries\Requests_IPv6;
 use App\Models\ActivityLogModel;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 
 if (!function_exists('base_url')) {
@@ -63,17 +64,27 @@ function storeActivityLog(array $data): void
 
     $description = $data['descriptions'] ?? build_activity_log_descriptions(Auth::user()->name, $logType[strtolower($data['log_type'])], $data['module']);
 
-    (new ActivityLogModel())->create([
-        'user_id' => Auth::user()->id,
-        'company_id' => Auth::user()->primary_company,
-        'object_id' => $data['object_id'],
-        'object' => $data['object'] ?? $data['log_type'],
-        'log_type' => strtolower($data['log_type']),
-        'uid' => random_string('alnum', 32),
+    // Build payload dynamically based on actual table columns
+    $payload = [
+        'user_id'      => Auth::user()->id,
+        'log_type'     => strtolower($data['log_type']),
+        'uid'          => random_string('alnum', 32),
         'data_records' => $data_records,
-        'ip_address' => getUserIPAddress(),
+        'ip_address'   => getUserIPAddress(),
         'descriptions' => $description,
-    ]);
+    ];
+
+    if (Schema::hasColumn('activity_logs', 'object_id') && isset($data['object_id'])) {
+        $payload['object_id'] = $data['object_id'];
+    }
+    if (Schema::hasColumn('activity_logs', 'object')) {
+        $payload['object'] = $data['object'] ?? $data['log_type'];
+    }
+    if (Schema::hasColumn('activity_logs', 'company_id')) {
+        $payload['company_id'] = Auth::user()->primary_company;
+    }
+
+    (new ActivityLogModel())->create($payload);
 }
 
 

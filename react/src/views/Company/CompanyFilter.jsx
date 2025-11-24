@@ -2,7 +2,23 @@ import React, { useEffect, useState } from "react";
 import { Card, Stack, Row, Col, Form, Button } from "react-bootstrap";
 
 export default function CompanyFilter(props) {
-  const { search, query, setQuery, resetFilterParameter,placeHolderTxt } = props;
+  const { search, query, setQuery, resetFilterParameter, placeHolderTxt } = props;
+
+  // Local state to debounce search input and prevent API calls per keystroke
+  const [localSearchTerm, setLocalSearchTerm] = useState(query?.searchTerm || "");
+
+  // Keep local input in sync when external reset occurs
+  useEffect(() => {
+    setLocalSearchTerm(query?.searchTerm || "");
+  }, [query?.searchTerm]);
+
+  // Debounce updating the parent query object
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setQuery((prev) => ({ ...prev, searchTerm: localSearchTerm }));
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [localSearchTerm, setQuery]);
   return (
     <>
      <Card className="p-3" style={{ borderBottom: "1px solid" }}>
@@ -17,8 +33,8 @@ export default function CompanyFilter(props) {
               <Form.Control
                 type="text"
                 size="sm"
-                value={query?.searchTerm}
-                onChange={(e) => setQuery({ ...query, searchTerm: e.target.value })}
+                value={localSearchTerm}
+                onChange={(e) => setLocalSearchTerm(e.target.value)}
                 placeholder={placeHolderTxt}
                 style={{ textTransform: "capitalize" }}
               />
@@ -64,7 +80,14 @@ export default function CompanyFilter(props) {
         {/* Filter and Reset Buttons */}
         <Row className="justify-content-end">
           <Col md={4} className="text-end">
-            <Button variant="warning" size="sm" onClick={resetFilterParameter}>
+            <Button
+              variant="warning"
+              size="sm"
+              onClick={() => {
+                setLocalSearchTerm("");
+                resetFilterParameter();
+              }}
+            >
               Reset
             </Button>
           </Col>

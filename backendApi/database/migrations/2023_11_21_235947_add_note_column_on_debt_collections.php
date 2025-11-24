@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-	    Schema::table('debt_collections', function($table) {
-		    $table->string('note')->after('amount')->default('null');
-	    });
+        if (Schema::hasTable('debt_collections')) {
+            Schema::table('debt_collections', function (Blueprint $table) {
+                $table->string('note')->after('amount')->default('null');
+            });
+        }
     }
 
     /**
@@ -21,8 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-	    Schema::table( 'debt_collections', function ( Blueprint $table ) {
-		    $table->dropColumn( 'note' );
-	    } );
+	    if (Schema::hasTable('debt_collections') && Schema::hasColumn('debt_collections', 'note')) {
+            Schema::table('debt_collections', function (Blueprint $table) {
+                $table->dropColumn('note');
+            });
+        }
 	}
 };

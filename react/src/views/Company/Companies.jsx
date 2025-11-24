@@ -68,7 +68,7 @@ export default function companies() {
     isError: companyDataError,
     refetch,
   } = useGetCompanyDataQuery(
-    { currentPage, pageSize, query },
+    { currentPage, pageSize, query: { limit: query?.limit } },
     { skip: !pageSize, refetchOnMountOrArgChange: isPaginate }
   );
   const [deleteCompany] = useDeleteCompanyMutation();

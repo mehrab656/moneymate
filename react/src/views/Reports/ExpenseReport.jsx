@@ -54,7 +54,7 @@ export default function ExpenseReport() {
   const [showFilterModal, setShowFilterModal] = useState(false);//important
 
   if (default_currency === undefined) {
-    default_currency = "AED ";
+    default_currency = "$ ";
   }
 
   const {data: getExpenseReport} = useGetExpenseReportDataQuery({query:filterQuery},{ skip: !hasFilter });

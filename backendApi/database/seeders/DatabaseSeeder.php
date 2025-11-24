@@ -2,22 +2,30 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
     /**
      * Seed the application's database.
-     *
-     * @return void
      */
     public function run(): void
     {
+        // Run existing seeders when available
+        if (class_exists(OptionSeeder::class)) {
+            $this->call(OptionSeeder::class);
+        }
+        if (class_exists(UserPermissionSeeder::class)) {
+            $this->call(UserPermissionSeeder::class);
+        }
+        if (class_exists(SingleUserSeeder::class)) {
+            $this->call(SingleUserSeeder::class);
+        }
 
-        //$this->call(BudgetSeeder::class);
-        //$this->call(RoleSeeder::class);
-        $this->call(UserPermissionSeeder::class);
+        // Ensure at least 2 rows in each main table
+        $this->call(DemoDataSeeder::class);
 
+        // Ensure every existing table has at least two rows
+        $this->call(EnsureTwoSeeder::class);
     }
 }

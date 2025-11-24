@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table){
-			$table->unsignedBigInteger('primary_company');
-        });
+        if (Schema::hasTable('users') && !Schema::hasColumn('users', 'primary_company')) {
+            Schema::table('users', function (Blueprint $table){
+                $table->unsignedBigInteger('primary_company');
+            });
+        }
     }
 
     /**
@@ -21,6 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        if (Schema::hasTable('users') && Schema::hasColumn('users', 'primary_company')) {
+            Schema::table('users', function (Blueprint $table){
+                $table->dropColumn('primary_company');
+            });
+        }
     }
 };

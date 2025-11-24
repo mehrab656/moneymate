@@ -16,11 +16,36 @@ const CompanyDetails = ({ data }) => {
 
   return (
     <Box p={3}>
-      <Typography variant="h5" gutterBottom color="primary" fontWeight="bold">
-        Company Details
-      </Typography>
-      
-      <Divider sx={{ mb: 3 }} />
+      {/* Logo Preview */}
+      {(() => {
+        const logo = data?.logo;
+        if (!logo || logo === "null") return null;
+        let logoUrl = null;
+        if (typeof logo === "string") {
+          const trimmed = logo.trim();
+          if (
+            trimmed.startsWith("http://") ||
+            trimmed.startsWith("https://") ||
+            trimmed.startsWith("/")
+          ) {
+            logoUrl = trimmed;
+          } else {
+            const base = window.__APP_CONFIG__?.VITE_APP_BASE_URL || "";
+            logoUrl = `${base}/storage/files/company/${trimmed}`;
+          }
+        }
+        if (!logoUrl) return null;
+        return (
+        <Box sx={{ mb: 3 }} display="flex" justifyContent="center">
+          <img
+            src={logoUrl}
+            alt="Company Logo"
+            style={{ maxWidth: 160, maxHeight: 160, borderRadius: 8, border: "1px solid #eee" }}
+            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+          />
+        </Box>
+        );
+      })()}
 
       {/* Company Details Section */}
       <Paper elevation={1} sx={{ p: 2, mb: 3 }}>
@@ -120,23 +145,7 @@ const CompanyDetails = ({ data }) => {
           </Grid>
         </Grid>
       </Paper>
-
-      {/* Additional Information Section */}
-      <Paper elevation={1} sx={{ p: 2 }}>
-        <Typography variant="h6" color="primary" gutterBottom>
-          Others
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Typography variant="body2" color="text.secondary">
-              Note
-            </Typography>
-            <Typography variant="body1" fontWeight="medium">
-              {data.extra || "N/A"}
-            </Typography>
-          </Grid>
-        </Grid>
-      </Paper>
+    
     </Box>
   );
 };
