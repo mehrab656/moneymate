@@ -48,6 +48,11 @@ use Illuminate\Support\Facades\Artisan;
 
 
 
+// Respond to CORS preflight for any API route with 204 No Content
+Route::options('/{any}', function () {
+    return response()->noContent();
+})->where('any', '.*');
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
@@ -58,12 +63,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('/users', UserController::class);
     Route::get('/get-all-users', [UserController::class, 'getUsers']);
     Route::get('/get-single-user/{slug}', [UserController::class, 'getSingleUser']);
+    // Current user profile by token
+    Route::get('/my-profile', [UserController::class, 'getMyProfile']);
     Route::get('/get-investors', [UserController::class, 'getInvestors']);
     Route::get('/dashboard-data', [DashboardController::class, 'dashboardData']);
     Route::post('/update-profile/{slug}', [UserController::class, 'updateProfile']);
     Route::post('/update-basic-info/{slug}', [UserController::class, 'updateBasicInfo']);
+    Route::post('/my-profile/update-basic-info', [UserController::class, 'updateMyBasicInfo']);
     Route::post('/update-contacts/{slug}', [UserController::class, 'updateContacts']);
+    Route::post('/my-profile/update-contacts', [UserController::class, 'updateMyContacts']);
     Route::post('/update-employment-details/{slug}', [UserController::class, 'updateEmploymentDetails']);
+    Route::post('/my-profile/update-employment-details', [UserController::class, 'updateMyEmploymentDetails']);
     Route::post('/update-security', [AuthController::class, 'changePassword']);
     Route::post('/update-authentication/{slug}', [UserController::class, 'updateAuthentication']);
 //    Route::post('/user/add', [UserController::class, 'store']);
@@ -313,8 +323,6 @@ Route::get('migrate', function () {
 });
 
 Route::post('/hospitable/webhook', [HospitableController::class, 'handleWebhook']);
-
-
 
 
 

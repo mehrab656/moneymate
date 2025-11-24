@@ -8,12 +8,15 @@
     <base href="/">
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
-        window.OneSignalDeferred = window.OneSignalDeferred || [];
-        OneSignalDeferred.push(async function(OneSignal) {
-            await OneSignal.init({
-                appId: "905b9270-0212-408e-829f-c6d15374291a",
+        // Initialize OneSignal only on the allowed origin to avoid dev port errors
+        if (window.location.origin === 'http://localhost:3000') {
+            window.OneSignalDeferred = window.OneSignalDeferred || [];
+            OneSignalDeferred.push(async function(OneSignal) {
+                await OneSignal.init({
+                    appId: "905b9270-0212-408e-829f-c6d15374291a",
+                });
             });
-        });
+        }
     </script>
     <script src="/config.js"></script>
 

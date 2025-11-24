@@ -40,7 +40,7 @@ class User extends Authenticatable
         'first_name',
         'last_name',
         'phone',
-        'emergency_contract',
+        'emergency_contact',
         'dob',
         'last_ip_address',
         'ip_address',
@@ -256,9 +256,35 @@ class User extends Authenticatable
                 $user->update($updateColumnsArray);
                 $message = __("messages.basic_data_update",['name'=>$user->first_name]);
 
+            } else if ($token === 'basicContacts') {
+                // Merge basic + contacts (and avatar) in one go
+                $updateColumnsArray = [
+                    'first_name' => $data['first_name'],
+                    'last_name' => $data['last_name'],
+                    'dob' => $data['dob'],
+                    'gender' => $data['gender'],
+                ];
+                if (isset($data['username'])) {
+                    $updateColumnsArray['username'] = $data['username'];
+                }
+                if (isset($data['phone'])) {
+                    $updateColumnsArray['phone'] = $data['phone'];
+                }
+                if (isset($data['emergency_contact'])) {
+                    $updateColumnsArray['emergency_contact'] = $data['emergency_contact'];
+                }
+                if (isset($data['email'])) {
+                    $updateColumnsArray['email'] = $data['email'];
+                }
+                if (isset($data['profile_picture']) && $data['profile_picture']) {
+                    $updateColumnsArray['profile_picture'] = $data['profile_picture'];
+                }
+                $user->update($updateColumnsArray);
+                $message = __("messages.basic_data_update",['name'=>$user->first_name]);
+
             } else if ($token === 'contacts') {
                 $updateColumnsArray['phone'] = $data['phone'];
-                $updateColumnsArray['emergency_contract'] = $data['emergency_contract'];
+                $updateColumnsArray['emergency_contact'] = $data['emergency_contact'];
                 $updateColumnsArray['email'] = $data['email'];
                 if (isset($data['profile_picture']) && $data['profile_picture']) {
                     $updateColumnsArray['profile_picture'] = $data['profile_picture'];
@@ -313,7 +339,7 @@ class User extends Authenticatable
                     'basic_salary' => $data['salary'],
                     'accommodation_cost' => $data['accommodation_cost'],
                     'phone' => $user['phone'],
-                    'emergency_contact' => $user['emergency_contract'],
+                    'emergency_contact' => $user['emergency_contact'],
                     'joining_date' => $data['date_of_joining'],
                     'extras' => json_encode($extra),
                 ];
@@ -356,8 +382,8 @@ class User extends Authenticatable
                 if (isset($data['profile_picture'])) {
                     $updateColumnsArray['profile_picture'] = $data['profile_picture'];
                 }
-                if (isset($data['emergency_contract'])) {
-                    $updateColumnsArray['emergency_contract'] = $data['emergency_contract'];
+                if (isset($data['emergency_contact'])) {
+                    $updateColumnsArray['emergency_contact'] = $data['emergency_contact'];
                 }
             }
             DB::commit();

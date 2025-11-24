@@ -53,6 +53,44 @@ const Header = ({
     </Col>
   );
 
+  // Display username only, per requirement
+  const displayName = (user?.username || "").trim();
+
+  // Derive a safe avatar URL that respects configured backend base URL
+  const avatarUrl = (() => {
+    const src = (user?.avatar || "").trim();
+    if (!src || src === "null") return "";
+
+    // Use as-is if already absolute and not pointing to dev frontend origin
+    if (src.startsWith("http://") || src.startsWith("https://")) {
+      // If it accidentally points to the frontend dev origin, rewrite to backend base
+      try {
+        const u = new URL(src);
+        if (src.includes("/avatars/")) {
+          const base = window.__APP_CONFIG__?.VITE_APP_BASE_URL || "";
+          const idx = src.indexOf("/avatars/");
+          const path = src.substring(idx); // e.g. /avatars/filename.png
+          if (base) return `${base}${path}`;
+        }
+        return src; // keep original
+      } catch {
+        // Fallback below
+      }
+    }
+
+    // If relative or malformed, try to construct using configured base URL
+    const base = window.__APP_CONFIG__?.VITE_APP_BASE_URL || "";
+    if (src.startsWith("/avatars/")) {
+      return `${base}${src}`;
+    }
+    if (src.includes("/avatars/")) {
+      const idx = src.indexOf("/avatars/");
+      const path = src.substring(idx);
+      return `${base}${path}`;
+    }
+    return src; // last resort
+  })();
+
   return (
     <header className="header-container bg-white py-3 shadow-sm">
       <Row className="align-items-center px-3">
@@ -136,7 +174,7 @@ const Header = ({
           </NavDropdown>
         </Col>
         <Col xs="auto" className="d-flex align-items-center ms-auto">
-         <small> {user.username}</small>
+         <small> {displayName}</small>
             <IconButton
                 aria-controls="user-menu"
                 aria-haspopup="true"
@@ -144,7 +182,11 @@ const Header = ({
                 className="user-dropdown ms-3"
                 sx={{mt: -1}}
             >
-                <Avatar sx={{width: 35, height: 35}} alt={user?.username ?? "User"} src={user?.avatars}/>
+                <Avatar
+                  sx={{width: 35, height: 35}}
+                  alt={displayName || "User"}
+                  src={avatarUrl}
+                />
             </IconButton>
             <Menu
                 id="user-menu"
@@ -160,7 +202,7 @@ const Header = ({
                     horizontal: "right",
                 }}
             >
-                <MenuItem component={Link} to={`/users/${user.slug}`} onClick={handleClose}>
+                <MenuItem component={Link} to={`/profile`} onClick={handleClose}>
                     Profile
                 </MenuItem>
                 <MenuItem

@@ -8,6 +8,7 @@ import { Container, Row, Col, Button, Offcanvas } from "react-bootstrap";
 import { compareDates } from "../../helper/HelperFunctions.js";
 import { useGetSectorListDataQuery } from "../../api/slices/sectorSlice.js";
 import { useGetFinancialReportDataQuery } from "../../api/slices/accountSlice.js";
+import { useGetMyProfileQuery } from "../../api/slices/userSlice.js";
 import Dropdown from "react-bootstrap/Dropdown";
 import { notification } from "../../components/ToastNotification";
 import { Tooltip } from "react-tooltip";
@@ -107,6 +108,42 @@ export default function AuthLayout() {
   const { data: getFinancialReportData } = useGetFinancialReportDataQuery({
     token,
   });
+
+  // Fetch latest profile to keep header synchronized (avoid refetch churn)
+  const { data: myProfileData } = useGetMyProfileQuery(undefined, {
+    refetchOnMountOrArgChange: false,
+  });
+
+  useEffect(() => {
+    if (!myProfileData || !myProfileData.username) return;
+    // Prevent unnecessary context updates that can cause render loops
+    const isSameUser = (() => {
+      if (!user) return false;
+      try {
+        return (
+          user.username === myProfileData.username &&
+          user.avatar === myProfileData.avatar &&
+          user.first_name === myProfileData.first_name &&
+          user.last_name === myProfileData.last_name &&
+          user.email === myProfileData.email &&
+          user.phone === myProfileData.phone &&
+          user.gender === myProfileData.gender &&
+          user.dob === myProfileData.dob
+        );
+      } catch (_) {
+        return false;
+      }
+    })();
+
+    if (!isSameUser) {
+      setUser(myProfileData);
+      try {
+        localStorage.setItem("ACCESS_USER", JSON.stringify(myProfileData));
+      } catch (_) {
+        // ignore storage issues
+      }
+    }
+  }, [myProfileData, user]);
 
   // Other effects
   useEffect(() => {

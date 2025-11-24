@@ -1,21 +1,21 @@
 import {useNavigate, useParams} from "react-router-dom";
-import React, {useContext, useEffect, useState} from "react";
-import axiosClient from "../../../axios-client.js";
+import React, {useContext, useEffect, useState, useRef} from "react";
+// Use RTK Query hooks for consistency
+import { useGetMyProfileQuery, useGetSingleUserDataQuery } from "../../../api/slices/userSlice.js";
 import {useStateContext} from "../../../contexts/ContextProvider.jsx";
 import WizCard from "../../../components/WizCard.jsx";
 import {SettingsContext} from "../../../contexts/SettingsContext.jsx";
 import MainLoader from "../../../components/loader/MainLoader.jsx";
 import {Col, Nav, Card, Row,Tab} from "react-bootstrap";
 import BasicInfo from "./ProfileTabs/BasicInfo.jsx";
-import ContactInfo from "./ProfileTabs/ContactInfo.jsx";
 import EmploymentInfo from "./ProfileTabs/EmploymentInfo.jsx";
 import SecurityInfo from "./ProfileTabs/SecurityInfo.jsx";
 import TwoFactAuthentication from "./ProfileTabs/TwoFactAuthentication.jsx";
 import {Avatar} from "@mui/material";
+// No RTK query for my-profile yet; use axiosClient directly
 
 const navItems = [
     {eventKey:'basic', tabName:'Basic'},
-    {eventKey:'contacts', tabName:'Contacts'},
     {eventKey:'employment', tabName:'Employment Details'},
     {eventKey:'security', tabName:'Security'},
     {eventKey:'authentication', tabName:'2F Authentication'},
@@ -30,24 +30,32 @@ export default function UserForm() {
         password: "",
         password_confirmation: ""
     });
-    const [loading, setLoading] = useState(false);
+    // Queries: by id (admin) or current user (my-profile)
+    const { data: userById, isFetching: fetchingById } = useGetSingleUserDataQuery({ id }, { skip: !id });
+    const { data: myProfile, isFetching: fetchingMyProfile } = useGetMyProfileQuery(undefined, {
+        skip: !!id,
+        refetchOnMountOrArgChange: false,
+        refetchOnFocus: false,
+        refetchOnReconnect: false,
+    });
+    const loading = fetchingById || fetchingMyProfile;
     const [activeTab, setActiveTab] = useState('basic')
 
-    if (id) {
-        useEffect(() => {
+    // Set page title and sync local state for downstream props
+    useEffect(() => {
+        if (id) {
             document.title = 'View User';
-            setLoading(true);
-            axiosClient
-                .get(`/get-single-user/${id}`)
-                .then(({data}) => {
-                    setLoading(false);
-                    setUser(data);
-                })
-                .catch(() => {
-                    setLoading(false);
-                });
-        }, []);
-    }
+            if (userById) setUser(userById);
+        } else {
+            document.title = 'My Profile';
+            if (myProfile) setUser((prev) => {
+                // Guard against redundant state updates
+                if (!prev) return myProfile;
+                const same = prev?.username === myProfile?.username && prev?.avatar === myProfile?.avatar;
+                return same ? prev : myProfile;
+            });
+        }
+    }, [id, userById, myProfile]);
 
 
     const setCurrentTab = (eventKey)=>{
@@ -55,10 +63,7 @@ export default function UserForm() {
     }
     const renderTabContent = (tab)=>{
         if (tab==='basic'){
-            return <BasicInfo />;
-        }
-        else if(tab==='contacts'){
-            return <ContactInfo user={user} />;
+            return <BasicInfo user={user} />;
         }
         else if(tab==='employment'){
             return <EmploymentInfo user={user} />;

@@ -150,6 +150,8 @@ export const createAuthRouter = () => {
         { path: "/users", element: <LazyRoute><UserList /></LazyRoute> },
         { path: "/users/new", element: <LazyRoute><UserForm key="userCreate" /></LazyRoute> },
         { path: "/users/:id", element: <LazyRoute><UserForm key="userUpdate" /></LazyRoute> },
+        // Self Profile
+        { path: "/profile", element: <LazyRoute><UserForm key="selfProfile" /></LazyRoute> },
         { path: "/roles", element: <LazyRoute><Roles /></LazyRoute> },
         { path: "/roles/new", element: <LazyRoute><RoleForms key="rolesCreate" /></LazyRoute> },
         { path: "/role/:id", element: <LazyRoute><RoleForms key="rolesUpdate" /></LazyRoute> },

@@ -1,6 +1,6 @@
 import {Tab, Form, Card, Row, Col,Button} from "react-bootstrap";
 import React, {useEffect, useState} from "react";
-import {useGetSingleUserDataQuery, useUpdateBasicInfoMutation} from "../../../../api/slices/userSlice.js";
+import {useGetSingleUserDataQuery, useUpdateBasicInfoMutation, useUpdateMyContactsMutation} from "../../../../api/slices/userSlice.js";
 import {notification} from "../../../../components/ToastNotification.jsx";
 import {useParams} from "react-router-dom";
 
@@ -11,22 +11,34 @@ const _initials={
     profile_picture:"",
     avatar:""
 }
-export default function ContactInfo(){
+export default function ContactInfo({ user }){
     const [data, setData] = useState(_initials);
     const [btnText, setBtnText] = useState('Update');
     let {id} = useParams();
-    const {data: getUserData } = useGetSingleUserDataQuery({ id:id});
+    const {data: getUserData } = useGetSingleUserDataQuery({ id }, { skip: !id });
     const [currentProfilePicture, setCurrentProfilePicture] = useState(null)
 
     useEffect(() => {
         if (id && getUserData){
-            data.phone = getUserData.phone;
-            data.emergency_contract = getUserData.emergency_contract;
-            data.email = getUserData.email;
-            setCurrentProfilePicture(getUserData.avatar)
+            setData((prev) => ({
+                ...prev,
+                phone: getUserData.phone ?? "",
+                emergency_contract: getUserData.emergency_contract ?? "",
+                email: getUserData.email ?? "",
+            }));
+            setCurrentProfilePicture(getUserData.avatar ?? null);
+        } else if (!id && user) {
+            setData((prev) => ({
+                ...prev,
+                phone: user.phone ?? "",
+                emergency_contract: user.emergency_contract ?? "",
+                email: user.email ?? "",
+            }));
+            setCurrentProfilePicture(user.avatar ?? null);
         }
-    }, [getUserData]);
+    }, [id, getUserData, user]);
     const [updateBasicData] = useUpdateBasicInfoMutation();
+    const [updateMyContacts] = useUpdateMyContactsMutation();
     const updateBasicInfo = async (event) => {
         event.preventDefault();
         setBtnText("Updating...");
@@ -37,8 +49,14 @@ export default function ContactInfo(){
         formData.append("emergency_contract", data.emergency_contract);
         formData.append("email", data.email);
         try {
-            const data = await updateBasicData({ url: `/update-contacts/${id}`, formData }).unwrap();
-            notification("success", data?.message, data?.description);
+            let result;
+            if (id) {
+                const url = `/update-contacts/${id}`;
+                result = await updateBasicData({ url, formData }).unwrap();
+            } else {
+                result = await updateMyContacts({ formData }).unwrap();
+            }
+            notification("success", result?.message, result?.description);
             setBtnText("Update");
 
         } catch (err) {
