@@ -1,4 +1,4 @@
-import {useNavigate, useParams} from "react-router-dom";
+import {useNavigate, useParams, useLocation} from "react-router-dom";
 import React, {useContext, useEffect, useState, useRef} from "react";
 // Use RTK Query hooks for consistency
 import { useGetMyProfileQuery, useGetSingleUserDataQuery } from "../../../api/slices/userSlice.js";
@@ -22,6 +22,7 @@ const navItems = [
 ]
 export default function UserForm() {
     const navigate = useNavigate();
+    const location = useLocation();
     let {id} = useParams();
     const [user, setUser] = useState({
         id: null,
@@ -41,6 +42,21 @@ export default function UserForm() {
     const loading = fetchingById || fetchingMyProfile;
     const [activeTab, setActiveTab] = useState('basic')
 
+    // Map between query param values and internal eventKeys
+    const tabParamToEventKey = {
+        basic: 'basic',
+        'employment-details': 'employment',
+        employment: 'employment',
+        security: 'security',
+        authentication: 'authentication',
+    };
+    const eventKeyToTabParam = {
+        employment: 'employment-details',
+        basic: 'basic',
+        security: 'security',
+        authentication: 'authentication',
+    };
+
     // Set page title and sync local state for downstream props
     useEffect(() => {
         if (id) {
@@ -57,9 +73,24 @@ export default function UserForm() {
         }
     }, [id, userById, myProfile]);
 
+    // Sync active tab from ?tab= query param
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const tabParam = params.get('tab');
+        if (tabParam) {
+            const nextKey = tabParamToEventKey[tabParam] || 'basic';
+            setActiveTab(nextKey);
+        } else {
+            setActiveTab('basic');
+        }
+    }, [location.search]);
+
 
     const setCurrentTab = (eventKey)=>{
-        setActiveTab(eventKey)
+        setActiveTab(eventKey);
+        const tabParam = eventKeyToTabParam[eventKey] || eventKey;
+        // Update only the query string, preserve current path
+        navigate({ pathname: location.pathname, search: `?tab=${tabParam}` }, { replace: true });
     }
     const renderTabContent = (tab)=>{
         if (tab==='basic'){
@@ -80,7 +111,7 @@ export default function UserForm() {
             <WizCard className="animated fadeInDown wiz-card-mh">
                 {loading && <div className="text-center">Loading...</div>}
                 <Row>
-                    <Tab.Container id="left-tabs-example" defaultActiveKey={activeTab}>
+                    <Tab.Container id="left-tabs-example" activeKey={activeTab}>
                         <Row>
                             <Col sm={3}>
                                 <Card>
