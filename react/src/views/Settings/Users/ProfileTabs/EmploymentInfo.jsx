@@ -15,7 +15,6 @@ const _initials = {
   designation:"",
   department:"",
   employment_type:"",
-  role_as:"employee",
   address:"",
   city:"",
   state:"",
@@ -53,7 +52,6 @@ export default function EmploymentInfo({ user }) {
         designation: employmentData.extras?.designation ?? "",
         department: employmentData.extras?.department ?? "",
         employment_type: employmentData.extras?.employment_type ?? "",
-        role_as: user?.role_as ?? "employee",
         address: employmentData.extras?.address ?? "",
         city: employmentData.extras?.city ?? "",
         state: employmentData.extras?.state ?? "",
@@ -77,7 +75,6 @@ export default function EmploymentInfo({ user }) {
     setBtnText("Updating...");
 
     const formData = new FormData();
-    formData.append("role_as", data.role_as);
     formData.append("employee_code", data.employee_code);
     formData.append("designation", data.designation);
     formData.append("department", data.department);

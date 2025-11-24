@@ -237,7 +237,7 @@ export default function AuthLayout() {
                 )}
                 {getCurrentCompanyData?.data?.name && (
                   <div className="aside-content">
-                    {userRole !== "employee" && (
+                    {checkPermission("company_view") && (
                       <Dropdown>
                         <Dropdown.Toggle
                           variant="dark"
