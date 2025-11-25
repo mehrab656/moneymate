@@ -148,6 +148,7 @@ class DemoDataSeeder extends Seeder
         // Bank accounts
         $insertTwo('bank_accounts', [
             [
+                'slug' => (string) Uuid::uuid4(),
                 'account_name' => 'Primary Account',
                 'account_number' => 'ACC-0001',
                 'user_id' => $user1,
@@ -156,6 +157,7 @@ class DemoDataSeeder extends Seeder
                 'balance' => 1000,
             ],
             [
+                'slug' => (string) Uuid::uuid4(),
                 'account_name' => 'Savings Account',
                 'account_number' => 'ACC-0002',
                 'user_id' => $user2,
@@ -174,7 +176,7 @@ class DemoDataSeeder extends Seeder
                 'slug' => (string) Uuid::uuid4(),
                 'name' => 'Hospitality',
                 'company_id' => $company1,
-                'payment_account_id' => $account1,
+                'bank_account_id' => $account1,
                 'contract_start_date' => now()->format('Y-m-d'),
                 'contract_end_date' => now()->addMonths(12)->format('Y-m-d'),
                 'el_note' => 'Demo sector A',
@@ -183,7 +185,7 @@ class DemoDataSeeder extends Seeder
                 'slug' => (string) Uuid::uuid4(),
                 'name' => 'Retail',
                 'company_id' => $company2,
-                'payment_account_id' => $account2,
+                'bank_account_id' => $account2,
                 'contract_start_date' => now()->format('Y-m-d'),
                 'contract_end_date' => now()->addMonths(12)->format('Y-m-d'),
                 'el_note' => 'Demo sector B',

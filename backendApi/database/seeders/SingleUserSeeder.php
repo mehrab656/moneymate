@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use App\Models\Role;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
@@ -20,22 +19,25 @@ class SingleUserSeeder extends Seeder
             return; // users table missing; skip
         }
 
-        // Skip creating roles here; user will use role_as='user'
-
+        // Deterministic demo credentials
         $email = 'hossainmehraab@gmail.com';
         $password = Hash::make('12345678');
         $username = 'Mehrab Hossain';
 
-        $user = User::where('email', $email)->first();
+        // Ensure a user with id=1 exists to match seeded relations
+        $user = User::find(1);
 
         if ($user) {
             $user->update([
+                'username' => $username,
+                'email' => $email,
                 'password' => $password,
                 'active' => true,
                 'role_as' => 'user',
             ]);
         } else {
             $data = [
+                'id' => 1,
                 'slug' => Uuid::uuid4(),
                 'username' => $username,
                 'email' => $email,
@@ -43,11 +45,12 @@ class SingleUserSeeder extends Seeder
                 'active' => true,
                 'role_as' => 'user',
             ];
+            // Set primary_company if the column exists; no FK enforced in migration
             if (Schema::hasColumn('users', 'primary_company')) {
-                $data['primary_company'] = 1; // default company id if applicable
+                $data['primary_company'] = 1;
             }
-            $user = User::create($data);
+            User::create($data);
         }
-        // No role assignment method on User; role_as string used
     }
 }
+

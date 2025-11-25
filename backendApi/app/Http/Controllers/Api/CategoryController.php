@@ -26,33 +26,32 @@ class CategoryController extends Controller {
 		$this->categoryRepository = $categoryRepository;
 	}
 
-	public function index( Request $request ): JsonResponse {
-		$page       = $request->query( 'page', 1 );
-		$pageSize   = $request->query( 'pageSize', 10 );
-		$sectorID   = $request->query( 'selectedSectorId', null );
-		$type   = $request->query( 'categoryType', null );
-		$categories = DB::table( 'categories' )->select( 'categories.*' )
-		                ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
-		                ->where( 'sectors.company_id', '=', Auth::user()->primary_company );
-        if ($sectorID){
-            $categories = $categories->where('sectors.id','=',$sectorID);
-        }
-        if ($type){
-            $categories = $categories->where('type','=',$type);
-        }
-//        if ($page){
-//            $categories = $categories->skip( ( $page - 1 ) * $pageSize );
-//        }
-//        if ($pageSize){
-//            $categories = $categories->take( $pageSize );
-//        }
-        $categories = $categories->skip( ( $page - 1 ) * $pageSize )->take( $pageSize )->get();
+    public function index( Request $request ): JsonResponse {
+        $page       = $request->query( 'page', 1 );
+        $pageSize   = $request->query( 'pageSize', 10 );
+        $sectorID   = $request->query( 'selectedSectorId', null );
+        $type       = $request->query( 'categoryType', null );
 
-		return response()->json( [
-			'data'  => CategoryResource::collection( $categories ),
-			'total' => Category::count(),
-		] );
-	}
+        // Use Eloquent to return Category models instead of stdClass
+        $query = Category::query()
+            ->select('categories.*')
+            ->join('sectors', 'categories.sector_id', '=', 'sectors.id')
+            ->where('sectors.company_id', '=', Auth::user()->primary_company);
+
+        if ($sectorID) {
+            $query->where('sectors.id', '=', $sectorID);
+        }
+        if ($type) {
+            $query->where('type', '=', $type);
+        }
+
+        $categories = $query->skip( ( $page - 1 ) * $pageSize )->take( $pageSize )->get();
+
+        return response()->json([
+            'data'  => CategoryResource::collection($categories),
+            'total' => Category::count(),
+        ]);
+    }
 
 	/**
 	 * @throws Exception
@@ -143,18 +142,18 @@ class CategoryController extends Controller {
      */
     public function categories(Request $request): JsonResponse
     {
-
         $type = $request->type;
-        $query = DB::table( 'categories' )->select( 'categories.*' )
-            ->join( 'sectors', 'categories.sector_id', '=', 'sectors.id' )
-            ->where( 'sectors.company_id', '=', Auth::user()->primary_company );
+        $query = Category::query()
+            ->select('categories.*')
+            ->join('sectors', 'categories.sector_id', '=', 'sectors.id')
+            ->where('sectors.company_id', '=', Auth::user()->primary_company);
 
-        if ($type){
-            $query= $query->where('type',$type);
+        if ($type) {
+            $query->where('type', $type);
         }
 
         return response()->json([
-            'data'=> CategoryFilterResource::collection($query->get()),
+            'data' => CategoryFilterResource::collection($query->get()),
         ]);
     }
 

@@ -69,7 +69,7 @@ class TaskModel extends Model
 
         //get the account id associated with this task by : task->category->sector->sector payment account
 
-        $accountID = $task->category->sector->payment_account_id;
+        $accountID = $task->category->sector->bank_account_id;
 
         $task->save();
 

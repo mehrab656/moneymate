@@ -72,9 +72,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    protected $with = [
-        'subscriptions'
-    ];
+    // Avoid implicit eager loading that can 500 when related tables are missing
+    protected $with = [];
 
     /**
      * @return HasMany
@@ -298,7 +297,12 @@ class User extends Authenticatable
 //                    ->where('company_id', Auth::user()->primary_company)
 //                    ->update(['role_id' => $data['role']]);
 
-                $updateColumnsArray['role_as'] = $data['role_as'];
+                // role_as is optional in employment updates; keep current if not provided
+                if (isset($data['role_as']) && $data['role_as'] !== null && $data['role_as'] !== '') {
+                    $updateColumnsArray['role_as'] = $data['role_as'];
+                } else {
+                    $updateColumnsArray['role_as'] = $user->role_as;
+                }
                 $employee = Employee::where('slug', $user->slug)->first();
 
                 $newExtras = [

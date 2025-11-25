@@ -9,6 +9,7 @@ return new class extends Migration {
     {
         Schema::create('bank_accounts', function (Blueprint $table) {
             $table->id();
+            $table->uuid('slug');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('company_id')->nullable();
             $table->unsignedBigInteger('bank_name_id')->nullable();
@@ -17,6 +18,8 @@ return new class extends Migration {
             $table->decimal('balance', 15, 2)->default(0);
             $table->timestamps();
             $table->softDeletes();
+            $table->index('slug');
+            $table->unique('slug');
         });
     }
 
@@ -25,4 +28,3 @@ return new class extends Migration {
         Schema::dropIfExists('bank_accounts');
     }
 };
-

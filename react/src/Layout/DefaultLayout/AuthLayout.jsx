@@ -115,6 +115,22 @@ export default function AuthLayout() {
   });
 
   useEffect(() => {
+    // Fallback: if no CURRENT_COMPANY is set, default to the first available company
+    try {
+      if (!currentCompanyID && getCompanyData?.data?.length > 0) {
+        const firstCompanyId = getCompanyData.data[0]?.id;
+        if (firstCompanyId) {
+          localStorage.setItem("CURRENT_COMPANY", String(firstCompanyId));
+          // Reload to ensure all queries re-run with the selected company
+          window.location.reload();
+        }
+      }
+    } catch (_) {
+      // ignore errors related to localStorage or window
+    }
+  }, [getCompanyData, currentCompanyID]);
+
+  useEffect(() => {
     if (!myProfileData || !myProfileData.username) return;
     // Prevent unnecessary context updates that can cause render loops
     const isSameUser = (() => {

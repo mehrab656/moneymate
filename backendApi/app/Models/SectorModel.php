@@ -24,10 +24,15 @@ class SectorModel extends Model
 	}
 
     public function account():HasOne{
-        return $this->hasOne(BankAccount::class,'id','payment_account_id');
+        return $this->hasOne(BankAccount::class,'id','bank_account_id');
     }
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function categories(): HasMany
+    {
+        return $this->hasMany(Category::class, 'sector_id');
     }
 }

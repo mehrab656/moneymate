@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { NavDropdown, Col, Row, Collapse, Badge } from "react-bootstrap";
-import { Menu, MenuItem, Divider, IconButton, Avatar } from "@mui/material";
+import { Menu, MenuItem, Divider, IconButton, Avatar, Box } from "@mui/material";
 
 import DropDownProperties from "./DropDownProperties";
 import {
@@ -137,43 +137,43 @@ const Header = ({
           </Collapse>
         </Col>
 
-        {/* Notifications, User Dropdown, Toggle Icon, and Sidebar Toggle Button */}
+
         <Col xs="auto" className="d-flex align-items-center ms-auto">
-          {/* Notifications Dropdown */}
-          <NavDropdown
-              title={
-                <DropDownProperties
-                    icon={faBell}
-                    totalNotification={notifications.length || 0}
-                />
-              }
-              id="notification-dropdown"
-              align="end"
-              className="notification-dropdown"
-          >
-            <NavDropdown.Header className="bg-primary p-1 text-white">
-              Notifications
-            </NavDropdown.Header>
-            {notifications.length > 0 ? (
-                notifications.map((item) => (
-                    <NavDropdown.Item
-                        key={`${item.type}-${item.id}`}
-                        className="notification-item"
-                    >
-                      {item.name} {item.type} bill date{" "}
-                      {item.type === "internet"
-                          ? item.internet_billing_date
-                          : item.el_billing_date}
-                    </NavDropdown.Item>
-                ))
-            ) : (
-                <NavDropdown.Item className="text-muted">
-                  No notifications
-                </NavDropdown.Item>
-            )}
-          </NavDropdown>
-        </Col>
-        <Col xs="auto" className="d-flex align-items-center ms-auto">
+          <Box sx={{mr: 2}}>
+            <NavDropdown
+                title={
+                  <DropDownProperties
+                      icon={faBell}
+                      totalNotification={notifications.length || 0}
+                  />
+                }
+                id="notification-dropdown"
+                align="end"
+                className="notification-dropdown"
+            >
+              <NavDropdown.Header className="bg-primary p-1 text-white">
+                Notifications
+              </NavDropdown.Header>
+              {notifications.length > 0 ? (
+                  notifications.map((item) => (
+                      <NavDropdown.Item
+                          key={`${item.type}-${item.id}`}
+                          className="notification-item"
+                      >
+                        {item.name} {item.type} bill date{" "}
+                        {item.type === "internet"
+                            ? item.internet_billing_date
+                            : item.el_billing_date}
+                      </NavDropdown.Item>
+                  ))
+              ) : (
+                  <NavDropdown.Item className="text-muted">
+                    No notifications
+                  </NavDropdown.Item>
+              )}
+            </NavDropdown>
+          </Box>
+
          <small> {displayName}</small>
             <IconButton
                 aria-controls="user-menu"
@@ -226,7 +226,7 @@ const Header = ({
             <Divider/>
 
             <MenuItem onClick={onLogout}>Logout</MenuItem>
-          </Menu>
+            </Menu>
 
           {/* Finance Section Toggle Icon for Small Screens */}
           {!isLargeScreen && (

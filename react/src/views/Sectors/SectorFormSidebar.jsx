@@ -11,7 +11,7 @@ import { useGetBankDataQuery } from "../../api/slices/bankSlice.js";
 const _initialSector = {
   id: null,
   name: "",
-  payment_account_id: "",
+  bank_account_id: "",
   contract_start_date: "",
   contract_end_date: "",
   contract_period: 6,
@@ -69,7 +69,7 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
       setFormData({
         id: s.id,
         name: s.name || "",
-        payment_account_id: s.payment_account_id || "",
+        bank_account_id: s.bank_account_id || s.payment_account_id || (s.account?.value ?? ""),
         contract_start_date: s.contract_start_date || "",
         contract_end_date: s.contract_end_date || "",
         contract_period: s.contract_period ?? 6,
@@ -89,12 +89,13 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
           : s.payments
           ? JSON.parse(s.payments)
           : [];
+        const cheque = (p || []).filter((x) => x.type === 'cheque');
         setPayments(
-          p && p.length > 0
-            ? p.map((x) => ({
-                paymentNumber: x.paymentNumber || "",
-                paymentDate: x.paymentDate || "",
-                amount: x.amount || "",
+          cheque && cheque.length > 0
+            ? cheque.map((x) => ({
+                paymentNumber: x.payment_number || x.paymentNumber || "",
+                paymentDate: x.date || x.paymentDate || "",
+                amount: x.amount ?? "",
               }))
             : _initialPayments
         );
@@ -136,6 +137,15 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    // Clear error for the field being edited
+    setErrors((prev) => {
+      if (!prev) return prev;
+      const next = { ...prev };
+      if (next[name]) {
+        delete next[name];
+      }
+      return next;
+    });
   };
 
   const handlePaymentChange = (e, index) => {
@@ -184,14 +194,12 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
     const fd = new FormData();
     // Basic fields
     fd.append("name", formData.name);
-    fd.append("payment_account_id", formData.payment_account_id);
+    fd.append("bank_account_id", formData.bank_account_id);
     fd.append("contract_start_date", formData.contract_start_date);
     fd.append("contract_end_date", formData.contract_end_date);
 
-    // Only on create
-    if (!sectorId) {
-      fd.append("contract_period", formData.contract_period);
-    }
+    // Contract period
+    fd.append("contract_period", formData.contract_period);
 
     // Electricity
     fd.append("el_premises_no", formData.el_premises_no);
@@ -205,8 +213,8 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
     fd.append("internet_billing_date", formData.internet_billing_date);
     fd.append("int_note", formData.int_note);
 
-    // Payments (create only)
-    if (!sectorId && payments && payments.length > 0) {
+    // Payments
+    if (payments && payments.length > 0) {
       payments.forEach((p) => {
         fd.append("payment_amount[]", p.amount);
         fd.append("payment_date[]", p.paymentDate);
@@ -214,8 +222,8 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
       });
     }
 
-    // Channels (create only)
-    if (!sectorId && channels && channels.length > 0) {
+    // Channels
+    if (channels && channels.length > 0) {
       channels.forEach((c) => {
         fd.append("channel_name[]", c.channel_name);
         fd.append("reference_id[]", c.reference_id);
@@ -223,8 +231,8 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
       });
     }
 
-    // Categories (create only)
-    if (!sectorId && categoryNames && categoryNames.length > 0) {
+    // Categories
+    if (categoryNames && categoryNames.length > 0) {
       categoryNames.forEach((name) => {
         if (name && name.trim() !== "") {
           fd.append("category_name[]", name);
@@ -247,7 +255,7 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
         closeSidebar();
       }
     } catch (err) {
-      const errs = err?.errorData || {};
+      const errs = err?.errorData?.errors || {};
       setErrors(errs);
       notification("error", err?.message || "Error", err?.description || "Please fix the errors and try again.");
     } finally {
@@ -289,15 +297,15 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
               <Form.Group className="form-group mb-3">
                 <Form.Label>Payment Account *</Form.Label>
                 <Form.Select
-                  name="payment_account_id"
-                  value={formData.payment_account_id}
+                  name="bank_account_id"
+                  value={formData.bank_account_id}
                   onChange={handleInputChange}
                   required
                 >
                   <option value="">Select Account</option>
                   {bankAccounts.length > 0 ? (
                     bankAccounts.map((account) => (
-                      <option key={account.id} value={account.id}>
+                      <option key={account.slug || account.id} value={account.slug || account.id}>
                         {account.bank_name} - {account.account_number}
                       </option>
                     ))
@@ -305,8 +313,8 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
                     <option disabled>No account was found</option>
                   )}
                 </Form.Select>
-                {errors.payment_account_id && (
-                  <p className="error-message">{errors.payment_account_id[0]}</p>
+                {errors.bank_account_id && (
+                  <p className="error-message">{errors.bank_account_id[0]}</p>
                 )}
               </Form.Group>
             </Col>
@@ -342,26 +350,24 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
               </Form.Group>
             </Col>
 
-            {!sectorId && (
-              <Col xs={12} md={6}>
-                <Form.Group className="form-group mb-3">
-                  <Form.Label>Contract Period (months) *</Form.Label>
-                  <Form.Select
-                    name="contract_period"
-                    value={formData.contract_period}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    {[...Array(24)].map((_, i) => (
-                      <option key={i + 1} value={i + 1}>{i + 1}</option>
-                    ))}
-                  </Form.Select>
-                  {errors.contract_period && (
-                    <p className="error-message">{errors.contract_period[0]}</p>
-                  )}
-                </Form.Group>
-              </Col>
-            )}
+            <Col xs={12} md={6}>
+              <Form.Group className="form-group mb-3">
+                <Form.Label>Contract Period (months) *</Form.Label>
+                <Form.Select
+                  name="contract_period"
+                  value={formData.contract_period}
+                  onChange={handleInputChange}
+                  required
+                >
+                  {[...Array(24)].map((_, i) => (
+                    <option key={i + 1} value={i + 1}>{i + 1}</option>
+                  ))}
+                </Form.Select>
+                {errors.contract_period && (
+                  <p className="error-message">{errors.contract_period[0]}</p>
+                )}
+              </Form.Group>
+            </Col>
           </Row>
         </div>
 
@@ -378,6 +384,9 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
                   value={formData.el_premises_no}
                   onChange={handleInputChange}
                 />
+                {errors.el_premises_no && (
+                  <p className="error-message">{errors.el_premises_no[0]}</p>
+                )}
               </Form.Group>
             </Col>
             <Col xs={12} md={6}>
@@ -389,6 +398,9 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
                   value={formData.el_business_acc_no}
                   onChange={handleInputChange}
                 />
+                {errors.el_business_acc_no && (
+                  <p className="error-message">{errors.el_business_acc_no[0]}</p>
+                )}
               </Form.Group>
             </Col>
             <Col xs={12} md={6}>
@@ -400,6 +412,9 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
                   value={formData.el_acc_no}
                   onChange={handleInputChange}
                 />
+                {errors.el_acc_no && (
+                  <p className="error-message">{errors.el_acc_no[0]}</p>
+                )}
               </Form.Group>
             </Col>
             <Col xs={12} md={6}>
@@ -411,6 +426,9 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
                   value={formData.el_billing_date}
                   onChange={handleInputChange}
                 />
+                {errors.el_billing_date && (
+                  <p className="error-message">{errors.el_billing_date[0]}</p>
+                )}
               </Form.Group>
             </Col>
             <Col xs={12}>
@@ -438,6 +456,9 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
                   value={formData.internet_acc_no}
                   onChange={handleInputChange}
                 />
+                {errors.internet_acc_no && (
+                  <p className="error-message">{errors.internet_acc_no[0]}</p>
+                )}
               </Form.Group>
             </Col>
             <Col xs={12} md={6}>
@@ -449,6 +470,9 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
                   value={formData.internet_billing_date}
                   onChange={handleInputChange}
                 />
+                {errors.internet_billing_date && (
+                  <p className="error-message">{errors.internet_billing_date[0]}</p>
+                )}
               </Form.Group>
             </Col>
             <Col xs={12}>
@@ -467,9 +491,8 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
           </Row>
         </div>
 
-        {/* Payments - only for create */}
-        {!sectorId && (
-          <div className="mb-4">
+        {/* Payments */}
+        <div className="mb-4">
             <h5 className="mb-3">Payment Schedule</h5>
             <div className="d-none d-lg-block sector-form-sidebar-desktop-container">
               <Table size="sm" bordered className="sector-form-sidebar-table">
@@ -582,11 +605,9 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
             </div>
             {errors?.payments && <p className="error-message mt-2">{errors?.payments[0]}</p>}
           </div>
-        )}
 
-        {/* Channels - only for create */}
-        {!sectorId && (
-          <div className="mb-4">
+        {/* Channels */}
+        <div className="mb-4">
             <h5 className="mb-3">Listing Channels</h5>
             <div className="d-none d-lg-block sector-form-sidebar-desktop-container">
               <Table size="sm" bordered className="sector-form-sidebar-table">
@@ -697,11 +718,9 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
             </div>
             {errors?.channels && <p className="error-message mt-2">{errors?.channels[0]}</p>}
           </div>
-        )}
 
-        {/* Categories - only for create */}
-        {!sectorId && (
-          <div className="mb-4">
+        {/* Categories */}
+        <div className="mb-4">
             <h5 className="mb-3">Default Categories</h5>
             {categoryNames.map((name, index) => (
               <Row key={`cat-${index}`} className="g-2 align-items-center mb-2">
@@ -723,7 +742,6 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
             ))}
             {errors?.categories && <p className="error-message mt-2">{errors?.categories[0]}</p>}
           </div>
-        )}
 
         {/* Submit Buttons */}
         <Row className="g-2">

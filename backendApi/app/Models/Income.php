@@ -113,7 +113,7 @@ class Income extends Model
             $income = $this->buildIncomeDatesetFromCSV($incomeData,$channel);
             $income += [
                 'user_id' => Auth::user()->id,
-                'account_id' => $sector->payment_account_id,
+                'account_id' => $sector->bank_account_id,
                 'category_id' => $category->id,
                 'attachment' => '',
             ];

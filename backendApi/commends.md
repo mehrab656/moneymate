@@ -35,7 +35,8 @@ php artisan serve --host=127.0.0.1 --port=8000
 ## Database
 ```bash
 php artisan migrate                # Run migrations
-php artisan db:seed               # Seed database
+php artisan db:seed  
+php artisan demo:counts             # Seed database
 php artisan migrate:rollback      # Roll back last batch
 php artisan migrate:fresh --seed  # Drop & re-run all with seeding
 ```

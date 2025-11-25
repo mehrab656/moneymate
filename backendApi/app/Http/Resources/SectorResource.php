@@ -33,7 +33,13 @@ class SectorResource extends JsonResource {
 			'id'                    => $this->slug,
 			'name'                  => $this->name,
 			'rent'                  => $this->rent,
-//			'payment_account_id'    => $this->payment_account_id,
+			// Provide the sector payment account using the related BankAccount slug
+			'bank_account_id'       => optional($this->account)->slug,
+			// Convenience field matching older UI patterns: value/label pair
+			'account'               => $this->account ? [
+				'value' => $this->account->slug,
+				'label' => sprintf('%s - %s', optional($this->account->bankName)->bank_name, $this->account->account_number),
+			] : null,
 			'contract_start_date'   => $this->contract_start_date,
 			'contract_end_date'     => $this->contract_end_date,
 			'el_premises_no'        => $this->el_premises_no,
@@ -45,6 +51,7 @@ class SectorResource extends JsonResource {
 			'internet_billing_date' => $this->internet_billing_date,
 			'int_note'              => $this->int_note,
 			'payments'              => $this->payments,
+			'categoryName'          => $this->categories()->where('type','expense')->pluck('name'),
 			'channels'              => $this->channels,
 		];
 	}

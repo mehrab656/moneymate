@@ -344,6 +344,7 @@ return array(
     'Database\\Seeders\\CategorySeeder' => $baseDir . '/database/seeders/CategorySeeder.php',
     'Database\\Seeders\\DatabaseSeeder' => $baseDir . '/database/seeders/DatabaseSeeder.php',
     'Database\\Seeders\\DemoDataSeeder' => $baseDir . '/database/seeders/DemoDataSeeder.php',
+    'Database\\Seeders\\EnsureTwoSeeder' => $baseDir . '/database/seeders/EnsureTwoSeeder.php',
     'Database\\Seeders\\OptionSeeder' => $baseDir . '/database/seeders/OptionSeeder.php',
     'Database\\Seeders\\RoleSeeder' => $baseDir . '/database/seeders/RoleSeeder.php',
     'Database\\Seeders\\SingleUserSeeder' => $baseDir . '/database/seeders/SingleUserSeeder.php',

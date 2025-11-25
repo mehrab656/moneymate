@@ -77,7 +77,7 @@ class SectorModelController extends Controller
 
         if ($accountID){
             $account =  BankAccount::where('slug',$accountID)->first();
-            $query=$query->where('payment_account_id',$account->id);
+            $query=$query->where('bank_account_id',$account->id);
         }
         if ($orderBy && $order) {
             $query = $query->orderBy($orderBy, $order);
@@ -113,7 +113,7 @@ class SectorModelController extends Controller
         $payment['numbers'] = $sector['payment_number'];
         $payment['amount'] = $sector['payment_amount'];
         $payment['date'] = $sector['payment_date'];
-        $accountSlug = $sector['payment_account_id'];
+        $accountSlug = $sector['bank_account_id'];
 
         $channel = [
             'channel_name' => $sector['channel_name'],
@@ -137,13 +137,15 @@ class SectorModelController extends Controller
             'slug'=>Uuid::uuid4(),
             'company_id' => Auth::user()->primary_company,
             'name' => $sector['name'],
-            'payment_account_id' => $bankAccount->id,
+            'bank_account_id' => $bankAccount->id,
             'contract_start_date' => Carbon::parse($sector['contract_start_date'])->format('Y-m-d'),
             'contract_end_date' => Carbon::parse($sector['contract_end_date'])->format('Y-m-d'),
             'el_premises_no' => $sector['el_premises_no'],
             'el_acc_no' => $sector['el_acc_no'],
             'el_business_acc_no' => $sector['el_business_acc_no'],
             'el_billing_date' => Carbon::parse($sector['el_billing_date'])->format('Y-m-d'),
+            // Ensure el_note is provided to satisfy non-null column constraints
+            'el_note' => $sector['el_note'] ?? '',
             'internet_acc_no' => $sector['internet_acc_no'],
             'internet_billing_date' => Carbon::parse($sector['internet_billing_date'])->format('Y-m-d'),
             'int_note' => $sector['int_note']
@@ -257,11 +259,26 @@ class SectorModelController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified resource by id or slug.
      */
-    public function show(SectorModel $sector): SectorResource
+    public function show($sector)
     {
-        return new SectorResource($sector);
+        // Accept either numeric id or slug and resolve the model explicitly
+        $model = null;
+        if (is_numeric($sector)) {
+            $model = SectorModel::find($sector);
+        } else {
+            $model = SectorModel::where('slug', $sector)->first();
+        }
+
+        if (!$model) {
+            return response()->json([
+                'message' => 'Sector not found',
+                'description' => 'No sector matches the provided identifier.'
+            ], 404);
+        }
+
+        return new SectorResource($model);
     }
 
     /**
@@ -276,29 +293,223 @@ class SectorModelController extends Controller
      * Update the specified resource in storage.
      * @throws \Exception
      */
-    public function update(SectorUpdateRequest $request, SectorModel $sector)
+    public function update(SectorUpdateRequest $request, $sector)
     {
         $data = $request->validated();
 
-        $sector->fill($data);
-        $sector->save();
+        // Resolve sector by numeric ID or slug
+        $model = is_numeric($sector)
+            ? SectorModel::find($sector)
+            : SectorModel::where('slug', $sector)->first();
+
+        if (!$model) {
+            return response()->json([
+                'message' => 'Sector not found',
+                'description' => 'No sector matches the provided identifier.'
+            ], 404);
+        }
+
+        // Convert bank account slug to internal numeric ID
+        if (!empty($data['bank_account_id'])) {
+            $bankAccount = BankAccount::where('slug', $data['bank_account_id'])->first();
+            if (!$bankAccount) {
+                return response()->json([
+                    'message' => 'Not Found!',
+                    'description' => 'Bank account was not found!',
+                ], 400);
+            }
+            $data['bank_account_id'] = $bankAccount->id;
+        }
+
+        // Normalize dates to Y-m-d
+        foreach (['contract_start_date','contract_end_date','el_billing_date','internet_billing_date'] as $dateField) {
+            if (!empty($data[$dateField])) {
+                $data[$dateField] = Carbon::parse($data[$dateField])->format('Y-m-d');
+            }
+        }
+
+        // Ensure optional notes are set
+        if (!array_key_exists('el_note', $data)) {
+            $data['el_note'] = '';
+        }
+        if (!array_key_exists('int_note', $data)) {
+            $data['int_note'] = '';
+        }
+
+        DB::beginTransaction();
+        try {
+            // Only persist actual sector columns; arrays are handled below
+            $allowedKeys = [
+                'name',
+                'bank_account_id',
+                'contract_start_date',
+                'contract_end_date',
+                'el_premises_no',
+                'el_acc_no',
+                'el_business_acc_no',
+                'el_billing_date',
+                'el_note',
+                'internet_acc_no',
+                'internet_billing_date',
+                'int_note',
+                'rent',
+            ];
+            $sectorUpdateData = array_intersect_key($data, array_flip($allowedKeys));
+            $model->fill($sectorUpdateData);
+            $model->save();
+
+            // Handle Channels update (replace existing with provided list)
+            $channelNames = $data['channel_name'] ?? [];
+            $channelRefs = $data['reference_id'] ?? [];
+            $channelDates = $data['listing_date'] ?? [];
+
+            if (is_array($channelNames) && count($channelNames) > 0) {
+                // Remove existing channels for this sector
+                Channel::where('sector_id', $model->id)->delete();
+                // Recreate channels from arrays
+                $total = count($channelNames);
+                for ($i = 0; $i < $total; $i++) {
+                    $name = $channelNames[$i] ?? null;
+                    if (!$name || trim($name) === '') { continue; }
+                    $ref = $channelRefs[$i] ?? null;
+                    $listDate = $channelDates[$i] ?? null;
+                    Channel::create([
+                        'sector_id' => $model->id,
+                        'channel_name' => $name,
+                        'reference_id' => $ref,
+                        'listing_date' => $listDate ? Carbon::parse($listDate)->format('Y-m-d') : null,
+                    ]);
+                }
+            }
+
+            // Handle cheque Payment schedule updates (replace only UNPAID cheques)
+            $paymentNumbers = $data['payment_number'] ?? [];
+            $paymentDates   = $data['payment_date'] ?? [];
+            $paymentAmounts = $data['payment_amount'] ?? [];
+
+            if (is_array($paymentNumbers) && count($paymentNumbers) > 0) {
+                DB::table('payments')
+                    ->where('sector_id', $model->id)
+                    ->where('type', 'cheque')
+                    ->where('status', 'unpaid')
+                    ->delete();
+
+                $total = count($paymentNumbers);
+                for ($i = 0; $i < $total; $i++) {
+                    $number = $paymentNumbers[$i] ?? null;
+                    $date   = $paymentDates[$i] ?? null;
+                    $amount = $paymentAmounts[$i] ?? 0;
+                    if (!$number || !$date) { continue; }
+                    PaymentModel::create([
+                        'sector_id' => $model->id,
+                        'payment_number' => $number,
+                        'date' => Carbon::parse($date)->format('Y-m-d'),
+                        'amount' => $amount,
+                        'type' => 'cheque',
+                        'note' => null,
+                    ]);
+                }
+            }
+
+            // Handle Default Categories and associative categories
+            // Ensure default income category reflects current sector name
+            $defaultIncome = Category::where('sector_id', $model->id)
+                ->where('type', 'income')
+                ->first();
+            if ($defaultIncome) {
+                $defaultIncome->name = $model->name;
+                $defaultIncome->save();
+            } else {
+                Category::create([
+                    'slug' => Uuid::uuid4(),
+                    'sector_id' => $model->id,
+                    'user_id' => auth()->user()->id,
+                    'name' => $model->name,
+                    'type' => 'income',
+                ]);
+            }
+
+            // Add associative expense categories if provided (avoid duplicates)
+            $assocCategories = $data['category_name'] ?? [];
+            if (is_array($assocCategories) && count($assocCategories) > 0) {
+                foreach ($assocCategories as $categoryName) {
+                    $categoryName = trim($categoryName ?? '');
+                    if ($categoryName === '') { continue; }
+                    $fullName = $model->name . '-' . $categoryName;
+                    $exists = Category::where('sector_id', $model->id)
+                        ->where('type', 'expense')
+                        ->where('name', $fullName)
+                        ->exists();
+                    if (!$exists) {
+                        Category::create([
+                            'slug' => Uuid::uuid4(),
+                            'sector_id' => $model->id,
+                            'user_id' => auth()->user()->id,
+                            'name' => $fullName,
+                            'type' => 'expense',
+                        ]);
+                    }
+                }
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Error',
+                'description' => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
+            ], 400);
+        }
+
         storeActivityLog([
             'user_id' => Auth::user()->id,
-            'object_id' => $sector->id,
+            'object_id' => $model->id,
             'log_type' => 'edit',
             'module' => 'Sector',
-            'descriptions' => "",
-            'data_records' => json_decode(json_encode($sector), true),
+            'descriptions' => '',
+            'data_records' => json_decode(json_encode($model), true),
         ]);
+
+        return response()->json([
+            'message' => 'Success!',
+            'description' => 'Sector updated successfully.',
+            'data' => new SectorResource($model),
+        ], 200);
 
      }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(SectorModel $sectorModel)
+    public function destroy($sector)
     {
-        //
+        // Resolve by numeric ID or slug
+        $model = is_numeric($sector)
+            ? SectorModel::find($sector)
+            : SectorModel::where('slug', $sector)->first();
+
+        if (!$model) {
+            return response()->json([
+                'message' => 'Sector not found',
+            ], 404);
+        }
+
+        // Soft delete
+        $model->delete();
+
+        // Log activity
+        storeActivityLog([
+            'user_id' => Auth::user()->id,
+            'object_id' => $model->id,
+            'log_type' => 'delete',
+            'module' => 'Sector',
+            'descriptions' => '',
+            'data_records' => json_decode(json_encode($model), true),
+        ]);
+
+        return response()->json([
+            'message' => 'Sector deleted successfully',
+        ], 200);
     }
 
     public function getTotalExpenseAndIncomeBySectorID($sectorID)
@@ -381,7 +592,7 @@ class SectorModelController extends Controller
             ], 404);
         }
 
-        $bankAccount = BankAccount::find($sector->payment_account_id);
+        $bankAccount = BankAccount::find($sector->bank_account_id);
         if (!$bankAccount) {
             storeActivityLog([
                 'user_id' => Auth::user()->id,
@@ -439,7 +650,7 @@ class SectorModelController extends Controller
         $expense = [
             'slug'=>Uuid::uuid4(),
             'user_id' => Auth::user()->id,
-            'account_id' => $sector->payment_account_id,
+            'account_id' => $sector->bank_account_id,
             'amount' => $paymentDetails->amount,
             'refundable_amount' => 0,
             'category_id' => $category->id,
@@ -533,7 +744,7 @@ class SectorModelController extends Controller
             }
 
 
-        $bankAccount = BankAccount::find($sector->payment_account_id);
+        $bankAccount = BankAccount::find($sector->bank_account_id);
         if ($bankAccount->balance < $request->amount) {
             storeActivityLog([
                 'user_id' => Auth::user()->id,
@@ -557,7 +768,7 @@ class SectorModelController extends Controller
                 'slug'=>Uuid::uuid4(),
                 'company_id' => Auth::user()->primary_company,
                 'user_id' => Auth::user()->id,
-                'account_id' => $sector->payment_account_id,
+                'account_id' => $sector->bank_account_id,
                 'amount' => $request->amount,
                 'refundable_amount' => 0,
                 'category_id' => $category->id,
@@ -711,4 +922,3 @@ class SectorModelController extends Controller
         ]);
     }
 }
-

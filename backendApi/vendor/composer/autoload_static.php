@@ -969,6 +969,7 @@ class ComposerStaticInit55a7ee4609f0c99fa751d357485b2243
         'Database\\Seeders\\CategorySeeder' => __DIR__ . '/../..' . '/database/seeders/CategorySeeder.php',
         'Database\\Seeders\\DatabaseSeeder' => __DIR__ . '/../..' . '/database/seeders/DatabaseSeeder.php',
         'Database\\Seeders\\DemoDataSeeder' => __DIR__ . '/../..' . '/database/seeders/DemoDataSeeder.php',
+        'Database\\Seeders\\EnsureTwoSeeder' => __DIR__ . '/../..' . '/database/seeders/EnsureTwoSeeder.php',
         'Database\\Seeders\\OptionSeeder' => __DIR__ . '/../..' . '/database/seeders/OptionSeeder.php',
         'Database\\Seeders\\RoleSeeder' => __DIR__ . '/../..' . '/database/seeders/RoleSeeder.php',
         'Database\\Seeders\\SingleUserSeeder' => __DIR__ . '/../..' . '/database/seeders/SingleUserSeeder.php',

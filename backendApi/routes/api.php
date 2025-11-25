@@ -213,7 +213,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/sectors', [SectorModelController::class, 'index']);
     Route::post('/sector/add', [SectorModelController::class, 'add']);
-    Route::delete('/sector/{sector}', [SectorModelController::class, 'delete']);
+    Route::delete('/sector/{sector}', [SectorModelController::class, 'destroy']);
     Route::get('sector/{sector}', [SectorModelController::class, 'show']);
     Route::post('sector/{sector}', [SectorModelController::class, 'update']);
     Route::get('/sectorsIncomeExpense/{sector}', [
@@ -324,7 +324,6 @@ Route::get('migrate', function () {
 });
 
 Route::post('/hospitable/webhook', [HospitableController::class, 'handleWebhook']);
-
 
 
 
