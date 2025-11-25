@@ -56,14 +56,38 @@ class CategoryController extends Controller {
 	/**
 	 * @throws Exception
 	 */
-	public function create( CategoryRequest $request ): JsonResponse {
-		$categoryData               = $request->validated();
-		$categoryData['user_id']    = auth()->user()->id;
+    public function create( CategoryRequest $request ): JsonResponse {
+        $categoryData               = $request->validated();
+        $categoryData['user_id']    = auth()->user()->id;
 
-		$category = $this->categoryRepository->create( $categoryData );
-		storeActivityLog( [
-			'object_id'    => $category->id,
-			'log_type'     => 'create',
+        // Resolve sector identifier to numeric sector ID if a slug/UUID is provided
+        if (array_key_exists('sector_id', $categoryData)) {
+            $sectorIdentifier = $categoryData['sector_id'];
+            if (!is_numeric($sectorIdentifier)) {
+                $sector = \App\Models\SectorModel::where('slug', $sectorIdentifier)->first();
+                if (!$sector) {
+                    return response()->json([
+                        'message' => 'Not Found',
+                        'description' => 'Sector could not be found for the given identifier.'
+                    ], 400);
+                }
+                $categoryData['sector_id'] = $sector->id;
+            } else {
+                // Ensure we only use an existing sector ID
+                $sector = \App\Models\SectorModel::find((int) $sectorIdentifier);
+                if (!$sector) {
+                    return response()->json([
+                        'message' => 'Not Found',
+                        'description' => 'Sector could not be found for the given identifier.'
+                    ], 400);
+                }
+            }
+        }
+
+        $category = $this->categoryRepository->create( $categoryData );
+        storeActivityLog( [
+            'object_id'    => $category->id,
+            'log_type'     => 'create',
 			'module'       => 'Category',
 			'descriptions' => "",
 			'data_records' => $category,
@@ -84,10 +108,33 @@ class CategoryController extends Controller {
 	/**
 	 * @throws Exception
 	 */
-	public function update( UpdateCategoryRequest $request, Category $category ): JsonResponse {
-		$data     = $request->validated();
+    public function update( UpdateCategoryRequest $request, Category $category ): JsonResponse {
+        $data     = $request->validated();
+
+        // If sector_id is provided (may be a slug from UI), resolve to numeric ID
+        if (array_key_exists('sector_id', $data) && !empty($data['sector_id'])) {
+            $sectorIdentifier = $data['sector_id'];
+            if (!is_numeric($sectorIdentifier)) {
+                $sector = \App\Models\SectorModel::where('slug', $sectorIdentifier)->first();
+                if (!$sector) {
+                    return response()->json([
+                        'message' => 'Not Found',
+                        'description' => 'Sector could not be found for the given identifier.'
+                    ], 400);
+                }
+                $data['sector_id'] = $sector->id;
+            } else {
+                $sector = \App\Models\SectorModel::find((int) $sectorIdentifier);
+                if (!$sector) {
+                    return response()->json([
+                        'message' => 'Not Found',
+                        'description' => 'Sector could not be found for the given identifier.'
+                    ], 400);
+                }
+            }
+        }
 		$oldData  = $category;
-		$category = $this->categoryRepository->update( $category, $data );
+        $category = $this->categoryRepository->update( $category, $data );
 
 		storeActivityLog( [
 			'object_id'    => $category->id,

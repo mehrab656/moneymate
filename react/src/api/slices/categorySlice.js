@@ -34,10 +34,10 @@ export const categorySlice = createApi({
       providesTags: ["sectors"],
     }),
     createCategory: builder.mutation({
-      query: ({ token, formData }) => ({
+      query: ({ data }) => ({
         url: `category/add`,
         method: "POST",
-        body: formData,
+        body: data,
       }),
       invalidatesTags: ["category"],
     }),
@@ -56,10 +56,10 @@ export const categorySlice = createApi({
       providesTags: ["category"],
     }),
     updateCategory: builder.mutation({
-      query: ({ id, token, formData }) => ({
+      query: ({ id, data }) => ({
         url: `category/${id}`,
         method: "PUT",
-        body: formData,
+        body: data,
       }),
       invalidatesTags: ["category"],
     }),

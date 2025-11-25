@@ -59,18 +59,18 @@ export const getSideMenus = (isActive, submenuVisible) => [
   {
     hasMultiMenu: false,
     className: 'aside-menu-item',
-    link: { to: '/all-assets', className: isActive('/all-assets') ? 'active' : '' },
-    icon: faTools,
-    text: 'Assets',
-    permission: 'assets_view'
-  },
-  {
-    hasMultiMenu: false,
-    className: 'aside-menu-item',
     link: { to: '/categories', className: isActive('/categories') ? 'active' : '' },
     icon: faListAlt,
     text: 'Categories',
     permission: 'category_view'
+  },
+  {
+    hasMultiMenu: false,
+    className: 'aside-menu-item',
+    link: { to: '/all-assets', className: isActive('/all-assets') ? 'active' : '' },
+    icon: faTools,
+    text: 'Assets',
+    permission: 'assets_view'
   },
   // {
   //   hasMultiMenu: false,

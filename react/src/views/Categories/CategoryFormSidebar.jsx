@@ -6,6 +6,7 @@ import {
   useCreateCategoryMutation,
   useGetCategorySectorListDataQuery,
   useGetSingleCategoryDataQuery,
+  useUpdateCategoryMutation,
 } from "../../api/slices/categorySlice.js";
 
 const _initialCategoryData = {
@@ -23,6 +24,7 @@ export default function CategoryFormSidebar({ categoryId = null, onSuccess }) {
 
   const { closeSidebar } = useSidebarActions();
   const [createCategory] = useCreateCategoryMutation();
+  const [updateCategory] = useUpdateCategoryMutation();
 
   // API calls
   const {
@@ -39,14 +41,18 @@ export default function CategoryFormSidebar({ categoryId = null, onSuccess }) {
 
   // Load category data when component mounts or categoryId changes
   useEffect(() => {
-    if (getSingleCategoryData?.data) {
-      const categoryData = getSingleCategoryData.data;
-      setCategoryData({
-        id: categoryData.id,
-        sector_id: categoryData.sector_id || "",
-        name: categoryData.name || "",
-        type: categoryData.type || "income",
-      });
+    if (getSingleCategoryData) {
+      const payload = getSingleCategoryData?.data ?? getSingleCategoryData;
+      if (payload) {
+        setCategoryData({
+          id: payload.id,
+          sector_id: payload.sector_id !== undefined && payload.sector_id !== null
+            ? String(payload.sector_id)
+            : "",
+          name: payload.name || "",
+          type: payload.type || "income",
+        });
+      }
     }
   }, [getSingleCategoryData]);
 
@@ -56,6 +62,9 @@ export default function CategoryFormSidebar({ categoryId = null, onSuccess }) {
       setSectors(getCategorySectorListData.data);
     }
   }, [getCategorySectorListData]);
+
+  // When editing: map numeric sector_id (id) to slug value for the dropdown
+  // NOTE: sector select now uses numeric IDs directly, so no mapping needed
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -77,16 +86,16 @@ export default function CategoryFormSidebar({ categoryId = null, onSuccess }) {
     event.preventDefault();
     setLoading(true);
     setErrors({});
-
-    const formData = new FormData();
-    formData.append("name", categoryData.name);
-    formData.append("type", categoryData.type);
-    formData.append("sector_id", categoryData.sector_id);
-
-    const url = categoryData.id ? `/category/${categoryData.id}` : "/category/add";
+    const payload = {
+      name: categoryData.name,
+      type: categoryData.type,
+      sector_id: categoryData.sector_id,
+    };
 
     try {
-      const data = await createCategory({ url: url, formData }).unwrap();
+      const data = categoryData.id
+        ? await updateCategory({ id: categoryData.id, data: payload }).unwrap()
+        : await createCategory({ data: payload }).unwrap();
       notification("success", data?.message, data?.description);
       
       if (onSuccess) {
@@ -188,7 +197,7 @@ export default function CategoryFormSidebar({ categoryId = null, onSuccess }) {
                 <option value="">Select Sector</option>
                 {sectors.length > 0 ? (
                   sectors.map((sector) => (
-                    <option key={sector.value} value={sector.value}>
+                    <option key={sector.id} value={String(sector.id)}>
                       {sector.label}
                     </option>
                   ))

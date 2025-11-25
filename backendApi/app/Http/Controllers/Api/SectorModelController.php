@@ -810,7 +810,7 @@ class SectorModelController extends Controller
             DB::rollBack();
 
             return response()->json([
-                'description' => $e->getMessages(),
+                'description' => $e->getMessage(),
                 'message' => '$isUpdated ? 200 : 400'
             ],404);
         }
