@@ -18,11 +18,13 @@ import { notification } from "../../../components/ToastNotification.jsx";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
 import AccountFormSidebar from "./AccountFormSidebar.jsx";
 import AccountDetails from "./AccountDetails.jsx";
+import WalletFormSidebar from "../../Wallets/WalletFormSidebar.jsx";
 
 export default function Accounts() {
 
     const [loading, setLoading] = useState(false);
     const [accounts, setAccounts] = useState([]);
+    const [wallets, setWallets] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [searchText, setSearchText] = useState("");
@@ -96,6 +98,15 @@ export default function Accounts() {
         });
     }
 
+    const getWallets = () => {
+        axiosClient
+            .get('/wallets')
+            .then(({ data }) => {
+                setWallets(Array.isArray(data) ? data : (data?.data || []));
+            })
+            .catch(() => {});
+    }
+
     useEffect(() => {
         document.title = "Manage Bank Account";
         axiosClient.get('/all-bank')
@@ -109,6 +120,7 @@ export default function Accounts() {
         });
 
         getAccounts(currentPage, pageSize);
+        getWallets();
         getAccountBalances();
     }, [currentPage, pageSize]);
 
@@ -163,7 +175,9 @@ export default function Accounts() {
                 .then((data) => {
                     // setNotification("Bank account information has been updated");
                     setShowModal(false);
-                    getAccounts(currentPage, pageSize);
+                    setSearchText("");
+                    setCurrentPage(1);
+                    getAccounts(1, pageSize);
                     getAccountBalances();
                     setBankAccount({
                         id: null,
@@ -191,7 +205,9 @@ export default function Accounts() {
                 .then((data) => {
                     // setNotification('Bank account has been added');
                     setShowModal(false);
-                    getAccounts(currentPage, pageSize);
+                    setSearchText("");
+                    setCurrentPage(1);
+                    getAccounts(1, pageSize);
                     getAccountBalances();
                     setBankAccount({
                         id: null,
@@ -253,6 +269,12 @@ export default function Accounts() {
             account.balance.toString().includes(searchText)
     );
 
+    const filteredWallets = wallets.filter(
+        (wallet) =>
+            (wallet?.name || '').toLowerCase().includes(searchText.toLowerCase()) ||
+            (wallet?.balance ?? '').toString().includes(searchText)
+    );
+
 
     // Sidebar actions for Accounts
     const { showQuickDetails, showLargeContent } = useSidebarActions();
@@ -269,6 +291,14 @@ export default function Accounts() {
             "Add New Bank Account",
             <AccountFormSidebar onSuccess={() => { getAccounts(currentPage, pageSize); getAccountBalances(); }} />,
             { width: "xl" }
+        );
+    };
+
+    const openCreateWalletSidebar = () => {
+        showLargeContent(
+            "Add New Wallet",
+            <WalletFormSidebar onSuccess={() => { getWallets(); getAccountBalances(); }} />,
+            { width: "md" }
         );
     };
 
@@ -458,7 +488,7 @@ export default function Accounts() {
                 <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
                     <h1 className="title-text mb-0">Wallet/Handcash</h1>
                     <div>
-                        <Link className="custom-btn btn-add" onClick={openCreateSidebar}><FontAwesomeIcon icon={faBank}/> Add
+                        <Link className="custom-btn btn-add" onClick={openCreateWalletSidebar}><FontAwesomeIcon icon={faBank}/> Add
                             New Wallet</Link>
                     </div>
                 </div>
@@ -477,9 +507,6 @@ export default function Accounts() {
                         <thead>
                         <tr>
                             <th>WALLET NAME</th>
-                            <th className="text-center">ACCOUNT HOLDER NAME</th>
-                            <th className="text-center">BANK NAME</th>
-                            <th className="text-center">ACCOUNT NUMBER</th>
                             <th className="text-center">AVAILABLE BALANCE</th>
                             {userRole ==='admin' && <th className="text-center" width="20%">ACTIONS</th>}
                             
@@ -497,31 +524,28 @@ export default function Accounts() {
                         )}
                         {!loading && (
                             <tbody>
-                            {filteredAccounts.length === 0 ? (
+                            {filteredWallets.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="text-center">
-                                        No bank account found
+                                        No wallet found
                                     </td>
                                 </tr>
                             ) : (
-                                filteredAccounts.map((account) => (
-                                    <tr key={account.id}>
-                                        <td>{account.customer_name}</td>
-                                        <td className="text-center">{account.account_name}</td>
-                                        <td className="text-center">{account.bank_name}</td>
-                                        <td className="text-center">{account.account_number}</td>
-                                        <td className="text-center">{default_currency}{account.balance}</td>
+                                filteredWallets.map((wallet) => (
+                                    <tr key={wallet.id}>
+                                        <td>{wallet.name}</td>
+                                        <td className="text-center">{default_currency}{wallet.balance}</td>
                                         {/* {userRole ==='admin' && 
                                         <td className="text-center">
                                             <div className="d-flex flex-wrap justify-content-center gap-2">
                                             <span>
-                                            <Link className="btn-edit" to={`#`} onClick={() => edit(account)}>
+                                            <Link className="btn-edit" to={`#`}>
                                             <FontAwesomeIcon icon={faEdit}/> Edit
                                             </Link>
                                                 </span>
                                                     <span>
                                                     <a className="btn-delete"
-                                                    onClick={(e) => onDelete(account)}><FontAwesomeIcon icon={faTrash}/> Delete</a>
+                                                    onClick={(e) => {}}><FontAwesomeIcon icon={faTrash}/> Delete</a>
                                                 </span>
                                                 </div>
                                             </td>
@@ -530,10 +554,10 @@ export default function Accounts() {
                                          <td>
                                             <ActionButtonHelpers
                                                 actionBtn={actionParams}
-                                                element={account}
+                                                element={wallet}
                                             />
                                         </td>}
-                                       
+                                        
                                     </tr>
                                 ))
                             )}

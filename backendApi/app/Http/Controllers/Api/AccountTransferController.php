@@ -149,4 +149,27 @@ class AccountTransferController extends Controller {
 		}
 	}
 
+	/**
+	 * Show a single transfer history record by ID (scoped to current company).
+	 *
+	 * @param int $id
+	 * @return JsonResponse
+	 */
+	public function show( int $id ): JsonResponse {
+		$transfer = AccountTransfer::where('company_id', Auth::user()->primary_company)
+			->where('id', $id)
+			->first();
+
+		if (!$transfer) {
+			return response()->json([
+				'message' => 'Not Found!',
+				'description' => 'Transfer history not found'
+			], 404);
+		}
+
+		return response()->json([
+			'data' => new TransferHistoryResource($transfer)
+		]);
+	}
+
 }

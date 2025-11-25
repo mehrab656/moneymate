@@ -28,6 +28,8 @@ class BankAccountResource extends JsonResource
     {
         return [
             'id' => $this->slug,
+            // Numeric primary key for cases needing actual ID (e.g., transfers)
+            'account_id' => $this->id,
             'customer_name' => $this->user->username,
             'account_name' => $this->account_name,
             'bank_name' => $this->bankName->bank_name,

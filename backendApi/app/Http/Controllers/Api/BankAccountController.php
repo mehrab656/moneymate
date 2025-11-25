@@ -23,16 +23,29 @@ class BankAccountController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $user = Auth::user();
         $page = $request->query('page', 1);
         $pageSize = $request->query('pageSize', 10);
-        $bankAccounts = BankAccount::where('company_id', Auth::user()->primary_company)
+
+        // Allow optional company override when user has access
+        $requestedCompanyId = $request->query('company_id');
+        $companyId = Auth::user()->primary_company;
+        if ($requestedCompanyId) {
+            $hasAccess = DB::table('company_user')
+                ->where('user_id', Auth::user()->id)
+                ->where('company_id', abs($requestedCompanyId))
+                ->exists();
+            if ($hasAccess) {
+                $companyId = abs($requestedCompanyId);
+            }
+        }
+
+        $bankAccounts = BankAccount::where('company_id', $companyId)
             ->skip(($page - 1) * $pageSize)
             ->take($pageSize)
             ->orderBy('id', 'desc')
             ->get();
 
-        $totalCount = BankAccount::where('company_id', Auth::user()->primary_company)->count();
+        $totalCount = BankAccount::where('company_id', $companyId)->count();
 
         return response()->json([
             'data' => BankAccountResource::collection($bankAccounts),
@@ -43,7 +56,20 @@ class BankAccountController extends Controller
 
     public function allBankAccount(): JsonResponse
     {
-        $bankAccounts = BankAccount::where('company_id', Auth::user()->primary_company)->get();
+        // Optional company override when user has access
+        $requestedCompanyId = request()->query('company_id');
+        $companyId = Auth::user()->primary_company;
+        if ($requestedCompanyId) {
+            $hasAccess = DB::table('company_user')
+                ->where('user_id', Auth::user()->id)
+                ->where('company_id', abs($requestedCompanyId))
+                ->exists();
+            if ($hasAccess) {
+                $companyId = abs($requestedCompanyId);
+            }
+        }
+
+        $bankAccounts = BankAccount::where('company_id', $companyId)->get();
 
         return response()->json([
             'data' => BankAccountResource::collection($bankAccounts)

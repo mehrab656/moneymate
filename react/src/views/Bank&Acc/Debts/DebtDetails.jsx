@@ -89,38 +89,6 @@ export default function DebtDetails({ debtId }) {
           </tbody>
         </table>
       </div>
-
-      <div>
-        <h5 className="mb-2">History</h5>
-        <table className="table table-bordered table-striped">
-          <thead>
-            <tr className="text-center">
-              <th>Type</th>
-              <th>Amount</th>
-              <th>Account</th>
-              <th>Date</th>
-              <th>Note</th>
-            </tr>
-          </thead>
-          <tbody>
-            {history.length === 0 ? (
-              <tr>
-                <td className="text-center" colSpan={5}>No history found</td>
-              </tr>
-            ) : (
-              history.map((h) => (
-                <tr key={`${h.type}-${h.date}-${h.amount}`} className="text-center">
-                  <td>{h.type}</td>
-                  <td>{h.amount}</td>
-                  <td>{h.account}</td>
-                  <td>{h.date}</td>
-                  <td>{h.note || '-'}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
     </div>
   );
 }

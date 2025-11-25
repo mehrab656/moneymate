@@ -271,9 +271,9 @@ export default function BalanceTransfers() {
                                             <Link className="btn btn-sm btn-outline-primary" onClick={() => showTransferDetails(t.id)}>
                                                 <FontAwesomeIcon icon={faEye} /> View
                                             </Link>
-                                            <Link className="btn btn-sm btn-outline-success" onClick={() => openEditSidebar(t.id)}>
+                                            {/* <Link className="btn btn-sm btn-outline-success" onClick={() => openEditSidebar(t.id)}>
                                                 <FontAwesomeIcon icon={faPenToSquare} /> Edit
-                                            </Link>
+                                            </Link> */}
                                         </div>
                                     </td>
                                 </tr>

@@ -22,6 +22,11 @@ class DatabaseSeeder extends Seeder
             $this->call(SingleUserSeeder::class);
         }
 
+        // Seed bank_names with at least two rows
+        if (class_exists(BankNameSeeder::class)) {
+            $this->call(BankNameSeeder::class);
+        }
+
         // Ensure at least 2 rows in each main table
         $this->call(DemoDataSeeder::class);
 

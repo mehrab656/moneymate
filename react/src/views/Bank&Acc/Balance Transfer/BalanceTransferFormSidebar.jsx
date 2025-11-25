@@ -123,12 +123,12 @@ export default function BalanceTransferFormSidebar({ mode = "create", transferId
             onChange={(event) => {
               const value = event.target.value || "";
               setSelectedFromAccountId(value);
-              setTransfer({ ...transfer, from_account_id: value ? parseInt(value) : "" });
+              setTransfer({ ...transfer, from_account_id: value ? Number(value) : "" });
             }}
           >
             <option value="">Select a bank account</option>
             {bankAccounts.map((account) => (
-              <option key={account.id} value={account.id}>
+              <option key={account.id} value={account.account_id}>
                 {account.bank_name} - {account.account_number} - Balance ({account.balance})
               </option>
             ))}
@@ -148,12 +148,12 @@ export default function BalanceTransferFormSidebar({ mode = "create", transferId
             onChange={(event) => {
               const value = event.target.value || "";
               setSelectedToAccountId(value);
-              setTransfer({ ...transfer, to_account_id: value ? parseInt(value) : "" });
+              setTransfer({ ...transfer, to_account_id: value ? Number(value) : "" });
             }}
           >
             <option value="">Select a bank account</option>
             {bankAccounts.map((account) => (
-              <option key={account.id} value={account.id}>
+              <option key={account.id} value={account.account_id}>
                 {account.bank_name} - {account.account_number} - Balance ({account.balance})
               </option>
             ))}

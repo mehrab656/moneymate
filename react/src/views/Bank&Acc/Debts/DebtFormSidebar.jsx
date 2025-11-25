@@ -4,6 +4,8 @@ import Select from "react-select";
 import { TextField } from "@mui/material";
 import DatePicker from "react-datepicker";
 import axiosClient from "../../../axios-client.js";
+import { useDispatch } from "react-redux";
+import { debtSlice } from "../../../api/slices/debtSlice.js";
 import { notification } from "../../../components/ToastNotification.jsx";
 import MainLoader from "../../../components/loader/MainLoader.jsx";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
@@ -20,6 +22,7 @@ const initialDebt = {
 };
 
 export default function DebtFormSidebar({ debtId = null }) {
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(null);
   const [debt, setDebt] = useState(initialDebt);
@@ -92,6 +95,8 @@ export default function DebtFormSidebar({ debtId = null }) {
 
         const { data } = await axiosClient.post("/debts/store", formData);
         notification(data.status || "success", data.message || "Debt created", data.description || "");
+        // Ensure the debts list refreshes immediately
+        dispatch(debtSlice.util.invalidateTags(["debt"]));
       } else {
         // Update: only person, date, note
         const payload = {
@@ -101,6 +106,8 @@ export default function DebtFormSidebar({ debtId = null }) {
         };
         const { data } = await axiosClient.post(`/debts/${debtId}`, payload);
         notification(data.status || "success", data.message || "Debt updated", data.description || "");
+        // Ensure the debts list refreshes immediately
+        dispatch(debtSlice.util.invalidateTags(["debt"]));
       }
       closeSidebar();
     } catch (error) {

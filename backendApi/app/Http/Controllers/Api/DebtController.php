@@ -28,7 +28,9 @@ class DebtController extends Controller {
 		$page     = $request->query( 'page', 1 );
 		$pageSize = $request->query( 'pageSize', 10 );
 
-		$debts = Debt::where('company_id',Auth::user()->primary_company)->skip( ( $page - 1 ) * $pageSize )
+		$debts = Debt::where('company_id',Auth::user()->primary_company)
+		             ->with(['accounts.bankName'])
+		             ->skip( ( $page - 1 ) * $pageSize )
 		             ->take( $pageSize )
 		             ->orderBy( 'id', 'desc' )
 		             ->get();
@@ -121,6 +123,7 @@ class DebtController extends Controller {
 			$borrowData = Borrow::create( [
 				'amount'     => ( $debt->amount * - 1 ),
 				'account_id' => $debt->account_id,
+				'company_id' => auth()->user()->primary_company,
 				'date'       => $debt->date,
 				'debt_id'    => $debt->id,
 				'note'       => $debt['note']

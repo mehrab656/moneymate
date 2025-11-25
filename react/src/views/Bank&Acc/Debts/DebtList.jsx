@@ -50,6 +50,8 @@ export default function Debts() {
     const [hasFilter, setHasFilter] = useState(false);
     const TABLE_HEAD = [
         { id: "person", label: "Person", align: "left" },
+        { id: "account", label: "Account", align: "left" },
+        { id: "account_number", label: "Account Number", align: "left" },
         { id: "type", label: "Type", align: "left" },
         { id: "date", label: "date", align: "left" },
         { id: "amount", label: "Amount", align: "right" },

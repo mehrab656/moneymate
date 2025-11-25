@@ -193,6 +193,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Account Transfer Api
 
     Route::get('/transfer/histories', [AccountTransferController::class, 'index']);
+    Route::get('/transfer/histories/{id}', [AccountTransferController::class, 'show']);
     Route::get('/transfer/current-month', [AccountTransferController::class, 'accountTransferCurrentMonth']);
     Route::post('/bank-accounts/transfer-amount', [AccountTransferController::class, 'transferAmount']);
 
@@ -323,7 +324,6 @@ Route::get('migrate', function () {
 });
 
 Route::post('/hospitable/webhook', [HospitableController::class, 'handleWebhook']);
-
 
 
 

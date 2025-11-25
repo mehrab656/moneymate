@@ -295,8 +295,8 @@ export default function Banks() {
                                             <td>{bank.id}</td>
                                         }
                                         <td>{bank.bank_name}</td>
-                                        <td></td>
-                                        <td></td>
+                                        <td>{bank.user_name || '—'}</td>
+                                        <td>{bank.created_at ? new Date(bank.created_at).toLocaleString() : '—'}</td>
                                         {userRole ==='admin' && 
                                          <td>
                                              <ActionButtonHelpers
