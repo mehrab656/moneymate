@@ -62,9 +62,21 @@ class AssetController extends Controller
 
         //check balance amount to make a valid expense
         $bankAccount = BankAccount::find($data['account_id']);
+        if (!$bankAccount) {
+            return response()->json([
+                'message' => 'Not Found',
+                'description' => 'Expense account not found.',
+            ], 404);
+        }
         $totalPrice = 0;
 
         $assets = json_decode($data['assets'], true);
+        if (!is_array($assets) || empty($assets)) {
+            return response()->json([
+                'message' => 'Error!',
+                'description' => 'Assets payload is invalid.',
+            ], 400);
+        }
 
         if ($assets[0]['qty'] === 0) {
             return response()->json([
@@ -152,12 +164,11 @@ class AssetController extends Controller
             ]);
 
             $assets = Asset::create([
-                'slug'=>Uuid::uuid4(),
                 'sector_id' => $data['sector_id'],
                 'expense_id' => $expense['id'],
                 'date' => $data['date'],
                 'assets' => $data['assets'],
-                'status'=>1
+                'status' => 1,
             ]);
             storeActivityLog([
                 'object_id' => $assets->id,
@@ -232,14 +243,25 @@ class AssetController extends Controller
 
         //check balance amount to make a valid expense
         $bankAccount = BankAccount::find($data['account_id']);
-        //adjust the previous expense mount for the new expense first
-
+        if (!$bankAccount) {
+            return response()->json([
+                'message' => 'Not Found',
+                'description' => 'Expense account not found.',
+            ], 404);
+        }
+        //adjust the previous expense amount for the new expense first
         $bankAccount->balance += $prevExpenseData['amount'];
         $bankAccount->save();
 
         $totalPrice = 0;
 
         $assets = json_decode($data['assets'], true);
+        if (!is_array($assets) || empty($assets)) {
+            return response()->json([
+                'message' => 'Error!',
+                'description' => 'Assets payload is invalid.',
+            ], 400);
+        }
         if ($assets[0]['qty'] === 0) {
             return response()->json([
                 'message' => 'Error!',

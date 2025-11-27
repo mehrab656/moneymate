@@ -24,9 +24,9 @@ class AssetRequest extends FormRequest
     {
         return [
             'id' => 'nullable',
-            'sector_id' => 'required',
-            'category_id' => 'required',
-            'account_id' => 'required',
+            'sector_id' => 'required|exists:sectors,id',
+            'category_id' => 'required|exists:categories,id',
+            'account_id' => 'required|exists:bank_accounts,id',
             'date' => 'required',
         ];
     }
@@ -35,8 +35,11 @@ class AssetRequest extends FormRequest
     {
         return [
             'sector_id.required' => 'Sector is required.',
+            'sector_id.exists' => 'Selected sector does not exist.',
             'category_id.required' => 'Category is required.',
+            'category_id.exists' => 'Selected category does not exist.',
             'account_id.required' => 'Expense account is required.',
+            'account_id.exists' => 'Selected bank account does not exist.',
             'date.contract_end_date' => 'Expense date is required.',
         ];
     }

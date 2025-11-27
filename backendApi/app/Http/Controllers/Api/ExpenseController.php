@@ -278,35 +278,32 @@ class ExpenseController extends Controller
      */
     public function categories(Request $request): JsonResponse
     {
+        $sectorIdentifier = $request->sector_id; // May be slug or numeric ID
 
-        $sectorSlug = $request->sector_id;
-
-        $columns = 'categories.*';
-
-        if($sectorSlug){
-            $sector = SectorModel::where('slug',$sectorSlug)->first();
-
-            if(!$sector){
-                return response()->json([
-                    'message' => 'Success!',
-                    'description' => 'Sector not find by given id.'
-                ]);
-            }
-
-            $columns = ['categories.slug','categories.name'];
-        }
-
-        $categories = DB::table('categories')->select($columns)
+        // Base query: always return full category fields
+        $categoriesQuery = DB::table('categories')
+            ->select('categories.*')
             ->join('sectors', 'categories.sector_id', '=', 'sectors.id')
             ->where('sectors.company_id', '=', Auth::user()->primary_company)
             ->where('type', '=', 'expense');
 
-        if ($sectorSlug) {
-            $categories = $categories->where('sectors.id', '=', $sector->id);
+        // If a sector identifier is provided, resolve to the numeric sector ID (supports slug or ID)
+        if (!empty($sectorIdentifier)) {
+            $sector = is_numeric($sectorIdentifier)
+                ? SectorModel::find((int) $sectorIdentifier)
+                : SectorModel::where('slug', $sectorIdentifier)->first();
+
+            if (!$sector) {
+                return response()->json([
+                    'message' => 'Not Found',
+                    'description' => 'Sector could not be found for the given identifier.'
+                ], 404);
+            }
+
+            $categoriesQuery = $categoriesQuery->where('categories.sector_id', '=', $sector->id);
         }
 
-
-        return response()->json(['categories' => $categories->get()]);
+        return response()->json(['categories' => $categoriesQuery->get()]);
     }
 
     /**

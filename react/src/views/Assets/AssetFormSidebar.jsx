@@ -190,10 +190,54 @@ export default function AssetFormSidebar({ assetId = null, onSuccess, asset = nu
     setAssets(updateAssets);
   };
 
+  // Helper to parse balances like "12,345.00" into numbers
+  const parseMoney = (val) => {
+    if (typeof val === "number") return val;
+    const s = String(val ?? "0");
+    return Number(s.replace(/,/g, ""));
+  };
+
+  // Compute total planned cost from asset rows
+  const getTotalPlannedCost = () => {
+    return assets.reduce((sum, a) => {
+      const qty = Number(a.qty || 0);
+      const unit = Number(a.unit_price || 0);
+      const lineTotal = a.total_price != null ? Number(a.total_price) : qty * unit;
+      return sum + (isNaN(lineTotal) ? 0 : lineTotal);
+    }, 0);
+  };
+
   const assetSubmit = async (event, stay) => {
     event.preventDefault();
     setLoading(true);
     setErrors({});
+
+    // Client-side guard: ensure sufficient account balance before submitting
+    try {
+      const selectedAccount = bankAccounts.find(
+        (a) => String(a.account_id) === String(formData.account_id)
+      );
+      const available = parseMoney(selectedAccount?.balance);
+      const required = getTotalPlannedCost();
+      if (!selectedAccount) {
+        setLoading(false);
+        setErrors({ account_id: ["Please select a valid bank account."] });
+        notification("error", "Error!", "Please select a valid bank account.");
+        return;
+      }
+      if (available < required) {
+        setLoading(false);
+        setErrors({ account_id: ["Insufficient balance in selected account."] });
+        notification(
+          "error",
+          "Error!",
+          "Insufficient account balance for this expense."
+        );
+        return;
+      }
+    } catch (e) {
+      // If any parsing fails, proceed to server which will validate
+    }
 
     let _formData = new FormData();
     _formData.append("sector_id", formData.sector_id);
@@ -262,7 +306,7 @@ export default function AssetFormSidebar({ assetId = null, onSuccess, asset = nu
                   <option value="">Select Sector</option>
                   {sectors.length > 0 ? (
                     sectors.map((sector) => (
-                      <option key={sector.value} value={sector.value}>
+                      <option key={sector.id} value={sector.id}>
                         {sector.label}
                       </option>
                     ))
@@ -331,7 +375,7 @@ export default function AssetFormSidebar({ assetId = null, onSuccess, asset = nu
                   <option value="">Select Account</option>
                   {bankAccounts.length > 0 ? (
                     bankAccounts.map((account) => (
-                      <option key={account.id} value={account.id}>
+                      <option key={account.account_id} value={account.account_id}>
                         {account.bank_name} - {account.account_number}
                       </option>
                     ))
