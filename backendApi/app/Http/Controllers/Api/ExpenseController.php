@@ -524,7 +524,7 @@ class ExpenseController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
 
-            return redirect()->back()->withErrors($e->getMessages())->withInput();
+            return redirect()->back()->withErrors([$e->getMessage()])->withInput();
         }
 
 

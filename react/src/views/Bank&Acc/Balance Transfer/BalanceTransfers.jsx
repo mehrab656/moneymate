@@ -13,6 +13,7 @@ import MainLoader from "../../../components/loader/MainLoader.jsx";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
 import BalanceTransferFormSidebar from "./BalanceTransferFormSidebar.jsx";
 import BalanceTransferDetails from "./BalanceTransferDetails.jsx";
+import useDebouncedValue from "../../../hooks/useDebouncedValue.js";
 
 export default function BalanceTransfers() {
 
@@ -42,6 +43,7 @@ export default function BalanceTransfers() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [searchTerm, setSearchTerm] = useState("");
+    const debouncedSearchTerm = useDebouncedValue(searchTerm, 300);
 
     const { showQuickDetails, showLargeContent } = useSidebarActions();
 
@@ -93,9 +95,9 @@ export default function BalanceTransfers() {
     const totalPages = Math.ceil(totalCount / pageSize);
 
     const filteredTransferHistories = transferHistories.filter((transfer) => {
-        return transfer.amount.toLowerCase().includes(searchTerm.toLowerCase())
-            || transfer.from_account.toLowerCase().includes(searchTerm.toLowerCase())
-            || transfer.to_account.toLowerCase().includes(searchTerm.toLowerCase())
+        return transfer.amount.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+            || transfer.from_account.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+            || transfer.to_account.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
     });
 
     const getTransferHistories = (page, pageSize) => {

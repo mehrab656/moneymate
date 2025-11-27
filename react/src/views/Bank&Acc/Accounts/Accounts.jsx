@@ -19,6 +19,7 @@ import { useSidebarActions } from "../../../components/GlobalSidebar";
 import AccountFormSidebar from "./AccountFormSidebar.jsx";
 import AccountDetails from "./AccountDetails.jsx";
 import WalletFormSidebar from "../../Wallets/WalletFormSidebar.jsx";
+import useDebouncedValue from "../../../hooks/useDebouncedValue.js";
 
 export default function Accounts() {
 
@@ -28,6 +29,7 @@ export default function Accounts() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [searchText, setSearchText] = useState("");
+    const debouncedSearchText = useDebouncedValue(searchText, 300);
     const [showModal, setShowModal] = useState(false);
     const [bankAccountBalance,setBankAccountBalance]=useState(0);
     const [handCashBalance,setHandCashBalance]=useState(0);
@@ -262,17 +264,17 @@ export default function Accounts() {
 
     const filteredAccounts = accounts.filter(
         (account) =>
-            account.customer_name.toLowerCase().includes(searchText.toLowerCase()) ||
-            account.account_name.toLowerCase().includes(searchText.toLowerCase()) ||
-            account.bank_name.toLowerCase().includes(searchText.toLowerCase()) ||
-            account.account_number.includes(searchText) ||
-            account.balance.toString().includes(searchText)
+            account.customer_name.toLowerCase().includes(debouncedSearchText.toLowerCase()) ||
+            account.account_name.toLowerCase().includes(debouncedSearchText.toLowerCase()) ||
+            account.bank_name.toLowerCase().includes(debouncedSearchText.toLowerCase()) ||
+            account.account_number.includes(debouncedSearchText) ||
+            account.balance.toString().includes(debouncedSearchText)
     );
 
     const filteredWallets = wallets.filter(
         (wallet) =>
-            (wallet?.name || '').toLowerCase().includes(searchText.toLowerCase()) ||
-            (wallet?.balance ?? '').toString().includes(searchText)
+            (wallet?.name || '').toLowerCase().includes(debouncedSearchText.toLowerCase()) ||
+            (wallet?.balance ?? '').toString().includes(debouncedSearchText)
     );
 
 

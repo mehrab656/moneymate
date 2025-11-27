@@ -15,11 +15,13 @@ import { notification } from "../../../components/ToastNotification.jsx";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
 import BankDetails from "./BankDetails.jsx";
 import BankFormSidebar from "./BankFormSidebar.jsx";
+import useDebouncedValue from "../../../hooks/useDebouncedValue.js";
 
 export default function Banks() {
     const [loading, setLoading] = useState(false);
     const [bankNames, setBankNames] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
+    const debouncedSearchTerm = useDebouncedValue(searchTerm, 300);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [showModal, setShowModal] = useState(false);
@@ -38,7 +40,7 @@ export default function Banks() {
     const totalPages = Math.ceil(totalCount / pageSize);
 
     const filteredBank = bankNames ? bankNames.filter(
-        (bank) => bank.bank_name.toLowerCase().includes(searchTerm.toLowerCase())
+        (bank) => bank.bank_name.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
     ) : [];
 
     const showCreateModal = () => {

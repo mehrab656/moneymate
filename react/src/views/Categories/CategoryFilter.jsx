@@ -1,8 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Card, Stack, Row, Col, Form, Button } from "react-bootstrap";
+import useDebouncedValue from "../../hooks/useDebouncedValue.js";
 
 export default function CategoryFilter(props) {
   const { search, query, setQuery, resetFilterParameter,placeHolderTxt } = props;
+  const [localSearchTerm, setLocalSearchTerm] = useState(query?.searchTerm || "");
+
+  useEffect(() => {
+    setLocalSearchTerm(query?.searchTerm || "");
+  }, [query?.searchTerm]);
+
+  const debouncedSearchTerm = useDebouncedValue(localSearchTerm, 300);
+  useEffect(() => {
+    setQuery((prev) => ({ ...prev, searchTerm: debouncedSearchTerm }));
+  }, [debouncedSearchTerm, setQuery]);
   return (
     <>
      <Card className="p-3" style={{ borderBottom: "1px solid" }}>
@@ -17,8 +28,8 @@ export default function CategoryFilter(props) {
               <Form.Control
                 type="text"
                 size="sm"
-                value={query?.searchTerm}
-                onChange={(e) => setQuery({ ...query, searchTerm: e.target.value })}
+                value={localSearchTerm}
+                onChange={(e) => setLocalSearchTerm(e.target.value)}
                 placeholder={placeHolderTxt}
                 style={{ textTransform: "capitalize" }}
               />
@@ -64,7 +75,7 @@ export default function CategoryFilter(props) {
         {/* Filter and Reset Buttons */}
         <Row className="justify-content-end">
           <Col md={4} className="text-end">
-            <Button variant="warning" size="sm" onClick={resetFilterParameter}>
+            <Button variant="warning" size="sm" onClick={() => { setLocalSearchTerm(""); resetFilterParameter(); }}>
               Reset
             </Button>
           </Col>
