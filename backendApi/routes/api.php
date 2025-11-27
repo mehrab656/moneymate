@@ -144,6 +144,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Application Settings Api
 
     Route::put('/store-application-setting', [SettingsController::class, 'storeSettings']);
+    // Generic application settings updater (Option table)
+    Route::put('/application-settings', [ApplicationSettingsController::class, 'storeApplicationSetting']);
 
 
     // Budget Api
@@ -324,7 +326,6 @@ Route::get('migrate', function () {
 });
 
 Route::post('/hospitable/webhook', [HospitableController::class, 'handleWebhook']);
-
 
 
 

@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { NavDropdown, Col, Row, Collapse, Badge } from "react-bootstrap";
-import { Menu, MenuItem, Divider, IconButton, Avatar, Box } from "@mui/material";
+import { Menu, MenuItem, Divider, IconButton, Avatar, Box, Switch, FormControlLabel, styled } from "@mui/material";
+import axiosClient from "../../axios-client.js";
+import { SettingsContext } from "../../contexts/SettingsContext.jsx";
 
 import DropDownProperties from "./DropDownProperties";
 import {
@@ -11,6 +13,40 @@ import {
   faChevronDown,
   faChevronUp,
 } from "@fortawesome/free-solid-svg-icons";
+
+const Android12Switch = styled(Switch)(({ theme }) => ({
+  padding: 8,
+  '& .MuiSwitch-track': {
+    borderRadius: 22 / 2,
+    '&::before, &::after': {
+      content: '""',
+      position: 'absolute',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      width: 16,
+      height: 16,
+    },
+    '&::before': {
+      backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+        theme.palette.getContrastText(theme.palette.primary.main),
+      )}" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/></svg>')`,
+      left: 12,
+    },
+    '&::after': {
+      backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+        theme.palette.getContrastText(theme.palette.primary.main),
+      )}" d="M19,13H5V11H19V13Z" /></svg>')`,
+      right: 12,
+    },
+  },
+  '& .MuiSwitch-thumb': {
+    boxShadow: 'none',
+    width: 16,
+    height: 16,
+    margin: 2,
+  },
+}));
+
 
 const Header = ({
   default_currency,
@@ -32,6 +68,27 @@ const Header = ({
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  // Settings context for privacy toggle
+  const { applicationSettings, setApplicationSettings } = useContext(SettingsContext);
+  const privacyEnabled = (applicationSettings?.privacy_field || "no") === "yes";
+
+  const handlePrivacyToggle = (event) => {
+    const next = event.target.checked ? "yes" : "no";
+    // Optimistically update UI
+    setApplicationSettings((prev) => ({ ...prev, privacy_field: next }));
+    axiosClient
+      .put("/application-settings", { privacy_field: next })
+      .then(({ data }) => {
+        if (data?.application_settings) {
+          setApplicationSettings(data.application_settings);
+        }
+      })
+      .catch(() => {
+        // revert on error
+        setApplicationSettings((prev) => ({ ...prev, privacy_field: privacyEnabled ? "yes" : "no" }));
+      });
   };
 
   // Update screen size state on resize
@@ -99,47 +156,73 @@ const Header = ({
           <Collapse in={open || isLargeScreen} dimension="height">
             <div id="finance-collapse" className="w-100">
               <Row className="d-flex flex-wrap align-items-center">
-                <Col
-                  xs={12}
-                  sm="auto"
-                  md="auto"
-                  className="text-center text-md-start mb-2 mb-md-0"
-                >
-                  {renderCurrencyItem(
-                    "Account Balance",
-                    financeStatus.totalAccountBalance
-                  )}
-                </Col>
-                <Col
-                  xs={12}
-                  sm="auto"
-                  md="auto"
-                  className="text-center text-md-start mb-2 mb-md-0"
-                >
-                  {renderCurrencyItem(
-                    "Total Income",
-                    financeStatus.totalIncome
-                  )}
-                </Col>
-                <Col
-                  xs={12}
-                  sm="auto"
-                  md="auto"
-                  className="text-center text-md-start mb-2 mb-md-0"
-                >
-                  {renderCurrencyItem(
-                    "Total Expense",
-                    financeStatus.totalExpense
-                  )}
-                </Col>
+                {!privacyEnabled && (
+                  <>
+                    <Col
+                      xs={12}
+                      sm="auto"
+                      md="auto"
+                      className="text-center text-md-start mb-2 mb-md-0"
+                    >
+                      {renderCurrencyItem(
+                        "Account Balance",
+                        financeStatus.totalAccountBalance
+                      )}
+                    </Col>
+                    <Col
+                      xs={12}
+                      sm="auto"
+                      md="auto"
+                      className="text-center text-md-start mb-2 mb-md-0"
+                    >
+                      {renderCurrencyItem(
+                        "Total Income",
+                        financeStatus.totalIncome
+                      )}
+                    </Col>
+                    <Col
+                      xs={12}
+                      sm="auto"
+                      md="auto"
+                      className="text-center text-md-start mb-2 mb-md-0"
+                    >
+                      {renderCurrencyItem(
+                        "Total Expense",
+                        financeStatus.totalExpense
+                      )}
+                    </Col>
+                  </>
+                )}
               </Row>
             </div>
           </Collapse>
         </Col>
 
 
-        <Col xs="auto" className="d-flex align-items-center ms-auto">
-          <Box sx={{mr: 2}}>
+        <Col xs="auto" className="d-flex align-items-center justify-content-center ms-auto">
+          {/* Privacy toggle left beside notification icon */}
+          <Box sx={{ mr: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+          <FormControlLabel
+            control={
+                <Android12Switch 
+                  checked={privacyEnabled}
+                  onChange={handlePrivacyToggle} defaultChecked />
+                  }
+                  label="Privacy Mode"
+            />
+           {/* <FormControlLabel
+              label="Privacy Mode"
+              labelPlacement="start"
+              control={
+                <Switch
+                  sx={{ mr: 2}}
+                  size="small"
+                  color="default"
+                  checked={privacyEnabled}
+                  onChange={handlePrivacyToggle}
+                />
+              }
+            /> */}
             <NavDropdown
                 title={
                   <DropDownProperties
