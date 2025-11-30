@@ -63,12 +63,6 @@ export default function InvestmentDetails({ investmentId = null, data = null }) 
 
   return (
     <Box p={3}>
-      <Typography variant="h5" gutterBottom color="primary" fontWeight="bold">
-        Investment Details
-      </Typography>
-
-      <Divider sx={{ mb: 3 }} />
-
       {/* Summary Section */}
       <Paper elevation={1} sx={{ p: 2, mb: 3 }}>
         <Typography variant="h6" color="primary" gutterBottom>
@@ -111,7 +105,7 @@ export default function InvestmentDetails({ investmentId = null, data = null }) 
       </Paper>
 
       {/* Account Section */}
-      <Paper elevation={1} sx={{ p: 2, mb: 3 }}>
+      {/* <Paper elevation={1} sx={{ p: 2, mb: 3 }}>
         <Typography variant="h6" color="primary" gutterBottom>
           Account
         </Typography>
@@ -125,7 +119,7 @@ export default function InvestmentDetails({ investmentId = null, data = null }) 
             </Typography>
           </Grid>
         </Grid>
-      </Paper>
+      </Paper> */}
 
       {/* Notes Section */}
       <Paper elevation={1} sx={{ p: 2 }}>

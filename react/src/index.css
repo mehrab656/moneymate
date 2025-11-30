@@ -2293,3 +2293,8 @@ taskList {
         transition: none;
     }
 }
+/* Privacy mode blur for masked amounts */
+.privacy-blur {
+  display: inline-block;
+  filter: blur(3px);
+}

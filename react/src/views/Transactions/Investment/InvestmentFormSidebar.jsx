@@ -44,19 +44,24 @@ export default function InvestmentFormSidebar({ investmentId = null, onSuccess }
     isFetching: bankIsFetching,
   } = useGetBankDataQuery({ currentPage: "", pageSize: 100 });
 
-  // Prefill on edit (best-effort; falls back gracefully if fields differ)
+  // Prefill on edit using resource shape and bank account list
   useEffect(() => {
     if (getSingleInvestmentData?.data && investmentId) {
       const inv = getSingleInvestmentData.data;
+      // Try to match numeric account_id to slug from loaded bank accounts
+      const matchedAccountSlug = bankAccounts.find(
+        (a) => typeof inv?.account_id !== 'undefined' && a.account_id === inv.account_id
+      )?.value;
+
       setFormData({
-        investor_id: inv.investor_slug || inv.investor_id || "",
-        account_id: inv.account_id || "",
-        amount: inv.amount || "",
-        investment_date: inv.investment_date || "",
-        note: inv.note || "",
+        investor_id: String(inv?.investor?.value ?? inv?.investor_slug ?? inv?.investor_id ?? ""),
+        account_id: String(matchedAccountSlug ?? ""),
+        amount: inv?.amount ?? "",
+        investment_date: inv?.investment_date ?? "",
+        note: inv?.note ?? "",
       });
     }
-  }, [getSingleInvestmentData, investmentId]);
+  }, [getSingleInvestmentData, investmentId, bankAccounts]);
 
   // Load investors
   useEffect(() => {
@@ -69,11 +74,12 @@ export default function InvestmentFormSidebar({ investmentId = null, onSuccess }
     }
   }, [getInvestorData]);
 
-  // Load bank accounts
+  // Load bank accounts (id is slug; include numeric account_id for matching)
   useEffect(() => {
     if (getBankData?.data?.length > 0) {
-      const accounts = getBankData.data.map(({ id, bank_name, account_number }) => ({
-        value: id,
+      const accounts = getBankData.data.map(({ id, account_id, bank_name, account_number }) => ({
+        value: String(id),
+        account_id: account_id,
         label: `${bank_name} (${account_number})`,
       }));
       setBankAccounts(accounts);

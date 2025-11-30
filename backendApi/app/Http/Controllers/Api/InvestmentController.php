@@ -20,6 +20,7 @@ use App\Models\Expense;
 use Carbon\Carbon;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Nette\Schema\ValidationException;
 use Ramsey\Uuid\Uuid;
@@ -58,7 +59,10 @@ class InvestmentController extends Controller
             $from_date = (new DateTime($to_date))->format('Y-m-01');
         }
 
-        $query = Investment::where('company_id', Auth::user()->primary_company);
+        // Guard against legacy schema missing company_id
+        $query = Schema::hasColumn('investments', 'company_id')
+            ? Investment::where('company_id', Auth::user()->primary_company)
+            : Investment::query();
         if ($from_date && $to_date) {
             $query = $query->whereBetween('investment_date', [$from_date, $to_date]);
         }
@@ -80,7 +84,9 @@ class InvestmentController extends Controller
         }
         $query = $query->get();
 
-        $totalCount = Investment::where('company_id',Auth::user()->primary_company)->count();
+        $totalCount = Schema::hasColumn('investments', 'company_id')
+            ? Investment::where('company_id', Auth::user()->primary_company)->count()
+            : Investment::count();
 
         return response()->json([
             'data' => InvestmentResource::collection($query),
@@ -175,31 +181,66 @@ class InvestmentController extends Controller
 
         DB::beginTransaction();
         try {
-            //first handel bank
-            $bankAccount = BankAccount::find($investment->account_id);
-            $bankAccount->balance = $bankAccount->balance - $investment->amount;
-            $bankAccount->save();
+            // Resolve investor_id to numeric if a slug was provided
+            if (isset($data['investor_id']) && !is_null($data['investor_id']) && !is_numeric($data['investor_id'])) {
+                $investorUser = User::where('slug', $data['investor_id'])->first();
+                if (!$investorUser) {
+                    DB::rollBack();
+                    return response()->json([
+                        'message' => 'error',
+                        'description' => 'Investor not found',
+                    ], 404);
+                }
+                $data['investor_id'] = $investorUser->id;
+            }
+
+            // Resolve account_id to numeric if a slug was provided
+            $newAccountId = $data['account_id'] ?? $request->account_id;
+            if (!is_null($newAccountId) && !is_numeric($newAccountId)) {
+                $newAccount = BankAccount::where('slug', $newAccountId)->first();
+                if (!$newAccount) {
+                    DB::rollBack();
+                    return response()->json([
+                        'message' => 'error',
+                        'description' => 'Bank account not found',
+                    ], 404);
+                }
+                $newAccountId = $newAccount->id;
+            }
+
+            // First handle bank: deduct previous amount from old account (if exists)
+            $oldAccount = BankAccount::find($investment->account_id);
+            if ($oldAccount && $investment->amount > 0) {
+                $oldAccount->balance = $oldAccount->balance - $investment->amount;
+                $oldAccount->save();
+            }
 
             // now update other data
             $investDate = Carbon::parse($data['investment_date'])->format('Y-m-d');
             $data['added_by'] = $user->id;
             $data['company_id'] = $user->primary_company;
             $data['investment_date'] = $investDate;
+            // Ensure we persist numeric account_id
+            if (!is_null($newAccountId)) {
+                $data['account_id'] = $newAccountId;
+            }
 
             $investment->update($data);
             $investment->save();
 
             //now again update bank with the new amount.
-            $bankAccount = BankAccount::find($request->account_id);
-            $bankAccount->balance += $request->amount;
-            $bankAccount->save();
+            $updatedAccount = BankAccount::find($newAccountId);
+            if ($updatedAccount) {
+                $updatedAccount->balance += $request->amount;
+                $updatedAccount->save();
+            }
 
             storeActivityLog([
                 'object_id' => $investment->id,
                 'log_type' => 'edit',
                 'module' => 'investment',
                 'descriptions' => "",
-                'data_records' => array_merge(json_decode(json_encode($investment), true), ['account_balance' => $bankAccount->balance]),
+                'data_records' => array_merge(json_decode(json_encode($investment), true), ['account_balance' => $updatedAccount->balance ?? null]),
             ]);
 
         } catch (ValidationException $e) {

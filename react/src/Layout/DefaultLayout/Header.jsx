@@ -102,9 +102,16 @@ const Header = ({
   const renderCurrencyItem = (label, amount) => (
     <Col xs={12} sm="auto" className="header-item">
       <span>
-        {label}:{" "}
+        {label}: {" "}
         {default_currency !== undefined && amount !== undefined && (
-          <strong>{`${default_currency} ${amount}`}</strong>
+          privacyEnabled ? (
+            <strong>
+              {`${default_currency} `}
+              <span className="privacy-blur">xxxx.xx</span>
+            </strong>
+          ) : (
+            <strong>{`${default_currency} ${amount}`}</strong>
+          )
         )}
       </span>
     </Col>
@@ -156,44 +163,42 @@ const Header = ({
           <Collapse in={open || isLargeScreen} dimension="height">
             <div id="finance-collapse" className="w-100">
               <Row className="d-flex flex-wrap align-items-center">
-                {!privacyEnabled && (
-                  <>
-                    <Col
-                      xs={12}
-                      sm="auto"
-                      md="auto"
-                      className="text-center text-md-start mb-2 mb-md-0"
-                    >
-                      {renderCurrencyItem(
-                        "Account Balance",
-                        financeStatus.totalAccountBalance
-                      )}
-                    </Col>
-                    <Col
-                      xs={12}
-                      sm="auto"
-                      md="auto"
-                      className="text-center text-md-start mb-2 mb-md-0"
-                    >
-                      {renderCurrencyItem(
-                        "Total Income",
-                        financeStatus.totalIncome
-                      )}
-                    </Col>
-                    <Col
-                      xs={12}
-                      sm="auto"
-                      md="auto"
-                      className="text-center text-md-start mb-2 mb-md-0"
-                    >
-                      {renderCurrencyItem(
-                        "Total Expense",
-                        financeStatus.totalExpense
-                      )}
-                    </Col>
-                  </>
-                )}
-              </Row>
+                <>
+                  <Col
+                    xs={12}
+                    sm="auto"
+                    md="auto"
+                    className="text-center text-md-start mb-2 mb-md-0"
+                  >
+                    {renderCurrencyItem(
+                      "Account Balance",
+                      financeStatus.totalAccountBalance
+                    )}
+                  </Col>
+                  <Col
+                    xs={12}
+                    sm="auto"
+                    md="auto"
+                    className="text-center text-md-start mb-2 mb-md-0"
+                  >
+                    {renderCurrencyItem(
+                      "Total Income",
+                      financeStatus.totalIncome
+                    )}
+                  </Col>
+                  <Col
+                    xs={12}
+                    sm="auto"
+                    md="auto"
+                    className="text-center text-md-start mb-2 mb-md-0"
+                  >
+                    {renderCurrencyItem(
+                      "Total Expense",
+                      financeStatus.totalExpense
+                    )}
+                  </Col>
+                </>
+            </Row>
             </div>
           </Collapse>
         </Col>

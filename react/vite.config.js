@@ -5,6 +5,16 @@ import path from 'path'
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [react()],
+    build: {
+        cssCodeSplit: false,
+        rollupOptions: {
+            output: {
+                inlineDynamicImports: true,
+                manualChunks: undefined,
+                assetFileNames: 'assets/[name][extname]',
+            },
+        },
+    },
     resolve: {
         alias: {
             react: path.resolve(__dirname, 'node_modules/react'),

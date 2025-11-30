@@ -1,10 +1,10 @@
 import {useParams} from 'react-router-dom';
 import React, {useEffect, useState} from 'react';
-import axiosClient from '../../../../axios-client.js';
+import axiosClient from '../../../axios-client.js';
 import {Button, Form, Modal} from 'react-bootstrap';
-import {useStateContext} from "../../../../contexts/ContextProvider.jsx";
+import {useStateContext} from "../../../contexts/ContextProvider.jsx";
 import DatePicker from "react-datepicker";
-import MainLoader from '../../../../components/loader/MainLoader.jsx';
+import MainLoader from '../../../components/loader/MainLoader.jsx';
 
 export default function ManageDebt() {
     let {id} = useParams();

@@ -25,22 +25,28 @@ class InvestmentResource extends JsonResource {
 	 *
 	 * @return array<string, mixed>
 	 */
-	public function toArray( Request $request ): array {
-        $investor = [
-            'value'=>$this->investor->slug,
-            'label'=>sprintf("%s %s (%s)", strtoupper($this->investor->first_name), strtoupper($this->investor->last_name), $this->investor->username),
-        ];
+    public function toArray( Request $request ): array {
+        $investorUser = $this->investor;
+        $investor = $investorUser ? [
+            'value' => $investorUser->slug ?? null,
+            'label' => sprintf(
+                "%s %s (%s)",
+                strtoupper($investorUser->first_name ?? ''),
+                strtoupper($investorUser->last_name ?? ''),
+                $investorUser->username ?? ''
+            ),
+        ] : null;
 
-		return [
-			'id'              => $this->id,
-			'investor'     => $investor,
-			'account_id'      => $this->account_id,
-			'investor_name'   => $this->investor->username,
-			'added_by_name'   => $this->added->username,
-			'amount'          => $this->amount,
-			'investment_date' => $this->investment_date,
-			'note'            => $this->note,
-			"company"         => $this->companies
-		];
-	}
+        return [
+            'id'              => $this->id,
+            'investor'     => $investor,
+            'account_id'      => $this->account_id,
+            'investor_name'   => $investorUser->username ?? null,
+            'added_by_name'   => $this->added?->username ?? null,
+            'amount'          => $this->amount,
+            'investment_date' => $this->investment_date,
+            'note'            => $this->note,
+            "company"         => $this->companies
+        ];
+    }
 }
