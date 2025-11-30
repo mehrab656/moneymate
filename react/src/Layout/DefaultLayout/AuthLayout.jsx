@@ -56,6 +56,65 @@ export default function AuthLayout() {
     hrModule: false,
   });
 
+  // Ensure sidebar dropdown expands based on URL query `menu=<slug>`
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(location.search);
+      const menuSlug = params.get("menu");
+      const parentKey = (() => {
+        if (!menuSlug) return null;
+        const map = {
+          // Transactions
+          investments: "transaction",
+          expenses: "transaction",
+          incomes: "transaction",
+          returns: "transaction",
+          // Reports
+          "income-report": "report",
+          "expense-report": "report",
+          "investment-report": "report",
+          "monthly-report": "report",
+          "all-report": "report",
+          // Bank & Acc.
+          banks: "bankAccount",
+          accounts: "bankAccount",
+          "balance-transfer": "bankAccount",
+          debts: "bankAccount",
+          // HRMS
+          employee: "hrModule",
+          payroll: "hrModule",
+          attendance: "hrModule",
+          "task-list": "hrModule",
+          "my-task": "hrModule",
+          "hr-reports": "hrModule",
+          // Settings
+          settings: "settings",
+          users: "settings",
+          roles: "settings",
+        };
+        return map[menuSlug] || null;
+      })();
+
+      const keys = ["transaction", "report", "bankAccount", "settings", "hrModule"];
+      setSubmenuVisible((prev) => {
+        if (!parentKey) {
+          // no menu param -> collapse all (preserve existing behavior)
+          return keys.reduce((acc, key) => ({ ...acc, [key]: false }), {});
+        }
+        // open only the matched parent dropdown
+        return keys.reduce(
+          (acc, key) => ({
+            ...acc,
+            [key]: key === parentKey,
+          }),
+          {}
+        );
+      });
+    } catch (_) {
+      // ignore malformed URLs
+    }
+  }, [location.search]);
+
   // remaining open multiple
   // const toggleSubmenu = (type) => {
   //   setSubmenuVisible((prev) => ({
@@ -327,6 +386,7 @@ export default function AuthLayout() {
                         toggleSubmenu={toggleSubmenu}
                         submenuVisible={submenuVisible}
                         checkPermission={checkPermission}
+                        currentMenu={(new URLSearchParams(location.search)).get('menu')}
                       />
                     </ul>
                   </div>
@@ -373,6 +433,7 @@ export default function AuthLayout() {
                       handleCloseSidebar={handleCloseSidebar}
                       user={user}
                       checkPermission={checkPermission}
+                      currentMenu={(new URLSearchParams(location.search)).get('menu')}
                     />
                   </ul>
                 </div>
