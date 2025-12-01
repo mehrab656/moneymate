@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box } from "@mui/material";
-import axiosClient from "../../axios-client.js";
+import axiosClient from "../../../axios-client.js";
 
 /**
  * Sidebar-friendly Investment Plan Details

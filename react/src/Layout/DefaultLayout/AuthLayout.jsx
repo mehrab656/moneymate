@@ -63,18 +63,20 @@ export default function AuthLayout() {
       const menuSlug = params.get("menu");
       const parentKey = (() => {
         if (!menuSlug) return null;
-        const map = {
-          // Transactions
-          investments: "transaction",
-          expenses: "transaction",
-          incomes: "transaction",
-          returns: "transaction",
-          // Reports
-          "income-report": "report",
-          "expense-report": "report",
-          "investment-report": "report",
-          "monthly-report": "report",
-          "all-report": "report",
+          const map = {
+            // Transactions
+            investments: "transaction",
+            "investment-plan": "transaction",
+            expenses: "transaction",
+            incomes: "transaction",
+            returns: "transaction",
+            budgets: "transaction",
+            // Reports
+            "income-report": "report",
+            "expense-report": "report",
+            "investment-report": "report",
+            "monthly-report": "report",
+            "all-report": "report",
           // Bank & Acc.
           banks: "bankAccount",
           accounts: "bankAccount",

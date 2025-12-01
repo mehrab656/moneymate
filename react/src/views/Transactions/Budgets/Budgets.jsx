@@ -1,21 +1,21 @@
 import {Link} from "react-router-dom";
-import axiosClient from "../../axios-client.js";
+import axiosClient from "../../../axios-client.js";
 import React, {useContext, useEffect, useState} from "react";
 import Swal from 'sweetalert2';
-import WizCard from "../../components/WizCard.jsx";
+import WizCard from "../../../components/WizCard.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEdit, faMoneyBill, faTrash} from "@fortawesome/free-solid-svg-icons";
 import Pagination from "react-bootstrap/Pagination";
 import {Button, Modal} from "react-bootstrap";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
-import {useStateContext} from "../../contexts/ContextProvider.jsx";
-import {SettingsContext} from "../../contexts/SettingsContext.jsx";
-import ActionButtonHelpers from "../../helper/ActionButtonHelpers.jsx";
-import MainLoader from "../../components/loader/MainLoader.jsx";
-import { notification } from "../../components/ToastNotification.jsx";
+import {useStateContext} from "../../../contexts/ContextProvider.jsx";
+import {SettingsContext} from "../../../contexts/SettingsContext.jsx";
+import ActionButtonHelpers from "../../../helper/ActionButtonHelpers.jsx";
+import MainLoader from "../../../components/loader/MainLoader.jsx";
+import { notification } from "../../../components/ToastNotification.jsx";
 import BudgetFormSidebar from "./BudgetFormSidebar.jsx";
-import { useSidebarActions } from "../../hooks/useSidebarActions";
+import { useSidebarActions } from "../../../hooks/useSidebarActions";
 
 export default function Budgets() {
 

@@ -1,15 +1,15 @@
 import {Link} from "react-router-dom";
 import React, {useContext, useEffect, useState} from "react";
-import axiosClient from "../../axios-client.js";
+import axiosClient from "../../../axios-client.js";
 import Swal from 'sweetalert2';
-import WizCard from "../../components/WizCard.jsx";
+import WizCard from "../../../components/WizCard.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faDollar} from "@fortawesome/free-solid-svg-icons";
 import Pagination from "react-bootstrap/Pagination";
-import {SettingsContext} from "../../contexts/SettingsContext.jsx";
-import MainLoader from "../../components/loader/MainLoader.jsx";
-import { notification } from "../../components/ToastNotification.jsx";
-import { useSidebarActions } from "../../components/GlobalSidebar";
+import {SettingsContext} from "../../../contexts/SettingsContext.jsx";
+import MainLoader from "../../../components/loader/MainLoader.jsx";
+import { notification } from "../../../components/ToastNotification.jsx";
+import { useSidebarActions } from "../../../components/GlobalSidebar";
 import InvestmentPlanFormSidebar from "./InvestmentPlanFormSidebar.jsx";
 import InvestmentPlanDetails from "./InvestmentPlanDetails.jsx";
 

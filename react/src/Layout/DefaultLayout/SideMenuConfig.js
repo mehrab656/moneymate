@@ -85,9 +85,11 @@ export const getSideMenus = (isActive, submenuVisible, currentMenu) => [
     mainMenu: { onClickToggleType: 'transaction', icon: faMoneyBill, text: 'Transactions', subIcon: submenuVisible.transaction ? '▲' : '▼' },
     subMenus: [
       { link: { to: '/transactions?menu=investments', className: (isActive('/transactions') && currentMenu === 'investments') || isActive('/investments') ? 'active' : '' }, icon: faMoneyBillTrendUp, text: 'Investments', permission: 'investment_view' },
+      { link: { to: '/transactions?menu=investment-plan', className: (isActive('/transactions') && currentMenu === 'investment-plan') || isActive('/investment-plan') ? 'active' : '' }, icon: faExchange, text: 'Investment Plan', permission: 'investment_plan_view' },
       { link: { to: '/transactions?menu=expenses', className: (isActive('/transactions') && currentMenu === 'expenses') || isActive('/expenses') ? 'active' : '' }, icon: faMoneyBill, text: 'Expenses', permission: 'expense_view' },
       { link: { to: '/transactions?menu=incomes', className: (isActive('/transactions') && currentMenu === 'incomes') || isActive('/incomes') ? 'active' : '' }, icon: faDollar, text: 'Incomes', permission: 'income_view' },
-      { link: { to: '/transactions?menu=returns', className: (isActive('/transactions') && currentMenu === 'returns') || isActive('/returns') ? 'active' : '' }, icon: faHandHoldingDollar, text: 'Returns', permission: 'return_view' }
+      { link: { to: '/transactions?menu=returns', className: (isActive('/transactions') && currentMenu === 'returns') || isActive('/returns') ? 'active' : '' }, icon: faHandHoldingDollar, text: 'Returns', permission: 'return_view' },
+      { link: { to: '/transactions?menu=budgets', className: (isActive('/transactions') && currentMenu === 'budgets') || isActive('/budgets') ? 'active' : '' }, icon: faWallet, text: 'Budgets', permission: 'budget_view' }
     ],
     submenuShowPermission: submenuVisible.transaction
   },
@@ -134,22 +136,6 @@ export const getSideMenus = (isActive, submenuVisible, currentMenu) => [
     icon: faList,
     text: 'Activity Logs',
     permission: 'admin'
-  },
-  {
-    hasMultiMenu: false,
-    className: 'aside-menu-item',
-    link: { to: '/budgets', className: isActive('/budgets') ? 'active' : '' },
-    icon: faWallet,
-    text: 'Budgets',
-    permission: 'budget_view'
-  },
-  {
-    hasMultiMenu: false,
-    className: 'aside-menu-item',
-    link: { to: '/investment-plan', className: isActive('/investment-plan') ? 'active' : '' },
-    icon: faExchange,
-    text: 'Investment Plan',
-    permission: 'investment_plan_view'
   },
   {
     hasMultiMenu: false,

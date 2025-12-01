@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
-import { notification } from '../../components/ToastNotification.jsx';
-import axiosClient from '../../axios-client';
+import { notification } from '../../../components/ToastNotification.jsx';
+import axiosClient from '../../../axios-client.js';
 import { 
   useCreateBudgetMutation, 
   useUpdateBudgetMutation, 
   useGetSingleBudgetDataQuery 
-} from '../../api/slices/budgetSlice';
-import { useSidebarActions } from '../../hooks/useSidebarActions';
+} from '../../../api/slices/budgetSlice.js';
+import { useSidebarActions } from '../../../hooks/useSidebarActions.js';
 
 const BudgetFormSidebar = ({ 
   budgetId = null, 

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Form, Row, Col, Button, Table } from "react-bootstrap";
-import { notification } from "../../components/ToastNotification.jsx";
-import { useSidebarActions } from "../../components/GlobalSidebar";
-import axiosClient from "../../axios-client.js";
-import MainLoader from "../../components/loader/MainLoader.jsx";
-import { useStateContext } from "../../contexts/ContextProvider.jsx";
+import { notification } from "../../../components/ToastNotification.jsx";
+import { useSidebarActions } from "../../../components/GlobalSidebar/index.js";
+import axiosClient from "../../../axios-client.js";
+import MainLoader from "../../../components/loader/MainLoader.jsx";
+import { useStateContext } from "../../../contexts/ContextProvider.jsx";
 
 /**
  * Sidebar form for creating/updating Investment Plans

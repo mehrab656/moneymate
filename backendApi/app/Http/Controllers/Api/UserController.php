@@ -231,8 +231,10 @@ class UserController extends Controller
 
     public function getActivityLogs(Request $request): JsonResponse
     {
-        $page = $request->query('page', 1);
-        $pageSize = $request->query('pageSize', 1000);
+        // Normalize pagination params: support both `rowsPerPage` and `pageSize`, clamp page to >= 1
+        $page = (int) $request->query('page', 1);
+        $page = $page < 1 ? 1 : $page;
+        $pageSize = (int) ($request->query('rowsPerPage') ?? $request->query('pageSize', 1000));
 
         $logs = ActivityLogModel::skip(($page - 1) * $pageSize)
             ->where('company_id', auth()->user()->primary_company)

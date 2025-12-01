@@ -58,10 +58,10 @@ const HrmsReport = lazy(() => import("../views/HRMS/HrmsReport.jsx"));
 const HrmsHub = lazy(() => import("../Layout/DefaultLayout/Hubs/HrmsHub.jsx"));
 
 // Budgets
-const Budgets = lazy(() => import("../views/Budgets/Budgets.jsx"));
+const Budgets = lazy(() => import("../views/Transactions/Budgets/Budgets.jsx"));
 
 // Investment Plan
-const InvestmentPlan = lazy(() => import("../views/InvestmentPlan/InvestmentPlan.jsx"));
+const InvestmentPlan = lazy(() => import("../views/Transactions/InvestmentPlan/InvestmentPlan.jsx"));
 
 // Calendar
 const Calendar = lazy(() => import("../views/Calender/Calendar.jsx"));

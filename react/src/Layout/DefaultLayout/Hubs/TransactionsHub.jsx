@@ -4,6 +4,8 @@ import InvestmentList from '../../../views/Transactions/Investment/InvestmentLis
 import ExpenseList from '../../../views/Transactions/Expense/ExpenseList.jsx';
 import IncomeList from '../../../views/Transactions/Income/IncomeList.jsx';
 import Return from '../../../views/Transactions/Return.jsx';
+import Budgets from '../../../views/Transactions/Budgets/Budgets.jsx';
+import InvestmentPlan from '../../../views/Transactions/InvestmentPlan/InvestmentPlan.jsx';
 
 const TransactionsHub = () => {
   const { search } = useLocation();
@@ -13,12 +15,16 @@ const TransactionsHub = () => {
   switch (menu) {
     case 'investments':
       return <InvestmentList />;
+    case 'investment-plan':
+      return <InvestmentPlan />;
     case 'expenses':
       return <ExpenseList />;
     case 'incomes':
       return <IncomeList />;
     case 'returns':
       return <Return />;
+    case 'budgets':
+      return <Budgets />;
     default:
       return <InvestmentList />;
   }
