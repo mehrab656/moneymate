@@ -132,6 +132,11 @@ class ExpenseController extends Controller
     {
 
         $expense = $request->validated();
+        // If client sends `return_amount` on create, map it to `refundable_amount`
+        $incomingReturn = $request->input('return_amount');
+        if ($incomingReturn !== null && (empty($expense['refundable_amount']) || !isset($expense['refundable_amount']))) {
+            $expense['refundable_amount'] = $incomingReturn;
+        }
 
         $category = Category::where('slug',$expense['category_id'])->first();
         if (!$category){
@@ -598,6 +603,13 @@ class ExpenseController extends Controller
 
         unset($data['account']);
         unset($data['category']);
+
+        // Map API field `return_amount` to the actual DB column `refundable_amount`
+        // and remove `return_amount` to prevent SQL errors on non-existent column.
+        if (array_key_exists('return_amount', $data)) {
+            $data['refundable_amount'] = $data['return_amount'];
+            unset($data['return_amount']);
+        }
 
         $expense->fill($data); // Use fill() instead of update()
 

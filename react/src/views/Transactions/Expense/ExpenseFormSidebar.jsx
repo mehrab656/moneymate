@@ -1,0 +1,293 @@
+import React, { useEffect, useState } from "react";
+import WizCard from "../../../components/WizCard.jsx";
+import MainLoader from "../../../components/loader/MainLoader.jsx";
+import { notification } from "../../../components/ToastNotification.jsx";
+import { Col, Form, Row, Button } from "react-bootstrap";
+import {
+  useCreateExpenseMutation,
+  useGetSingleExpenseDataQuery,
+} from "../../../api/slices/expenseSlice.js";
+import Select from "react-select";
+import { useGetBankDataQuery } from "../../../api/slices/bankSlice.js";
+import { useGetCategoryListDataQuery } from "../../../api/slices/categorySlice.js";
+import { useSidebarActions } from "../../../components/GlobalSidebar";
+
+const _initialExpense = {
+  id: null,
+  amount: "",
+  refundable_amount: 0,
+  description: "",
+  reference: "",
+  date: "",
+  note: "",
+  attachment: "",
+  account: [],
+  category: [],
+};
+
+export default function ExpenseFormSidebar({ expenseId, onSuccess }) {
+  const [expense, setExpense] = useState(_initialExpense);
+  const [loading, setLoading] = useState(false);
+  const [accounts, setAccounts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [saveBtnTxt, setSaveBtnTxt] = useState("Save");
+  const [errors, setErrors] = useState({});
+  const { closeSidebar } = useSidebarActions();
+
+  // api calls
+  const { data: getBankData } = useGetBankDataQuery({ currentPage: "", pageSize: 100 });
+  const { data: getCategoryListData, isFetching: categoryIsFetching } =
+    useGetCategoryListDataQuery({ categoryType: "expense" });
+  const { data: getSingleExpenseData } = useGetSingleExpenseDataQuery(
+    { id: expenseId },
+    { skip: !expenseId }
+  );
+  const [createExpense] = useCreateExpenseMutation();
+
+  useEffect(() => {
+    if (getBankData?.data?.length > 0) {
+      const modifiedAccounts = getBankData.data.map(({ id, bank_name, account_number }) => ({
+        value: id,
+        label: `${bank_name}(${account_number})`,
+      }));
+      setAccounts(modifiedAccounts);
+    }
+    if (getCategoryListData?.data?.length > 0) {
+      const modifiedCategories = getCategoryListData.data.map((c) => ({
+        value: c?.value ?? c?.id,
+        label: c?.label ?? c?.name ?? c?.category_name ?? String(c?.id ?? "Category"),
+      }));
+      setCategories(modifiedCategories);
+      setExpense((prev) => (
+        prev?.category && prev.category.value
+          ? prev
+          : { ...prev, category: modifiedCategories[0] }
+      ));
+    }
+    if (expenseId && getSingleExpenseData?.data) {
+      setExpense(getSingleExpenseData.data);
+    }
+  }, [expenseId, getSingleExpenseData, getBankData, getCategoryListData]);
+
+  useEffect(() => {
+    if (!expense?.date) {
+      setExpense((prev) => ({ ...prev, date: new Date().toISOString().split("T")[0] }));
+    }
+  }, [expense?.date]);
+
+  const expenseSubmit = async (event, stay = false) => {
+    event.preventDefault();
+    setLoading(true);
+    setSaveBtnTxt("Saving...");
+
+    if (!expense?.account?.value) {
+      setSaveBtnTxt("Save");
+      setLoading(false);
+      setErrors((prev) => ({ ...prev, account: ["Account is required."] }));
+      notification("error", "Account required", "Please select an account.");
+      return;
+    }
+    if (!expense?.category?.value) {
+      setSaveBtnTxt("Save");
+      setLoading(false);
+      setErrors((prev) => ({ ...prev, category: ["Category is required."] }));
+      notification("error", "Category required", "Please select a category.");
+      return;
+    }
+    if (!expense?.amount || Number(expense.amount) <= 0) {
+      setSaveBtnTxt("Save");
+      setLoading(false);
+      setErrors((prev) => ({ ...prev, amount: ["Enter a positive amount."] }));
+      notification("error", "Amount invalid", "Please enter a valid amount.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("account_id", expense.account.value);
+    formData.append("amount", expense.amount);
+    // Use `refundable_amount` for updates.
+    // For creates, default `return_amount` to `refundable_amount` if provided,
+    // otherwise fall back to the entered `amount`.
+    if (expense?.id) {
+      const refundableVal = Number(expense?.refundable_amount ?? 0);
+      // Send BOTH to satisfy backend validation and DB mapping on update
+      formData.append("refundable_amount", refundableVal);
+      formData.append("return_amount", refundableVal);
+    } else {
+      const createVal = Number(
+        (expense?.refundable_amount !== undefined && expense?.refundable_amount !== "")
+          ? expense?.refundable_amount
+          : (expense?.amount ?? 0)
+      );
+      // Send BOTH to satisfy possible backend expectations and DB mapping
+      formData.append("return_amount", createVal);
+      formData.append("refundable_amount", createVal);
+    }
+    formData.append("category_id", expense.category.value);
+    formData.append("description", expense.description);
+    formData.append("note", expense.note);
+    formData.append("reference", expense.reference);
+    formData.append("date", expense.date);
+    if (expense.attachment) {
+      formData.append("attachment", expense.attachment);
+    }
+
+    const url = expense.id ? `/expense/${expense.id}` : "/expense/add";
+    try {
+      const data = await createExpense({ url, formData }).unwrap();
+      notification("success", data?.message, data?.description);
+      if (stay) {
+        setExpense({ ..._initialExpense, category: categories[0] ?? [] });
+      } else {
+        onSuccess?.();
+        closeSidebar();
+      }
+    } catch (err) {
+      setSaveBtnTxt("Save");
+      notification("error", err?.message || "An error occurred", err?.description || "Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFileInputChange = (event) => {
+    const file = event.target.files[0];
+    setExpense({ ...expense, attachment: file });
+  };
+
+  return (
+    <div style={{ padding: 16 }}>
+      <MainLoader loaderVisible={loading} />
+      <WizCard className="animated fadeInDown">
+        <Form onSubmit={(e) => expenseSubmit(e, false)}>
+          <Row>
+            <Col xs={12}>
+              <Form.Group className="mb-3" controlId="description">
+                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Description</Form.Label>
+                <Form.Control as="textarea" rows={3} value={expense.description ?? ""} name="description"
+                              onChange={(e) => setExpense({ ...expense, description: e.target.value })}
+                              placeholder="Enter description" />
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col xs={12} md={6}>
+              <Form.Group className="mb-3" controlId="amount">
+                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Amount</Form.Label>
+                <Form.Control type="number" placeholder="i.g: 50 AED" value={expense.amount}
+                              onChange={(e) => setExpense({ ...expense, amount: e.target.value })} />
+                {errors.amount && (
+                  <p className="error-message">{errors.amount[0]}</p>
+                )}
+              </Form.Group>
+            </Col>
+            <Col xs={12} md={6}>
+              <Form.Group className="mb-3" controlId="refundable_amount">
+                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Refundable Amount</Form.Label>
+                <Form.Control type="number" placeholder="i.g: 50 AED" value={expense.refundable_amount}
+                              onChange={(e) => setExpense({ ...expense, refundable_amount: e.target.value })} />
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col xs={12} md={6}>
+              <Form.Group className="mb-3" controlId="account">
+                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Account</Form.Label>
+                <Select classNamePrefix="select" value={expense.account} isSearchable name="account" options={accounts}
+                        onChange={(e) => {
+                          setExpense({ ...expense, account: e });
+                          if (errors.account && e?.value) {
+                            const next = { ...errors };
+                            delete next.account;
+                            setErrors(next);
+                          }
+                        }} />
+                {errors.account && (
+                  <p className="error-message">{errors.account[0]}</p>
+                )}
+              </Form.Group>
+            </Col>
+            <Col xs={12} md={6}>
+              <Form.Group className="mb-3" controlId="category_id">
+                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Category</Form.Label>
+                <Select classNamePrefix="select" value={expense.category} isSearchable name="category_id"
+                        isLoading={categoryIsFetching} options={categories}
+                        onChange={(e) => {
+                          setExpense({ ...expense, category: e });
+                          if (errors.category && e?.value) {
+                            const next = { ...errors };
+                            delete next.category;
+                            setErrors(next);
+                          }
+                        }} />
+                {errors.category && (
+                  <p className="error-message">{errors.category[0]}</p>
+                )}
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col xs={12} md={6}>
+              <Form.Group className="mb-3" controlId="date">
+                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Date</Form.Label>
+                <Form.Control type="date" value={expense.date}
+                              onChange={(e) => setExpense({ ...expense, date: e.target.value })} />
+              </Form.Group>
+            </Col>
+            <Col xs={12} md={6}>
+              <Form.Group className="mb-3" controlId="reference">
+                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Reference</Form.Label>
+                <Form.Control type="text" placeholder="i.g: 50 AED" value={expense.reference ?? ""}
+                              onChange={(e) => setExpense({ ...expense, reference: e.target.value })} />
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col xs={12} md={6}>
+              <Form.Group className="mb-3" controlId="note">
+                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Note</Form.Label>
+                <Form.Control as="textarea" rows={3} value={expense.note ?? ""} name="note"
+                              onChange={(e) => setExpense({ ...expense, note: e.target.value })} />
+              </Form.Group>
+            </Col>
+
+            <Col xs={12} md={6}>
+              <Form.Group className="mb-3">
+                <Form.Label>Add Attachment</Form.Label>
+                <Form.Control type="file" onChange={handleFileInputChange} />
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Row className="g-2">
+            <Col xs={12}>
+              <div className="d-flex flex-column flex-sm-row gap-2 justify-content-end">
+                {expense.id ? (
+                  <Button type="submit" variant="primary" disabled={loading}>
+                    {loading ? "Updating..." : "Update Expense"}
+                  </Button>
+                ) : (
+                  <>
+                    <Button type="submit" variant="primary" disabled={loading}>
+                      {loading ? "Saving..." : "Add Expense"}
+                    </Button>
+                    <Button type="button" variant="success" disabled={loading} onClick={(e) => expenseSubmit(e, true)}>
+                      {loading ? "Saving..." : "Save & Add Another"}
+                    </Button>
+                  </>
+                )}
+                <Button type="button" variant="outline-secondary" onClick={closeSidebar}>
+                  Cancel
+                </Button>
+              </div>
+            </Col>
+          </Row>
+        </Form>
+      </WizCard>
+    </div>
+  );
+}

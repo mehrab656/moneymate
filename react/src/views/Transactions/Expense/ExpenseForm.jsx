@@ -43,9 +43,10 @@ export default function ExpenseForm({ handelCloseModal, id }) {
     useGetCategoryListDataQuery({
       categoryType: "expense",
     });
-  const { data: getSingleExpenseData } = useGetSingleExpenseDataQuery({
-    id: id,
-  });
+  const { data: getSingleExpenseData } = useGetSingleExpenseDataQuery(
+    { id },
+    { skip: !id }
+  );
   const [createExpense] = useCreateExpenseMutation();
 
   useEffect(() => {
@@ -61,7 +62,16 @@ export default function ExpenseForm({ handelCloseModal, id }) {
       setAccounts(modifiedAccounts);
     }
     if (getCategoryListData?.data.length > 0) {
-      setCategories(getCategoryListData?.data);
+      const modifiedCategories = getCategoryListData?.data.map((c) => ({
+        value: c?.value ?? c?.id,
+        label: c?.label ?? c?.name ?? c?.category_name ?? String(c?.id ?? "Category"),
+      }));
+      setCategories(modifiedCategories);
+      setExpense((prev) => (
+        prev?.category && prev.category.value
+          ? prev
+          : { ...prev, category: modifiedCategories[0] }
+      ));
     }
     if (id && getSingleExpenseData?.data) {
       setExpense(getSingleExpenseData?.data);
@@ -83,16 +93,51 @@ export default function ExpenseForm({ handelCloseModal, id }) {
     setSaveBtnTxt("Saving...");
     // event.currentTarget.disabled = true;
 
+    // Basic validation
+    if (!expense?.account?.value) {
+      setSaveBtnTxt("Save");
+      notification("error", "Account required", "Please select an account.");
+      return;
+    }
+    if (!expense?.category?.value) {
+      setSaveBtnTxt("Save");
+      notification("error", "Category required", "Please select a category.");
+      return;
+    }
+    if (!expense?.amount || Number(expense.amount) <= 0) {
+      setSaveBtnTxt("Save");
+      notification("error", "Amount invalid", "Please enter a valid amount.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("account_id", expense.account.value);
     formData.append("amount", expense.amount);
-    formData.append("refundable_amount", expense.refundable_amount);
+    // For updates, send `refundable_amount`.
+    // For creates, send BOTH `return_amount` and `refundable_amount`.
+    // If refundable is empty, default to entered `amount`.
+    if (expense?.id) {
+      const refundableVal = Number(expense?.refundable_amount ?? 0);
+      // Send BOTH to satisfy backend validation and DB mapping
+      formData.append("refundable_amount", refundableVal);
+      formData.append("return_amount", refundableVal);
+    } else {
+      const createVal = Number(
+        (expense?.refundable_amount !== undefined && expense?.refundable_amount !== "")
+          ? expense?.refundable_amount
+          : (expense?.amount ?? 0)
+      );
+      formData.append("return_amount", createVal);
+      formData.append("refundable_amount", createVal);
+    }
     formData.append("category_id", expense.category.value);
     formData.append("description", expense.description);
     formData.append("note", expense.note);
     formData.append("reference", expense.reference);
     formData.append("date", expense.date);
-    formData.append("attachment", expense.attachment);
+    if (expense.attachment) {
+      formData.append("attachment", expense.attachment);
+    }
 
     const url = expense.id ? `/expense/${expense?.id}` : "/expense/add";
     try {

@@ -9,11 +9,21 @@ export const expenseSlice = createApi({
   endpoints: (builder) => ({
     getExpenseData: builder.query({
       query: ({ currentPage, pageSize, query }) => {
-        const sectors = query.sectorIDS.toString();
-        const categories = query.categoryIDS.toString();
+        const params = new URLSearchParams();
+        params.set("page", currentPage ?? 1);
+        params.set("pageSize", pageSize ?? 10);
+        if (query?.limit) params.set("limit", query.limit);
+        if (query?.order) params.set("order", query.order);
+        if (query?.orderBy) params.set("orderBy", query.orderBy);
+        const sectors = (query?.sectorIDS ?? []).filter(Boolean).join(",");
+        const categories = (query?.categoryIDS ?? []).filter(Boolean).join(",");
+        if (sectors) params.set("sectors", sectors);
+        if (categories) params.set("categories", categories);
+        if (query?.start_date) params.set("start_date", query.start_date);
+        if (query?.end_date) params.set("end_date", query.end_date);
 
         return {
-          url: `/expenses?page=${currentPage}&pageSize=${pageSize}&limit=${query?.limit}&order=${query?.order}&orderBy=${query?.orderBy}&sectors=${sectors}&categories=${categories}&start_date=${query?.start_date}&end_date=${query?.end_date}`,
+          url: `/expenses?${params.toString()}`,
           method: "GET",
         };
       },
