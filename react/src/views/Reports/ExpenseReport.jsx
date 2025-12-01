@@ -111,6 +111,21 @@ export default function ExpenseReport() {
   return (
     <div>
       <MainLoader loaderVisible={loading} />
+      <div className={'report-page'}>
+        <div className={'report-header'}>
+          <span className={'page-title-header'}>Expenses Report</span>
+          {/* <div className={'d-flex align-items-center gap-2'}>
+            <ReactToPrint
+                trigger={() => (
+                    <button className={'btn btn-success btn-sm'}>
+                      <FontAwesomeIcon icon={faPrint}/>{' Print'}
+                    </button>
+                )}
+                content={() => componentRef.current}
+            />
+          </div> */}
+        </div>
+      </div>
         <Container fluid>
             <Row>
               <Col xs={6} md={4}>
@@ -172,8 +187,8 @@ export default function ExpenseReport() {
               </Col>
             </Row>
           <Row>
-            <div className="report-table-containe">
-              <table className={"report-table"}>
+            <div className="table-scroll" ref={componentRef}>
+              <table className={"table table-bordered custom-table"}>
               <thead>
                 <tr className={"text-center"}>
                   <th>Expense Date</th>

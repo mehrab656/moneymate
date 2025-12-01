@@ -90,10 +90,22 @@ export default function IncomeReport() {
     return (
         <>
             <MainLoader loaderVisible={loading}/>
+            <div className={'report-page'}>
+                <div className={'report-header'}>
+                    <span className={'page-title-header'}>Income Report</span>
+                    <div className={'d-flex align-items-center gap-2'}>
+                        <ReactToPrint
+                            trigger={() => <button className="btn btn-success btn-sm">Print</button>}
+                            content={()=> componentRef.current}
+                        />
+                        <button className={'btn btn-secondary btn-sm'} onClick={getIncomeReport}>Refresh</button>
+                    </div>
+                </div>
+            </div>
             <WizCard className="animated fadeInDown wiz-card-mh">
                 <div className="row">
                     <form onSubmit={handleIncomeFilterSubmit}>
-                        <div className="col-3">
+                        <div className="col-12 col-md-3">
                             <div className="form-group">
                                 <label className="custom-form-label" htmlFor="income_category">Income Category</label>
                                 <select
@@ -114,7 +126,7 @@ export default function IncomeReport() {
                                 </select>
                             </div>
                         </div>
-                        <div className="col-3">
+                        <div className="col-12 col-md-3">
                             <div className="form-group">
                                 <label className="custom-form-label" htmlFor="start_date">Start Date:</label>
                                 <DatePicker
@@ -126,7 +138,7 @@ export default function IncomeReport() {
                                 />
                             </div>
                         </div>
-                        <div className="col-3">
+                        <div className="col-12 col-md-3">
                             <div className="form-group">
                                 <label className="custom-form-label" htmlFor="end_date">End Date:</label>
                                 <DatePicker
@@ -138,18 +150,14 @@ export default function IncomeReport() {
                                 />
                             </div>
                         </div>
-                        <div className="col-3 mt-4">
-                            <button className={'btn-add right mt-2'} type="submit">Filter</button>
-                            <button className={"btn btn-warning ml-2"} onClick={resetFilterParameter}>Reset</button>
-                            <ReactToPrint
-                                trigger={() => <button className="btn btn-success ml-2">Print</button>}
-                                content={()=> componentRef.current}
-                             />
+                        <div className="col-12 col-md-3 mt-4 d-flex flex-wrap align-items-center gap-2">
+                            <button className={'btn-add mt-2'} type="submit">Filter</button>
+                            <button className={"btn btn-warning mt-2"} onClick={resetFilterParameter}>Reset</button>
                         </div>
                     </form>
                 </div>
                 <div className="row" ref={componentRef}>
-                    <div className="table-responsive-sm">
+                    <div className="table-scroll">
                         <table className="table table-bordered custom-table">
                             <thead>
                             <tr className={'text-center'}>

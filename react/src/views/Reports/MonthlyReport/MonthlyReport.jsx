@@ -106,61 +106,60 @@ export default function MonthlyReport() {
         <>
             <MainLoader loaderVisible={loading}/>
             <WizCard className="animated fadeInDown">
-                <div className="row mb-3">
-                    <table>
-                        <tbody>
-                        <tr style={{border: 'hidden'}}>
-                            <td>
-                                <form onSubmit={handleSubmit}>
-                                    <select
-                                        className="custom-form-control"
-                                        value={selectedCategoryId}
-                                        id="income-category"
-                                        name="income-category"
-                                        onChange={(event) => {
-                                            const value = event.target.value || '';
-                                            setSelectedCategoryId(value);
-                                        }}>
-                                        <option defaultValue>Filter by income category</option>
-                                        {incomeCategories.map(category => (
-                                            <option key={category.id} value={category.id}>
-                                                {category.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </form>
-                            </td>
-                            <td>
-                                <form onSubmit={handleSubmit}>
-                                    <DatePicker
-                                        label={"Select Report Month"}
-                                        className="custom-form-control"
-                                        id="from_date"
-                                        selected={fromDate}
-                                        onChange={(date) => setFromDate(date)}
-                                        dateFormat="MM/yyyy"
-                                        showMonthYearPicker
-                                    />
-                                </form>
-                            </td>
-                            <td width={'5%'}>
-                                <form onSubmit={handleSubmit}>
-                                    <button className={'btn-add right'} type="submit">Filter</button>
-                                </form>
-                            </td>
-                            <td  width={'5%'}>
-                                <button className="btn btn-warning" onClick={resetFilterParameter}>Reset</button>
-                            </td>
-                            <td >
-                                <ReactToPrint
-                                    trigger={() => <Button variant="outlined">Print</Button>}
-                                    content={()=> componentRef.current}
+                <div className="report-page">
+                    <div className="report-header">
+                        <div>
+                            <h2 className="h5 mb-0">Monthly Report</h2>
+                            <small className="text-muted">{monthlyReport.reportingMonth || 'Select month to view report'}</small>
+                        </div>
+                        <div className="d-flex gap-2">
+                            <ReactToPrint
+                                trigger={() => <Button variant="outlined" size="small">Print</Button>}
+                                content={() => componentRef.current}
+                            />
+                            <Button variant="contained" size="small" onClick={getMonthlyReports}>Refresh</Button>
+                        </div>
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="mb-3">
+                        <div className="row g-2">
+                            <div className="col-12 col-md-4">
+                                <select
+                                    className="custom-form-control w-100"
+                                    value={selectedCategoryId}
+                                    id="income-category"
+                                    name="income-category"
+                                    onChange={(event) => {
+                                        const value = event.target.value || '';
+                                        setSelectedCategoryId(value);
+                                    }}>
+                                    <option defaultValue>Filter by income category</option>
+                                    {incomeCategories.map(category => (
+                                        <option key={category.id} value={category.id}>
+                                            {category.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="col-12 col-md-4">
+                                <DatePicker
+                                    label={"Select Report Month"}
+                                    className="custom-form-control w-100"
+                                    id="from_date"
+                                    selected={fromDate}
+                                    onChange={(date) => setFromDate(date)}
+                                    dateFormat="MM/yyyy"
+                                    showMonthYearPicker
                                 />
-                            </td>
-                           
-                        </tr>
-                        </tbody>
-                    </table>
+                            </div>
+                            <div className="col-6 col-md-2 d-grid">
+                                <button className={'btn btn-primary'} type="submit">Filter</button>
+                            </div>
+                            <div className="col-6 col-md-2 d-grid">
+                                <button type="button" className="btn btn-warning" onClick={resetFilterParameter}>Reset</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
 
                 {
@@ -172,9 +171,8 @@ export default function MonthlyReport() {
 
                 <div className="row" ref={componentRef}>
                     <div className="col-12">
-                        <div className="responsive" style={{overflow: 'auto'}}>
-                            <div className="table-responsive-sm">
-                                <table className="table  table-bordered">
+                        <div className="table-scroll">
+                                <table className="table table-bordered align-middle">
                                     <thead>
                                     <tr className={'text-center'}>
                                         <td colSpan={11} className={'bg-info'}>
@@ -239,7 +237,6 @@ export default function MonthlyReport() {
                                     </tr>
                                     </tbody>
                                 </table>
-                            </div>
                         </div>
                     </div>
                 </div>

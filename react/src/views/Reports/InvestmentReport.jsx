@@ -53,19 +53,29 @@ export default function InvestmentReport() {
   return (
     <>
       <MainLoader loaderVisible={loading} />
-      <div className={"row mb-2"}>
-        <div className={"col-md-4"}>
-          <span className={"page-title-header"}>Investments</span>
-        </div>
-        <div className={"col-md-8 text-end"}>
-          <button className={"btn btn-secondary btn-sm mr-2"}>
-            <FontAwesomeIcon icon={faDownload} />
-            {" Download CSV"}
-          </button>
-          <button className={"btn-sm btn-add"}>
-            <FontAwesomeIcon icon={faFilter} />
-            {" Add Expense"}
-          </button>
+      <div className={'report-page'}>
+        <div className={'report-header'}>
+          <span className={'page-title-header'}>Investments</span>
+          <div className={'d-flex align-items-center gap-2'}>
+            <button className={"btn btn-secondary btn-sm"}>
+              <FontAwesomeIcon icon={faDownload} />
+              {" Download CSV"}
+            </button>
+            <Box
+              display={"flex"}
+              justifyContent={"center"}
+              alignItems={"center"}
+            >
+              <ReactToPrint
+                trigger={() => (
+                  <Button sx={{ ml: 1 }} variant="outlined">
+                    Print
+                  </Button>
+                )}
+                content={() => componentRef.current}
+              />
+            </Box>
+          </div>
         </div>
       </div>
 
@@ -73,7 +83,7 @@ export default function InvestmentReport() {
         <WizCard className="animated fadeInDown">
           <div className="row">
             <form onSubmit={handleSubmit}>
-              <div className="col-6">
+              <div className="col-12 col-md-6">
                 <div className="form-group">
                   <label className="custom-form-label" htmlFor="start_date">
                     Start Date
@@ -87,7 +97,7 @@ export default function InvestmentReport() {
                   />
                 </div>
               </div>
-              <div className="col-6">
+              <div className="col-12 col-md-6">
                 <div className="form-group">
                   <label className="custom-form-label" htmlFor="end_date">
                     End Date:
@@ -113,7 +123,8 @@ export default function InvestmentReport() {
               <h1 className="title-text text-center">
                 Total Investment Reports
               </h1>
-              <table className="table table-bordered custom-table">
+              <div className="table-scroll">
+                <table className="table table-bordered custom-table">
                 <thead>
                   <tr className={"text-center"}>
                     <th>Investor Name</th>
@@ -142,7 +153,8 @@ export default function InvestmentReport() {
                     ))}
                   </tbody>
                 )}
-              </table>
+                </table>
+              </div>
             </div>
           </div>
         </WizCard>
@@ -169,21 +181,7 @@ export default function InvestmentReport() {
               />
             </WizCard>
 
-            <Box
-              sx={{ mt: 1 }}
-              display={"flex"}
-              justifyContent={"center"}
-              alignItems={"center"}
-            >
-              <ReactToPrint
-                trigger={() => (
-                  <Button sx={{ ml: 1 }} variant="outlined">
-                    Print
-                  </Button>
-                )}
-                content={() => componentRef.current}
-              />
-            </Box>
+            
           </div>
         </div>
       </div>
