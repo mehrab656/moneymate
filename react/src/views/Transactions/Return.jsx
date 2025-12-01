@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import {Link} from "react-router-dom";
 import Pagination from "react-bootstrap/Pagination";
 import WizCard from "../../components/WizCard.jsx";
-import {Button, Form, Modal} from "react-bootstrap";
+import {Button, Form, Modal, Container, Row, Col} from "react-bootstrap";
 import {useStateContext} from "../../contexts/ContextProvider.jsx";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCoins, faEdit, faTrash} from "@fortawesome/free-solid-svg-icons";
@@ -162,33 +162,35 @@ export default function Return() {
     return (
         <div>
             <MainLoader loaderVisible={loading}/>
-            <div className="col-9">
-                <WizCard className="animated fadeInDown">
-                    <div className="row">
-                        <div className="col-4">
-                            <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
-                                <h1 className="title-text mb-0">Market Returns</h1>
-                            </div>
-                        </div>
-                        <div className="col-8">
-                            <div className="mb-4">
-                                <input
-                                    className="custom-form-control"
-                                    type="text"
-                                    placeholder="Search Returns..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="table-responsive-sm">
-                        <table className="table table-bordered table-responsive" >
+            <Container fluid>
+                <Row>
+                    <Col xs={12} lg={9}>
+                        <WizCard className="animated fadeInDown">
+                            <Row className="align-items-center">
+                                <Col xs={12} md={4}>
+                                    <div className="d-flex justify-content-between align-items-center gap-2 mb-3">
+                                        <span className="page-title-header">Market Returns</span>
+                                    </div>
+                                </Col>
+                                <Col xs={12} md={8}>
+                                    <div className="mb-3">
+                                        <input
+                                            className="custom-form-control"
+                                            type="text"
+                                            placeholder="Search Returns..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                        />
+                                    </div>
+                                </Col>
+                            </Row>
+                            <div className="table-responsive">
+                                <table className="table table-bordered">
                             <thead>
                             <tr>
                                 {
                                     userRole === 'admin'&&
-                                    <th>id</th>
+                                    <th className="text-center d-none d-md-table-cell">ID</th>
                                 }
                                 <th className="text-center">Date</th>
                                 <th className="text-center">Description</th>
@@ -229,10 +231,17 @@ export default function Return() {
                                             <tr key={marketReturn.id}>
                                                 {
                                                     userRole === 'admin'&&
-                                                    <td>{marketReturn.id}</td>
+                                                    <td className="d-none d-md-table-cell">{marketReturn.id}</td>
                                                 }
                                                 <td>{marketReturn.date}</td>
-                                                <td>{marketReturn.description}</td>
+                                                <td>
+                                                    <div className="d-flex align-items-center gap-2">
+                                                        {userRole === 'admin' && (
+                                                            <span className="badge bg-secondary d-inline d-md-none compact-id-badge">#{marketReturn.id}</span>
+                                                        )}
+                                                        <span className="compact-desc">{marketReturn.description}</span>
+                                                    </div>
+                                                </td>
                                                 <td className="text-right">{default_currency + ' ' + + marketReturn.refundable_amount}</td>
                                                 <td className="text-right">{default_currency + ' ' + + marketReturn.refunded_amount}</td>
                                                 <td className="text-right">{default_currency + ' ' + + (marketReturn.refundable_amount - marketReturn.refunded_amount).toString()}</td>
@@ -252,26 +261,26 @@ export default function Return() {
                                 </tbody>
                             )}
                         </table>
-                    </div>
-                    {totalPages > 1 && (
-                        <Pagination>
-                            <Pagination.Prev
-                                disabled={currentPage === 1}
-                                onClick={() => handlePageChange(currentPage - 1)}
-                            />
-                            {paginationItems}
-                            <Pagination.Next
-                                disabled={currentPage === totalPages}
-                                onClick={() => handlePageChange(currentPage + 1)}
-                            />
-                        </Pagination>
-                    )}
-                </WizCard>
-            </div>
+                            </div>
+                            {totalPages > 1 && (
+                                <Pagination>
+                                    <Pagination.Prev
+                                        disabled={currentPage === 1}
+                                        onClick={() => handlePageChange(currentPage - 1)}
+                                    />
+                                    {paginationItems}
+                                    <Pagination.Next
+                                        disabled={currentPage === totalPages}
+                                        onClick={() => handlePageChange(currentPage + 1)}
+                                    />
+                                </Pagination>
+                            )}
+                        </WizCard>
+                    </Col>
 
-            <div className="col-xl-3 col-md-3">
-                <div className="card quater-card summery-card">
-                    <div className="card-block">
+                    <Col xs={12} lg={3} className="mt-3 mt-lg-0">
+                        <div className="card quater-card summery-card">
+                            <div className="card-block">
                         <h6 className="text-muted m-b-20">Summary</h6>
 
                         <h4>{default_currency + ' ' + totals.totalRefundableAmount}</h4>
@@ -290,11 +299,13 @@ export default function Return() {
                             <div className="progress-bar bg-danger"
                                  style={{width: totals.totalRemainingPercent + '%'}}/>
                         </div>
-                    </div>
-                </div>
-            </div>
+                            </div>
+                        </div>
+                    </Col>
+                </Row>
+            </Container>
 
-            <Modal show={showModal} centered onHide={handleCloseModal} className="custom-modal">
+            <Modal show={showModal} centered scrollable onHide={handleCloseModal} className="custom-modal">
                 <Modal.Header closeButton>
                     <Modal.Title>
                         <span>Update Return: {marketReturn.reference}</span>

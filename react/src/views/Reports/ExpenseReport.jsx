@@ -5,10 +5,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faFilter, faPrint} from "@fortawesome/free-solid-svg-icons";
 import { Tooltip } from "react-tooltip";
 import {Col, Container, Form, InputGroup, Row} from "react-bootstrap";
-import ExpenseFilter from "../Transactions/Expense/ExpenseFilter.jsx";
+import ExpenseFilter from "../transactions/expense/ExpenseFilter.jsx";
 
 import ReactToPrint from "react-to-print";
-import ExpenseShow from "../Transactions/Expense/ExpenseShow.jsx";
 import {genRand} from "../../helper/HelperFunctions.js";
 import {useGetExpenseReportDataQuery} from "../../api/slices/reportSlice.js"
 import {useGetSectorListDataQuery} from "../../api/slices/sectorSlice.js";
@@ -253,14 +252,7 @@ export default function ExpenseReport() {
             </Row>
           </Container>
 
-      {showModal && (
-        <ExpenseShow
-          handelCloseModal={handleCloseModal}
-          title={"Expense Details"}
-          data={modalData}
-          currency={default_currency}
-        />
-      )}
+      {/* Details modal removed: component "ExpenseShow" no longer exists */}
 
       {showFilterModal && (
           <ExpenseFilter

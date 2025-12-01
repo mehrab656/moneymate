@@ -8,7 +8,6 @@ import {
     useDeleteExpenseMutation,
     useGetExpenseDataQuery,
 } from "../../../api/slices/expenseSlice.js";
-import ExpenseShow from "./ExpenseShow.jsx";
 import ExpenseFilter from "./ExpenseFilter.jsx";
 import ExpenseForm from "./ExpenseForm.jsx";
 import ExpenseFormSidebar from "./ExpenseFormSidebar.jsx";

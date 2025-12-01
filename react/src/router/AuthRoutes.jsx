@@ -28,7 +28,7 @@ const IncomeList = lazy(() => import("../views/Transactions/Income/IncomeList.js
 const ExpenseList = lazy(() => import("../views/Transactions/Expense/ExpenseList.jsx"));
 const InvestmentList = lazy(() => import("../views/Transactions/Investment/InvestmentList.jsx"));
 const TransactionsHub = lazy(() => import("../Layout/DefaultLayout/Hubs/TransactionsHub.jsx"));
-const ExpenseForm = lazy(() => import("../views/Transactions/Expense/ExpenseForm.jsx"));
+const ExpenseForm = lazy(() => import("../views/transactions/expense/ExpenseForm.jsx"));
 const Return = lazy(() => import("../views/Transactions/Return.jsx"));
 
 // Reports

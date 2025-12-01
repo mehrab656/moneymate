@@ -1025,7 +1025,7 @@ select option:focus {
 }
 
 .table-responsive {
-    overflow-x: initial !important;
+    overflow-x: auto !important;
 }
 
 
@@ -1036,7 +1036,7 @@ select option:focus {
     background-color: #607d8b !important;
 }
 .summery-card{
-    z-index: -1;
+    z-index: 0;
 }
 .amount{
     text-align: end;
@@ -1057,6 +1057,24 @@ select option:focus {
 }
 .table-wrapper-scroll-y {
     display: block;
+}
+
+/* Compact table view helpers for small screens */
+.compact-desc {
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+@media (min-width: 768px) {
+    .compact-desc {
+        max-width: 360px;
+    }
+}
+.compact-id-badge {
+    font-size: 11px;
+    line-height: 1;
+    padding: 4px 6px;
 }
 .logo-bookingcom{
     display: inline-block;
@@ -1399,18 +1417,19 @@ taskList {
     padding: 0;
 }
 .filter-modal-body.modal-body{
-    padding: 0 ;
-    height: 100vh;
+    padding: 0;
+    max-height: 80vh;
+    overflow-y: auto;
 }
 .filter-modal-row{
-    height: 100vh;
+    min-height: 50vh;
 }
 .filter-column{
     padding: 5px !important;
     border: 1px solid;
 }
 .report-filter-list{
-    max-height: 68vh;
+    max-height: 60vh;
     overflow-y: auto;
 }
 .expense-filter-actionBtn{
