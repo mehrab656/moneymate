@@ -34,8 +34,10 @@ class ApplicationSettingsController extends Controller {
 			] );
 		}
 
+		$applicationSettings = Option::all()->pluck( 'value', 'key' );
+
 		return response()->json( [
-			'application_settings' => ApplicationSettingsResource::collection( Option::all() ) ,
+			'application_settings' => $applicationSettings,
 			'message'     => 'Success!',
 			'description' => 'Application settings have been updated',
 		] );
@@ -67,6 +69,7 @@ class ApplicationSettingsController extends Controller {
 			'last_income_cat_id',
 			'last_income_cat_id',
 			'associative_categories',
+			'privacy_field',
 		];
 
 		$applicationSettings = Option::whereIn( 'key', $keys )->pluck( 'value', 'key' );

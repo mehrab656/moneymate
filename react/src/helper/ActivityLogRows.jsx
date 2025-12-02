@@ -19,18 +19,40 @@ const ActivityLogRows = (row) => {
     let {id, data_records, descriptions, log_type, object, created_at, view_status, view_by, uid} = row.row;
 
     let dateOptions = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
-    const _records = Object.entries(JSON.parse(data_records));
+    // Safely parse data_records if it's JSON string or already an object
+    let parsedRecords = {};
+    try {
+        if (typeof data_records === 'string') {
+            parsedRecords = JSON.parse(data_records || '{}') || {};
+        } else if (data_records && typeof data_records === 'object') {
+            parsedRecords = data_records;
+        }
+    } catch (e) {
+        parsedRecords = {};
+    }
+    const _records = Object.entries(parsedRecords);
 
     let viewList = [];
 
 
-    const results = _records.filter((rec) => !rec[0].includes('id') && !rec[0].includes('slug'));
+    const results = _records.filter((rec) => !String(rec[0]).includes('id') && !String(rec[0]).includes('slug'));
 
-    const modifiedResults = results.map(res=>{
-        if(res.includes('date') || res.includes("created_at")||res.includes('deleted_at') || res.includes("updated_at") ){
-            const date = new Date(res[1]);
-            res[1] = date.toDateString();
-
+    const modifiedResults = results.map(res => {
+        const key = String(res[0]);
+        const val = res[1];
+        if (key.includes('date') || key.includes('created_at') || key.includes('deleted_at') || key.includes('updated_at')) {
+            const d = new Date(val);
+            res[1] = isNaN(d.getTime()) ? String(val) : d.toDateString();
+        } else if (val !== null && typeof val === 'object') {
+            try {
+                res[1] = JSON.stringify(val);
+            } catch {
+                res[1] = String(val);
+            }
+        } else if (typeof val === 'boolean') {
+            res[1] = val ? 'Yes' : 'No';
+        } else {
+            res[1] = String(val);
         }
         return res;
     });
@@ -73,7 +95,7 @@ const ActivityLogRows = (row) => {
                 <TableCell>{log_type?.toUpperCase()}</TableCell>
                 <TableCell>{object?.toUpperCase()}</TableCell>
                 <TableCell>{(new Date(created_at)).toLocaleDateString("en-US", dateOptions)}</TableCell>
-                <TableCell>{rowStatus ? 'seen by' : 'unseen'}
+                <TableCell>{rowStatus ? 'Seen' : 'Unseen'}
                     {
                         viewList.length > 0 &&
                         <>
@@ -86,6 +108,9 @@ const ActivityLogRows = (row) => {
                             </span>)
                         </>
                     }
+                    {rowStatus && viewList.length === 0 && (
+                        <span style={{fontSize:"10px"}}>(by you)</span>
+                    )}
 
 
                 </TableCell>

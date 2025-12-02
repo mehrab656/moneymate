@@ -34,10 +34,10 @@ export const categorySlice = createApi({
       providesTags: ["sectors"],
     }),
     createCategory: builder.mutation({
-      query: ({ token, formData }) => ({
+      query: ({ data }) => ({
         url: `category/add`,
         method: "POST",
-        body: formData,
+        body: data,
       }),
       invalidatesTags: ["category"],
     }),
@@ -45,6 +45,21 @@ export const categorySlice = createApi({
       query: ({ token, id }) => ({
         url: `category/${id}`,
         method: "DELETE",
+      }),
+      invalidatesTags: ["category"],
+    }),
+    getSingleCategoryData: builder.query({
+      query: ({ id, token }) => ({
+        url: `category/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["category"],
+    }),
+    updateCategory: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `category/${id}`,
+        method: "PUT",
+        body: data,
       }),
       invalidatesTags: ["category"],
     }),
@@ -57,4 +72,6 @@ export const {
   useGetCategoryListDataQuery,
   useCreateCategoryMutation,
   useDeleteCategoryMutation,
+  useGetSingleCategoryDataQuery,
+  useUpdateCategoryMutation,
 } = categorySlice;

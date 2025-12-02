@@ -31,7 +31,12 @@ class UserResource extends JsonResource
 //            }
 //
 //    }
-        $extraData = json_decode($this->employee->extras,true);
+        $employee = $this->employee;
+        $extraData = [];
+        if ($employee && $employee->extras) {
+            $decoded = json_decode($employee->extras, true);
+            $extraData = is_array($decoded) ? $decoded : [];
+        }
 
 
         return [
@@ -41,7 +46,7 @@ class UserResource extends JsonResource
             'username' => $this->username,
             'email' => $this->email,
             'phone'=>$this->phone,
-            'emergency_contract'=>$this->emergency_contract,
+            'emergency_contact'=>$this->emergency_contact,
             'dob'=>$this->dob,
             'gender'=>$this->gender,
             'avatar' => asset('avatars/'.$this->profile_picture),
@@ -51,16 +56,26 @@ class UserResource extends JsonResource
             'created_at' => $this->created_at,
             'active'=>$this->active?'Active':'Inactive',
             'options'=>$this->options,
-            'employeeData'=>[
-                'salary'=>$this->employee->basic_salary,
-                'accommodation_cost'=>$this->employee->accommodation_cost,
-                'joining_date'=>$this->employee->joining_date,
-                'phone'=>$this->employee->phone,
-                'emergency_contact'=>$this->employee->emergency_contact,
-                'position'=>$this->employee->position,
-                'extras'=>json_decode($this->employee->extras),
-                'passport_file_name' => isset($extraData['passport_copy'])? asset('passports/'.$extraData['passport_copy']):'',
-                'emirate_file_name' => isset($extraData['emirate_id_copy'])? asset('ids/'.$extraData['emirate_id_copy']):'',
+            'employeeData'=> $employee ? [
+                'salary'=> $employee->basic_salary,
+                'accommodation_cost'=> $employee->accommodation_cost,
+                'joining_date'=> $employee->joining_date,
+                'phone'=> $employee->phone,
+                'emergency_contact'=> $employee->emergency_contact,
+                'position'=> $employee->position,
+                'extras'=> $employee->extras ? json_decode($employee->extras) : (object)[],
+                'passport_file_name' => isset($extraData['passport_copy']) ? asset('passports/'.$extraData['passport_copy']) : '',
+                'emirate_file_name' => isset($extraData['emirate_id_copy']) ? asset('ids/'.$extraData['emirate_id_copy']) : '',
+            ] : [
+                'salary'=> null,
+                'accommodation_cost'=> null,
+                'joining_date'=> null,
+                'phone'=> null,
+                'emergency_contact'=> null,
+                'position'=> null,
+                'extras'=> (object)[],
+                'passport_file_name' => '',
+                'emirate_file_name' => '',
             ],
         ];
     }

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Schema;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
@@ -14,17 +15,23 @@ class UserPermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        // Retrieve the "user" role
-        $userRole = Role::where('name', 'user')->first();
+        if (!Schema::hasTable('roles') || !Schema::hasTable('permissions')) {
+            return; // required tables missing; skip
+        }
 
-        // Create permissions
-        $createCategoryPermission = Permission::create(['name' => 'create_category']);
-        $editCategoryPermission = Permission::create(['name' => 'edit_category']);
+        // Ensure "user" role exists
+        $userRole = Role::firstOrCreate(['name' => 'user']);
+
+        // Create permissions if they don't already exist
+        $createCategoryPermission = Permission::firstOrCreate(['name' => 'create_category']);
+        $editCategoryPermission = Permission::firstOrCreate(['name' => 'edit_category']);
 
         // Assign permissions to the "user" role
-        $userRole->syncPermissions([
-            $createCategoryPermission,
-            $editCategoryPermission,
-        ]);
+        if ($userRole) {
+            $userRole->syncPermissions([
+                $createCategoryPermission,
+                $editCategoryPermission,
+            ]);
+        }
     }
 }

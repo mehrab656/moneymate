@@ -12,8 +12,9 @@ import {useGetInvestmentDataQuery,
     useCreateInvestmentMutation,
     useDeleteInvestmentMutation
 } from "../../../api/slices/investmentSlice.js";
-import ShowDetails from "./ShowDetails.jsx";
-import InvestmentForm from "./InvestmentForm.jsx";
+import InvestmentDetails from "./InvestmentDetails.jsx";
+import InvestmentFormSidebar from "./InvestmentFormSidebar.jsx";
+import { useSidebarActions } from "../../../components/GlobalSidebar";
 
 const defaultQuery = {
     investor_id: "",
@@ -32,8 +33,8 @@ export default function InvestmentList() {
     const [investments, setInvestments] = useState([]);
     const [investment, setInvestment] = useState({});
     const [loading, setLoading] = useState(true);
-    const [showCreateModal, setShowCreateModal] = useState(false);
-    const [viewInvestmentModal, setViewInvestmentModal] = useState(false);
+    // Global sidebar for create/edit
+    // const [viewInvestmentModal, setViewInvestmentModal] = useState(false); // replaced by GlobalSidebar
    const [showMainLoader, setShowMainLoader] = useState(false);
     const [query, setQuery] = useState(defaultQuery);
     const { num_data_per_page } = applicationSettings;
@@ -65,6 +66,7 @@ export default function InvestmentList() {
         { refetchOnMountOrArgChange: isPaginate }
     );
     const [deleteInvestment] = useDeleteInvestmentMutation();
+    const { showLargeContent, showQuickDetails } = useSidebarActions();
 
     const onDelete = (investment) => {
         Swal.fire({
@@ -89,26 +91,37 @@ export default function InvestmentList() {
             }
         });
     };
+    
     const showCreateModalFunc = () => {
-        setShowCreateModal(true);
-    };
-    const closeCreateModalFunc = () => {
-        setShowCreateModal(false);
-        setInvestment({});
+        showLargeContent(
+            "Add New Investment",
+            <InvestmentFormSidebar
+                investmentId={null}
+                onSuccess={() => {
+                    setIsPaginate(true);
+                }}
+            />
+        );
     };
     const showEditModalFunc = (investment) => {
-        setShowCreateModal(true);
         setInvestment(investment);
+        showLargeContent(
+            "Edit Investment",
+            <InvestmentFormSidebar
+                investmentId={investment.id}
+                onSuccess={() => {
+                    setIsPaginate(true);
+                }}
+            />
+        );
     };
 
 
-    const showViewModalFunc = (investment) => {
-        setViewInvestmentModal(true);
-        setInvestment(investment);
-    };
-    const closeViewModalFunc = () => {
-        setViewInvestmentModal(false);
-        setInvestment({});
+    const showInvestmentDetails = (investment) => {
+        showQuickDetails(
+            "Investment Details",
+            <InvestmentDetails investmentId={investment.id} data={investment} />
+        );
     };
 
 
@@ -170,7 +183,7 @@ export default function InvestmentList() {
             actionName: "View",
             type: "modal",
             route: "",
-            actionFunction: showViewModalFunc,
+            actionFunction: showInvestmentDetails,
             permission: "investment_view",
             textClass: "text-warning",
         },
@@ -220,19 +233,7 @@ export default function InvestmentList() {
                 loaderRow={query?.limit}
                 loaderCol={4}
             />
-
-            {showCreateModal && (
-                <InvestmentForm
-                handelCloseModal={closeCreateModalFunc}
-                title={"Create New Investment"}
-                id={investment.id}
-                />
-            )}
-            {viewInvestmentModal && (
-                <ShowDetails handleCloseModal={closeViewModalFunc}
-                             element={investment}
-                />
-            )}
+            {/* Details now handled by GlobalSidebar via showInvestmentDetails */}
         </div>
     );
 }

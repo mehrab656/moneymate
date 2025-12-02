@@ -23,6 +23,7 @@ class DebtResource extends JsonResource
             'amount' => $this->amount,
             'account_id' => $this->account_id,
             'account' => $this->accounts->bankName->bank_name,
+            'account_number' => $this->accounts->account_number,
             'type' => $this->type,
             'person' => $this->person,
             'date' => $this->date,

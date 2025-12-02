@@ -22,6 +22,7 @@ class SectorForFilterResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
             'label' => $this->name,
             'value' => $this->slug,
             'internet_billing_date' => $this->internet_billing_date,

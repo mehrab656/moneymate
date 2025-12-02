@@ -118,7 +118,7 @@ class UserController extends Controller
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            return response($e, 400);
+            return response()->json(['error' => $e->getMessage()], 400);
 
         }
         return response()->json( [
@@ -148,6 +148,15 @@ class UserController extends Controller
     }
 
     /**
+     * Get the currently authenticated user's full profile (including employee relation).
+     */
+    public function getMyProfile(): UserResource
+    {
+        $user = User::with('employee')->findOrFail(Auth::id());
+        return new UserResource($user);
+    }
+
+    /**
      * @return JsonResponse
      */
 
@@ -166,7 +175,7 @@ class UserController extends Controller
         }
 
 
-        if ($user->tokenCan('admin')) {
+        if ($user->role_as === 'admin') {
             $role = 'admin';
         } else {
             $role = $user->role_as;
@@ -222,8 +231,10 @@ class UserController extends Controller
 
     public function getActivityLogs(Request $request): JsonResponse
     {
-        $page = $request->query('page', 1);
-        $pageSize = $request->query('pageSize', 1000);
+        // Normalize pagination params: support both `rowsPerPage` and `pageSize`, clamp page to >= 1
+        $page = (int) $request->query('page', 1);
+        $page = $page < 1 ? 1 : $page;
+        $pageSize = (int) ($request->query('rowsPerPage') ?? $request->query('pageSize', 1000));
 
         $logs = ActivityLogModel::skip(($page - 1) * $pageSize)
             ->where('company_id', auth()->user()->primary_company)
@@ -357,11 +368,31 @@ class UserController extends Controller
             ],404);
         }
 
+        // Normalize DOB: allow empty and cast valid dates to Y-m-d
+        if (array_key_exists('dob', $data)) {
+            $dob = $data['dob'];
+            if (is_string($dob)) {
+                $dobTrim = trim($dob);
+                if ($dobTrim === '' || strtolower($dobTrim) === 'null') {
+                    $data['dob'] = null;
+                } else {
+                    $ts = strtotime($dobTrim);
+                    if ($ts !== false) {
+                        $data['dob'] = date('Y-m-d', $ts);
+                    }
+                }
+            }
+        }
+
+        // Validate basic + optional contacts
         $validator = Validator::make($data, [
             'first_name' => 'required',
             'last_name' => 'required',
-            'dob' => 'required',
-            'gender' => 'required'
+            'dob' => 'nullable|date',
+            'gender' => 'required',
+            'phone' => 'sometimes|required',
+            'emergency_contact' => 'sometimes|required',
+            'email' => 'sometimes|required|email',
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -370,7 +401,85 @@ class UserController extends Controller
             ],400);
         }
 
-        $update = (new User())->updateUser($data, $slug,'basicInfo');
+        // Handle avatar upload if provided
+        if ($request->hasFile('profile_picture')) {
+            $path = public_path('avatars');
+            if (!File::exists($path)) {
+                File::makeDirectory($path, 0755, true);
+            }
+            $attachment = $request->file('profile_picture');
+            $filename = str_replace(' ', '_', sprintf("%s avatar %s.%s", $user['first_name'], time(), $attachment->getClientOriginalExtension()));
+            $attachment->move('avatars', $filename);
+            $data['profile_picture'] = $filename; // Store only the filename
+        }
+
+        $update = (new User())->updateUser($data, $slug,'basicContacts');
+        return response()->json($update, $update['status_code']);
+    }
+
+    /**
+     * Update the authenticated user's basic info using token (no slug required).
+     */
+    public function updateMyBasicInfo(Request $request): JsonResponse
+    {
+        $data = $request->input();
+        if (!$data){
+            return response()->json([
+                'message' => "Missing Form Data",
+                'description' => "Missing Form Data",
+            ],400);
+        }
+
+        $user = Auth::user();
+        // Normalize DOB: allow empty and cast valid dates to Y-m-d
+        if (array_key_exists('dob', $data)) {
+            $dob = $data['dob'];
+            if (is_string($dob)) {
+                $dobTrim = trim($dob);
+                if ($dobTrim === '' || strtolower($dobTrim) === 'null') {
+                    $data['dob'] = null;
+                } else {
+                    $ts = strtotime($dobTrim);
+                    if ($ts !== false) {
+                        $data['dob'] = date('Y-m-d', $ts);
+                    }
+                }
+            }
+        }
+
+        // Build validation rules for merged basic + optional contacts
+        $rules = [
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'dob' => 'nullable|date',
+            'gender' => 'required',
+            // Contacts and avatar are optional but validated if present
+            'phone' => 'sometimes|required',
+            'emergency_contact' => 'sometimes|required',
+            'email' => 'sometimes|required|email',
+        ];
+
+        $validator = Validator::make($data, $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Please fill the required fields!',
+                'description' => $validator->errors()->first()
+            ],400);
+        }
+
+        // Handle avatar upload if provided
+        if ($request->hasFile('profile_picture')) {
+            $path = public_path('avatars');
+            if (!File::exists($path)) {
+                File::makeDirectory($path, 0755, true);
+            }
+            $attachment = $request->file('profile_picture');
+            $filename = str_replace(' ', '_', sprintf("%s avatar %s.%s", $user['first_name'], time(), $attachment->getClientOriginalExtension()));
+            $attachment->move('avatars', $filename);
+            $data['profile_picture'] = $filename; // Store only the filename
+        }
+
+        $update = (new User())->updateUser($data, $user->slug,'basicContacts');
         return response()->json($update, $update['status_code']);
     }
     public function updateContacts(Request $request, $slug):JsonResponse
@@ -394,7 +503,7 @@ class UserController extends Controller
 
         $validator = Validator::make($data, [
             'phone' => 'required',
-            'emergency_contract' => 'required',
+            'emergency_contact' => 'required',
             'email' => 'required|email',
         ]);
         if ($validator->fails()) {
@@ -415,6 +524,46 @@ class UserController extends Controller
         }
 
         $update = (new User())->updateUser($data, $slug,'contacts');
+        return response()->json($update, $update['status_code']);
+    }
+
+    /**
+     * Update the authenticated user's contact info using token.
+     */
+    public function updateMyContacts(Request $request): JsonResponse
+    {
+        $data = $request->input();
+        if (!$data){
+            return response()->json([
+                'message' => "Missing Form Data",
+                'description' => "Missing Form Data",
+            ],400);
+        }
+        $user = Auth::user();
+
+        $validator = Validator::make($data, [
+            'phone' => 'required',
+            'emergency_contact' => 'required',
+            'email' => 'required|email',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => true,
+                'message' => $validator->errors()
+            ]);
+        }
+        if ($request->hasFile('profile_picture')) {
+            $path = public_path('avatars');
+            if (!File::exists($path)) {
+                File::makeDirectory($path, 0755, true);
+            }
+            $attachment = $request->file('profile_picture');
+            $filename = str_replace(' ', '_', sprintf("%s avatar %s.%s",$user['first_name'], time(),$attachment->getClientOriginalExtension()));
+            $attachment->move('avatars', $filename);
+            $data['profile_picture'] = $filename; // Store only the filename
+        }
+
+        $update = (new User())->updateUser($data, $user->slug,'contacts');
         return response()->json($update, $update['status_code']);
     }
     public function updateEmploymentDetails(Request $request, $slug):JsonResponse
@@ -474,6 +623,58 @@ class UserController extends Controller
             $data['emirate_id_copy'] = $filename; // Store only the filename
         }
         $update = (new User())->updateUser($data, $slug,'employmentDetails');
+        return response()->json($update, $update['status_code']);
+    }
+
+    /**
+     * Update the authenticated user's employment details using token.
+     */
+    public function updateMyEmploymentDetails(Request $request): JsonResponse
+    {
+        $data = $request->input();
+        if (!$data){
+            return response()->json([
+                'message' => "Missing Form Data",
+                'description' => "Missing Form Data",
+            ],400);
+        }
+        $user = Auth::user();
+
+        $validator = Validator::make($data, [
+            'designation' => 'required',
+            'date_of_joining' => 'required',
+            'employment_type' => 'required',
+            'salary' => 'required',
+            'national_id' => 'required',
+            'emirates_id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => true,
+                'message' => $validator->errors()
+            ]);
+        }
+        if ($request->hasFile('passport_copy')) {
+            $path = public_path('passports');
+            if (!File::exists($path)) {     //check if the dir is present. if not, create a dir with permission
+                File::makeDirectory($path, 0755, true);
+            }
+            $attachment = $request->file('passport_copy');
+            $filename = str_replace(' ', '_', sprintf("%s passport %s.%s",$user['first_name'], time(),$attachment->getClientOriginalExtension()));
+            $attachment->move('passports', $filename);
+            $data['passport_copy'] = $filename; // Store only the filename
+        }
+        if ($request->hasFile('emirate_id_copy')) {
+            $path = public_path('ids');
+            if (!File::exists($path)) {  //check if the dir is present. if not, create a dir with permission
+                File::makeDirectory($path, 0755, true);
+            }
+            $attachment = $request->file('emirate_id_copy');
+            $filename = str_replace(' ', '_', sprintf("%s Emirate Id %s.%s",$user['first_name'], time(),$attachment->getClientOriginalExtension()));
+            $attachment->move('ids', $filename);
+            $data['emirate_id_copy'] = $filename; // Store only the filename
+        }
+        $update = (new User())->updateUser($data, $user->slug,'employmentDetails');
         return response()->json($update, $update['status_code']);
     }
 }

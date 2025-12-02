@@ -8,7 +8,9 @@ import {notification} from "../../../components/ToastNotification.jsx";
 import Iconify from "../../../components/Iconify.jsx";
 import CommonTable from "../../../helper/CommonTable.jsx";
 import TaskFilters from "../Task/TaskFilters.jsx";
-import CreateOrUpdateModal from "./CreateOrUpdateModal.jsx";
+import EmployeeFormSidebar from "./EmployeeFormSidebar.jsx";
+import EmployeeDetails from "./EmployeeDetails.jsx";
+import { useSidebarActions } from "../../../components/GlobalSidebar";
 import Image from 'react-bootstrap/Image';
 
 const defaultEmployee = {
@@ -118,11 +120,27 @@ export default function Employee() {
             }
         });
     };
-    const showCreateModalFunc = () => {
-        setShowCreateOrUpdateModal(true);
+    const { showLargeContent, showQuickDetails } = useSidebarActions();
+
+    const openCreateForm = () => {
+        showLargeContent(
+            "Add Employee",
+            <EmployeeFormSidebar onSuccess={getEmployees} />
+        );
     };
-    const closeCreateModalFunc = () => {
-        setShowCreateOrUpdateModal(false);
+
+    const openEditForm = (element) => {
+        showLargeContent(
+            "Edit Employee",
+            <EmployeeFormSidebar employeeId={element.id} onSuccess={getEmployees} />
+        );
+    };
+
+    const openViewDetails = (element) => {
+        showQuickDetails(
+            "Employee Details",
+            <EmployeeDetails employeeId={element.id} />
+        );
     };
 
     const getEmployees = () => {
@@ -175,7 +193,7 @@ export default function Employee() {
             actionName: 'Edit',
             type: "modal",
             route: "",
-            actionFunction: "editModal",
+            actionFunction: openEditForm,
             permission: 'edit_employee',
             textClass: 'text-info',
         },
@@ -183,7 +201,7 @@ export default function Employee() {
             actionName: 'View',
             type: "modal",
             route: "",
-            actionFunction: 'showViewModalFunc',
+            actionFunction: openViewDetails,
             permission: 'employee_view',
             textClass: 'text-warning'
         },
@@ -217,15 +235,13 @@ export default function Employee() {
             <MainLoader loaderVisible={loading}/>
             <CommonTable
                 cardTitle={"List of employees"}
-                addBTN={
-                    {
-                        permission: checkPermission('employee_create'),
-                        txt: "Add New employee",
-                        icon: (<Iconify icon={"eva:plus-fill"}/>), //"faBuildingFlag",
-                        linkTo: 'modal',
-                        link: showCreateModalFunc
-                    }
-                }
+                addBTN={{
+                    permission: checkPermission('employee_create'),
+                    txt: "Add New employee",
+                    icon: (<Iconify icon={"eva:plus-fill"}/>),
+                    linkTo: 'modal',
+                    link: openCreateForm,
+                }}
                 paginations={{
                     totalPages: totalPages,
                     totalCount: totalCount,
@@ -246,11 +262,7 @@ export default function Employee() {
                 }}
                 filter={filters}
             />
-
-            <CreateOrUpdateModal show={showCreateOrUpdateModal}
-                                 closeFunc={closeCreateModalFunc}
-            />
-
+            {/* Sidebars handle create/edit/view; legacy modal removed */}
         </div>
     );
 }

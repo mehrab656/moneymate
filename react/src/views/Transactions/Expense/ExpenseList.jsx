@@ -8,10 +8,12 @@ import {
     useDeleteExpenseMutation,
     useGetExpenseDataQuery,
 } from "../../../api/slices/expenseSlice.js";
-import ExpenseShow from "./ExpenseShow.jsx";
 import ExpenseFilter from "./ExpenseFilter.jsx";
 import ExpenseForm from "./ExpenseForm.jsx";
+import ExpenseFormSidebar from "./ExpenseFormSidebar.jsx";
 import { Form} from "react-bootstrap";
+import { useSidebarActions } from "../../../components/GlobalSidebar";
+import ExpenseDetails from "./ExpenseDetails.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faDownload, faFilter} from "@fortawesome/free-solid-svg-icons";
 import FilteredParameters from "./Components/FilteredParameters.jsx";
@@ -62,13 +64,19 @@ export default function ExpenseList() {
         note: "",
         attachment: "",
     });
+    const { showLargeContent, showQuickDetails } = useSidebarActions();
+
     const toggleFilterModal = () => {
         setShowFilterModal(!showFilterModal);
-        setHasFilter(false);
+        setHasFilter(true);
     }
     const showExpense = (expense) => {
         setExpense(expense);
-        setShowModal(true);
+        // Use GlobalSidebar quick details view
+        showQuickDetails(
+            "Expense Details",
+            <ExpenseDetails data={expense} />
+        );
     };
     const handleCloseModal = () => {
         setShowModal(false);
@@ -100,30 +108,64 @@ export default function ExpenseList() {
         data: getExpenseData,
         isFetching: isDataFetching,
         isError: hasDataFetchingError,
+        refetch,
     } = useGetExpenseDataQuery(
-        {currentPage, pageSize, query: query},
-        {skip: !hasFilter},
-        {refetchOnMountOrArgChange: isPaginate}
+        { currentPage, pageSize, query: query },
+        { skip: false, refetchOnMountOrArgChange: isPaginate }
     );
     const [deleteExpense] = useDeleteExpenseMutation();
     useEffect(() => {
         document.title = "Manage Expenses";
-        if (getExpenseData?.data) {
-            setExpenses(getExpenseData.data);
-            setTotalCount(getExpenseData.total);
+        // Normalize various response envelopes to keep UI resilient
+        const normalizedList = Array.isArray(getExpenseData?.data)
+            ? getExpenseData.data
+            : Array.isArray(getExpenseData?.expenses?.data)
+                ? getExpenseData.expenses.data
+                : Array.isArray(getExpenseData?.items)
+                    ? getExpenseData.items
+                    : Array.isArray(getExpenseData?.results)
+                        ? getExpenseData.results
+                        : [];
+
+        const normalizedTotal =
+            typeof getExpenseData?.total === 'number'
+                ? getExpenseData.total
+                : typeof getExpenseData?.expenses?.total === 'number'
+                    ? getExpenseData.expenses.total
+                    : typeof getExpenseData?.count === 'number'
+                        ? getExpenseData.count
+                        : normalizedList.length;
+
+        if (normalizedList.length > 0 || isDataFetching) {
+            setExpenses(normalizedList);
+            setTotalCount(normalizedTotal);
             setShowMainLoader(false);
+        } else if (hasDataFetchingError) {
+            setShowMainLoader(false);
+            setExpenses([]);
         } else {
-            setShowMainLoader(true);
+            // Still fetching or empty results
+            setShowMainLoader(isDataFetching);
         }
         setIsPaginate(false);
-    }, [getExpenseData, currentPage]);
+    }, [getExpenseData, isDataFetching, hasDataFetchingError, currentPage]);
 
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
         setIsPaginate(true);
     };
     const showExpenseFormFunc = () => {
-        setShowExpenseForm(true);
+        // open in GlobalSidebar large content
+        showLargeContent(
+            "Add New Expense",
+            <ExpenseFormSidebar
+                expenseId={null}
+                onSuccess={() => {
+                    setIsPaginate(true);
+                    refetch();
+                }}
+            />
+        );
     };
 
     const closeCreateModalFunc = () => {
@@ -131,8 +173,17 @@ export default function ExpenseList() {
         setExpense({});
     };
     const showEditModalFunc = (expense) => {
-        setShowExpenseForm(true);
         setExpense(expense);
+        showLargeContent(
+            "Edit Expense",
+            <ExpenseFormSidebar
+                expenseId={expense.id}
+                onSuccess={() => {
+                    setIsPaginate(true);
+                    refetch();
+                }}
+            />
+        );
     };
 
     const filteredExpenses = expenses.filter((expense) => {
@@ -290,14 +341,7 @@ export default function ExpenseList() {
                        isFetching={isDataFetching}
                        hasError={hasDataFetchingError}
             />
-            {showModal && (
-                <ExpenseShow
-                    handelCloseModal={handleCloseModal}
-                    title={"Expense Details "}
-                    data={expense}
-                    currency={default_currency}
-                />
-            )}
+            {/* Details handled by GlobalSidebar via showExpense */}
             {showExpenseForm && (
                 <ExpenseForm
                     handelCloseModal={closeCreateModalFunc}

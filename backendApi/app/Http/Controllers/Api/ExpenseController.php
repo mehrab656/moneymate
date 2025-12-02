@@ -132,6 +132,11 @@ class ExpenseController extends Controller
     {
 
         $expense = $request->validated();
+        // If client sends `return_amount` on create, map it to `refundable_amount`
+        $incomingReturn = $request->input('return_amount');
+        if ($incomingReturn !== null && (empty($expense['refundable_amount']) || !isset($expense['refundable_amount']))) {
+            $expense['refundable_amount'] = $incomingReturn;
+        }
 
         $category = Category::where('slug',$expense['category_id'])->first();
         if (!$category){
@@ -278,35 +283,32 @@ class ExpenseController extends Controller
      */
     public function categories(Request $request): JsonResponse
     {
+        $sectorIdentifier = $request->sector_id; // May be slug or numeric ID
 
-        $sectorSlug = $request->sector_id;
-
-        $columns = 'categories.*';
-
-        if($sectorSlug){
-            $sector = SectorModel::where('slug',$sectorSlug)->first();
-
-            if(!$sector){
-                return response()->json([
-                    'message' => 'Success!',
-                    'description' => 'Sector not find by given id.'
-                ]);
-            }
-
-            $columns = ['categories.slug','categories.name'];
-        }
-
-        $categories = DB::table('categories')->select($columns)
+        // Base query: always return full category fields
+        $categoriesQuery = DB::table('categories')
+            ->select('categories.*')
             ->join('sectors', 'categories.sector_id', '=', 'sectors.id')
             ->where('sectors.company_id', '=', Auth::user()->primary_company)
             ->where('type', '=', 'expense');
 
-        if ($sectorSlug) {
-            $categories = $categories->where('sectors.id', '=', $sector->id);
+        // If a sector identifier is provided, resolve to the numeric sector ID (supports slug or ID)
+        if (!empty($sectorIdentifier)) {
+            $sector = is_numeric($sectorIdentifier)
+                ? SectorModel::find((int) $sectorIdentifier)
+                : SectorModel::where('slug', $sectorIdentifier)->first();
+
+            if (!$sector) {
+                return response()->json([
+                    'message' => 'Not Found',
+                    'description' => 'Sector could not be found for the given identifier.'
+                ], 404);
+            }
+
+            $categoriesQuery = $categoriesQuery->where('categories.sector_id', '=', $sector->id);
         }
 
-
-        return response()->json(['categories' => $categories->get()]);
+        return response()->json(['categories' => $categoriesQuery->get()]);
     }
 
     /**
@@ -527,7 +529,7 @@ class ExpenseController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
 
-            return redirect()->back()->withErrors($e->getMessages())->withInput();
+            return redirect()->back()->withErrors([$e->getMessage()])->withInput();
         }
 
 
@@ -601,6 +603,13 @@ class ExpenseController extends Controller
 
         unset($data['account']);
         unset($data['category']);
+
+        // Map API field `return_amount` to the actual DB column `refundable_amount`
+        // and remove `return_amount` to prevent SQL errors on non-existent column.
+        if (array_key_exists('return_amount', $data)) {
+            $data['refundable_amount'] = $data['return_amount'];
+            unset($data['return_amount']);
+        }
 
         $expense->fill($data); // Use fill() instead of update()
 

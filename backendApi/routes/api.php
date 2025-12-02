@@ -32,6 +32,7 @@ use App\Http\Controllers\Api\WalletController;
 use App\Http\Controllers\HospitableController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 
 
 /*
@@ -47,6 +48,11 @@ use Illuminate\Support\Facades\Route;
 
 
 
+// Respond to CORS preflight for any API route with 204 No Content
+Route::options('/{any}', function () {
+    return response()->noContent();
+})->where('any', '.*');
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
@@ -57,12 +63,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('/users', UserController::class);
     Route::get('/get-all-users', [UserController::class, 'getUsers']);
     Route::get('/get-single-user/{slug}', [UserController::class, 'getSingleUser']);
+    // Current user profile by token
+    Route::get('/my-profile', [UserController::class, 'getMyProfile']);
     Route::get('/get-investors', [UserController::class, 'getInvestors']);
     Route::get('/dashboard-data', [DashboardController::class, 'dashboardData']);
     Route::post('/update-profile/{slug}', [UserController::class, 'updateProfile']);
     Route::post('/update-basic-info/{slug}', [UserController::class, 'updateBasicInfo']);
+    Route::post('/my-profile/update-basic-info', [UserController::class, 'updateMyBasicInfo']);
     Route::post('/update-contacts/{slug}', [UserController::class, 'updateContacts']);
+    Route::post('/my-profile/update-contacts', [UserController::class, 'updateMyContacts']);
     Route::post('/update-employment-details/{slug}', [UserController::class, 'updateEmploymentDetails']);
+    Route::post('/my-profile/update-employment-details', [UserController::class, 'updateMyEmploymentDetails']);
     Route::post('/update-security', [AuthController::class, 'changePassword']);
     Route::post('/update-authentication/{slug}', [UserController::class, 'updateAuthentication']);
 //    Route::post('/user/add', [UserController::class, 'store']);
@@ -133,6 +144,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Application Settings Api
 
     Route::put('/store-application-setting', [SettingsController::class, 'storeSettings']);
+    // Generic application settings updater (Option table)
+    Route::put('/application-settings', [ApplicationSettingsController::class, 'storeApplicationSetting']);
 
 
     // Budget Api
@@ -159,6 +172,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/debts/store', [DebtController::class, 'store']);
     Route::get('/debts', [DebtController::class, 'index']);
     Route::get('/debts/{debt}', [DebtController::class, 'show']);
+    Route::post('/debts/{debt}', [DebtController::class, 'update']);
     Route::get('/get-debt-history/{debt_id}', [DebtController::class, 'getDebtHistory']);
     Route::delete('/debts/delete/{id}', [DebtController::class, 'destroy']);
 
@@ -181,6 +195,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Account Transfer Api
 
     Route::get('/transfer/histories', [AccountTransferController::class, 'index']);
+    Route::get('/transfer/histories/{id}', [AccountTransferController::class, 'show']);
     Route::get('/transfer/current-month', [AccountTransferController::class, 'accountTransferCurrentMonth']);
     Route::post('/bank-accounts/transfer-amount', [AccountTransferController::class, 'transferAmount']);
 
@@ -195,12 +210,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/export-investment-csv', [InvestmentController::class, 'exportInvestmentCsv']);
     Route::get('/investment/graph', [InvestmentController::class, 'getInvestmentGraph']);
     Route::post('/investments/add-new-plan', [InvestmentController::class, 'addPlan']);
+    // Investment Plans listing APIs
+    Route::get('/investment-plans', [InvestmentController::class, 'listPlans']);
+    Route::get('/investment-plan/{id}', [InvestmentController::class, 'showPlan']);
+    Route::post('/investment-plan/{id}', [InvestmentController::class, 'updatePlan']);
+    Route::delete('/investment-plan/{id}', [InvestmentController::class, 'deletePlan']);
 
     // Sectors API
 
     Route::get('/sectors', [SectorModelController::class, 'index']);
     Route::post('/sector/add', [SectorModelController::class, 'add']);
-    Route::delete('/sector/{sector}', [SectorModelController::class, 'delete']);
+    Route::delete('/sector/{sector}', [SectorModelController::class, 'destroy']);
     Route::get('sector/{sector}', [SectorModelController::class, 'show']);
     Route::post('sector/{sector}', [SectorModelController::class, 'update']);
     Route::get('/sectorsIncomeExpense/{sector}', [
@@ -281,6 +301,16 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
+// Temporary env diagnostic endpoint to verify web context DB config
+Route::get('/env-check', function () {
+    return response()->json([
+        'db_database' => config('database.connections.mysql.database'),
+        'db_host' => config('database.connections.mysql.host'),
+        'app_url' => config('app.url'),
+        'app_env' => config('app.env'),
+        'config_cached' => app()->configurationIsCached(),
+    ]);
+});
 
 Route::get('/get-application-settings', [ApplicationSettingsController::class, 'getApplicationSettings']);
 Route::get('/get-associative-categories', [ApplicationSettingsController::class, 'getAssociativeCategories']);
@@ -301,13 +331,6 @@ Route::get('migrate', function () {
 });
 
 Route::post('/hospitable/webhook', [HospitableController::class, 'handleWebhook']);
-
-
-
-
-
-
-
 
 
 

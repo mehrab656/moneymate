@@ -8,15 +8,17 @@ import { notification } from "../../../components/ToastNotification.jsx";
 
 import Iconify from "../../../components/Iconify.jsx";
 import CommonTable from "../../../helper/CommonTable.jsx";
-import TaskAddModal from "./TaskAddModal.jsx";
+// Legacy modals replaced by sidebars for create/edit/view
 import TaskFilters from "./TaskFilters.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import TaskHistoryModal from "./TaskHistoryModal.jsx";
-import ShowTaskModal from "./ShowTaskModal.jsx";
+import TaskFormSidebar from "./TaskFormSidebar.jsx";
+import TaskDetails from "./TaskDetails.jsx";
 import UpdatePaymentStatusModal from "./UpdatePaymentStatusModal.jsx";
 import UpdateStatus from "./UpdateStatus.jsx";
 import { useStateContext } from "../../../contexts/ContextProvider.jsx";
+import { useSidebarActions } from "../../../components/GlobalSidebar";
 import {
   useCreateTaskMutation,
   useDeleteTaskMutation,
@@ -101,6 +103,9 @@ export default function Task() {
   );
   const [deleteTask] = useDeleteTaskMutation();
 
+  // Sidebar actions
+  const { showLargeContent, showQuickDetails } = useSidebarActions();
+
   const onDelete = (task) => {
     Swal.fire({
       title: "Are you sure?",
@@ -124,16 +129,15 @@ export default function Task() {
       }
     });
   };
-  const showCreateModalFunc = () => {
-    setShowCreateModal(true);
+  // Sidebar open helpers for add/edit/view
+  const openCreateForm = () => {
+    showLargeContent("Add Task", <TaskFormSidebar onSuccess={() => setIsPaginate(true)} />);
   };
-  const closeCreateModalFunc = () => {
-    setShowCreateModal(false);
-    setTask(defaultTaskData);
-  };
-  const showEditModalFunc = (task) => {
-    setShowCreateModal(true);
-    setTask(task);
+  const openEditForm = (element) => {
+    showLargeContent(
+      "Edit Task",
+      <TaskFormSidebar taskId={element.id} onSuccess={() => setIsPaginate(true)} />
+    );
   };
   const showTimelineModalFunc = (task) => {
     setTaskTimelineModal(true);
@@ -158,12 +162,8 @@ export default function Task() {
   const closePaymentModalFunc = (task) => {
     setShowPaymentStatusModal(false);
   };
-  const showViewModalFunc = (task) => {
-    setViewTaskModal(true);
-    setTask(task);
-  };
-  const closeViewModalFunc = () => {
-    setViewTaskModal(false);
+  const openViewDetails = (element) => {
+    showQuickDetails("Task Details", <TaskDetails taskId={element.id} />);
   };
   const showStatusModalFunc = (task) => {
     setShowStatusModal(true);
@@ -287,7 +287,7 @@ export default function Task() {
       actionName: "Edit",
       type: "modal",
       route: "",
-      actionFunction: showEditModalFunc,
+      actionFunction: openEditForm,
       permission: "edit_task",
       textClass: "text-info",
     },
@@ -295,7 +295,7 @@ export default function Task() {
       actionName: "View",
       type: "modal",
       route: "",
-      actionFunction: showViewModalFunc,
+      actionFunction: openViewDetails,
       permission: "task_view",
       textClass: "text-warning",
     },
@@ -331,13 +331,13 @@ export default function Task() {
       <CommonTable
         cardTitle={`List of Tasks`}
         cardSubTitle={subTitle}
-        addBTN={{
-          permission: checkPermission("task_create"),
-          txt: "Add New Task",
-          icon: <Iconify icon={"eva:plus-fill"} />, //"faBuildingFlag",
-          linkTo: "modal",
-          link: showCreateModalFunc,
-        }}
+      addBTN={{
+        permission: checkPermission("task_create"),
+        txt: "Add New Task",
+        icon: <Iconify icon={"eva:plus-fill"} />, //"faBuildingFlag",
+        linkTo: "modal",
+        link: openCreateForm,
+      }}
         paginations={{
           totalPages: totalPages,
           totalCount: totalCount,
@@ -362,13 +362,6 @@ export default function Task() {
         loaderCol={9}
       />
 
-      {showCreateModal && (
-        <TaskAddModal
-          handelCloseModal={closeCreateModalFunc}
-          title={"Add new Task"}
-          id={task.id}
-        />
-      )}
 
       {taskTimelineModal && (
         <TaskHistoryModal
@@ -377,9 +370,6 @@ export default function Task() {
         />
       )}
 
-      {viewTaskModal && (
-        <ShowTaskModal handelCloseModal={closeViewModalFunc} element={task} />
-      )}
 
       {showPaymentStatusModal && (
         <UpdatePaymentStatusModal

@@ -17,7 +17,10 @@ import {faEye} from "@fortawesome/free-solid-svg-icons";
 import Image from "react-bootstrap/Image";
 import UserFilters from "./UserFilters.jsx";
 import UpdateStatus from "../../HRMS/Task/UpdateStatus.jsx";
-import CreateOrUpdateModal from "./CreateOrUpdateModal.jsx";
+// Sidebar-based components
+import { useSidebarActions } from "../../../hooks/useSidebarActions.js";
+import UserFormSidebar from "./UserFormSidebar.jsx";
+import UserDetails from "./UserDetails.jsx";
 
 
 const defaultUserData = {
@@ -52,8 +55,7 @@ export default function UserList() {
     const [users, setUsers] = useState([]);
     const [user, setUser] = useState(defaultUserData);
     const [loading, setLoading] = useState(true);
-    const [showViewModal, setShowViewModal] = useState(false);
-    const [showAddModal, setShowAddModal] = useState(false);
+    // Sidebar replaces local modals
     const [query, setQuery] = useState(defaultQuery)
     const {
         num_data_per_page,
@@ -114,25 +116,31 @@ export default function UserList() {
             }
         });
     };
-    const updateModalFunc = (user) => {
-        setUser(user);
-        setShowAddModal(true);
-    };
-    const createModalFunc = () => {
-        setUser(defaultUserData);
-        setShowAddModal(true);
-    };
-    const closeModal = () => {
-        setShowAddModal(false);
+    // Sidebar actions
+    const { showLargeContent, showQuickDetails } = useSidebarActions();
+
+    const openCreateForm = () => {
+        showLargeContent(
+            "Add New User",
+            <UserFormSidebar onSuccess={getUsers} />,
+            { width: "xl" }
+        );
     };
 
-    const showViewModalFunc = (user) => {
-        setShowViewModal(true);
-        setUser(user);
-    }
-    const closeViewModalFunc = () => {
-        setShowViewModal(false)
-    }
+    const openEditForm = (element) => {
+        showLargeContent(
+            "Edit User",
+            <UserFormSidebar data={element} onSuccess={getUsers} />,
+            { width: "xl" }
+        );
+    };
+
+    const openViewDetails = (element) => {
+        showQuickDetails(
+            "User Details",
+            <UserDetails userId={element?.id} data={element} />
+        );
+    };
 
     const getUsers = () => {
         setLoading(true);
@@ -183,7 +191,7 @@ export default function UserList() {
             actionName: 'Edit',
             type: "modal",
             route: "",
-            actionFunction: updateModalFunc,
+            actionFunction: openEditForm,
             permission: 'user_edit',
             textClass: 'text-info',
         },
@@ -191,7 +199,7 @@ export default function UserList() {
             actionName: 'View',
             type: "modal",
             route: "",
-            actionFunction: showViewModalFunc,
+            actionFunction: openViewDetails,
             permission: 'user_view',
             textClass: 'text-warning'
         },
@@ -209,15 +217,13 @@ export default function UserList() {
             <MainLoader loaderVisible={loading}/>
             <CommonTable
                 cardTitle={"List of Users"}
-                addBTN={
-                    {
-                        permission: checkPermission('user_create'),
-                        txt: "Add New User",
-                        icon: (<Iconify icon={"eva:plus-fill"}/>), //"faBuildingFlag",
-                        linkTo: 'modal',
-                        link: createModalFunc
-                    }
-                }
+                addBTN={{
+                    permission: checkPermission('user_create'),
+                    txt: "Add New User",
+                    icon: (<Iconify icon={"eva:plus-fill"}/>),
+                    linkTo: 'modal',
+                    link: openCreateForm,
+                }}
                 paginations={{
                     totalPages: totalPages,
                     totalCount: totalCount,
@@ -238,12 +244,7 @@ export default function UserList() {
                 }}
                 filter={filters}
             />
-            {
-                showAddModal &&
-                <CreateOrUpdateModal handelCloseModal={closeModal}
-                                     element={user}
-                setElement={setUser}/>
-            }
+            {/* Sidebar-powered UI replaces local modals */}
 
 
 

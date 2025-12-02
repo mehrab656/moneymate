@@ -7,6 +7,14 @@ export const userSlice = createApi({
   baseQuery: customBaseQuery,
   tagTypes: ["users"],
   endpoints: (builder) => ({
+    // Current authenticated user's profile
+    getMyProfile: builder.query({
+      query: () => ({
+        url: "/my-profile",
+        method: "GET",
+      }),
+      providesTags: ["users"],
+    }),
     getUserData: builder.query({
       query: ({ token }) => {
         return {
@@ -152,6 +160,32 @@ export const userSlice = createApi({
 
       invalidatesTags: ["user"],
     }),
+    // My-profile specific updates (authenticated user)
+    updateMyBasicInfo: builder.mutation({
+      queryFn: async ({ formData }) => {
+        try {
+          const response = await axiosClient.post(
+            "/my-profile/update-basic-info",
+            formData,
+            {
+              headers: { "Content-Type": "multipart/form-data" },
+            }
+          );
+          const { message, description, data } = response.data;
+          return { data: { message, description, data } };
+        } catch (error) {
+          const status = error?.response?.status || 500;
+          const message =
+            error?.response?.data?.message || "An unexpected error occurred.";
+          const description = error?.response?.data?.description || "";
+          const errorData = error?.response?.data || {};
+          return {
+            error: { status, message, description, errorData },
+          };
+        }
+      },
+      invalidatesTags: ["user"],
+    }),
     updateEmploymentInfo: builder.mutation({
       queryFn: async ({ url, formData }) => {
         try {
@@ -179,6 +213,48 @@ export const userSlice = createApi({
 
       invalidatesTags: ["user"],
     }),
+    updateMyContacts: builder.mutation({
+      queryFn: async ({ formData }) => {
+        try {
+          const response = await axiosClient.post(
+            "/my-profile/update-contacts",
+            formData,
+            { headers: { "Content-Type": "multipart/form-data" } }
+          );
+          const { message, description, data } = response.data;
+          return { data: { message, description, data } };
+        } catch (error) {
+          const status = error?.response?.status || 500;
+          const message =
+            error?.response?.data?.message || "An unexpected error occurred.";
+          const description = error?.response?.data?.description || "";
+          const errorData = error?.response?.data || {};
+          return { error: { status, message, description, errorData } };
+        }
+      },
+      invalidatesTags: ["user"],
+    }),
+    updateMyEmploymentDetails: builder.mutation({
+      queryFn: async ({ formData }) => {
+        try {
+          const response = await axiosClient.post(
+            "/my-profile/update-employment-details",
+            formData,
+            { headers: { "Content-Type": "multipart/form-data" } }
+          );
+          const { message, description, data } = response.data;
+          return { data: { message, description, data } };
+        } catch (error) {
+          const status = error?.response?.status || 500;
+          const message =
+            error?.response?.data?.message || "An unexpected error occurred.";
+          const description = error?.response?.data?.description || "";
+          const errorData = error?.response?.data || {};
+          return { error: { status, message, description, errorData } };
+        }
+      },
+      invalidatesTags: ["user"],
+    }),
     updateSecurityInfo: builder.mutation({
       query: (data) => ({
         url: "/update-security",
@@ -192,12 +268,16 @@ export const userSlice = createApi({
 
 export const {
   useGetUserDataQuery,
+  useGetMyProfileQuery,
   useGetInvestorDataQuery,
   useCreateUserMutation,
   useDeleteuserMutation,
   useUpdateUserMutation,
   useGetSingleUserDataQuery,
   useUpdateBasicInfoMutation,
+  useUpdateMyBasicInfoMutation,
   useUpdateEmploymentInfoMutation,
+  useUpdateMyEmploymentDetailsMutation,
+  useUpdateMyContactsMutation,
   useUpdateSecurityInfoMutation
 } = userSlice;

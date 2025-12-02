@@ -27,7 +27,8 @@ class BankNameResource extends JsonResource
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
-	        'user_name'=>$this->person->name,
+            // Prefer username; fall back to name if available
+            'user_name' => optional($this->person)->username ?? optional($this->person)->name ?? null,
             'bank_name' => $this->bank_name,
             'created_at' => $this->created_at,
         ];

@@ -15,7 +15,7 @@ export const debtSlice = createApi({
           method: "GET",
         };
       },
-      providesTags: ["employee"],
+      providesTags: ["debt"],
     }),
     createDebt: builder.mutation({
       queryFn: async ({ url, formData }) => {
@@ -42,14 +42,14 @@ export const debtSlice = createApi({
         }
       },
 
-      invalidatesTags: ["company"],
+      invalidatesTags: ["debt"],
     }),
     deleteDebt: builder.mutation({
       query: ({ id }) => ({
         url: `/debts/delete/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["company"],
+      invalidatesTags: ["debt"],
     }),
   }),
 });

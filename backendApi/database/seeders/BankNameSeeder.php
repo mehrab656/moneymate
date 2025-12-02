@@ -15,31 +15,18 @@ class BankNameSeeder extends Seeder
      */
     public function run(): void
     {
+        // Seed at least two deterministic rows to avoid unique conflicts on reruns
+        $now = now();
         $banks = [
-            'Bank A',
-            'Bank B',
-            'Bank C',
-            'Bank D',
-            'Bank E',
-            'Bank F',
-            'Bank G',
-            'Bank H',
-            'Bank I',
-            'Bank J',
-            'Bank K',
-            'Bank L',
-            'Bank M',
-            'Bank N',
-            'Bank O',
+            ['company_id' => 1, 'user_id' => 1, 'bank_name' => 'Eastern Bank', 'created_at' => $now, 'updated_at' => $now],
+            ['company_id' => 1, 'user_id' => 1, 'bank_name' => 'Western Bank', 'created_at' => $now, 'updated_at' => $now],
         ];
 
-        foreach ($banks as $bank) {
-            DB::table('bank_names')->insert([
-                'user_id' => random_int(1, 10), // Assuming user IDs exist from 1 to 10
-                'bank_name' => $bank,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
+        // Use upsert to be idempotent across multiple runs
+        DB::table('bank_names')->upsert(
+            $banks,
+            ['company_id', 'user_id', 'bank_name'],
+            ['updated_at']
+        );
     }
 }

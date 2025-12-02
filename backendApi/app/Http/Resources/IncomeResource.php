@@ -33,19 +33,38 @@ class IncomeResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return
-            ['id' => $this->slug,
-            'category_name' => $this->category->name,
+        $category = $this->category ?? null;
+        $bankAccount = $this->bankAccount ?? null;
+        $bankName = $bankAccount && $bankAccount->bankName ? $bankAccount->bankName->bank_name : '';
+        $accountNumber = $bankAccount ? $bankAccount->account_number : '';
+        $accountSlug = $bankAccount ? $bankAccount->slug : null;
+
+        return [
+            'id' => $this->slug,
+            'category_name' => $category ? $category->name : '',
             'amount' => $this->amount,
             'description' => $this->description,
             'note' => $this->note,
             'attachment' => $this->attachment,
-            'date' => Carbon::parse($this->date)->format('Y-m-d'),
-            'checkin_date' => Carbon::parse($this->checkin_date)->format('Y-m-d'),
-            'checkout_date' => Carbon::parse($this->checkout_date)->format('Y-m-d'),
-            'category' => ['value' => $this->category->slug, 'label' => $this->category->name],
-            'account' => ['label' => $this->bankAccount->bankName->bank_name . '(' . $this->bankAccount->account_number . ')', 'value' => $this->bankAccount->slug],
-            'reference' => ['value' => $this->reference, 'label' => strtoupper($this->reference)],
-            'income_type' => ['value' => $this->income_type, 'label' => strtoupper($this->income_type)]];
+            'date' => $this->date ? Carbon::parse($this->date)->format('Y-m-d') : null,
+            'checkin_date' => $this->checkin_date ? Carbon::parse($this->checkin_date)->format('Y-m-d') : null,
+            'checkout_date' => $this->checkout_date ? Carbon::parse($this->checkout_date)->format('Y-m-d') : null,
+            'category' => [
+                'value' => $category ? $category->slug : null,
+                'label' => $category ? $category->name : ''
+            ],
+            'account' => [
+                'label' => ($bankName && $accountNumber) ? ($bankName . '(' . $accountNumber . ')') : '',
+                'value' => $accountSlug
+            ],
+            'reference' => [
+                'value' => $this->reference,
+                'label' => strtoupper((string) $this->reference)
+            ],
+            'income_type' => [
+                'value' => $this->income_type,
+                'label' => strtoupper((string) $this->income_type)
+            ]
+        ];
     }
 }

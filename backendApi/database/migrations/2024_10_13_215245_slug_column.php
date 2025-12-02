@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
 
 return new class extends Migration {
@@ -28,14 +29,13 @@ return new class extends Migration {
     public function up(): void
     {
         foreach ($this->tables as $key=>$tableName) {
-            $uuid = Uuid::uuid4() . $key;
-
-            Schema::table($tableName, function (Blueprint $table)  use($tableName){
-                $table->string('slug')->after('id');
-
-            });
-            DB::statement("UPDATE $tableName SET slug = CONCAT(id,'$uuid')");
-
+            if (Schema::hasTable($tableName) && !Schema::hasColumn($tableName, 'slug')) {
+                $uuid = Uuid::uuid4() . $key;
+                Schema::table($tableName, function (Blueprint $table)  use($tableName){
+                    $table->string('slug')->after('id');
+                });
+                DB::statement("UPDATE $tableName SET slug = CONCAT(id,'$uuid')");
+            }
         }
     }
 
@@ -45,9 +45,11 @@ return new class extends Migration {
     public function down(): void
     {
         foreach ($this->tables as $tableName) {
-            Schema::table($tableName, function (Blueprint $table) {
-                $table->dropColumn('slug');
-            });
+            if (Schema::hasTable($tableName) && Schema::hasColumn($tableName, 'slug')) {
+                Schema::table($tableName, function (Blueprint $table) {
+                    $table->dropColumn('slug');
+                });
+            }
         }
     }
 };

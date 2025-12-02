@@ -5,8 +5,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { genRand } from '../../helper/HelperFunctions';
 import { getSideMenus } from './SideMenuConfig'; // adjust path
 
-const SideMenus = ({ isActive, toggleSubmenu, handleCloseSidebar, submenuVisible, checkPermission }) => {
-  const sideMenus = useMemo(() => getSideMenus(isActive, submenuVisible), [isActive, submenuVisible]);
+const SideMenus = ({ isActive, toggleSubmenu, handleCloseSidebar, submenuVisible, checkPermission, currentMenu }) => {
+  const sideMenus = useMemo(() => getSideMenus(isActive, submenuVisible, currentMenu), [isActive, submenuVisible, currentMenu]);
 
   // handle single menu
   const handleSingleMenu = ()=>{

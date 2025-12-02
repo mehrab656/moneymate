@@ -1,11 +1,20 @@
 import { CardContent, TextField } from "@mui/material";
 import { Col, Form, Row } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
+import useDebouncedValue from "../../hooks/useDebouncedValue.js";
 import { useGetBankDataQuery } from "../../api/slices/bankSlice.js";
 
 export default function SectorFilter(props) {
   const { query, setQuery, resetFilterParameter, placeHolderTxt } = props;
   const [accounts, setAccounts] = useState([]);
+  const [localSearchTerm, setLocalSearchTerm] = useState(query?.searchTerm || "");
+  useEffect(() => {
+    setLocalSearchTerm(query?.searchTerm || "");
+  }, [query?.searchTerm]);
+  const debouncedSearchTerm = useDebouncedValue(localSearchTerm, 300);
+  useEffect(() => {
+    setQuery((prev) => ({ ...prev, searchTerm: debouncedSearchTerm }));
+  }, [debouncedSearchTerm, setQuery]);
   const {
     data: getBankData,
     isFetching: bankIsFetching,
@@ -101,10 +110,8 @@ export default function SectorFilter(props) {
                 }}
                 size="small"
                 fullWidth
-                value={query?.searchTerm}
-                onChange={(e) =>
-                  setQuery({ ...query, searchTerm: e.target.value })
-                }
+                value={localSearchTerm}
+                onChange={(e) => setLocalSearchTerm(e.target.value)}
                 placeholder={placeHolderTxt}
               />
             </Form.Group>
@@ -191,7 +198,7 @@ export default function SectorFilter(props) {
               <button
                 className="btn btn-warning btn-sm"
                 type="reset"
-                onClick={resetFilterParameter}
+                onClick={() => { setLocalSearchTerm(""); resetFilterParameter(); }}
               >
                 Reset
               </button>

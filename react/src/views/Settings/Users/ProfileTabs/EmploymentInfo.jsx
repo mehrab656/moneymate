@@ -1,6 +1,6 @@
 import { Tab, Form, Card, Row, Col, Button } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
-import {useGetSingleUserDataQuery, useUpdateEmploymentInfoMutation} from "../../../../api/slices/userSlice.js";
+import {useGetSingleUserDataQuery, useUpdateEmploymentInfoMutation, useUpdateMyEmploymentDetailsMutation} from "../../../../api/slices/userSlice.js";
 import { notification } from "../../../../components/ToastNotification.jsx";
 import {useParams} from "react-router-dom";
 
@@ -32,49 +32,49 @@ export default function EmploymentInfo({ user }) {
   const [data, setData] = useState(_initials);
   const [btnText, setBtnText] = useState("Update");
   let {id} = useParams();
-  const {data: getUserData } = useGetSingleUserDataQuery({ id:id});
+  const {data: getUserData } = useGetSingleUserDataQuery({ id }, { skip: !id });
  const [previewPassport, setPreviewPassport]= useState(null);
  const [previewEmirateId, setPreviewEmirateId]= useState(null);
 
 
   useEffect(() => {
-    if (getUserData) {
-      const employmentData= user.employeeData;
+    const employmentData = user?.employeeData;
+    if (employmentData) {
       setData({
         ...data,
-        date_of_joining: employmentData.joining_date,
-        phone: employmentData.phone,
-        position: employmentData.position,
-        salary: employmentData.salary ,
-        accommodation_cost: employmentData.accommodation_cost ,
-        emergency_contact: employmentData.emergency_contact ,
-        employee_code: employmentData.extras.employee_code,
-        designation: employmentData.extras.designation,
-        department: employmentData.extras.department,
-        employment_type: employmentData.extras.employment_type,
-        address: employmentData.extras.address ,
-        city: employmentData.extras.city ,
-        state: employmentData.extras.state ,
-        country: employmentData.extras.country ,
-        national_id: employmentData.extras.national_id ,
-        passport_no: employmentData.extras.passport_no ,
-        emirates_id: employmentData.extras.emirates_id ,
-        visa_status: employmentData.extras.visa_status ,
-        status: employmentData.extras.status ,
+        date_of_joining: employmentData.joining_date ?? "",
+        phone: employmentData.phone ?? "",
+        position: employmentData.position ?? "",
+        salary: employmentData.salary ?? "",
+        accommodation_cost: employmentData.accommodation_cost ?? "",
+        emergency_contact: employmentData.emergency_contact ?? "",
+        employee_code: employmentData.extras?.employee_code ?? "",
+        designation: employmentData.extras?.designation ?? "",
+        department: employmentData.extras?.department ?? "",
+        employment_type: employmentData.extras?.employment_type ?? "",
+        address: employmentData.extras?.address ?? "",
+        city: employmentData.extras?.city ?? "",
+        state: employmentData.extras?.state ?? "",
+        country: employmentData.extras?.country ?? "",
+        national_id: employmentData.extras?.national_id ?? "",
+        passport_no: employmentData.extras?.passport_no ?? "",
+        emirates_id: employmentData.extras?.emirates_id ?? "",
+        visa_status: employmentData.extras?.visa_status ?? "",
+        status: employmentData.extras?.status ?? "",
       });
-      setPreviewPassport(employmentData.passport_file_name);
-      setPreviewEmirateId(employmentData.emirate_file_name);
+      setPreviewPassport(employmentData.passport_file_name || null);
+      setPreviewEmirateId(employmentData.emirate_file_name || null);
     }
-  }, [getUserData]);
+  }, [id, user, getUserData]);
 
   const [updateEmploymentData] = useUpdateEmploymentInfoMutation();
+  const [updateMyEmploymentDetails] = useUpdateMyEmploymentDetailsMutation();
 
   const updateEmploymentInfo = async (event) => {
     event.preventDefault();
     setBtnText("Updating...");
 
     const formData = new FormData();
-    formData.append("role_as", data.role_as);
     formData.append("employee_code", data.employee_code);
     formData.append("designation", data.designation);
     formData.append("department", data.department);
@@ -101,11 +101,14 @@ export default function EmploymentInfo({ user }) {
 
 
     try {
-      const response = await updateEmploymentData({
-        url: `/update-employment-details/${user.slug}`,
-        formData,
-      }).unwrap();
-      notification("success", response?.message, response?.description);
+      let result;
+      if (id) {
+        const url = `/update-employment-details/${user.slug}`;
+        result = await updateEmploymentData({ url, formData }).unwrap();
+      } else {
+        result = await updateMyEmploymentDetails({ formData }).unwrap();
+      }
+      notification("success", result?.message, result?.description);
       setBtnText("Update");
     } catch (err) {
       setBtnText("Try again");

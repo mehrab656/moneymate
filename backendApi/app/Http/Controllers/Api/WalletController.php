@@ -9,6 +9,8 @@ use App\Http\Resources\WalletResource;
 use App\Models\Wallet;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Auth;
+use Ramsey\Uuid\Uuid;
 
 class WalletController extends Controller
 {
@@ -18,7 +20,11 @@ class WalletController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        return WalletResource::collection(Wallet::all());
+        return WalletResource::collection(
+            Wallet::where('company_id', Auth::user()->primary_company)
+                ->orderBy('id', 'desc')
+                ->get()
+        );
     }
 
 
@@ -30,7 +36,9 @@ class WalletController extends Controller
     {
         $wallet = $request->validated();
         $wallet = Wallet::firstOrCreate([
+            'slug' => Uuid::uuid4(),
             'user_id' => auth()->user()->id,
+            'company_id' => auth()->user()->primary_company,
             'name' => $wallet['name'],
             'balance' => $wallet['balance']
         ]);
@@ -86,11 +94,11 @@ class WalletController extends Controller
 	 * @return JsonResponse
 	 */
 
-	public function totalWalletBalance(): JsonResponse {
-		$totalWallet = Wallet::sum( 'balance' );
+    public function totalWalletBalance(): JsonResponse {
+        $totalWallet = Wallet::where('company_id', Auth::user()->primary_company)->sum('balance');
 
-		return response()->json( [
-			'balance' => $totalWallet
-		] );
-	}
+        return response()->json( [
+            'balance' => fix_number_format($totalWallet)
+        ] );
+    }
 }

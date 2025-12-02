@@ -356,13 +356,13 @@ class ComposerStaticInit55a7ee4609f0c99fa751d357485b2243
         ),
         'Spatie\\LaravelIgnition\\' => 
         array (
-            0 => __DIR__ . '/..' . '/spatie/laravel-ignition/src',
-            1 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/laravel-ignition',
+            0 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/laravel-ignition',
+            1 => __DIR__ . '/..' . '/spatie/laravel-ignition/src',
         ),
         'Spatie\\Ignition\\' => 
         array (
-            0 => __DIR__ . '/..' . '/spatie/ignition/src',
-            1 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/ignition',
+            0 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/ignition',
+            1 => __DIR__ . '/..' . '/spatie/ignition/src',
         ),
         'Spatie\\FlareClient\\' => 
         array (
@@ -398,8 +398,8 @@ class ComposerStaticInit55a7ee4609f0c99fa751d357485b2243
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -631,6 +631,7 @@ class ComposerStaticInit55a7ee4609f0c99fa751d357485b2243
     );
 
     public static $classMap = array (
+        'App\\Console\\Commands\\DemoCountsCommand' => __DIR__ . '/../..' . '/app/Console/Commands/DemoCountsCommand.php',
         'App\\Console\\Commands\\ExportDatabase' => __DIR__ . '/../..' . '/app/Console/Commands/ExportDatabase.php',
         'App\\Console\\Commands\\ImportSqlFile' => __DIR__ . '/../..' . '/app/Console/Commands/ImportSqlFile.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
@@ -669,6 +670,7 @@ class ComposerStaticInit55a7ee4609f0c99fa751d357485b2243
         'App\\Http\\Controllers\\Api\\UserController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/UserController.php',
         'App\\Http\\Controllers\\Api\\WalletController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/WalletController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
+        'App\\Http\\Controllers\\HospitableController' => __DIR__ . '/../..' . '/app/Http/Controllers/HospitableController.php',
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
         'App\\Http\\Middleware\\Authenticate' => __DIR__ . '/../..' . '/app/Http/Middleware/Authenticate.php',
         'App\\Http\\Middleware\\ContentSecurityPolicy' => __DIR__ . '/../..' . '/app/Http/Middleware/ContentSecurityPolicy.php',
@@ -760,6 +762,7 @@ class ComposerStaticInit55a7ee4609f0c99fa751d357485b2243
         'App\\Models\\DebtCollection' => __DIR__ . '/../..' . '/app/Models/DebtCollection.php',
         'App\\Models\\Employee' => __DIR__ . '/../..' . '/app/Models/Employee.php',
         'App\\Models\\Expense' => __DIR__ . '/../..' . '/app/Models/Expense.php',
+        'App\\Models\\Hospitable' => __DIR__ . '/../..' . '/app/Models/Hospitable.php',
         'App\\Models\\Income' => __DIR__ . '/../..' . '/app/Models/Income.php',
         'App\\Models\\Investment' => __DIR__ . '/../..' . '/app/Models/Investment.php',
         'App\\Models\\Lend' => __DIR__ . '/../..' . '/app/Models/Lend.php',
@@ -965,7 +968,11 @@ class ComposerStaticInit55a7ee4609f0c99fa751d357485b2243
         'Database\\Seeders\\BudgetSeeder' => __DIR__ . '/../..' . '/database/seeders/BudgetSeeder.php',
         'Database\\Seeders\\CategorySeeder' => __DIR__ . '/../..' . '/database/seeders/CategorySeeder.php',
         'Database\\Seeders\\DatabaseSeeder' => __DIR__ . '/../..' . '/database/seeders/DatabaseSeeder.php',
+        'Database\\Seeders\\DemoDataSeeder' => __DIR__ . '/../..' . '/database/seeders/DemoDataSeeder.php',
+        'Database\\Seeders\\EnsureTwoSeeder' => __DIR__ . '/../..' . '/database/seeders/EnsureTwoSeeder.php',
+        'Database\\Seeders\\OptionSeeder' => __DIR__ . '/../..' . '/database/seeders/OptionSeeder.php',
         'Database\\Seeders\\RoleSeeder' => __DIR__ . '/../..' . '/database/seeders/RoleSeeder.php',
+        'Database\\Seeders\\SingleUserSeeder' => __DIR__ . '/../..' . '/database/seeders/SingleUserSeeder.php',
         'Database\\Seeders\\UserPermissionSeeder' => __DIR__ . '/../..' . '/database/seeders/UserPermissionSeeder.php',
         'Database\\Seeders\\UserSeeder' => __DIR__ . '/../..' . '/database/seeders/UserSeeder.php',
         'DateError' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateError.php',

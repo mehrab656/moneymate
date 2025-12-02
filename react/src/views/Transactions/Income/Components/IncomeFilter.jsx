@@ -117,7 +117,7 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
             </div>
             <span className={'results'}>{`Found ${filteredSectors.length} Results`}</span>
 
-            <div className={"report-filter-list"}>
+            <div className={"report-filter-list"} style={{ maxHeight: '50vh', overflowY: 'auto' }}>
               {filteredSectors.length > 0 ?
                   filteredSectors.map((sector, index) => (
                       <InputGroup className="mb-3" size={"sm"} key={`sector-${index}`}>
@@ -163,7 +163,7 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
             </div>
             <span className={'results'}>{`Found ${incomeReferences.length} Results`}</span>
 
-            <div className={"report-filter-list"}>
+            <div className={"report-filter-list"} style={{ maxHeight: '50vh', overflowY: 'auto' }}>
               {incomeReferences.length > 0 ?
                   incomeReferences.map((ref, index) => (
                       <InputGroup className="mb-3" size={"sm"} key={`sector-${index}`}>
@@ -209,7 +209,7 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
             </div>
             <span className={'results'}>{`Found ${incomeTypes.length} Results`}</span>
 
-            <div className={"report-filter-list"}>
+            <div className={"report-filter-list"} style={{ maxHeight: '50vh', overflowY: 'auto' }}>
               {incomeTypes.length > 0 ?
                   incomeTypes.map((type, index) => (
                       <InputGroup className="mb-3" size={"sm"} key={`incomeType-${index}`}>
@@ -352,16 +352,19 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
             onHide={closeModal}
             backdrop="static"
             keyboard={false}
+            fullscreen="sm-down"
+            size="lg"
+            scrollable
         >
           <Modal.Header closeButton onClick={resetFilter}>
             <Modal.Title>Filters</Modal.Title>
           </Modal.Header>
           <Modal.Body className={"filter-modal-body"}>
-            <Container>
+            <Container fluid>
               <Tab.Container id="left-tabs-example" defaultActiveKey="filter-report-by-sector">
 
                 <Row className={"filter-modal-row"}>
-                  <Col md={6} xs={6} className={"filter-column"}>
+                  <Col md={4} xs={12} className={"filter-column"}>
                     <Nav variant="pills" className="flex-column">
                       {
                         navItems.map(item => {
@@ -376,8 +379,8 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
                       }
                     </Nav>
                   </Col>
-                  <Col md={6} xs={6} className={"filter-column"}>
-                    <Tab.Content>
+                  <Col md={8} xs={12} className={"filter-column"}>
+                    <Tab.Content style={{ maxHeight: '60vh', overflowY: 'auto' }}>
                       {showCurrentPan(currentTab)}
                     </Tab.Content>
                   </Col>

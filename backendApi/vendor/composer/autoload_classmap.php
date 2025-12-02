@@ -6,6 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Console\\Commands\\DemoCountsCommand' => $baseDir . '/app/Console/Commands/DemoCountsCommand.php',
     'App\\Console\\Commands\\ExportDatabase' => $baseDir . '/app/Console/Commands/ExportDatabase.php',
     'App\\Console\\Commands\\ImportSqlFile' => $baseDir . '/app/Console/Commands/ImportSqlFile.php',
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
@@ -44,6 +45,7 @@ return array(
     'App\\Http\\Controllers\\Api\\UserController' => $baseDir . '/app/Http/Controllers/Api/UserController.php',
     'App\\Http\\Controllers\\Api\\WalletController' => $baseDir . '/app/Http/Controllers/Api/WalletController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
+    'App\\Http\\Controllers\\HospitableController' => $baseDir . '/app/Http/Controllers/HospitableController.php',
     'App\\Http\\Kernel' => $baseDir . '/app/Http/Kernel.php',
     'App\\Http\\Middleware\\Authenticate' => $baseDir . '/app/Http/Middleware/Authenticate.php',
     'App\\Http\\Middleware\\ContentSecurityPolicy' => $baseDir . '/app/Http/Middleware/ContentSecurityPolicy.php',
@@ -135,6 +137,7 @@ return array(
     'App\\Models\\DebtCollection' => $baseDir . '/app/Models/DebtCollection.php',
     'App\\Models\\Employee' => $baseDir . '/app/Models/Employee.php',
     'App\\Models\\Expense' => $baseDir . '/app/Models/Expense.php',
+    'App\\Models\\Hospitable' => $baseDir . '/app/Models/Hospitable.php',
     'App\\Models\\Income' => $baseDir . '/app/Models/Income.php',
     'App\\Models\\Investment' => $baseDir . '/app/Models/Investment.php',
     'App\\Models\\Lend' => $baseDir . '/app/Models/Lend.php',
@@ -340,7 +343,11 @@ return array(
     'Database\\Seeders\\BudgetSeeder' => $baseDir . '/database/seeders/BudgetSeeder.php',
     'Database\\Seeders\\CategorySeeder' => $baseDir . '/database/seeders/CategorySeeder.php',
     'Database\\Seeders\\DatabaseSeeder' => $baseDir . '/database/seeders/DatabaseSeeder.php',
+    'Database\\Seeders\\DemoDataSeeder' => $baseDir . '/database/seeders/DemoDataSeeder.php',
+    'Database\\Seeders\\EnsureTwoSeeder' => $baseDir . '/database/seeders/EnsureTwoSeeder.php',
+    'Database\\Seeders\\OptionSeeder' => $baseDir . '/database/seeders/OptionSeeder.php',
     'Database\\Seeders\\RoleSeeder' => $baseDir . '/database/seeders/RoleSeeder.php',
+    'Database\\Seeders\\SingleUserSeeder' => $baseDir . '/database/seeders/SingleUserSeeder.php',
     'Database\\Seeders\\UserPermissionSeeder' => $baseDir . '/database/seeders/UserPermissionSeeder.php',
     'Database\\Seeders\\UserSeeder' => $baseDir . '/database/seeders/UserSeeder.php',
     'DateError' => $vendorDir . '/symfony/polyfill-php83/Resources/stubs/DateError.php',

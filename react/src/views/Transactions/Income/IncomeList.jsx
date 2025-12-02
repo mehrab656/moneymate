@@ -8,11 +8,12 @@ import {
     useGetIncomeDataQuery,
     useDeleteIncomeMutation
 } from "../../../api/slices/incomeSlice.js";
-import IncomeForm from "./IncomeForm.jsx";
-import IncomeShow from "./IncomeShow.jsx";
+import IncomeFormSidebar from "./IncomeFormSidebar.jsx";
+import IncomeDetails from "./IncomeDetails.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faDownload, faFilter} from "@fortawesome/free-solid-svg-icons";
 import {Form} from "react-bootstrap";
+import { useSidebarActions } from "../../../components/GlobalSidebar";
 import FilteredParameters from "../Expense/Components/FilteredParameters.jsx";
 import ListTable from "./Components/ListTable.jsx";
 import CsvFileUpload from "./Components/CsvFileUpload.jsx";
@@ -54,7 +55,6 @@ export default function IncomeList() {
     const [income, setIncome] = useState({});
     const [showIncomeForm, setShowIncomeForm] = useState(false);
     const [showCsvForm, setShowCsvForm] = useState(false)
-    const [showIncomeDetails, setShowIncomeDetails] = useState(false);
     const [showMainLoader, setShowMainLoader] = useState(false);
     const [query, setQuery] = useState(defaultQuery);
     const {num_data_per_page,default_currency} = applicationSettings;
@@ -62,6 +62,7 @@ export default function IncomeList() {
     const [showFilterModal, setShowFilterModal] = useState(false);//important
     const [hasFilter, setHasFilter] = useState(true);
     const [searchTerms, setSearchTerms] = useState("");
+    const { showLargeContent, showQuickDetails } = useSidebarActions();
 
 
     useEffect(() => {
@@ -83,15 +84,11 @@ export default function IncomeList() {
 
 
     // api call
-    const {
-        data: getIncomeData,
-        isFetching: incomeDataFetching,
-        isError: incomeDataError,
-    } = useGetIncomeDataQuery(
-        {currentPage, pageSize, query: query},
-        {skip: !hasFilter},
-        {refetchOnMountOrArgChange: isPaginate}
-    );
+    const { data: getIncomeData, isFetching: incomeDataFetching, isError: incomeDataError, refetch } =
+        useGetIncomeDataQuery(
+            { currentPage, pageSize, query: query },
+            { skip: !hasFilter, refetchOnMountOrArgChange: isPaginate }
+        );
     const [deleteIncome] = useDeleteIncomeMutation();
 
     const onDelete = (income) => {
@@ -118,7 +115,17 @@ export default function IncomeList() {
         });
     };
     const showIncomeFormFunc = () => {
-        setShowIncomeForm(true);
+        // Open Income form in GlobalSidebar large content
+        showLargeContent(
+            "Add New Income",
+            <IncomeFormSidebar
+                incomeId={null}
+                onSuccess={() => {
+                    setIsPaginate(true);
+                    refetch();
+                }}
+            />
+        );
     };
     const showCsvIncomeFormFunc = () => {
         setShowCsvForm(true);
@@ -132,18 +139,27 @@ export default function IncomeList() {
         setIncome({});
     };
     const showEditModalFunc = (income) => {
-        setShowIncomeForm(true);
         setIncome(income);
+        showLargeContent(
+            "Edit Income",
+            <IncomeFormSidebar
+                incomeId={income.id}
+                onSuccess={() => {
+                    setIsPaginate(true);
+                    refetch();
+                }}
+            />
+        );
     };
 
 
     const showViewModalFunc = (income) => {
-        setShowIncomeDetails(true);
         setIncome(income);
-    };
-    const closeViewModalFunc = () => {
-        setShowIncomeDetails(false);
-        setIncome({});
+        // Open details in GlobalSidebar quick details (consistent with Expense)
+        showQuickDetails(
+            "Income Details",
+            <IncomeDetails data={income} />
+        );
     };
 
 
@@ -158,16 +174,37 @@ export default function IncomeList() {
 
     useEffect(() => {
         document.title = "Manage Incomes";
-        if (getIncomeData?.data) {
-            setIncomes(getIncomeData.data);
-            setTotalCount(getIncomeData.total);
-            setShowMainLoader(false);
+        const normalizedList = Array.isArray(getIncomeData?.data)
+            ? getIncomeData.data
+            : Array.isArray(getIncomeData?.incomes?.data)
+                ? getIncomeData.incomes.data
+                : Array.isArray(getIncomeData?.items)
+                    ? getIncomeData.items
+                    : Array.isArray(getIncomeData?.results)
+                        ? getIncomeData.results
+                        : [];
 
+        const normalizedTotal =
+            typeof getIncomeData?.total === 'number'
+                ? getIncomeData.total
+                : typeof getIncomeData?.incomes?.total === 'number'
+                    ? getIncomeData.incomes.total
+                    : typeof getIncomeData?.count === 'number'
+                        ? getIncomeData.count
+                        : normalizedList.length;
+
+        if (normalizedList.length > 0 || incomeDataFetching) {
+            setIncomes(normalizedList);
+            setTotalCount(normalizedTotal);
+            setShowMainLoader(false);
+        } else if (incomeDataError) {
+            setShowMainLoader(false);
+            setIncomes([]);
         } else {
-            setShowMainLoader(true);
+            setShowMainLoader(incomeDataFetching);
         }
         setIsPaginate(false);
-    }, [getIncomeData, currentPage]);
+    }, [getIncomeData, incomeDataFetching, incomeDataError, currentPage]);
 
     const filteredIncomes = incomes.filter((income) =>{
         return (income.description.toLowerCase().includes(searchTerms.toLowerCase()));
@@ -268,25 +305,14 @@ export default function IncomeList() {
                        hasError={incomeDataError}
             />
 
-            {showIncomeForm && (
-                <IncomeForm
-                    handelCloseModal={closeCreateModalFunc}
-                    title={"Create New Income"}
-                    id={income.id}
-                />
-            )}
+            {/* Income create/edit handled via GlobalSidebar */}
             {showCsvForm && (
                 <CsvFileUpload
                     handelCloseModal={closeCsvFileUploadModalFunc}
                     title={"Upload Csv Income File"}
                 />
             )}
-            {showIncomeDetails && (
-                <IncomeShow handleCloseModal={closeViewModalFunc}
-                            data={income}
-                            currency={default_currency}
-                />
-            )}
+            {/* Income details now handled via GlobalSidebar quick details */}
 
             {showFilterModal && (
                 <IncomeFilter

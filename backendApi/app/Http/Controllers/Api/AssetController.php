@@ -18,6 +18,7 @@ use DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use PHPUnit\Exception;
 use Ramsey\Uuid\Uuid;
 use Throwable;
@@ -62,9 +63,21 @@ class AssetController extends Controller
 
         //check balance amount to make a valid expense
         $bankAccount = BankAccount::find($data['account_id']);
+        if (!$bankAccount) {
+            return response()->json([
+                'message' => 'Not Found',
+                'description' => 'Expense account not found.',
+            ], 404);
+        }
         $totalPrice = 0;
 
         $assets = json_decode($data['assets'], true);
+        if (!is_array($assets) || empty($assets)) {
+            return response()->json([
+                'message' => 'Error!',
+                'description' => 'Assets payload is invalid.',
+            ], 400);
+        }
 
         if ($assets[0]['qty'] === 0) {
             return response()->json([
@@ -151,14 +164,26 @@ class AssetController extends Controller
                 'data_records' => array_merge(json_decode(json_encode($expense), true), ['old_account_balance' => $oldAccountBalance, 'new_account_balance' => $bankAccount->balance]),
             ]);
 
-            $assets = Asset::create([
-                'slug'=>Uuid::uuid4(),
+            // Build payload dynamically to match actual DB schema
+            $assetPayload = [
                 'sector_id' => $data['sector_id'],
                 'expense_id' => $expense['id'],
                 'date' => $data['date'],
                 'assets' => $data['assets'],
-                'status'=>1
-            ]);
+                'status' => 1,
+            ];
+
+            // Conditionally include slug if the column exists
+            if (Schema::hasColumn('assets', 'slug')) {
+                $assetPayload['slug'] = Uuid::uuid4();
+            }
+
+            // Conditionally include company_id if the column exists
+            if (Schema::hasColumn('assets', 'company_id')) {
+                $assetPayload['company_id'] = Auth::user()->primary_company;
+            }
+
+            $assets = Asset::create($assetPayload);
             storeActivityLog([
                 'object_id' => $assets->id,
                 'log_type' => 'create',
@@ -232,14 +257,25 @@ class AssetController extends Controller
 
         //check balance amount to make a valid expense
         $bankAccount = BankAccount::find($data['account_id']);
-        //adjust the previous expense mount for the new expense first
-
+        if (!$bankAccount) {
+            return response()->json([
+                'message' => 'Not Found',
+                'description' => 'Expense account not found.',
+            ], 404);
+        }
+        //adjust the previous expense amount for the new expense first
         $bankAccount->balance += $prevExpenseData['amount'];
         $bankAccount->save();
 
         $totalPrice = 0;
 
         $assets = json_decode($data['assets'], true);
+        if (!is_array($assets) || empty($assets)) {
+            return response()->json([
+                'message' => 'Error!',
+                'description' => 'Assets payload is invalid.',
+            ], 400);
+        }
         if ($assets[0]['qty'] === 0) {
             return response()->json([
                 'message' => 'Error!',

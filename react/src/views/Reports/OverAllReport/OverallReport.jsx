@@ -112,11 +112,21 @@ export default function OverallReport() {
     return (
         <>
             <MainLoader loaderVisible={loading}/>
+            <div className={'report-page'}>
+                <div className={'report-header'}>
+                    <span className={'page-title-header'}>Overall Reports</span>
+                    <div className={'d-flex align-items-center gap-2'}>
+                        <ReactToPrint
+                            trigger={() => <Button sx={{ml:1}} variant="outlined">Print</Button>}
+                            content={()=> componentRef.current}
+                        />
+                    </div>
+                </div>
+            </div>
             <WizCard className="animated fadeInDown">
-                <h1 className="title-text text-center">Overall Reports</h1>
                 <div className="row">
                     <form onSubmit={handleSubmit}>
-                        <div className="col-3">
+                        <div className="col-12 col-md-3">
                             <div className="form-group">
                                 <label className="custom-form-label" htmlFor="income_category">Filter</label>
                                 <select
@@ -140,7 +150,7 @@ export default function OverallReport() {
                                 </select>
                             </div>
                         </div>
-                        <div className="col-3">
+                        <div className="col-12 col-md-3">
                             <div className="form-group">
                                 <label className="custom-form-label" htmlFor="start_date">Start Date:</label>
                                 <DatePicker
@@ -152,7 +162,7 @@ export default function OverallReport() {
                                 />
                             </div>
                         </div>
-                        <div className="col-3">
+                        <div className="col-12 col-md-3">
                             <div className="form-group">
                                 <label className="custom-form-label" htmlFor="end_date">End Date:</label>
                                 <DatePicker
@@ -164,20 +174,15 @@ export default function OverallReport() {
                                 />
                             </div>
                         </div>
-                        <div className="col-3 mt-4">
-                            <button className={'btn-add right mt-2'} type="submit">Filter</button>
-                            <button className="btn btn-warning ml-2" onClick={resetFilterParameter}>Reset</button>
-                            <ReactToPrint
-                                trigger={() => <Button sx={{ml:1}} variant="outlined">Print</Button>}
-                                content={()=> componentRef.current}
-                             />
+                        <div className="col-12 col-md-3 mt-4 d-flex flex-wrap align-items-center gap-2">
+                            <button className={'btn-add mt-2'} type="submit">Filter</button>
+                            <button className="btn btn-warning mt-2" onClick={resetFilterParameter}>Reset</button>
                         </div>
                     </form>
                 </div>
                 <div className="row"  ref={componentRef}>
                     <div className="col-12">
-                        <div className="responsive" style={{overflow: 'auto'}}>
-                            <div className="table-responsive-sm">
+                        <div className="table-scroll">
                                 <table className="table table-bordered custom-table">
                                     <thead>
                                     <tr className={'text-center'}>
@@ -223,8 +228,7 @@ export default function OverallReport() {
                                     )}
                                 </table>
                             </div>
-
-                            <div className="table-responsive-sm">
+                            <div className="table-scroll">
                                 <table className="table table-bordered custom-table">
                                     <thead>
                                     <tr className={'text-center'}>

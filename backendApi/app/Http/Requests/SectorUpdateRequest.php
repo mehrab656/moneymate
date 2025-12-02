@@ -17,22 +17,35 @@ class SectorUpdateRequest extends FormRequest {
 	 *
 	 * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
 	 */
-	public function rules(): array {
-		return [
-			'name'                  => 'required',
-			'payment_account_id'    => 'required',
-			'contract_start_date'   => 'required',
-			'contract_end_date'     => 'required',
-			'el_premises_no'        => 'required',
-			'el_acc_no'             => 'required',
-			'el_business_acc_no'    => 'required',
-			'el_billing_date'       => 'required',
-			'internet_acc_no'       => 'required',
-			'internet_billing_date' => 'required',
-			'int_note'              => 'nullable',
+    public function rules(): array {
+        return [
+            'name'                  => 'required',
+            'bank_account_id'       => 'required',
+            'contract_start_date'   => 'required',
+            'contract_end_date'     => 'required',
+            'el_premises_no'        => 'required',
+            'el_acc_no'             => 'required',
+            'el_business_acc_no'    => 'required',
+            'el_billing_date'       => 'required',
+            // allow optional electricity note updates
+            'el_note'               => 'nullable',
+            'internet_acc_no'       => 'required',
+            'internet_billing_date' => 'required',
+            'int_note'              => 'nullable',
 
-		];
-	}
+            // optional arrays for updating schedules, channels, and categories
+            'payment_number'        => 'nullable|array',
+            'payment_date'          => 'nullable|array',
+            'payment_amount'        => 'nullable|array',
+
+            'channel_name'          => 'nullable|array',
+            'reference_id'          => 'nullable|array',
+            'listing_date'          => 'nullable|array',
+
+            'category_name'         => 'nullable|array',
+
+        ];
+    }
 
 	/**
 	 * @return string[]
@@ -40,7 +53,7 @@ class SectorUpdateRequest extends FormRequest {
 	public function messages(): array {
 		return [
 			'sector_name.required'                => 'Sector name is required.',
-			'payment_account_id.required'         => 'Payment account is required.',
+            'bank_account_id.required'            => 'Bank account is required.',
 			'contract_start_date.required'        => 'Contract start date is required.',
 			'contract_end_date.contract_end_date' => 'Contract end date is required.',
 			'el_premises_no.required'             => 'Electricity premises number is required.',

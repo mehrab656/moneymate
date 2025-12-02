@@ -33,6 +33,7 @@ class UpdateCategoryRequest extends FormRequest
                 'required',
             ],
             'type' => 'required|in:income,expense',
+            'sector_id' => 'nullable',
         ];
     }
 }

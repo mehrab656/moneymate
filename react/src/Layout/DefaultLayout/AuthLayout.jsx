@@ -8,6 +8,7 @@ import { Container, Row, Col, Button, Offcanvas } from "react-bootstrap";
 import { compareDates } from "../../helper/HelperFunctions.js";
 import { useGetSectorListDataQuery } from "../../api/slices/sectorSlice.js";
 import { useGetFinancialReportDataQuery } from "../../api/slices/accountSlice.js";
+import { useGetMyProfileQuery } from "../../api/slices/userSlice.js";
 import Dropdown from "react-bootstrap/Dropdown";
 import { notification } from "../../components/ToastNotification";
 import { Tooltip } from "react-tooltip";
@@ -19,6 +20,7 @@ import {
   useGetSideBarCompanyListsDataQuery,
 } from "../../api/slices/dashBoardSlice.js";
 import { SettingsContext } from "../../contexts/SettingsContext.jsx";
+import { SidebarContainer } from "../../components/GlobalSidebar/index.js";
 
 const defaultQuery = {
   searchTerm: "",
@@ -53,6 +55,67 @@ export default function AuthLayout() {
     settings: false,
     hrModule: false,
   });
+
+  // Ensure sidebar dropdown expands based on URL query `menu=<slug>`
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(location.search);
+      const menuSlug = params.get("menu");
+      const parentKey = (() => {
+        if (!menuSlug) return null;
+          const map = {
+            // Transactions
+            investments: "transaction",
+            "investment-plan": "transaction",
+            expenses: "transaction",
+            incomes: "transaction",
+            returns: "transaction",
+            budgets: "transaction",
+            // Reports
+            "income-report": "report",
+            "expense-report": "report",
+            "investment-report": "report",
+            "monthly-report": "report",
+            "all-report": "report",
+          // Bank & Acc.
+          banks: "bankAccount",
+          accounts: "bankAccount",
+          "balance-transfer": "bankAccount",
+          debts: "bankAccount",
+          // HRMS
+          employee: "hrModule",
+          payroll: "hrModule",
+          attendance: "hrModule",
+          "task-list": "hrModule",
+          "my-task": "hrModule",
+          "hr-reports": "hrModule",
+          // Settings
+          settings: "settings",
+          users: "settings",
+          roles: "settings",
+        };
+        return map[menuSlug] || null;
+      })();
+
+      const keys = ["transaction", "report", "bankAccount", "settings", "hrModule"];
+      setSubmenuVisible((prev) => {
+        if (!parentKey) {
+          // no menu param -> collapse all (preserve existing behavior)
+          return keys.reduce((acc, key) => ({ ...acc, [key]: false }), {});
+        }
+        // open only the matched parent dropdown
+        return keys.reduce(
+          (acc, key) => ({
+            ...acc,
+            [key]: key === parentKey,
+          }),
+          {}
+        );
+      });
+    } catch (_) {
+      // ignore malformed URLs
+    }
+  }, [location.search]);
 
   // remaining open multiple
   // const toggleSubmenu = (type) => {
@@ -106,6 +169,58 @@ export default function AuthLayout() {
   const { data: getFinancialReportData } = useGetFinancialReportDataQuery({
     token,
   });
+
+  // Fetch latest profile to keep header synchronized (avoid refetch churn)
+  const { data: myProfileData } = useGetMyProfileQuery(undefined, {
+    refetchOnMountOrArgChange: false,
+  });
+
+  useEffect(() => {
+    // Fallback: if no CURRENT_COMPANY is set, default to the first available company
+    try {
+      if (!currentCompanyID && getCompanyData?.data?.length > 0) {
+        const firstCompanyId = getCompanyData.data[0]?.id;
+        if (firstCompanyId) {
+          localStorage.setItem("CURRENT_COMPANY", String(firstCompanyId));
+          // Reload to ensure all queries re-run with the selected company
+          window.location.reload();
+        }
+      }
+    } catch (_) {
+      // ignore errors related to localStorage or window
+    }
+  }, [getCompanyData, currentCompanyID]);
+
+  useEffect(() => {
+    if (!myProfileData || !myProfileData.username) return;
+    // Prevent unnecessary context updates that can cause render loops
+    const isSameUser = (() => {
+      if (!user) return false;
+      try {
+        return (
+          user.username === myProfileData.username &&
+          user.avatar === myProfileData.avatar &&
+          user.first_name === myProfileData.first_name &&
+          user.last_name === myProfileData.last_name &&
+          user.email === myProfileData.email &&
+          user.phone === myProfileData.phone &&
+          user.gender === myProfileData.gender &&
+          user.dob === myProfileData.dob
+        );
+      } catch (_) {
+        return false;
+      }
+    })();
+
+    if (!isSameUser) {
+      setUser(myProfileData);
+      try {
+        localStorage.setItem("ACCESS_USER", JSON.stringify(myProfileData));
+      } catch (_) {
+        // ignore storage issues
+      }
+    }
+  }, [myProfileData, user]);
 
   // Other effects
   useEffect(() => {
@@ -184,6 +299,7 @@ export default function AuthLayout() {
       });
   };
 
+
   // Main render
   return (
     <>
@@ -199,7 +315,7 @@ export default function AuthLayout() {
                 )}
                 {getCurrentCompanyData?.data?.name && (
                   <div className="aside-content">
-                    {userRole !== "employee" && (
+                    {checkPermission("company_view") && (
                       <Dropdown>
                         <Dropdown.Toggle
                           variant="dark"
@@ -208,9 +324,38 @@ export default function AuthLayout() {
                           data-tooltip-id="switch-company"
                           data-tooltip-content={"Switch to another company "}
                         >
-                          {getCurrentCompanyData?.data
-                            ? getCurrentCompanyData?.data.name
-                            : "company"}
+                          {(() => {
+                            const logo = getCurrentCompanyData?.data?.logo;
+                            let logoUrl = null;
+                            if (typeof logo === "string" && logo && logo !== "null") {
+                              const trimmed = logo.trim();
+                              if (
+                                trimmed.startsWith("http://") ||
+                                trimmed.startsWith("https://") ||
+                                trimmed.startsWith("/")
+                              ) {
+                                logoUrl = trimmed;
+                              } else {
+                                const base = window.__APP_CONFIG__?.VITE_APP_BASE_URL || "";
+                                logoUrl = `${base}/storage/files/company/${trimmed}`;
+                              }
+                            }
+                            return (
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                                {logoUrl && (
+                                  <img
+                                    src={logoUrl}
+                                    alt="Company Logo"
+                                    style={{ width: 22, height: 22, borderRadius: 4, objectFit: 'cover' }}
+                                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                  />
+                                )}
+                                <span>
+                                  {getCurrentCompanyData?.data ? getCurrentCompanyData?.data.name : "company"}
+                                </span>
+                              </span>
+                            );
+                          })()}
                         </Dropdown.Toggle>
                         <Tooltip id="switch-company" />
                         <Dropdown.Menu className="scrollable-dropdown">
@@ -244,6 +389,7 @@ export default function AuthLayout() {
                         toggleSubmenu={toggleSubmenu}
                         submenuVisible={submenuVisible}
                         checkPermission={checkPermission}
+                        currentMenu={(new URLSearchParams(location.search)).get('menu')}
                       />
                     </ul>
                   </div>
@@ -290,6 +436,7 @@ export default function AuthLayout() {
                       handleCloseSidebar={handleCloseSidebar}
                       user={user}
                       checkPermission={checkPermission}
+                      currentMenu={(new URLSearchParams(location.search)).get('menu')}
                     />
                   </ul>
                 </div>
@@ -297,6 +444,9 @@ export default function AuthLayout() {
             </div>
           </Offcanvas.Body>
         </Offcanvas>
+        
+        {/* Global Sidebar */}
+        <SidebarContainer />
       </Container>
     </>
   );

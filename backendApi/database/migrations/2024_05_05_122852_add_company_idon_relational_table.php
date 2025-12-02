@@ -31,10 +31,12 @@ return new class extends Migration {
 	public function up(): void {
 
 		foreach ( $this->tables as $tableName ) {
-			Schema::table( $tableName, function ( Blueprint $table ) {
-				$table->unsignedBigInteger( 'company_id' )->after( 'id' )->default( 1 );
-				// $table->foreign( 'company_id' )->references( 'id' )->on( 'companies' );
-			} );
+			if (Schema::hasTable($tableName) && !Schema::hasColumn($tableName, 'company_id')) {
+				Schema::table( $tableName, function ( Blueprint $table ) {
+					$table->unsignedBigInteger( 'company_id' )->after( 'id' )->default( 1 );
+					// $table->foreign( 'company_id' )->references( 'id' )->on( 'companies' );
+				} );
+			}
 		}
 	}
 
@@ -43,11 +45,12 @@ return new class extends Migration {
 	 */
 	public function down(): void {
 		foreach ( $this->tables as $tableName ) {
-			Schema::table( $tableName, function ( Blueprint $table ) {
-				$table->dropForeign( ['company_id'] );
-				$table->dropColumn('company_id');
-
-			} );
+			if (Schema::hasTable($tableName) && Schema::hasColumn($tableName, 'company_id')) {
+				Schema::table( $tableName, function ( Blueprint $table ) {
+					// Foreign key was not created above, so only drop column if exists
+					$table->dropColumn('company_id');
+				} );
+			}
 		}
 	}
 };
