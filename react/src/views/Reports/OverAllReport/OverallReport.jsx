@@ -319,9 +319,7 @@ export default function OverallReport() {
                             </div>
                         </div>
                     </div>
-                </div>
             </WizCard>
         </>
     )
 }
-
