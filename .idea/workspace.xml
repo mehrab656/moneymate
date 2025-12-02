@@ -5,9 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb82f29d-a946-4d7c-af4f-355ea30ae3ce" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/react/src/components/table/CommonTable.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/70/d5/70d5789fb8fa04f157e2f175d8e9158bc3d2b5c6" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/c0/71/c071422490d526a8aada046adf3a9c9fa0593468" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/.env" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/52/ac/52acebe9de48b9434598fa65d2ec8d0e111e90b0" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/52/ac/52acebe9de48b9434598fa65d2ec8d0e111e90b0" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/70/d5/70d5789fb8fa04f157e2f175d8e9158bc3d2b5c6" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/70/d5/70d5789fb8fa04f157e2f175d8e9158bc3d2b5c6" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/c0/71/c071422490d526a8aada046adf3a9c9fa0593468" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/c0/71/c071422490d526a8aada046adf3a9c9fa0593468" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/ec/c4/ecc49f49f4da6b940dcde13f0571e79c299871e6" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/ec/c4/ecc49f49f4da6b940dcde13f0571e79c299871e6" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/logs/laravel.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/react/config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/public/custom.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/public/custom.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Transactions/Expense/Components/ExpenseExportButton.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Transactions/Expense/Components/ExpenseExportButton.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Transactions/Expense/ExpenseFormSidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Transactions/Expense/ExpenseFormSidebar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Transactions/Expense/ExpenseList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Transactions/Expense/ExpenseList.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/vite.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/react/vite.config.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,8 +33,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="JavaScript File" />
-        <option value="JSX File" />
         <option value="HTML File" />
+        <option value="JSX File" />
       </list>
     </option>
   </component>
@@ -178,35 +189,35 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowPanel.toolwindow.highlight.mappings": "true",
-    "WebServerToolWindowPanel.toolwindow.highlight.symlinks": "true",
-    "WebServerToolWindowPanel.toolwindow.show.date": "false",
-    "WebServerToolWindowPanel.toolwindow.show.permissions": "false",
-    "WebServerToolWindowPanel.toolwindow.show.size": "false",
-    "git-widget-placeholder": "saas",
-    "last_opened_file_path": "/Applications/XAMPP/xamppfiles/htdocs/moneymate/backendApi/public/avatars",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "npm.dev.executor": "Run",
-    "settings.editor.selected.configurable": "advanced.settings",
-    "ts.external.directory.path": "/Applications/PhpStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.highlight.mappings&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.highlight.symlinks&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.show.date&quot;: &quot;false&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.show.permissions&quot;: &quot;false&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.show.size&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;saas&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Applications/XAMPP/xamppfiles/htdocs/moneymate/backendApi/storage/app/cache&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;npm.dev.executor&quot;: &quot;Run&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Applications/PhpStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/backendApi/storage/app/cache" />
       <recent name="$PROJECT_DIR$/backendApi/public/avatars" />
       <recent name="$PROJECT_DIR$/backendApi/public/passports" />
       <recent name="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs" />
       <recent name="$PROJECT_DIR$/assets" />
-      <recent name="$PROJECT_DIR$/react/public" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/react/public" />
@@ -271,6 +282,7 @@
       <workItem from="1749659574060" duration="55309000" />
       <workItem from="1755799534883" duration="23722000" />
       <workItem from="1759914034257" duration="23268000" />
+      <workItem from="1764705581442" duration="10153000" />
     </task>
     <servers />
   </component>
@@ -280,11 +292,6 @@
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/react/src/views/Sectors/SectorForm.jsx</url>
-          <line>280</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/react/src/views/ApplicationSettingsForm.jsx</url>
           <line>269</line>
@@ -297,7 +304,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="php">
           <url>file://$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php</url>
-          <line>383</line>
+          <line>385</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="php">
