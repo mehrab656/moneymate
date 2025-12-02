@@ -84,6 +84,86 @@ composer update
 tail -f storage/logs/laravel.log
 ```
 
+## File Permissions
+
+Ensure the web server can read/write `storage/` and `bootstrap/cache/`, and any public upload directories.
+
+### Linux/macOS (Apache/Nginx)
+```bash
+cd /c/xampp/htdocs/moneymate/backendApi
+
+# Set owner to your web user
+# Linux examples: www-data (Debian/Ubuntu), apache (CentOS/RHEL), nginx
+# macOS Apache default: _www
+# Discover the correct user:
+#   id _www   # macOS Apache
+#   id www-data  # Debian/Ubuntu
+#   ps aux | grep -E "(httpd|apache|nginx|php-fpm)"
+sudo chown -R _www:_www storage bootstrap/cache  # macOS
+# sudo chown -R www-data:www-data storage bootstrap/cache  # Debian/Ubuntu
+# sudo chown -R apache:apache storage bootstrap/cache       # CentOS/RHEL
+
+# Grant read/write/execute to owner/group (directories 775, files 664)
+sudo find storage -type d -exec chmod 775 {} \;
+sudo find storage -type f -exec chmod 664 {} \;
+sudo chmod -R 775 bootstrap/cache
+
+# macOS optional: grant extended ACLs so _www can write even if owner is your user
+# (applies to storage and bootstrap/cache)
+sudo chmod -R +a "_www allow read,write,append,file_inherit,directory_inherit" storage
+sudo chmod -R +a "_www allow read,write,append,file_inherit,directory_inherit" bootstrap/cache
+
+# If SELinux is enabled (CentOS/RHEL), allow web writes
+sudo chcon -R -t httpd_sys_rw_content_t storage bootstrap/cache
+
+# Optional: public upload dirs (if used)
+sudo mkdir -p public/avatars public/passports public/ids
+sudo chown -R www-data:www-data public/avatars public/passports public/ids
+sudo chmod -R 775 public/avatars public/passports public/ids
+```
+
+### Windows (XAMPP, Apache)
+Use `icacls` to grant Modify (M) permissions recursively to the `Users` group.
+Run these in an elevated PowerShell or Command Prompt.
+```powershell
+cd C:\xampp\htdocs\moneymate\backendApi
+
+# Grant Modify to Users group recursively
+icacls storage /grant Users:(OI)(CI)M /T
+icacls bootstrap\cache /grant Users:(OI)(CI)M /T
+
+# Optional: public upload dirs (create + grant)
+mkdir public\avatars 2>$null
+mkdir public\passports 2>$null
+mkdir public\ids 2>$null
+icacls public\avatars /grant Users:(OI)(CI)M /T
+icacls public\passports /grant Users:(OI)(CI)M /T
+icacls public\ids /grant Users:(OI)(CI)M /T
+```
+
+### Verify permissions
+- `php artisan config:cache` and `php artisan cache:clear` succeed.
+- API writes logs to `storage/logs/laravel.log`.
+- No `Permission denied` or `Unable to create directory` in logs.
+
+Linux/macOS
+- Set web server ownership:
+  - sudo chown -R www-data:www-data storage/logs
+- Directory and file permissions:
+  - sudo find storage/logs -type d -exec chmod 775 {} \;
+  - sudo find storage/logs -type f -exec chmod 664 {} \;
+- Create the log file if missing:
+  - sudo install -m 664 -o www-data -g www-data /dev/null storage/logs/laravel.log
+- SELinux (CentOS/RHEL) context:
+  - sudo chcon -R -t httpd_sys_rw_content_t storage/logs
+
+Windows (XAMPP)
+- Grant Modify permissions to the Users group:
+  - icacls storage\logs /grant Users:(OI)(CI)M /T
+- Create the log file if missing:
+  - type NUL > storage\logs\laravel.log
+  - icacls storage\logs\laravel.log /grant Users:M
+
 ## Key Files (Debts/Accounts)
 - Controllers:
   - `app/Http/Controllers/Api/DebtController.php`
@@ -135,4 +215,3 @@ curl -X POST "http://moneymate.com/backendApi/public/api/debts/store" \
 - Debts index eager-loads `accounts.bankName` for performance.
 - Debt API response includes `account` and `account_number` via `DebtResource`.
 - Run all `php artisan` and `composer` commands inside `backendApi` directory.
-
