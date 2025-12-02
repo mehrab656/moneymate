@@ -15,7 +15,7 @@ import { useSidebarActions } from "../../../components/GlobalSidebar";
 const _initialExpense = {
   id: null,
   amount: "",
-  refundable_amount: 0,
+  refundable_amount: "",
   description: "",
   reference: "",
   date: "",
@@ -25,7 +25,7 @@ const _initialExpense = {
   category: [],
 };
 
-export default function ExpenseFormSidebar({ expenseId, onSuccess }) {
+export default function ExpenseFormSidebar({ expenseId, onSuccess, showLabel="true", colXS=12, colMD=6, colSM=12 }) {
   const [expense, setExpense] = useState(_initialExpense);
   const [loading, setLoading] = useState(false);
   const [accounts, setAccounts] = useState([]);
@@ -156,14 +156,16 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess }) {
   };
 
   return (
-    <div style={{ padding: 16 }}>
+    <div>
       <MainLoader loaderVisible={loading} />
       <WizCard className="animated fadeInDown">
         <Form onSubmit={(e) => expenseSubmit(e, false)}>
           <Row>
             <Col xs={12}>
-              <Form.Group className="mb-3" controlId="description">
-                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Description</Form.Label>
+              <Form.Group className="mb-3" controlId="Expense Description">
+                {showLabel &&
+                    <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Description</Form.Label>
+                }
                 <Form.Control as="textarea" rows={3} value={expense.description ?? ""} name="description"
                               onChange={(e) => setExpense({ ...expense, description: e.target.value })}
                               placeholder="Enter description" />
@@ -174,8 +176,10 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess }) {
           <Row>
             <Col xs={12} md={6}>
               <Form.Group className="mb-3" controlId="amount">
+                { showLabel &&
                 <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Amount</Form.Label>
-                <Form.Control type="number" placeholder="i.g: 50 AED" value={expense.amount}
+                }
+                <Form.Control type="number" placeholder="Expense Amount" value={expense.amount}
                               onChange={(e) => setExpense({ ...expense, amount: e.target.value })} />
                 {errors.amount && (
                   <p className="error-message">{errors.amount[0]}</p>
@@ -184,18 +188,24 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess }) {
             </Col>
             <Col xs={12} md={6}>
               <Form.Group className="mb-3" controlId="refundable_amount">
-                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Refundable Amount</Form.Label>
-                <Form.Control type="number" placeholder="i.g: 50 AED" value={expense.refundable_amount}
+                { showLabel &&
+                    <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Refundable Amount</Form.Label>
+                }
+                <Form.Control type="number" placeholder="Refundable Amount" value={expense.refundable_amount}
                               onChange={(e) => setExpense({ ...expense, refundable_amount: e.target.value })} />
               </Form.Group>
             </Col>
           </Row>
 
           <Row>
-            <Col xs={12} md={6}>
+            <Col xs={colXS} md={colMD}>
               <Form.Group className="mb-3" controlId="account">
-                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Account</Form.Label>
+                { showLabel &&
+                    <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Account</Form.Label> }
+
                 <Select classNamePrefix="select" value={expense.account} isSearchable name="account" options={accounts}
+                        placeholder={"Select Bank Account"}
+
                         onChange={(e) => {
                           setExpense({ ...expense, account: e });
                           if (errors.account && e?.value) {
@@ -209,9 +219,11 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess }) {
                 )}
               </Form.Group>
             </Col>
-            <Col xs={12} md={6}>
+            <Col xs={colXS} md={colMD}>
               <Form.Group className="mb-3" controlId="category_id">
-                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Category</Form.Label>
+                { showLabel &&
+                    <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Category</Form.Label>
+                }
                 <Select classNamePrefix="select" value={expense.category} isSearchable name="category_id"
                         isLoading={categoryIsFetching} options={categories}
                         onChange={(e) => {
@@ -232,14 +244,19 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess }) {
           <Row>
             <Col xs={12} md={6}>
               <Form.Group className="mb-3" controlId="date">
-                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Date</Form.Label>
+                { showLabel &&
+                    <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Date</Form.Label>
+                }
                 <Form.Control type="date" value={expense.date}
                               onChange={(e) => setExpense({ ...expense, date: e.target.value })} />
               </Form.Group>
             </Col>
             <Col xs={12} md={6}>
               <Form.Group className="mb-3" controlId="reference">
-                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Reference</Form.Label>
+                { showLabel &&
+                    <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Reference</Form.Label>
+                }
+
                 <Form.Control type="text" placeholder="i.g: 50 AED" value={expense.reference ?? ""}
                               onChange={(e) => setExpense({ ...expense, reference: e.target.value })} />
               </Form.Group>
@@ -247,17 +264,20 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess }) {
           </Row>
 
           <Row>
-            <Col xs={12} md={6}>
+            <Col xs={colXS} md={colMD}>
               <Form.Group className="mb-3" controlId="note">
-                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Note</Form.Label>
+                { showLabel &&
+                    <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Note</Form.Label>}
+
                 <Form.Control as="textarea" rows={3} value={expense.note ?? ""} name="note"
                               onChange={(e) => setExpense({ ...expense, note: e.target.value })} />
               </Form.Group>
             </Col>
 
-            <Col xs={12} md={6}>
+            <Col xs={colXS} md={colMD}>
               <Form.Group className="mb-3">
-                <Form.Label>Add Attachment</Form.Label>
+                { showLabel &&
+                    <Form.Label>Add Attachment</Form.Label>}
                 <Form.Control type="file" onChange={handleFileInputChange} />
               </Form.Group>
             </Col>
@@ -267,22 +287,14 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess }) {
             <Col xs={12}>
               <div className="d-flex flex-column flex-sm-row gap-2 justify-content-end">
                 {expense.id ? (
-                  <Button type="submit" variant="primary" disabled={loading}>
+                  <Button className={"btn-sm"} type="submit" variant="primary" disabled={loading}>
                     {loading ? "Updating..." : "Update Expense"}
                   </Button>
                 ) : (
-                  <>
-                    <Button type="submit" variant="primary" disabled={loading}>
+                    <Button type="button" variant="success" disabled={loading} onClick={(e) => expenseSubmit(e, true)}>
                       {loading ? "Saving..." : "Add Expense"}
                     </Button>
-                    <Button type="button" variant="success" disabled={loading} onClick={(e) => expenseSubmit(e, true)}>
-                      {loading ? "Saving..." : "Save & Add Another"}
-                    </Button>
-                  </>
                 )}
-                <Button type="button" variant="outline-secondary" onClick={closeSidebar}>
-                  Cancel
-                </Button>
               </div>
             </Col>
           </Row>

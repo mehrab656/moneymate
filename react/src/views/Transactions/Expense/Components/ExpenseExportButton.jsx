@@ -29,7 +29,7 @@ export default function ExpenseExportButton() {
 
     return (
         // <div>
-            <button className='btn-info' onClick={handleExportCsv} disabled={loading}>
+            <button className='btn btn-info btn-sm ml-2' onClick={handleExportCsv} disabled={loading}>
                 <FontAwesomeIcon icon={faFileExport}/>
                 {/*{loading ? 'Exporting...' : 'Export Expense Data'}*/}
             </button>

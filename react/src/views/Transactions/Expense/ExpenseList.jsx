@@ -11,14 +11,26 @@ import {
 import ExpenseFilter from "./ExpenseFilter.jsx";
 import ExpenseForm from "./ExpenseForm.jsx";
 import ExpenseFormSidebar from "./ExpenseFormSidebar.jsx";
-import { Form} from "react-bootstrap";
+import {Col, Form, Row} from "react-bootstrap";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
 import ExpenseDetails from "./ExpenseDetails.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faDownload, faFilter} from "@fortawesome/free-solid-svg-icons";
+import {fa0, faDownload, faFilter} from "@fortawesome/free-solid-svg-icons";
 import FilteredParameters from "./Components/FilteredParameters.jsx";
 import ListTable from "./Components/ListTable.jsx";
 import ExpenseExportButton from "./Components/ExpenseExportButton.jsx";
+
+import {
+    Box,
+    Card,
+    CardActions,
+    CardContent,
+    CardHeader,
+    Button
+} from "@mui/material";
+import CommonTable from "../../../components/table/CommonTable.jsx";
+import Iconify from "../../../components/Iconify.jsx";
+import Select from "react-select";
 
 const defaultQuery = {
     start_date: "",
@@ -32,9 +44,12 @@ const defaultQuery = {
     limit: "",
 };
 const TABLE_HEAD = [
-    {id: "date", label: "Date", align: "left"},
-    {id: "descriptions", label: "Details", align: "left"},
-    {id: "amount", label: "Amount", align: "right"}
+    {id: "date", label: "Date", align: "left", minWidth: 170},
+    {id: "description", label: "Details", align: "left", minWidth: 170},
+    {id: "amount", label: "Amount", align: "right", minWidth: 170, format: (value) => value.toFixed(2)},
+    {id: "user_name", label: "Expense By", align: "left", minWidth: 170},
+    {id: "refundable_amount", label: "Refundable Amount", align: "right", minWidth: 170, format: (value) => value.toFixed(2)},
+    {id: "refunded_amount", label: "Refunded Amount", align: "right", minWidth: 170, format: (value) => value.toFixed(2)}
 ];
 
 export default function ExpenseList() {
@@ -49,6 +64,8 @@ export default function ExpenseList() {
     const [hasFilter, setHasFilter] = useState(true);
     const [showExpenseForm, setShowExpenseForm] = useState(false);
     const [searchTerms, setSearchTerms] = useState("");
+    const [errors, setErrors] = useState({});
+
     const [showFilterModal, setShowFilterModal] = useState(false);//important
     const [expense, setExpense] = useState({
         id: null,
@@ -289,58 +306,107 @@ export default function ExpenseList() {
         <div>
             <MainLoader loaderVisible={isDataFetching}/>
 
-            <div className={"row mb-2"}>
-                <div className={"col-md-4"}>
+            <Row>
+                <Col xs={12} sm={12} md={9}>
                     <span className={"page-title-header"}>Expense Histories</span>
-                </div>
-                <div className={"col-md-8 text-end"}>
-                    <button className={'btn btn-secondary btn-sm mr-2'}>
-                        <FontAwesomeIcon icon={faDownload}/>{' Download CSV'}
-                    </button>
-                    <ExpenseExportButton />
-                    <button className={'btn-sm btn-add'} onClick={showExpenseFormFunc}>
-                        <FontAwesomeIcon icon={faFilter}/>{' Add Expense'}
-                    </button>
-                </div>
-            </div>
+                    <Row>
+                        <div style={{padding: "10px", display: "flex", justifyContent: "space-between"}}>
+                            <button className={'btn btn-secondary btn-sm mr-2'} onClick={toggleFilterModal}>
+                                <FontAwesomeIcon icon={faFilter}/>{' Filter'}</button>
+                            <Form>
+                                <Form.Control
+                                    type="text"
+                                    size="sm"
+                                    value={searchTerms}
+                                    onChange={(e) => setSearchTerms(e.target.value)}
+                                    placeholder={"search by key wards..."}
+                                    style={{textTransform: "capitalize"}}
+                                />
+                            </Form>
+                        </div>
+                    </Row>
+                    <Row>
+                        <Box sx={{padding: "10px"}}>
+                            <FilteredParameters queries={query}
+                                                setQuery={setQuery}/>
+                        </Box>
+                    </Row>
+                    <Row>
+                        <Box sx={{padding: "10px"}}>
+                            <Card sx={{p: 5}} style={{padding: "0px"}}>
+                                <CommonTable data={modifiedFilteredExpenses}
+                                             tableColumns={TABLE_HEAD}
+                                             actionButtons={actionParams}
+                                             loading={loading}
+                                             pagination={{
+                                                 totalPages: totalPages??0,
+                                                 totalCount: totalCount,
+                                                 currentPage: currentPage,
+                                                 handlePageChange: handlePageChange,
+                                             }}
+                                             cardSubTitle={`Page-${currentPage} (showing ${modifiedFilteredExpenses.length} results from ${totalCount})`}
+                                             isFetching={isDataFetching}
+                                             hasError={hasDataFetchingError}
+                                />
+                                {/*<ListTable expenses={modifiedFilteredExpenses}*/}
+                                {/*           tableColumns={TABLE_HEAD}*/}
+                                {/*           actionBtns={actionParams}*/}
+                                {/*           loading={loading}*/}
+                                {/*           paginations={{*/}
+                                {/*               totalPages: totalPages??0,*/}
+                                {/*               totalCount: totalCount,*/}
+                                {/*               currentPage: currentPage,*/}
+                                {/*               handlePageChange: handlePageChange,*/}
+                                {/*           }}*/}
+                                {/*           cardSubTitle={`Page-${currentPage} (showing ${modifiedFilteredExpenses.length} results from ${totalCount})`}*/}
+                                {/*           isFetching={isDataFetching}*/}
+                                {/*           hasError={hasDataFetchingError}*/}
+                                {/*/>*/}
 
-            <div className={"row mb-2"}>
-                <div className={"col-md-8"}>
-                    <button className={'btn btn-secondary btn-sm mr-2'} onClick={toggleFilterModal}>
-                        <FontAwesomeIcon icon={faFilter}/>{' Filter'}</button>
-                </div>
+                            </Card>
+                        </Box>
+                    </Row>
+                </Col>
+                <Col xs={12} sm={12} md={3}>
+                    <Row>
+                        <Box sx={{padding:"10px", display:"flex", justifyContent:"flex-end"}}>
+                            <button className={'btn btn-secondary btn-sm ml-2'}>
+                                <FontAwesomeIcon icon={faDownload}/>
+                            </button>
+                            <ExpenseExportButton/>
+                            <button className={'btn btn-success btn-sm ml-2'} onClick={showExpenseFormFunc}>
+                                <Iconify icon={"eva:plus-fill"} />
+                            </button>
+                        </Box>
+                    </Row>
+                    <Row>
+                        <div className={'sidebar-form'} style={{padding:"10px"}}>
+                            <ExpenseFormSidebar
+                                expenseId={null}
+                                onSuccess={() => {
+                                    setIsPaginate(true);
+                                    refetch();
+                                }}
+                                showLabel={false}
+                                colXS={12}
+                                colMD={12}
+                            />
+                        </div>
+                    </Row>
 
-                <div className={"col-md-4"}>
-                    <Form.Control
-                        type="text"
-                        size="sm"
-                        value={searchTerms}
-                        onChange={(e) => setSearchTerms(e.target.value)}
-                        placeholder={"search by key wards..."}
-                        style={{textTransform: "capitalize"}}
-                    />
-                </div>
-            </div>
+                </Col>
+            </Row>
 
-            <div className="row mb-2">
-                <FilteredParameters queries={query}
-                setQuery={setQuery}/>
-            </div>
 
-            <ListTable expenses={modifiedFilteredExpenses}
-                       tableColumns={TABLE_HEAD}
-                       actionBtns={actionParams}
-                       loading={loading}
-                       paginations={{
-                           totalPages: totalPages??0,
-                           totalCount: totalCount,
-                           currentPage: currentPage,
-                           handlePageChange: handlePageChange,
-                       }}
-                       cardSubTitle={`Page-${currentPage} (showing ${modifiedFilteredExpenses.length} results from ${totalCount})`}
-                       isFetching={isDataFetching}
-                       hasError={hasDataFetchingError}
-            />
+
+
+
+
+
+
+
+
+
             {/* Details handled by GlobalSidebar via showExpense */}
             {showExpenseForm && (
                 <ExpenseForm
