@@ -299,6 +299,7 @@ export default function AuthLayout() {
       });
   };
 
+
   // Main render
   return (
     <>

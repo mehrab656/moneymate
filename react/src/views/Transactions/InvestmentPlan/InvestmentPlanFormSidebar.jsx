@@ -40,32 +40,37 @@ export default function InvestmentPlanFormSidebar({ planId = null, onSuccess = (
     }
   }, [plan.date, plan.startDate]);
 
+  // Load existing plan for editing
   useEffect(() => {
     if (!planId) return;
     setLoading(true);
-    axiosClient
-      .get(`/investment-plan/${planId}`)
+    axiosClient.get(`/investment-plan/${planId}`)
       .then(({ data }) => {
-        // Expecting shape similar to { id, plan_name, user_id, date, start_date, end_date, purposes }
-        const d = data?.data || data;
+        const p = data?.data || data;
         setPlan({
-          id: d?.id || planId,
-          plan_name: d?.plan_name || "",
-          userId: d?.user_id || null,
-          date: d?.date || "",
-          startDate: d?.start_date || "",
-          endDate: d?.end_date || "",
+          id: p?.id,
+          plan_name: p?.plan_name || "",
+          date: p?.plan_created_date || p?.date || "",
+          startDate: p?.plan_start_date || p?.start_date || "",
+          endDate: p?.plan_end_date || p?.end_date || "",
+          userId: p?.user_id || user?.id || null,
         });
-        if (Array.isArray(d?.purposes) && d.purposes.length) {
-          setTableData(
-            d.purposes.map((p) => ({
-              purpose: p?.purpose ?? "",
-              paymentTerms: p?.paymentTerms ?? "",
-              amount: p?.amount ?? "",
-              refundableAmount: p?.refundableAmount ?? "",
-              remarks: p?.remarks ?? "",
-            }))
-          );
+
+        // Load purposes if present
+        let purposes = [];
+        if (Array.isArray(p?.purposes)) {
+          purposes = p.purposes;
+        } else if (p?.purposes) {
+          try { purposes = JSON.parse(p.purposes); } catch {}
+        }
+        if (purposes && purposes.length) {
+          setTableData(purposes.map(x => ({
+            purpose: x?.purpose || "",
+            paymentTerms: x?.paymentTerms || "",
+            amount: x?.amount || "",
+            refundableAmount: x?.refundableAmount || "",
+            remarks: x?.remarks || "",
+          })));
         }
         setLoading(false);
       })
@@ -104,16 +109,12 @@ export default function InvestmentPlanFormSidebar({ planId = null, onSuccess = (
     formData.append("purposes", JSON.stringify(tableData));
 
     const req = plan.id
-      ? axiosClient.post(`/investment-plan/${plan.id}`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        })
-      : axiosClient.post(`/investments/add-new-plan`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+      ? axiosClient.post(`/investment-plan/${plan.id}`, formData, { headers: { "Content-Type": "multipart/form-data" } })
+      : axiosClient.post(`/investments/add-new-plan`, formData, { headers: { "Content-Type": "multipart/form-data" } });
 
     req
       .then(({ data }) => {
-        notification("success", plan.id ? "Plan updated" : "Plan added", "");
+        notification("success", "Plan added", "");
         setLoading(false);
         onSuccess();
         closeSidebar();

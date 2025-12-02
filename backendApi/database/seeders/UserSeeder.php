@@ -4,32 +4,42 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
     /**
-     * Run the seeder.
-     *
-     * @return void
+     * Run the database seeds.
      */
     public function run(): void
     {
-        $users = [];
-        $password = Hash::make('12345678');
-
-        for ($i = 1; $i <= 10; $i++) {
-            $users[] = [
-                'name' => 'User ' . $i,
-                'email' => 'user' . $i . '@example.com',
-                'email_verified_at' => now(),
-                'password' => $password,
-                'remember_token' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
+        if (!Schema::hasTable('users')) {
+            return; // users table missing; skip
         }
 
-        DB::table('users')->insert($users);
+        // Seed a specific user account (safe if SingleUserSeeder already ran)
+        $data = [
+            'email' => 'hossainmehraab@gmail.com',
+            'password' => Hash::make('12345678'),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        if (Schema::hasColumn('users', 'email_verified_at')) {
+            $data['email_verified_at'] = now();
+        }
+
+        // Prefer 'username' when present; fall back to 'name'
+        if (Schema::hasColumn('users', 'username')) {
+            $data['username'] = 'Mehrab Hossain';
+        } elseif (Schema::hasColumn('users', 'name')) {
+            $data['name'] = 'Mehrab Hossain';
+        }
+
+        DB::table('users')->updateOrInsert(
+            ['email' => 'hossainmehraab@gmail.com'],
+            $data
+        );
     }
 }

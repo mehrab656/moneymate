@@ -48,7 +48,9 @@ export default function InvestmentPlanDetails({ planId = null, data = null }) {
     );
   }
 
-  const purposes = Array.isArray(plan?.purposes) ? plan.purposes : [];
+  const purposes = Array.isArray(plan?.purposes)
+    ? plan.purposes
+    : (() => { try { return JSON.parse(plan?.purposes || '[]'); } catch { return []; } })();
 
   return (
     <Box p={3}>
@@ -57,14 +59,25 @@ export default function InvestmentPlanDetails({ planId = null, data = null }) {
         <strong>Plan Name:</strong> {plan?.plan_name || "N/A"}
       </div>
       <div style={{ marginBottom: 8 }}>
-        <strong>Plan Date:</strong> {plan?.date || "N/A"}
+        <strong>Plan Date:</strong> {plan?.plan_created_date || plan?.date || "N/A"}
       </div>
       <div style={{ marginBottom: 8 }}>
-        <strong>Start Date:</strong> {plan?.start_date || plan?.startDate || "N/A"}
+        <strong>Start Date:</strong> {plan?.plan_start_date || plan?.start_date || plan?.startDate || "N/A"}
+      </div>
+      <div style={{ marginBottom: 8 }}>
+        <strong>End Date:</strong> {plan?.plan_end_date || plan?.end_date || plan?.endDate || "N/A"}
+      </div>
+      <div style={{ marginBottom: 8 }}>
+        <strong>Amount:</strong> {plan?.amount ?? "N/A"}
       </div>
       <div style={{ marginBottom: 16 }}>
-        <strong>End Date:</strong> {plan?.end_date || plan?.endDate || "N/A"}
+        <strong>Return Amount:</strong> {plan?.return_amount ?? "N/A"}
       </div>
+      {plan?.note && (
+        <div style={{ marginBottom: 16 }}>
+          <strong>Note:</strong> {plan?.note}
+        </div>
+      )}
 
       <h3 style={{ marginTop: 16, marginBottom: 8 }}>Purposes</h3>
       {purposes.length === 0 ? (

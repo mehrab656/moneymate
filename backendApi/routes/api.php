@@ -210,6 +210,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/export-investment-csv', [InvestmentController::class, 'exportInvestmentCsv']);
     Route::get('/investment/graph', [InvestmentController::class, 'getInvestmentGraph']);
     Route::post('/investments/add-new-plan', [InvestmentController::class, 'addPlan']);
+    // Investment Plans listing APIs
+    Route::get('/investment-plans', [InvestmentController::class, 'listPlans']);
+    Route::get('/investment-plan/{id}', [InvestmentController::class, 'showPlan']);
+    Route::post('/investment-plan/{id}', [InvestmentController::class, 'updatePlan']);
+    Route::delete('/investment-plan/{id}', [InvestmentController::class, 'deletePlan']);
 
     // Sectors API
 
@@ -326,8 +331,6 @@ Route::get('migrate', function () {
 });
 
 Route::post('/hospitable/webhook', [HospitableController::class, 'handleWebhook']);
-
-
 
 
 

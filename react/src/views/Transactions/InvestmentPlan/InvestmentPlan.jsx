@@ -1,22 +1,16 @@
-import {Link} from "react-router-dom";
 import React, {useContext, useEffect, useState} from "react";
 import axiosClient from "../../../axios-client.js";
-import Swal from 'sweetalert2';
-import WizCard from "../../../components/WizCard.jsx";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faDollar} from "@fortawesome/free-solid-svg-icons";
-import Pagination from "react-bootstrap/Pagination";
 import {SettingsContext} from "../../../contexts/SettingsContext.jsx";
-import MainLoader from "../../../components/loader/MainLoader.jsx";
-import { notification } from "../../../components/ToastNotification.jsx";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
 import InvestmentPlanFormSidebar from "./InvestmentPlanFormSidebar.jsx";
 import InvestmentPlanDetails from "./InvestmentPlanDetails.jsx";
+import CommonTable from "../../../helper/CommonTable.jsx";
+import Iconify from "../../../components/Iconify.jsx";
 
 export default function InvestmentPlan() {
 
     const [loading, setLoading] = useState(false);
-    const [incomes, setIncomes] = useState([]);
+    const [plans, setPlans] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [searchTerm, setSearchTerm] = useState("");
@@ -27,75 +21,47 @@ export default function InvestmentPlan() {
         default_currency
     } = applicationSettings;
 
-    const pageSize = num_data_per_page;
+    const pageSize = num_data_per_page || 10;
     const totalPages = Math.ceil(totalCount / pageSize);
+    const TABLE_HEAD = [
+        { id: "plan_name", label: "Plan Name", align: "left" },
+        { id: "plan_created_date", label: "Date", align: "left" },
+        { id: "plan_start_date", label: "Contract Start", align: "left" },
+        { id: "plan_end_date", label: "Contract End", align: "left" },
+        { id: "purposes", label: "Purposes", align: "left" },
+    ];
 
 
     useEffect(() => {
-        document.title = "Manage Incomes";
-        getIncomes(currentPage, pageSize);
+        document.title = "Manage Investment Plans";
+        getPlans(currentPage, pageSize);
     }, [currentPage, pageSize]);
 
-    const getIncomes = (page, pageSize) => {
+    useEffect(() => {
+        // Reset to first page when searching and refetch
+        setCurrentPage(1);
+        getPlans(1, pageSize);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchTerm]);
+
+    const getPlans = (page, pageSize) => {
         setLoading(true);
-        axiosClient.get('/incomes', {params: {page, pageSize}})
-            .then(({data}) => {
-                setLoading(false);
-                setIncomes(data.data);
-                setTotalCount(data.total);
-            })
-            .catch(() => {
+        axiosClient.get('/investment-plans', { params: { page, pageSize, searchTerm } })
+            .then(({ data }) => {
+                setPlans(data?.data || []);
+                setTotalCount(data?.total || 0);
                 setLoading(false);
             })
+            .catch(() => setLoading(false));
     }
 
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
+    const handlePageChange = (event, value) => {
+        setCurrentPage(value);
     };
 
-    const paginationItems = [];
-    for (let i = 1; i <= totalPages; i++) {
-        paginationItems.push(
-            <Pagination.Item
-                key={i}
-                active={i === currentPage}
-                onClick={() => handlePageChange(i)}>
-                {i}
-            </Pagination.Item>
-        );
-    }
+    // Pagination handled by CommonTable
 
-    // const filteredIncomes = incomes.filter((income) => {
-    //     return income.user_name.toLowerCase().includes(searchTerm.toLowerCase())
-    //         || income.account_number.toLowerCase().includes(searchTerm.toLowerCase())
-    //         || income.category_name.toLowerCase().includes(searchTerm.toLowerCase())
-    //         || income.amount.toLowerCase().includes(searchTerm.toLowerCase())
-    //         || income.description.toLowerCase().includes(searchTerm.toLowerCase())
-    //         || income.bank_name.toLowerCase().includes(searchTerm.toLowerCase())
-    // });
-
-    const onDelete = (income) => {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: `You will not be able to recover the income !`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'Cancel',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                axiosClient.delete(`income/${income.id}`).then((data) => {
-                    getIncomes();
-                    notification('success',data?.message,data?.description)
-                }).catch(err => {
-                    if (err.response) { 
-                        const error = err.response.data
-                        notification('error',error?.message,error.description)
-                    }
-                })
-            }
-        });
-    };
+    // Edit/delete not supported for plans yet
 
     // Sidebar actions
     const { showLargeContent, showQuickDetails } = useSidebarActions();
@@ -106,24 +72,13 @@ export default function InvestmentPlan() {
             <InvestmentPlanFormSidebar
                 planId={null}
                 onSuccess={() => {
-                    // Refresh list when adding new
-                    getIncomes(currentPage, pageSize);
+                    getPlans(currentPage, pageSize);
                 }}
             />
         );
     };
 
-    const openEditForm = (plan) => {
-        showLargeContent(
-            "Edit Investment Plan",
-            <InvestmentPlanFormSidebar
-                planId={plan?.id}
-                onSuccess={() => {
-                    getIncomes(currentPage, pageSize);
-                }}
-            />
-        );
-    };
+    // const openEditForm = (plan) => {};
 
     const openViewDetails = (plan) => {
         showQuickDetails(
@@ -132,114 +87,123 @@ export default function InvestmentPlan() {
         );
     };
 
+    const filteredPlans = (plans || []).filter((plan) => {
+        const text = `${plan.plan_name || ''} ${plan.plan_created_date || ''} ${plan.plan_start_date || ''} ${plan.plan_end_date || ''}`.toLowerCase();
+        return text.includes(searchTerm.toLowerCase());
+    }).map((plan) => {
+        const purposes = Array.isArray(plan.purposes)
+            ? plan.purposes
+            : (() => {
+                try { return JSON.parse(plan.purposes || '[]'); } catch { return []; }
+            })();
+        const purposesElement = (
+            <span>
+                {purposes.length === 0 ? '—' : purposes.map((p, idx) => {
+                    const label = typeof p === 'string' ? p : (p?.purpose ?? '');
+                    return (
+                        <span key={idx} className="badge bg-secondary me-1" style={{textTransform:'capitalize'}}>
+                            {String(label).replaceAll('_',' ')}
+                        </span>
+                    );
+                })}
+            </span>
+        );
+        return {
+            ...plan,
+            purposes: purposesElement,
+        };
+    });
+
+    // duplicate removed
+
+    const filters = () => (
+        <div className="mb-3">
+            <input
+                className="custom-form-control"
+                type="text"
+                placeholder="Search Plan..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            />
+        </div>
+    );
+
+    const actionParams = [
+        {
+            actionName: "View",
+            type: "modal",
+            route: "",
+            actionFunction: openViewDetails,
+            textClass: "text-warning",
+        },
+        {
+            actionName: "Edit",
+            type: "modal",
+            route: "",
+            actionFunction: (plan) => {
+                showLargeContent(
+                    "Edit Investment Plan",
+                    <InvestmentPlanFormSidebar
+                        planId={plan?.id}
+                        onSuccess={() => getPlans(currentPage, pageSize)}
+                    />
+                );
+            },
+            textClass: "text-info",
+        },
+        {
+            actionName: "Delete",
+            type: "button",
+            route: "",
+            actionFunction: async (plan) => {
+                const ok = window.confirm("Delete this plan?");
+                if (!ok) return;
+                try {
+                    setLoading(true);
+                    await axiosClient.delete(`/investment-plan/${plan?.id}`);
+                } catch (e) {
+                    // ignore
+                } finally {
+                    getPlans(currentPage, pageSize);
+                }
+            },
+            textClass: "text-danger",
+        },
+    ];
+
     return (
         <div>
-           <MainLoader loaderVisible={loading} />
-            <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
-                <h1 className="title-text mb-0">Investment Plan Histories</h1>
-                {userRole ==='admin' && (
-                    <button className="btn-add align-right mr-3" onClick={openCreateForm}>
-                        <FontAwesomeIcon icon={faDollar}/> Add New Plan
-                    </button>
-                )}
-              
-                 {/*<IncomeExportButton/>*/}
-            </div>
-
-            <WizCard className="animated fadeInDown">
-                <div className="mb-4">
-                    <input className="custom-form-control"
-                           type="text"
-                           placeholder="Search Plan..."
-                           value={searchTerm}
-                           onChange={(e) => setSearchTerm(e.target.value)}/>
-
-                </div>
-
-                {/*
-                <div className="table-responsive">
-                    <table className="table table-bordered custom-table">
-                        <thead>
-                        <tr className={'text-center'}>
-                            <th>User Name</th>
-                            <th>Account Number</th>
-                            <th>Category</th>
-                            <th>Amount</th>
-                            <th>Attachment</th>
-                            <th>Description</th>
-                            <th>Date</th>
-                            {userRole==='admin' && <th width="20%">Action</th>}
-                            
-                        </tr>
-                        </thead>
-                        {loading && (
-                            <tbody>
-                            <tr>
-                                <td colSpan={8} className="text-center">
-                                    Loading...
-                                </td>
-                            </tr>
-                            </tbody>
-                        )}
-                        {!loading && (
-                            <tbody>
-                            {filteredIncomes.length === 0 ? (
-                                <tr>
-                                    <td colSpan={8} className="text-center">
-                                        No Income found
-                                    </td>
-                                </tr>
-                            ) : (
-                                filteredIncomes.map((income) => (
-                                    <tr className={'text-center'} key={income.id}>
-                                        <td>{income.user_name}</td>
-                                        <td>{income.account_number}</td>
-                                        <td>{income.category_name}</td>
-                                        <td>{default_currency}{income.amount}</td>
-                                        <td>{income.attachment &&
-                                            <DownloadAttachment filename={income.attachment}/>}</td>
-                                        <td>{income.description !== 'null' ? income.description : ''}</td>
-
-                                        <td>{income.date}</td>
-                                        {userRole ==='admin' &&
-                                            <td>
-                                                <button className="btn-edit" onClick={() => openEditForm(income)}>
-                                                    <FontAwesomeIcon icon={faDollar}/> Edit Plan
-                                                </button>
-                                                &nbsp;
-                                                <a onClick={() => onDelete(income)} className="btn-delete"><FontAwesomeIcon
-                                                    icon={faTrash}/> Delete</a>
-                                                &nbsp;
-                                                <button className="btn-view" onClick={() => openViewDetails(income)}>
-                                                    View Details
-                                                </button>
-                                            </td>
-                                        }
-                                        
-                                    </tr>
-                                ))
-                            )}
-                            </tbody>
-                        )}
-                    </table>
-                </div>
-                */}
-
-                {totalPages > 1 && (
-                    <Pagination>
-                        <Pagination.Prev
-                            disabled={currentPage === 1}
-                            onClick={() => handlePageChange(currentPage - 1)}
-                        />
-                        {paginationItems}
-                        <Pagination.Next
-                            disabled={currentPage === totalPages}
-                            onClick={() => handlePageChange(currentPage + 1)}
-                        />
-                    </Pagination>
-                )}
-
-            </WizCard>
+            <CommonTable
+                cardTitle={"List of Investment Plans"}
+                addBTN={{
+                    txt: "Add New Plan",
+                    icon: <Iconify icon={"eva:plus-fill"} />,
+                    linkTo: "modal",
+                    link: openCreateForm,
+                }}
+                paginations={{
+                    totalPages: totalPages,
+                    totalCount: totalCount,
+                    currentPage: currentPage,
+                    handlePageChange: handlePageChange,
+                }}
+                table={{
+                    size: "small",
+                    ariaLabel: "investment plan table",
+                    showIdColumn: userRole === "admin" ?? false,
+                    tableColumns: TABLE_HEAD,
+                    tableBody: {
+                        loading: loading,
+                        loadingColSpan: TABLE_HEAD.length,
+                        rows: filteredPlans,
+                    },
+                    actionButtons: actionParams,
+                }}
+                filter={filters}
+                loading={loading}
+                loaderRow={pageSize}
+                loaderCol={TABLE_HEAD.length}
+            />
         </div>
-    )
+    );
 }

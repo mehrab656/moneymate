@@ -15,7 +15,34 @@ class Cors
      */
     public function handle(Request $request, Closure $next): Response
     {
-        return $next($request);
+        // Determine allowed origin
+        $origin = $request->headers->get('Origin');
+        $allowedOrigins = config('cors.allowed_origins', []);
 
+        $response = $request->getMethod() === 'OPTIONS'
+            ? response()->noContent(204)
+            : $next($request);
+
+        // Apply CORS headers
+        $allowOriginHeader = '*';
+        $supportsCredentials = (bool) config('cors.supports_credentials', false);
+
+        if ($origin && in_array($origin, $allowedOrigins, true)) {
+            $allowOriginHeader = $origin;
+        }
+
+        $response->headers->set('Access-Control-Allow-Origin', $allowOriginHeader);
+        $response->headers->set('Vary', 'Origin');
+        $response->headers->set('Access-Control-Allow-Methods', implode(', ', config('cors.allowed_methods', ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'])));
+        $requestedHeaders = $request->headers->get('Access-Control-Request-Headers');
+        $allowedHeadersConfig = config('cors.allowed_headers', ['Content-Type', 'Authorization', 'X-Requested-With']);
+        $allowedHeaders = $requestedHeaders ?: implode(', ', $allowedHeadersConfig);
+        $response->headers->set('Access-Control-Allow-Headers', $allowedHeaders);
+
+        if ($supportsCredentials && $allowOriginHeader !== '*') {
+            $response->headers->set('Access-Control-Allow-Credentials', 'true');
+        }
+
+        return $response;
     }
 }

@@ -170,9 +170,11 @@ const BudgetFormSidebar = ({
       let result;
       
       if (budgetId) {
-        result = await updateBudget({ id: budgetId, ...budgetData }).unwrap();
+        // RTK slice expects { id, formData }
+        result = await updateBudget({ id: budgetId, formData: budgetData }).unwrap();
       } else {
-        result = await createBudget(budgetData).unwrap();
+        // RTK slice expects { formData }
+        result = await createBudget({ formData: budgetData }).unwrap();
       }
       
       notification('success', result?.message || 'Budget saved successfully', result?.description);
@@ -301,13 +303,13 @@ const BudgetFormSidebar = ({
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label className="form-label fw-semibold">
-                    End Date
+                    End Date <span className="text-danger">*</span>
                   </Form.Label>
                   <DatePicker
                     selected={budget.end_date ? new Date(budget.end_date) : null}
                     onChange={(date) => handleDateChange('end_date', date)}
                     dateFormat="yyyy-MM-dd"
-                    placeholderText="Select end date (optional)"
+                    placeholderText="Select end date"
                     className={`form-control form-control-lg ${errors.end_date ? 'is-invalid' : ''}`}
                     wrapperClassName="w-100"
                     minDate={budget.start_date ? new Date(budget.start_date) : null}
