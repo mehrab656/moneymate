@@ -5,12 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb82f29d-a946-4d7c-af4f-355ea30ae3ce" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/react/src/test.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/52/ac/52acebe9de48b9434598fa65d2ec8d0e111e90b0" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/52/ac/52acebe9de48b9434598fa65d2ec8d0e111e90b0" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/70/d5/70d5789fb8fa04f157e2f175d8e9158bc3d2b5c6" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/70/d5/70d5789fb8fa04f157e2f175d8e9158bc3d2b5c6" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/c0/71/c071422490d526a8aada046adf3a9c9fa0593468" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/c0/71/c071422490d526a8aada046adf3a9c9fa0593468" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/ec/c4/ecc49f49f4da6b940dcde13f0571e79c299871e6" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/ec/c4/ecc49f49f4da6b940dcde13f0571e79c299871e6" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/70/d5/70d5789fb8fa04f157e2f175d8e9158bc3d2b5c6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/storage/framework/cache/data/c0/71/c071422490d526a8aada046adf3a9c9fa0593468" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -191,7 +188,7 @@
     "WebServerToolWindowPanel.toolwindow.show.permissions": "false",
     "WebServerToolWindowPanel.toolwindow.show.size": "false",
     "git-widget-placeholder": "saas",
-    "last_opened_file_path": "/Applications/XAMPP/xamppfiles/htdocs/moneymate/react/src/views/Settings/Users/ProfileTabs",
+    "last_opened_file_path": "/Applications/XAMPP/xamppfiles/htdocs/moneymate/backendApi/public/avatars",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -205,11 +202,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/backendApi/public/avatars" />
+      <recent name="$PROJECT_DIR$/backendApi/public/passports" />
       <recent name="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs" />
       <recent name="$PROJECT_DIR$/assets" />
       <recent name="$PROJECT_DIR$/react/public" />
-      <recent name="$PROJECT_DIR$/react/src/views/Settings/Components" />
-      <recent name="$PROJECT_DIR$" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/react/public" />
