@@ -43,14 +43,15 @@ class ExpenseController extends Controller
     {
 
         $page = $request->query('page', 1);
-        $pageSize = $request->query('pageSize', 10);
+        // Prefer pageSize, fallback to limit, default 10
+        $perPage = (int) ($request->query('pageSize', $request->query('limit', 10)));
         $order = $request->query('order');
         $sectorSlugs = $request->query('sectors');
         $categorySlugs = $request->query('categories');
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
         $orderBy = $request->query('orderBy');
-        $limit = $request->query('limit',10);
+        // `limit` is accepted but normalized via $perPage above
 
         $query = Expense::select( 'expenses.*' )
             ->where( 'company_id', Auth::user()->primary_company )
@@ -106,18 +107,23 @@ class ExpenseController extends Controller
             }
             $query = $query->whereIn( 'category_id', $catIDS );
         }
-        $expensesRes = ExpenseReportResource::collection( $query->skip(($page - 1) * $pageSize)->take($pageSize)->orderBy( $orderBy??'date', $order??'DESC' )->limit($limit)->get() );
+        // Build filtered total first (without pagination)
+        $filteredTotal = (clone $query)->count();
 
-        $totalCount = Expense::where('company_id', Auth::user()->primary_company)
-            ->whereHas('category', function ($query) {
-                $query->where('type', 'expense');
-            })->count();
+        // Fetch the current page
+        $expenses = $query
+            ->orderBy($orderBy ?? 'date', $order ?? 'DESC')
+            ->skip(($page - 1) * $perPage)
+            ->take($perPage)
+            ->get();
+
+        // Total across filtered query (all pages)
+        $totalCount = $filteredTotal;
 
         return response()->json([
-            'data' => ExpenseResource::collection($expensesRes),
+            'data' => ExpenseResource::collection($expenses),
             'total' => $totalCount,
-            'totalFound' => $expensesRes->count(),
-
+            'totalFound' => $expenses->count(),
         ]);
     }
 

@@ -28,7 +28,6 @@ const IncomeList = lazy(() => import("../views/Transactions/Income/IncomeList.js
 const ExpenseList = lazy(() => import("../views/Transactions/Expense/ExpenseList.jsx"));
 const InvestmentList = lazy(() => import("../views/Transactions/Investment/InvestmentList.jsx"));
 const TransactionsHub = lazy(() => import("../Layout/DefaultLayout/Hubs/TransactionsHub.jsx"));
-const ExpenseForm = lazy(() => import("../views/transactions/expense/ExpenseForm.jsx"));
 const Return = lazy(() => import("../views/Transactions/Return.jsx"));
 
 // Reports
@@ -107,8 +106,7 @@ export const createAuthRouter = () => {
         // Transactions
       { path: "/incomes", element: <LazyRoute><IncomeList /></LazyRoute> },
       { path: "/expenses", element: <LazyRoute><ExpenseList /></LazyRoute> },
-      { path: "/expense/new", element: <LazyRoute><ExpenseForm key="expenseCreate" /></LazyRoute> },
-      { path: "/expense/:id", element: <LazyRoute><ExpenseForm key="expenseUpdate" /></LazyRoute> },
+
       { path: "/returns", element: <LazyRoute><Return /></LazyRoute> },
       { path: "/investments", element: <LazyRoute><InvestmentList /></LazyRoute> },
       { path: "/transactions", element: <LazyRoute><TransactionsHub /></LazyRoute> },
