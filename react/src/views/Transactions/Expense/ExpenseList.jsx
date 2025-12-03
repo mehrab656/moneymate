@@ -427,17 +427,19 @@ export default function ExpenseList() {
         <Col xs={12} sm={12} md={3}>
           <Row>
             <div className={"sidebar-form"} style={{ padding: "10px" }}>
-              <ExpenseFormSidebar
-                expenseId={null}
-                onSuccess={() => {
-                  setIsPaginate(true);
-                  refetch();
-                }}
-                sidebarTitle="Quick Expense"
-                showLabel={false}
-                colXS={12}
-                colMD={12}
-              />
+              <div className={"sidebar-form-content"}>
+                <ExpenseFormSidebar
+                  expenseId={null}
+                  onSuccess={() => {
+                    setIsPaginate(true);
+                    refetch();
+                  }}
+                  sidebarTitle="Quick Expense"
+                  showLabel={false}
+                  colXS={12}
+                  colMD={12}
+                />
+              </div>
             </div>
           </Row>
         </Col>

@@ -2,7 +2,8 @@ import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { NavDropdown, Col, Row, Collapse, Badge } from "react-bootstrap";
-import { Menu, MenuItem, Divider, IconButton, Avatar, Box, Switch, FormControlLabel, styled } from "@mui/material";
+import { Menu, MenuItem, Divider, IconButton, Avatar, Box, Switch, FormControlLabel } from "@mui/material";
+import { useTheme } from '@mui/material/styles';
 import axiosClient from "../../axios-client.js";
 import { SettingsContext } from "../../contexts/SettingsContext.jsx";
 
@@ -14,38 +15,7 @@ import {
   faChevronUp,
 } from "@fortawesome/free-solid-svg-icons";
 
-const Android12Switch = styled(Switch)(({ theme }) => ({
-  padding: 8,
-  '& .MuiSwitch-track': {
-    borderRadius: 22 / 2,
-    '&::before, &::after': {
-      content: '""',
-      position: 'absolute',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      width: 16,
-      height: 16,
-    },
-    '&::before': {
-      backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
-        theme.palette.getContrastText(theme.palette.primary.main),
-      )}" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/></svg>')`,
-      left: 12,
-    },
-    '&::after': {
-      backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
-        theme.palette.getContrastText(theme.palette.primary.main),
-      )}" d="M19,13H5V11H19V13Z" /></svg>')`,
-      right: 12,
-    },
-  },
-  '& .MuiSwitch-thumb': {
-    boxShadow: 'none',
-    width: 16,
-    height: 16,
-    margin: 2,
-  },
-}));
+// Use compact default Switch for a cleaner, consistent look
 
 
 const Header = ({
@@ -57,6 +27,7 @@ const Header = ({
   toggleSidebar,
   onLogout,
 }) => {
+  const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 768);
 
@@ -71,7 +42,7 @@ const Header = ({
   };
 
   // Settings context for privacy toggle
-  const { applicationSettings, setApplicationSettings } = useContext(SettingsContext);
+  const { applicationSettings, setApplicationSettings, themeMode, setThemeMode } = useContext(SettingsContext);
   const privacyEnabled = (applicationSettings?.privacy_field || "no") === "yes";
 
   const handlePrivacyToggle = (event) => {
@@ -156,7 +127,13 @@ const Header = ({
   })();
 
   return (
-    <header className="header-container bg-white py-3 shadow-sm">
+    <header
+      className="header-container py-3 shadow-sm"
+      style={{
+        backgroundColor: themeMode === 'dark' ? '#262a32' : theme.palette.background.paper,
+        borderBottom: `1px solid ${themeMode === 'dark' ? '#384049' : theme.palette.divider}`,
+      }}
+    >
       <Row className="align-items-center px-3">
         {/* Finance Section with Collapse */}
         <Col xs={12} md="auto" className="d-flex flex-column align-items-start">
@@ -209,11 +186,26 @@ const Header = ({
           <Box sx={{ mr: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
           <FormControlLabel
             control={
-                <Android12Switch 
+                <Switch 
+                  size="small"
                   checked={privacyEnabled}
-                  onChange={handlePrivacyToggle} defaultChecked />
-                  }
-                  label="Privacy Mode"
+                  onChange={handlePrivacyToggle}
+                />
+              }
+              label="Privacy Mode"
+              sx={{ '& .MuiFormControlLabel-label': { fontSize: '0.75rem' }, mr: 1 }}
+            />
+            {/* Theme mode toggle beside Privacy Mode */}
+            <FormControlLabel
+              control={
+                <Switch
+                  size="small"
+                  checked={themeMode === 'dark'}
+                  onChange={(e) => setThemeMode(e.target.checked ? 'dark' : 'light')}
+                />
+              }
+              label="Dark Mode"
+              sx={{ '& .MuiFormControlLabel-label': { fontSize: '0.75rem' }, mr: 1 }}
             />
            {/* <FormControlLabel
               label="Privacy Mode"

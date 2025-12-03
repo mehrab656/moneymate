@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import InvestmentList from '../../../views/Transactions/Investment/InvestmentList.jsx';
 import ExpenseList from '../../../views/Transactions/Expense/ExpenseList.jsx';
@@ -6,6 +6,7 @@ import IncomeList from '../../../views/Transactions/Income/IncomeList.jsx';
 import Return from '../../../views/Transactions/Return.jsx';
 import Budgets from '../../../views/Transactions/Budgets/Budgets.jsx';
 import InvestmentPlan from '../../../views/Transactions/InvestmentPlan/InvestmentPlan.jsx';
+// Theme is now applied globally in AuthLayout
 
 const TransactionsHub = () => {
   const { search } = useLocation();

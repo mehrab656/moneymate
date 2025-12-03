@@ -21,6 +21,9 @@ import {
 } from "../../api/slices/dashBoardSlice.js";
 import { SettingsContext } from "../../contexts/SettingsContext.jsx";
 import { SidebarContainer } from "../../components/GlobalSidebar/index.js";
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { createCmsTheme } from '../../styles/cmsTheme';
 
 const defaultQuery = {
   searchTerm: "",
@@ -148,6 +151,7 @@ export default function AuthLayout() {
   // Context and other hooks
   const { applicationSettings, userRole, setUserRole, checkPermission } =
     useContext(SettingsContext);
+  const { themeMode } = useContext(SettingsContext);
   const { num_data_per_page, default_currency } = applicationSettings;
   const currentCompanyID = localStorage.getItem("CURRENT_COMPANY");
   const pageSize = num_data_per_page;
@@ -397,6 +401,8 @@ export default function AuthLayout() {
               </aside>
               <div className="wrapping-body">
                 <div className="body-content d-flex flex-column">
+                  <ThemeProvider theme={createCmsTheme(themeMode)}>
+                  <CssBaseline />
                   <Header
                     default_currency={default_currency}
                     financeStatus={
@@ -414,6 +420,7 @@ export default function AuthLayout() {
                     <Outlet />
                   </main>
                   <Footer />
+                  </ThemeProvider>
                 </div>
               </div>
             </div>

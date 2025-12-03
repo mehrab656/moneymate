@@ -7,9 +7,11 @@ const SettingsContext = createContext({
     applicationSettings: {},
     userRole: {},
     userPermission: {},
+    themeMode: 'light',
     setApplicationSettings: () => {},
     setUserRole: () => {},
     setUserPermission: () => {},
+    setThemeMode: () => {},
 });
 
 const SettingsProvider = ({ children }) => {
@@ -19,6 +21,26 @@ const SettingsProvider = ({ children }) => {
     const [isSettingsFetched, setIsSettingsFetched] = useState(false); // Flag
     //  to prevent double API calls
   const { token } = useStateContext();
+    const [themeMode, _setThemeMode] = useState(
+      typeof window !== 'undefined' ? (localStorage.getItem('APP_THEME_MODE') || 'dark') : 'dark'
+    );
+
+    const setThemeMode = (mode) => {
+      const next = mode === 'dark' ? 'dark' : 'light';
+      _setThemeMode(next);
+      try {
+        localStorage.setItem('APP_THEME_MODE', next);
+      } catch {}
+    };
+
+    // Reflect theme mode on the document for CSS-based theming of custom elements
+    useEffect(() => {
+      try {
+        if (typeof document !== 'undefined') {
+          document.body.setAttribute('data-theme', themeMode);
+        }
+      } catch {}
+    }, [themeMode]);
 
 
     useEffect(() => {
@@ -70,6 +92,8 @@ const SettingsProvider = ({ children }) => {
                 userPermission,
                 setUserPermission,
                 checkPermission,
+                themeMode,
+                setThemeMode,
             }}
         >
             {children}

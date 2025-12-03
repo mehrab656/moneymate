@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import WizCard from "../../../components/WizCard.jsx";
 import MainLoader from "../../../components/loader/MainLoader.jsx";
 import { notification } from "../../../components/ToastNotification.jsx";
@@ -11,6 +11,7 @@ import Select from "react-select";
 import { useGetBankDataQuery } from "../../../api/slices/bankSlice.js";
 import { useGetCategoryListDataQuery } from "../../../api/slices/categorySlice.js";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
+import { SettingsContext } from "../../../contexts/SettingsContext.jsx";
 
 const _initialExpense = {
   id: null,
@@ -33,6 +34,7 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess, showLabel="tr
   const [saveBtnTxt, setSaveBtnTxt] = useState("Save");
   const [errors, setErrors] = useState({});
   const { closeSidebar } = useSidebarActions();
+  const { themeMode } = useContext(SettingsContext);
 
   // api calls
   const { data: getBankData } = useGetBankDataQuery({ currentPage: "", pageSize: 100 });
@@ -156,13 +158,41 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess, showLabel="tr
 
   // Enforce consistent font size for inputs and selects
   const inputFontSize = '0.875rem';
+  const isDark = themeMode === 'dark';
   const selectStyles = {
-    control: (base) => ({ ...base, fontSize: inputFontSize, minHeight: 38 }),
-    singleValue: (base) => ({ ...base, fontSize: inputFontSize }),
-    input: (base) => ({ ...base, fontSize: inputFontSize }),
-    placeholder: (base) => ({ ...base, fontSize: inputFontSize }),
-    menu: (base) => ({ ...base, fontSize: inputFontSize }),
-    option: (base) => ({ ...base, fontSize: inputFontSize }),
+    control: (base) => ({
+      ...base,
+      fontSize: inputFontSize,
+      minHeight: 38,
+      backgroundColor: isDark ? '#1c1f24' : '#fff',
+      borderColor: isDark ? '#3a4048' : '#c5ccd6',
+      color: isDark ? 'rgba(255,255,255,0.87)' : 'rgba(0,0,0,0.87)'
+    }),
+    singleValue: (base) => ({
+      ...base,
+      fontSize: inputFontSize,
+      color: isDark ? 'rgba(255,255,255,0.87)' : 'rgba(0,0,0,0.87)'
+    }),
+    input: (base) => ({
+      ...base,
+      fontSize: inputFontSize,
+      color: isDark ? 'rgba(255,255,255,0.87)' : 'rgba(0,0,0,0.87)'
+    }),
+    placeholder: (base) => ({
+      ...base,
+      fontSize: inputFontSize,
+      color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)'
+    }),
+    menu: (base) => ({
+      ...base,
+      fontSize: inputFontSize,
+      backgroundColor: isDark ? '#23262b' : '#fff'
+    }),
+    option: (base) => ({
+      ...base,
+      fontSize: inputFontSize,
+      color: isDark ? 'rgba(255,255,255,0.87)' : 'rgba(0,0,0,0.87)'
+    }),
   };
 
   return (
