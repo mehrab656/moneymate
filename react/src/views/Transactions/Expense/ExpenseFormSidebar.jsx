@@ -21,11 +21,11 @@ const _initialExpense = {
   date: "",
   note: "",
   attachment: "",
-  account: [],
-  category: [],
+  account: null,
+  category: null,
 };
 
-export default function ExpenseFormSidebar({ expenseId, onSuccess, showLabel="true", colXS=12, colMD=6, colSM=12 }) {
+export default function ExpenseFormSidebar({ expenseId, onSuccess, showLabel="true",sidebarTitle=null, colXS=12, colMD=6, colSM=12 }) {
   const [expense, setExpense] = useState(_initialExpense);
   const [loading, setLoading] = useState(false);
   const [accounts, setAccounts] = useState([]);
@@ -58,22 +58,14 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess, showLabel="tr
         label: c?.label ?? c?.name ?? c?.category_name ?? String(c?.id ?? "Category"),
       }));
       setCategories(modifiedCategories);
-      setExpense((prev) => (
-        prev?.category && prev.category.value
-          ? prev
-          : { ...prev, category: modifiedCategories[0] }
-      ));
+      // Do NOT preselect a default category for create mode
     }
     if (expenseId && getSingleExpenseData?.data) {
       setExpense(getSingleExpenseData.data);
     }
   }, [expenseId, getSingleExpenseData, getBankData, getCategoryListData]);
 
-  useEffect(() => {
-    if (!expense?.date) {
-      setExpense((prev) => ({ ...prev, date: new Date().toISOString().split("T")[0] }));
-    }
-  }, [expense?.date]);
+  // Do NOT set automatic default date; user must choose explicitly in create mode
 
   const expenseSubmit = async (event, stay = false) => {
     event.preventDefault();
@@ -92,6 +84,13 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess, showLabel="tr
       setLoading(false);
       setErrors((prev) => ({ ...prev, category: ["Category is required."] }));
       notification("error", "Category required", "Please select a category.");
+      return;
+    }
+    if (!expense?.date) {
+      setSaveBtnTxt("Save");
+      setLoading(false);
+      setErrors((prev) => ({ ...prev, date: ["Date is required."] }));
+      notification("error", "Date required", "Please select a date.");
       return;
     }
     if (!expense?.amount || Number(expense.amount) <= 0) {
@@ -137,7 +136,7 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess, showLabel="tr
       const data = await createExpense({ url, formData }).unwrap();
       notification("success", data?.message, data?.description);
       if (stay) {
-        setExpense({ ..._initialExpense, category: categories[0] ?? [] });
+        setExpense({ ..._initialExpense });
       } else {
         onSuccess?.();
         closeSidebar();
@@ -155,9 +154,21 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess, showLabel="tr
     setExpense({ ...expense, attachment: file });
   };
 
+  // Enforce consistent font size for inputs and selects
+  const inputFontSize = '0.875rem';
+  const selectStyles = {
+    control: (base) => ({ ...base, fontSize: inputFontSize, minHeight: 38 }),
+    singleValue: (base) => ({ ...base, fontSize: inputFontSize }),
+    input: (base) => ({ ...base, fontSize: inputFontSize }),
+    placeholder: (base) => ({ ...base, fontSize: inputFontSize }),
+    menu: (base) => ({ ...base, fontSize: inputFontSize }),
+    option: (base) => ({ ...base, fontSize: inputFontSize }),
+  };
+
   return (
-    <div>
+    <div style={{ fontSize: '0.875rem' }}>
       <MainLoader loaderVisible={loading} />
+      {sidebarTitle && <h6>{sidebarTitle?sidebarTitle : ''}</h6>}
       <WizCard className="animated fadeInDown">
         <Form onSubmit={(e) => expenseSubmit(e, false)}>
           <Row>
@@ -166,7 +177,7 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess, showLabel="tr
                 {showLabel &&
                     <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Description</Form.Label>
                 }
-                <Form.Control as="textarea" rows={3} value={expense.description ?? ""} name="description"
+                <Form.Control as="textarea" rows={3} value={expense.description ?? ""} name="description" style={{ fontSize: inputFontSize }}
                               onChange={(e) => setExpense({ ...expense, description: e.target.value })}
                               placeholder="Enter description" />
               </Form.Group>
@@ -179,7 +190,7 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess, showLabel="tr
                 { showLabel &&
                 <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Amount</Form.Label>
                 }
-                <Form.Control type="number" placeholder="Expense Amount" value={expense.amount}
+                <Form.Control type="number" placeholder="Expense Amount" value={expense.amount} style={{ fontSize: inputFontSize }}
                               onChange={(e) => setExpense({ ...expense, amount: e.target.value })} />
                 {errors.amount && (
                   <p className="error-message">{errors.amount[0]}</p>
@@ -191,7 +202,7 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess, showLabel="tr
                 { showLabel &&
                     <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Refundable Amount</Form.Label>
                 }
-                <Form.Control type="number" placeholder="Refundable Amount" value={expense.refundable_amount}
+                <Form.Control type="number" placeholder="Refundable Amount" value={expense.refundable_amount} style={{ fontSize: inputFontSize }}
                               onChange={(e) => setExpense({ ...expense, refundable_amount: e.target.value })} />
               </Form.Group>
             </Col>
@@ -203,7 +214,7 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess, showLabel="tr
                 { showLabel &&
                     <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Account</Form.Label> }
 
-                <Select classNamePrefix="select" value={expense.account} isSearchable name="account" options={accounts}
+                <Select classNamePrefix="select" value={expense.account} isSearchable name="account" options={accounts} styles={selectStyles}
                         placeholder={"Select Bank Account"}
 
                         onChange={(e) => {
@@ -224,7 +235,7 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess, showLabel="tr
                 { showLabel &&
                     <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Category</Form.Label>
                 }
-                <Select classNamePrefix="select" value={expense.category} isSearchable name="category_id"
+                <Select classNamePrefix="select" value={expense.category} isSearchable name="category_id" styles={selectStyles}
                         isLoading={categoryIsFetching} options={categories}
                         onChange={(e) => {
                           setExpense({ ...expense, category: e });
@@ -247,7 +258,7 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess, showLabel="tr
                 { showLabel &&
                     <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Date</Form.Label>
                 }
-                <Form.Control type="date" value={expense.date}
+                <Form.Control type="date" value={expense.date} style={{ fontSize: inputFontSize }}
                               onChange={(e) => setExpense({ ...expense, date: e.target.value })} />
               </Form.Group>
             </Col>
@@ -257,7 +268,7 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess, showLabel="tr
                     <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Reference</Form.Label>
                 }
 
-                <Form.Control type="text" placeholder="i.g: 50 AED" value={expense.reference ?? ""}
+                <Form.Control type="text" placeholder="i.g: 50 AED" value={expense.reference ?? ""} style={{ fontSize: inputFontSize }}
                               onChange={(e) => setExpense({ ...expense, reference: e.target.value })} />
               </Form.Group>
             </Col>
@@ -269,7 +280,7 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess, showLabel="tr
                 { showLabel &&
                     <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Note</Form.Label>}
 
-                <Form.Control as="textarea" rows={3} value={expense.note ?? ""} name="note"
+                <Form.Control as="textarea" rows={3} value={expense.note ?? ""} name="note" style={{ fontSize: inputFontSize }}
                               onChange={(e) => setExpense({ ...expense, note: e.target.value })} />
               </Form.Group>
             </Col>
@@ -278,7 +289,7 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess, showLabel="tr
               <Form.Group className="mb-3">
                 { showLabel &&
                     <Form.Label>Add Attachment</Form.Label>}
-                <Form.Control type="file" onChange={handleFileInputChange} />
+                <Form.Control type="file" onChange={handleFileInputChange} style={{ fontSize: inputFontSize }} />
               </Form.Group>
             </Col>
           </Row>

@@ -12,7 +12,6 @@ export const expenseSlice = createApi({
         const params = new URLSearchParams();
         params.set("page", currentPage ?? 1);
         params.set("pageSize", pageSize ?? 10);
-        if (query?.limit) params.set("limit", query.limit);
         if (query?.order) params.set("order", query.order);
         if (query?.orderBy) params.set("orderBy", query.orderBy);
         const sectors = (query?.sectorIDS ?? []).filter(Boolean).join(",");
