@@ -2317,6 +2317,20 @@ taskList {
   display: inline-block;
   filter: blur(3px);
 }
+/* Specific shades for masked amounts per theme */
+body[data-theme='light'] .privacy-blur {
+  color: rgba(0, 0, 0, 0.5);
+}
+body[data-theme='dark'] .privacy-blur {
+  color: rgba(255, 255, 255, 0.65);
+}
+/* Visible finance amounts styling (privacy off) */
+body[data-theme='light'] .finance-amount {
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+}
+body[data-theme='dark'] .finance-amount {
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6);
+}
 /* Report pages */
 .report-page {
   padding: 0.5rem;

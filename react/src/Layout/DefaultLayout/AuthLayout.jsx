@@ -452,8 +452,11 @@ export default function AuthLayout() {
           </Offcanvas.Body>
         </Offcanvas>
         
-        {/* Global Sidebar */}
-        <SidebarContainer />
+        {/* Global Sidebar (wrapped with theme to ensure correct colors) */}
+        <ThemeProvider theme={createCmsTheme(themeMode)}>
+          <CssBaseline />
+          <SidebarContainer />
+        </ThemeProvider>
       </Container>
     </>
   );

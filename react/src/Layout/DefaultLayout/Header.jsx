@@ -81,7 +81,10 @@ const Header = ({
               <span className="privacy-blur">xxxx.xx</span>
             </strong>
           ) : (
-            <strong>{`${default_currency} ${amount}`}</strong>
+            <strong>
+              {`${default_currency} `}
+              <span className="finance-amount">{amount}</span>
+            </strong>
           )
         )}
       </span>
@@ -132,6 +135,7 @@ const Header = ({
       style={{
         backgroundColor: themeMode === 'dark' ? '#262a32' : theme.palette.background.paper,
         borderBottom: `1px solid ${themeMode === 'dark' ? '#384049' : theme.palette.divider}`,
+        color: themeMode === 'dark' ? 'rgba(255,255,255,0.87)' : 'rgba(0,0,0,0.87)',
       }}
     >
       <Row className="align-items-center px-3">

@@ -40,7 +40,7 @@ const designTokens = {
 
 const paletteTokens = {
   light: {
-    primary: { main: '#0063F7', contrastText: '#FFFFFF' },
+    primary: { main: '#022534', contrastText: '#FFFFFF' },
     secondary: { main: '#7C4DFF' },
     background: { default: '#F7F9FC', paper: '#FFFFFF' },
     text: { primary: '#0B1726', secondary: '#44566A' },
@@ -51,7 +51,7 @@ const paletteTokens = {
     info: { main: '#2B8CF1' },
   },
   dark: {
-    primary: { main: '#80B8FF', contrastText: '#0B1A2B' },
+    primary: { main: '#3794a7', contrastText: '#FFFFFF' },
     secondary: { main: '#CFC0FF' },
     background: { default: '#0B1220', paper: '#0F1724' },
     text: { primary: '#E6EEF8', secondary: '#B9C6D8' },
@@ -169,6 +169,13 @@ export function createCmsTheme(mode = 'light') {
         },
       },
       MuiTableHead: {
+        styleOverrides: {
+          root: {
+            backgroundColor: palette.background.paper,
+          },
+        },
+      },
+      MuiTableCell: {
         styleOverrides: {
           root: {
             backgroundColor: palette.background.paper,

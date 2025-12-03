@@ -332,7 +332,7 @@ export default function ExpenseFormSidebar({ expenseId, onSuccess, showLabel="tr
                     {loading ? "Updating..." : "Update Expense"}
                   </Button>
                 ) : (
-                    <Button type="button" variant="success" disabled={loading} onClick={(e) => expenseSubmit(e, true)}>
+                    <Button className={"btn-sm"} type="button" variant="primary" disabled={loading} onClick={(e) => expenseSubmit(e, true)}>
                       {loading ? "Saving..." : "Add Expense"}
                     </Button>
                 )}

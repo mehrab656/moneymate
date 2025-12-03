@@ -23,10 +23,13 @@ body {
 .wiz-card {
     /*border: 1px solid #dddddd;*/
     padding: 1.5rem;
-    background-color: #FFFFFF;
-    /*box-shadow: var(--common-shadow);*/
-    -webkit-border-radius: .5rem;
-    border-radius: .5rem;
+    /* Light mode default: white surface */
+    background-color: #ffffff;
+    color: rgba(0, 0, 0, 0.87);
+    /* Match MUI Card elevation and radius for visual consistency */
+    box-shadow: 0 4px 8px rgba(16, 24, 40, 0.06);
+    -webkit-border-radius: 12px;
+    border-radius: 12px;
 }
 
 .summary-value {
@@ -477,6 +480,14 @@ footer {
     font-weight: bold;
 }
 
+/* Theme-aware header amount colors */
+body[data-theme='light'] .header-item strong {
+    color: rgba(0, 0, 0, 0.87);
+}
+body[data-theme='dark'] .header-item strong {
+    color: rgba(255, 255, 255, 0.87);
+}
+
 #notification-dropdown, #user-dropdown {
     text-align: left;
 }
@@ -792,6 +803,7 @@ section .details span {
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
     overflow: visible; /* allow shadow to render fully */
     margin-top: 10px;
+    border-radius: 10px;
 }
 
 /* move scroll to inner content to avoid clipping box-shadow */
@@ -806,19 +818,57 @@ body[data-theme='dark'] {
 }
 
 body[data-theme='dark'] .sidebar-form {
-    background-color: #1e1e1e;
+    background-color: #0F1724;
     color: rgba(255, 255, 255, 0.87);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 2px 10px rgba(0, 0, 0, 0.45);
 }
 
 /* Ensure WizCard adopts dark mode too */
 body[data-theme='dark'] .wiz-card {
-    background-color: #1e1e1e;
+    background-color: #0F1724;
     color: rgba(255, 255, 255, 0.87);
+    box-shadow: 0 4px 8px rgba(16, 24, 40, 0.06);
 }
 
 /* Darken label text for better contrast in dark mode */
 body[data-theme='dark'] .custom-form-label {
+    color: rgba(255, 255, 255, 0.87);
+}
+
+/* Quick Expense card specific styling — use unified dark surface */
+.quick-expense-card {
+    background-color: #ffffff;
+    color: rgba(0, 0, 0, 0.87);
+}
+body[data-theme='dark'] .quick-expense-card {
+    background-color: #0F1724;
+    color: rgba(255, 255, 255, 0.87);
+}
+
+/* Global dark surface for all cards (MUI + Bootstrap) */
+body[data-theme='dark'] .MuiCard-root {
+    background-color: #0F1724 !important;
+    color: rgba(255, 255, 255, 0.87);
+}
+body[data-theme='dark'] .MuiCardHeader-root,
+body[data-theme='dark'] .MuiCardContent-root,
+body[data-theme='dark'] .MuiCardActions-root {
+    color: rgba(255, 255, 255, 0.87);
+}
+body[data-theme='dark'] .card {
+    background-color: #0F1724;
+    color: rgba(255, 255, 255, 0.87);
+}
+
+/* Ensure MUI Drawer (GlobalSidebar) uses the same surface in dark mode */
+body[data-theme='dark'] .MuiDrawer-paper {
+    background-color: #0F1724 !important;
+    color: rgba(255, 255, 255, 0.87);
+}
+
+/* Ensure MUI table cells adopt the same dark surface */
+body[data-theme='dark'] .MuiTableCell-root {
+    background-color: #0F1724;
     color: rgba(255, 255, 255, 0.87);
 }
 
@@ -844,12 +894,65 @@ body[data-theme='light'] .custom-form-control {
 }
 
 /* Themed buttons */
-body[data-theme='light'] .btn-primary { background-color: var(--primary); border-color: var(--primary); color: #fff; }
-body[data-theme='light'] .btn-primary:hover { background-color: #3385e6; border-color: #3385e6; }
+body[data-theme='light'] .btn-primary { background-color: #022534; border-color: #022534; color: #fff; }
+body[data-theme='light'] .btn-primary:hover { filter: brightness(0.95); }
 body[data-theme='light'] .btn-success { background-color: var(--success); border-color: var(--success); color: #fff; }
 body[data-theme='light'] .btn-success:hover { filter: brightness(0.95); }
+body[data-theme='light'] .btn-secondary { background-color: #022534; border-color: #022534; color: #fff; }
+body[data-theme='light'] .btn-secondary:hover { filter: brightness(0.95); }
+body[data-theme='light'] .btn-danger { background-color: var(--danger); border-color: var(--danger); color: #fff; }
+body[data-theme='light'] .btn-danger:hover { filter: brightness(0.95); }
+body[data-theme='light'] .btn-outline-primary { border-color: #022534; color: #022534; background-color: transparent; }
+body[data-theme='light'] .btn-outline-primary:hover { background-color: #022534; color: #fff; }
+body[data-theme='light'] .btn-outline-secondary { border-color: #022534; color: #022534; background-color: transparent; }
+body[data-theme='light'] .btn-outline-secondary:hover { background-color: #022534; color: #fff; }
 
-body[data-theme='dark'] .btn-primary { background-color: var(--primary); border-color: var(--primary); color: #fff; }
+body[data-theme='dark'] .btn-primary { background-color: #3794a7; border-color: #3794a7; color: #fff; }
 body[data-theme='dark'] .btn-primary:hover { filter: brightness(1.05); }
 body[data-theme='dark'] .btn-success { background-color: #2e7d32; border-color: #2e7d32; color: #fff; }
 body[data-theme='dark'] .btn-success:hover { filter: brightness(1.05); }
+body[data-theme='dark'] .btn-secondary { background-color: #3794a7; border-color: #3794a7; color: #fff; }
+body[data-theme='dark'] .btn-secondary:hover { filter: brightness(1.08); }
+body[data-theme='dark'] .btn-danger { background-color: #b91c1c; border-color: #b91c1c; color: #fff; }
+body[data-theme='dark'] .btn-danger:hover { filter: brightness(1.08); }
+body[data-theme='dark'] .btn-outline-primary { border-color: #3794a7; color: #3794a7; background-color: transparent; }
+body[data-theme='dark'] .btn-outline-primary:hover { background-color: #3794a7; color: #fff; }
+
+body[data-theme='dark'] .btn-outline-secondary { border-color: #475569; color: #cbd5e1; background-color: transparent; }
+body[data-theme='dark'] .btn-outline-secondary:hover { background-color: #475569; color: #fff; }
+
+/* Attractive button base styling */
+body[data-theme='light'] .btn,
+body[data-theme='dark'] .btn {
+    border-radius: 8px;
+    transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+}
+body[data-theme='light'] .btn-primary,
+body[data-theme='dark'] .btn-primary { box-shadow: 0 10px 22px -12px rgba(62,151,255,0.45); }
+body[data-theme='light'] .btn-success,
+body[data-theme='dark'] .btn-success { box-shadow: 0 10px 22px -12px rgba(80,205,137,0.35); }
+body[data-theme='light'] .btn-danger,
+body[data-theme='dark'] .btn-danger { box-shadow: 0 10px 22px -12px rgba(241,65,108,0.35); }
+
+/* Style the header action link as a button */
+.btn-add {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background-color: #022534;
+    color: #fff !important;
+    border: 1px solid #022534;
+    text-decoration: none;
+}
+.btn-add:hover {
+    filter: brightness(0.95);
+}
+
+/* Theme-specific overrides for .btn-add */
+body[data-theme='dark'] .btn-add {
+    background-color: #3794a7;
+    border-color: #3794a7;
+}
+body[data-theme='dark'] .btn-add:hover {
+    filter: brightness(1.05);
+}

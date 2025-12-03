@@ -27,6 +27,7 @@ import {
   CardHeader,
   Button,
 } from "@mui/material";
+import { useTheme } from '@mui/material/styles';
 import CommonTable from "../../../components/table/CommonTable.jsx";
 import Iconify from "../../../components/Iconify.jsx";
 import Select from "react-select";
@@ -70,6 +71,7 @@ const TABLE_HEAD = [
 ];
 
 export default function ExpenseList() {
+  const theme = useTheme();
   const [loading, setLoading] = useState(false);
   const [expenses, setExpenses] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -361,7 +363,7 @@ export default function ExpenseList() {
             >
               <Box display="flex">
                 <button
-                  className={"btn btn-secondary btn-sm mr-2"}
+                  className={"btn btn-primary btn-sm mr-2"}
                   onClick={toggleFilterModal}
                 >
                   <FontAwesomeIcon icon={faFilter} />
@@ -388,7 +390,21 @@ export default function ExpenseList() {
           </Row> */}
           <Row>
             <Box sx={{ padding: "10px" }}>
-              <Card sx={{ p: 5 }} style={{ padding: "0px" }}>
+              <Card
+                sx={{
+                  p: 5,
+                  // Use theme-aware surfaces for both light and dark modes
+                  backgroundColor: theme.palette.background.paper,
+                  color: theme.palette.text.primary,
+                  borderRadius: 2,
+                  border: `1px solid ${theme.palette.divider}`,
+                  // Ensure nested table containers and papers match the card surface
+                  '& .MuiTableContainer-root': { backgroundColor: theme.palette.background.paper },
+                  '& .MuiPaper-root': { backgroundColor: theme.palette.background.paper },
+                  '& .MuiTableCell-root': { color: theme.palette.text.primary },
+                }}
+                style={{ padding: "0px" }}
+              >
                 <CommonTable
                   data={modifiedFilteredExpenses}
                   tableColumns={TABLE_HEAD}
@@ -426,7 +442,7 @@ export default function ExpenseList() {
         </Col>
         <Col xs={12} sm={12} md={3}>
           <Row>
-            <div className={"sidebar-form"} style={{ padding: "10px" }}>
+            <div className={"sidebar-form quick-expense-card"} style={{ padding: "10px" }}>
               <div className={"sidebar-form-content"}>
                 <ExpenseFormSidebar
                   expenseId={null}
