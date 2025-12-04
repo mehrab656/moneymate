@@ -1,9 +1,10 @@
-import React, {memo, useEffect, useState} from "react";
+import React, {memo, useEffect, useState, useContext} from "react";
 import {Col, Tab, Row, Button, Nav, Modal, InputGroup, Form} from "react-bootstrap";
 import Container from "react-bootstrap/Container";
 import {useGetSectorListDataQuery} from "../../../../api/slices/sectorSlice.js"
 import { faRefresh} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import { SettingsContext } from "../../../../contexts/SettingsContext.jsx";
 
 const navItems = [
   {key: 'filter-report-by-sector', name: 'Sector'},
@@ -37,6 +38,20 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
   const [searchSectors, setSearchSector] = useState("");
   const [searchReference, setSearchReference] = useState("");
   const [searchIncomeType, setSearchIncomeType] = useState("");
+  const { themeMode } = useContext(SettingsContext);
+  const isDark = themeMode === "dark";
+  const inputFontSize = "0.875rem";
+  const inputStyle = {
+    backgroundColor: isDark ? "#1c1f24" : "#fff",
+    color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+    borderColor: isDark ? "#3a4048" : "#c5ccd6",
+    fontSize: inputFontSize,
+    minHeight: 36,
+  };
+  const checkboxStyle = {
+    backgroundColor: isDark ? "#1c1f24" : undefined,
+    borderColor: isDark ? "#3a4048" : undefined,
+  };
 
   //fetching sectors.
   const {
@@ -106,13 +121,12 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
 
             </label>
             <div className='form-group mb-1'>
-              <input
-                  className='custom-form-control'
-                  placeholder='search by keywards'
+              <Form.Control
+                  size="sm"
+                  style={inputStyle}
+                  placeholder='search by keywords'
                   value={searchSectors}
-                  onChange={(ev) =>
-                      setSearchSector(ev.target.value)
-                  }
+                  onChange={(ev) => setSearchSector(ev.target.value)}
               />
             </div>
             <span className={'results'}>{`Found ${filteredSectors.length} Results`}</span>
@@ -126,12 +140,14 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
                                              checked={queryParams.sectorIDS.includes(sector.value)}
                                              onChange={e => {
                                                handelSectorIds(e, sector)
-                                             }}/>
+                                             }}
+                                             style={checkboxStyle}/>
                         <Form.Control
                             type="text"
                             value={sector.label}
                             disabled={true}
                             aria-describedby="basic-addon3"
+                            style={inputStyle}
                         />
                       </InputGroup>
                   )) :
@@ -152,13 +168,12 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
 
             </label>
             <div className='form-group mb-1'>
-              <input
-                  className='custom-form-control'
-                  placeholder='search by keywards'
+              <Form.Control
+                  size="sm"
+                  style={inputStyle}
+                  placeholder='search by keywords'
                   value={searchReference}
-                  onChange={(ev) =>
-                      setSearchReference(ev.target.value)
-                  }
+                  onChange={(ev) => setSearchReference(ev.target.value)}
               />
             </div>
             <span className={'results'}>{`Found ${incomeReferences.length} Results`}</span>
@@ -172,12 +187,13 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
                                              checked={queryParams.reference.includes(ref.value)}
                                              onChange={e => {
                                                handleReference(e, ref)
-                                             }}/>
+                                             }} style={checkboxStyle}/>
                         <Form.Control
                             type="text"
                             value={ref.label}
                             disabled={true}
                             aria-describedby="basic-addon3"
+                            style={inputStyle}
                         />
                       </InputGroup>
                   )) :
@@ -198,13 +214,12 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
 
             </label>
             <div className='form-group mb-1'>
-              <input
-                  className='custom-form-control'
-                  placeholder='search by keywards'
+              <Form.Control
+                  size="sm"
+                  style={inputStyle}
+                  placeholder='search by keywords'
                   value={searchIncomeType}
-                  onChange={(ev) =>
-                      setSearchIncomeType(ev.target.value)
-                  }
+                  onChange={(ev) => setSearchIncomeType(ev.target.value)}
               />
             </div>
             <span className={'results'}>{`Found ${incomeTypes.length} Results`}</span>
@@ -224,6 +239,7 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
                             value={type.label}
                             disabled={true}
                             aria-describedby="basic-addon3"
+                            style={inputStyle}
                         />
                       </InputGroup>
                   )) :
@@ -237,13 +253,13 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
           <Form.Label style={{marginBottom:'0px'}} className="custom-form-label">From</Form.Label>
           <Form.Control size={"sm"} type="date" value={queryParams.start_date} onChange={(e) => {
             setQueryParams({...queryParams, start_date: e.target.value});
-          }}/>
+          }} style={inputStyle}/>
         </Form.Group>
         <Form.Group controlId="to_date">
           <Form.Label style={{marginBottom:'0px'}} className="custom-form-label">To</Form.Label>
           <Form.Control size={"sm"} type="date" value={queryParams.end_date} onChange={(e) => {
             setQueryParams({...queryParams, end_date: e.target.value});
-          }}/>
+          }} style={inputStyle}/>
         </Form.Group>
 
 
@@ -259,7 +275,7 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
                        onChange={(event) => {
                          const value = event.target.value || '';
                          setQueryParams({...queryParams, check_for: value});
-                       }}>
+                       }} style={inputStyle}>
             <option>Select Date Options</option>
             <option value={'checkinout'}>{'Checkin or Checkout'}</option>
             <option value={'checkin'}>{'Checkin'}</option>
@@ -270,13 +286,13 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
           <Form.Label style={{marginBottom: '0px'}} className="custom-form-label">From</Form.Label>
           <Form.Control size={"sm"} type="date" value={queryParams.check_from} onChange={(e) => {
             setQueryParams({...queryParams, check_from: e.target.value});
-          }}/>
+          }} style={inputStyle}/>
         </Form.Group>
         <Form.Group controlId="to_date">
           <Form.Label style={{marginBottom: '0px'}} className="custom-form-label">To</Form.Label>
           <Form.Control size={"sm"} type="date" value={queryParams.check_to} onChange={(e) => {
             setQueryParams({...queryParams, check_to: e.target.value});
-          }}/>
+          }} style={inputStyle}/>
         </Form.Group>
 
 
@@ -295,7 +311,7 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
               onChange={(event) => {
                 const value = event.target.value || '';
                 setQueryParams({...queryParams, orderBy: value});
-              }}>
+              }} style={inputStyle}>
             <option defaultValue>Filter By Order Column</option>
             <option value={'id'}>{'Id'}</option>
             <option value={'date'}>{'Date'}</option>
@@ -314,7 +330,7 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
               onChange={(event) => {
                 const value = event.target.value || '';
                 setQueryParams({...queryParams, order: value});
-              }}>
+              }} style={inputStyle}>
             <option defaultValue>Filter By Order</option>
             <option value={'DESC'}>{'DESCENDING'}</option>
             <option value={'ASC'}>{'ASCENDING'}</option>
@@ -331,7 +347,7 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
               onChange={(event) => {
                 const value = event.target.value || '';
                 setQueryParams({...queryParams, limit: value});
-              }}>
+              }} style={inputStyle}>
             <option defaultValue>Filter By Limit</option>
             <option value={'10'}>{'10'}</option>
             <option value={'20'}>{'20'}</option>
@@ -355,6 +371,7 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
             fullscreen="sm-down"
             size="lg"
             scrollable
+            contentClassName="filter-modal-content"
         >
           <Modal.Header closeButton onClick={resetFilter}>
             <Modal.Title>Filters</Modal.Title>

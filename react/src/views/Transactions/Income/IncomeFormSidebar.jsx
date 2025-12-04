@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import WizCard from "../../../components/WizCard.jsx";
 import MainLoader from "../../../components/loader/MainLoader.jsx";
 import { notification } from "../../../components/ToastNotification.jsx";
 import { Col, Form, Row, Button } from "react-bootstrap";
 import Select from "react-select";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
+import { SettingsContext } from "../../../contexts/SettingsContext.jsx";
 import { useGetBankDataQuery } from "../../../api/slices/bankSlice.js";
 import { useGetCategoryListDataQuery } from "../../../api/slices/categorySlice.js";
 import {
@@ -35,26 +36,38 @@ const _initialIncome = {
   id: null,
   amount: "",
   description: "",
-  reference: defaultReference[0],
-  income_type: defaultIncomeType[0],
+  reference: null,
+  income_type: null,
   date: "",
   checkin_date: "",
   checkout_date: "",
   note: "",
   attachment: "",
-  account: [],
-  category: [],
+  account: null,
+  category: null,
 };
 
-export default function IncomeFormSidebar({ incomeId, onSuccess }) {
+export default function IncomeFormSidebar({
+  incomeId,
+  onSuccess,
+  showLabel = "true",
+  sidebarTitle = null,
+  colXS = 12,
+  colMD = 6,
+  colSM = 12,
+}) {
   const [income, setIncome] = useState(_initialIncome);
   const [loading, setLoading] = useState(false);
   const [accounts, setAccounts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [errors, setErrors] = useState({});
   const { closeSidebar } = useSidebarActions();
+  const { themeMode } = useContext(SettingsContext);
 
-  const { data: getBankData } = useGetBankDataQuery({ currentPage: "", pageSize: 100 });
+  const { data: getBankData } = useGetBankDataQuery({
+    currentPage: "",
+    pageSize: 100,
+  });
   const { data: getCategoryListData, isFetching: categoryIsFetching } =
     useGetCategoryListDataQuery({ categoryType: "income" });
   const { data: getSingleIncomeData } = useGetSingleIncomeDataQuery(
@@ -63,25 +76,65 @@ export default function IncomeFormSidebar({ incomeId, onSuccess }) {
   );
   const [createIncome] = useCreateIncomeMutation();
 
+  // Enforce consistent font size for inputs and selects
+  const inputFontSize = "0.875rem";
+  const isDark = themeMode === "dark";
+  const selectStyles = {
+    control: (base) => ({
+      ...base,
+      fontSize: inputFontSize,
+      minHeight: 38,
+      backgroundColor: isDark ? "#1c1f24" : "#fff",
+      borderColor: isDark ? "#3a4048" : "#c5ccd6",
+      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+    }),
+    singleValue: (base) => ({
+      ...base,
+      fontSize: inputFontSize,
+      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+    }),
+    input: (base) => ({
+      ...base,
+      fontSize: inputFontSize,
+      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+    }),
+    placeholder: (base) => ({
+      ...base,
+      fontSize: inputFontSize,
+      color: isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)",
+    }),
+    menu: (base) => ({
+      ...base,
+      fontSize: inputFontSize,
+      backgroundColor: isDark ? "#23262b" : "#fff",
+    }),
+    option: (base) => ({
+      ...base,
+      fontSize: inputFontSize,
+      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+    }),
+  };
+
   useEffect(() => {
     if (getBankData?.data?.length > 0) {
-      const modifiedAccounts = getBankData.data.map(({ id, bank_name, account_number, slug }) => ({
-        value: slug ?? id,
-        label: `${bank_name}(${account_number})`,
-      }));
+      const modifiedAccounts = getBankData.data.map(
+        ({ id, bank_name, account_number, slug }) => ({
+          value: slug ?? id,
+          label: `${bank_name}(${account_number})`,
+        })
+      );
       setAccounts(modifiedAccounts);
     }
     if (getCategoryListData?.data?.length > 0) {
       const modifiedCategories = getCategoryListData.data.map((c) => ({
         value: c?.value ?? c?.id ?? c?.slug,
-        label: c?.label ?? c?.name ?? c?.category_name ?? String(c?.id ?? "Category"),
+        label:
+          c?.label ??
+          c?.name ??
+          c?.category_name ??
+          String(c?.id ?? "Category"),
       }));
       setCategories(modifiedCategories);
-      setIncome((prev) => (
-        prev?.category && prev.category.value
-          ? prev
-          : { ...prev, category: modifiedCategories[0] }
-      ));
     }
     if (incomeId && getSingleIncomeData?.data) {
       // The backend returns account/category/reference/income_type in {value,label} shape
@@ -93,11 +146,8 @@ export default function IncomeFormSidebar({ incomeId, onSuccess }) {
     }
   }, [incomeId, getSingleIncomeData, getBankData, getCategoryListData]);
 
-  useEffect(() => {
-    if (!income?.date) {
-      setIncome((prev) => ({ ...prev, date: new Date().toISOString().split("T")[0] }));
-    }
-  }, [income?.date]);
+  // Do NOT set automatic default date in create mode; user must choose
+  // Keep date empty unless editing an existing record
 
   const handleFileInputChange = (event) => {
     const file = event.target.files[0];
@@ -148,7 +198,7 @@ export default function IncomeFormSidebar({ incomeId, onSuccess }) {
       const data = await createIncome({ url, formData }).unwrap();
       notification("success", data?.message, data?.description);
       if (stay) {
-        setIncome({ ..._initialIncome, category: categories[0] ?? [], reference: defaultReference[0], income_type: defaultIncomeType[0] });
+        setIncome({ ..._initialIncome });
       } else {
         onSuccess?.();
         closeSidebar();
@@ -173,47 +223,92 @@ export default function IncomeFormSidebar({ incomeId, onSuccess }) {
     }
   };
 
-  const reservationSelected = (income?.income_type?.value ?? "") === "reservation";
+  const reservationSelected =
+    (income?.income_type?.value ?? "") === "reservation";
 
   return (
-    <div style={{ padding: 16 }}>
+    <div style={{ fontSize: "0.875rem" }}>
       <MainLoader loaderVisible={loading} />
+      {sidebarTitle && <h6>{sidebarTitle ? sidebarTitle : ""}</h6>}
       <WizCard className="animated fadeInDown">
         <Form onSubmit={(e) => submitIncome(e, false)}>
           <Row>
             <Col xs={12}>
               <Form.Group className="mb-3" controlId="description">
-                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Description</Form.Label>
-                <Form.Control as="textarea" rows={3} value={income.description ?? ""} name="description"
-                              onChange={(e) => setIncome({ ...income, description: e.target.value })}
-                              placeholder="Enter description" />
+                {showLabel && (
+                  <Form.Label
+                    style={{ marginBottom: 0 }}
+                    className="custom-form-label"
+                  >
+                    Description
+                  </Form.Label>
+                )}
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  value={income.description ?? ""}
+                  name="description"
+                  onChange={(e) =>
+                    setIncome({ ...income, description: e.target.value })
+                  }
+                  placeholder="Enter description"
+                />
               </Form.Group>
             </Col>
           </Row>
 
           <Row>
-            <Col xs={12} md={6}>
+            <Col xs={colXS} md={colMD} sm={colSM}>
               <Form.Group className="mb-3" controlId="amount">
-                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Amount</Form.Label>
-                <Form.Control type="number" placeholder="i.g: 50 AED" value={income.amount}
-                              onChange={(e) => setIncome({ ...income, amount: e.target.value })} />
+                {showLabel && (
+                  <Form.Label
+                    style={{ marginBottom: 0 }}
+                    className="custom-form-label"
+                  >
+                    Amount
+                  </Form.Label>
+                )}
+                <Form.Control
+                  type="number"
+                  placeholder="i.g: 50 AED"
+                  value={income.amount}
+                  style={{ fontSize: inputFontSize }}
+                  onChange={(e) =>
+                    setIncome({ ...income, amount: e.target.value })
+                  }
+                />
                 {errors.amount && (
                   <p className="error-message">{errors.amount[0]}</p>
                 )}
               </Form.Group>
             </Col>
-            <Col xs={12} md={6}>
+            <Col xs={colXS} md={colMD} sm={colSM}>
               <Form.Group className="mb-3" controlId="account">
-                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Account</Form.Label>
-                <Select classNamePrefix="select" value={income.account} isSearchable name="account" options={accounts}
-                        onChange={(e) => {
-                          setIncome({ ...income, account: e });
-                          if (errors.account && e?.value) {
-                            const next = { ...errors };
-                            delete next.account;
-                            setErrors(next);
-                          }
-                        }} />
+                {showLabel && (
+                  <Form.Label
+                    style={{ marginBottom: 0 }}
+                    className="custom-form-label"
+                  >
+                    Account
+                  </Form.Label>
+                )}
+                <Select
+                  classNamePrefix="select"
+                  value={income.account}
+                  isSearchable
+                  name="account"
+                  options={accounts}
+                  styles={selectStyles}
+                  placeholder={"Select Bank Account"}
+                  onChange={(e) => {
+                    setIncome({ ...income, account: e });
+                    if (errors.account && e?.value) {
+                      const next = { ...errors };
+                      delete next.account;
+                      setErrors(next);
+                    }
+                  }}
+                />
                 {errors.account && (
                   <p className="error-message">{errors.account[0]}</p>
                 )}
@@ -222,49 +317,107 @@ export default function IncomeFormSidebar({ incomeId, onSuccess }) {
           </Row>
 
           <Row>
-            <Col xs={12} md={6}>
+            <Col xs={colXS} md={colMD} sm={colSM}>
               <Form.Group className="mb-3" controlId="category">
-                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Category</Form.Label>
-                <Select classNamePrefix="select" value={income.category} isSearchable name="category"
-                        isLoading={categoryIsFetching} options={categories}
-                        onChange={(e) => {
-                          setIncome({ ...income, category: e });
-                          if (errors.category && e?.value) {
-                            const next = { ...errors };
-                            delete next.category;
-                            setErrors(next);
-                          }
-                        }} />
+                {showLabel && (
+                  <Form.Label
+                    style={{ marginBottom: 0 }}
+                    className="custom-form-label"
+                  >
+                    Category
+                  </Form.Label>
+                )}
+                <Select
+                  classNamePrefix="select"
+                  value={income.category}
+                  isSearchable
+                  name="category"
+                  isLoading={categoryIsFetching}
+                  options={categories}
+                  styles={selectStyles}
+                  placeholder={"Select Category"}
+                  onChange={(e) => {
+                    setIncome({ ...income, category: e });
+                    if (errors.category && e?.value) {
+                      const next = { ...errors };
+                      delete next.category;
+                      setErrors(next);
+                    }
+                  }}
+                />
                 {errors.category && (
                   <p className="error-message">{errors.category[0]}</p>
                 )}
               </Form.Group>
             </Col>
-            <Col xs={12} md={6}>
+            <Col xs={colXS} md={colMD} sm={colSM}>
               <Form.Group className="mb-3" controlId="date">
-                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Date</Form.Label>
-                <Form.Control type="date" value={income.date}
-                              onChange={(e) => setIncome({ ...income, date: e.target.value })} />
+                {showLabel && (
+                  <Form.Label
+                    style={{ marginBottom: 0 }}
+                    className="custom-form-label"
+                  >
+                    Date
+                  </Form.Label>
+                )}
+                <Form.Control
+                  type="date"
+                  value={income.date}
+                  style={{ fontSize: inputFontSize }}
+                  onChange={(e) =>
+                    setIncome({ ...income, date: e.target.value })
+                  }
+                />
               </Form.Group>
             </Col>
           </Row>
 
           <Row>
-            <Col xs={12} md={6}>
+            <Col xs={colXS} md={colMD} sm={colSM}>
               <Form.Group className="mb-3" controlId="reference">
-                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Reference</Form.Label>
-                <Select classNamePrefix="select" value={income.reference} isSearchable name="reference" options={defaultReference}
-                        onChange={(e) => setIncome({ ...income, reference: e })} />
+                {showLabel && (
+                  <Form.Label
+                    style={{ marginBottom: 0 }}
+                    className="custom-form-label"
+                  >
+                    Reference
+                  </Form.Label>
+                )}
+                <Select
+                  classNamePrefix="select"
+                  value={income.reference}
+                  isSearchable
+                  name="reference"
+                  options={defaultReference}
+                  styles={selectStyles}
+                  placeholder={"Select Reference"}
+                  onChange={(e) => setIncome({ ...income, reference: e })}
+                />
                 {errors.reference && (
                   <p className="error-message">{errors.reference[0]}</p>
                 )}
               </Form.Group>
             </Col>
-            <Col xs={12} md={6}>
+            <Col xs={colXS} md={colMD} sm={colSM}>
               <Form.Group className="mb-3" controlId="income_type">
-                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Income Type</Form.Label>
-                <Select classNamePrefix="select" value={income.income_type} isSearchable name="income_type" options={defaultIncomeType}
-                        onChange={(e) => setIncome({ ...income, income_type: e })} />
+                {showLabel && (
+                  <Form.Label
+                    style={{ marginBottom: 0 }}
+                    className="custom-form-label"
+                  >
+                    Income Type
+                  </Form.Label>
+                )}
+                <Select
+                  classNamePrefix="select"
+                  value={income.income_type}
+                  isSearchable
+                  name="income_type"
+                  options={defaultIncomeType}
+                  styles={selectStyles}
+                  placeholder={"Select Income Type"}
+                  onChange={(e) => setIncome({ ...income, income_type: e })}
+                />
                 {errors.income_type && (
                   <p className="error-message">{errors.income_type[0]}</p>
                 )}
@@ -274,21 +427,41 @@ export default function IncomeFormSidebar({ incomeId, onSuccess }) {
 
           {reservationSelected && (
             <Row>
-              <Col xs={12} md={6}>
+              <Col xs={colXS} md={colMD} sm={colSM}>
                 <Form.Group className="mb-3" controlId="checkin_date">
-                  <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Check-in Date</Form.Label>
-                  <Form.Control type="date" value={income.checkin_date}
-                                onChange={(e) => setIncome({ ...income, checkin_date: e.target.value })} />
+                  <Form.Label
+                    style={{ marginBottom: 0 }}
+                    className="custom-form-label"
+                  >
+                    Check-in Date
+                  </Form.Label>
+                  <Form.Control
+                    type="date"
+                    value={income.checkin_date}
+                    onChange={(e) =>
+                      setIncome({ ...income, checkin_date: e.target.value })
+                    }
+                  />
                   {errors.checkin_date && (
                     <p className="error-message">{errors.checkin_date[0]}</p>
                   )}
                 </Form.Group>
               </Col>
-              <Col xs={12} md={6}>
+              <Col xs={colXS} md={colMD} sm={colSM}>
                 <Form.Group className="mb-3" controlId="checkout_date">
-                  <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Check-out Date</Form.Label>
-                  <Form.Control type="date" value={income.checkout_date}
-                                onChange={(e) => setIncome({ ...income, checkout_date: e.target.value })} />
+                  <Form.Label
+                    style={{ marginBottom: 0 }}
+                    className="custom-form-label"
+                  >
+                    Check-out Date
+                  </Form.Label>
+                  <Form.Control
+                    type="date"
+                    value={income.checkout_date}
+                    onChange={(e) =>
+                      setIncome({ ...income, checkout_date: e.target.value })
+                    }
+                  />
                   {errors.checkout_date && (
                     <p className="error-message">{errors.checkout_date[0]}</p>
                   )}
@@ -298,17 +471,36 @@ export default function IncomeFormSidebar({ incomeId, onSuccess }) {
           )}
 
           <Row>
-            <Col xs={12} md={6}>
+            <Col xs={colXS} md={colMD} sm={colSM}>
               <Form.Group className="mb-3" controlId="note">
-                <Form.Label style={{ marginBottom: 0 }} className="custom-form-label">Note</Form.Label>
-                <Form.Control as="textarea" rows={3} value={income.note ?? ""} name="note"
-                              onChange={(e) => setIncome({ ...income, note: e.target.value })} />
+                {showLabel && (
+                  <Form.Label
+                    style={{ marginBottom: 0 }}
+                    className="custom-form-label"
+                  >
+                    Note
+                  </Form.Label>
+                )}
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  value={income.note ?? ""}
+                  name="note"
+                  style={{ fontSize: inputFontSize }}
+                  onChange={(e) =>
+                    setIncome({ ...income, note: e.target.value })
+                  }
+                />
               </Form.Group>
             </Col>
-            <Col xs={12} md={6}>
+            <Col xs={colXS} md={colMD} sm={colSM}>
               <Form.Group className="mb-3">
-                <Form.Label>Add Attachment</Form.Label>
-                <Form.Control type="file" onChange={handleFileInputChange} />
+                {showLabel && <Form.Label>Add Attachment</Form.Label>}
+                <Form.Control
+                  type="file"
+                  onChange={handleFileInputChange}
+                  style={{ fontSize: inputFontSize }}
+                />
                 {errors.attachment && (
                   <p className="error-message">{errors.attachment[0]}</p>
                 )}
@@ -328,14 +520,23 @@ export default function IncomeFormSidebar({ incomeId, onSuccess }) {
                     <Button type="submit" variant="primary" disabled={loading}>
                       {loading ? "Saving..." : "Add Income"}
                     </Button>
-                    <Button type="button" variant="success" disabled={loading} onClick={(e) => submitIncome(e, true)}>
+                    {/* <Button
+                      type="button"
+                      variant="success"
+                      disabled={loading}
+                      onClick={(e) => submitIncome(e, true)}
+                    >
                       {loading ? "Saving..." : "Save & Add Another"}
-                    </Button>
+                    </Button> */}
                   </>
                 )}
-                <Button type="button" variant="outline-secondary" onClick={closeSidebar}>
+                {/* <Button
+                  type="button"
+                  variant="outline-secondary"
+                  onClick={closeSidebar}
+                >
                   Cancel
-                </Button>
+                </Button> */}
               </div>
             </Col>
           </Row>
@@ -344,4 +545,3 @@ export default function IncomeFormSidebar({ incomeId, onSuccess }) {
     </div>
   );
 }
-

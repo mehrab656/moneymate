@@ -2378,3 +2378,99 @@ body[data-theme='dark'] .finance-amount {
   padding: 0.125rem 0.375rem;
   border-radius: 8px;
 }
+
+/* Theme-aware styling for Filter modals (Income/Expense) */
+body[data-theme='dark'] .filter-modal-body {
+  background-color: #0f1216;
+  color: rgba(255,255,255,0.87);
+}
+
+body[data-theme='dark'] .filter-modal-body .filter-column {
+  border-color: #3a4048;
+}
+
+/* Left tabs (nav-pills) inside filter modal */
+body[data-theme='dark'] .filter-modal-body .nav-pills .nav-link {
+  color: rgba(255,255,255,0.75);
+}
+body[data-theme='dark'] .filter-modal-body .nav-pills .nav-link.active,
+body[data-theme='dark'] .filter-modal-body .nav-pills .show > .nav-link {
+  background-color: #1c1f24;
+  color: #ffffff;
+  border: 1px solid #3a4048;
+}
+
+/* Inputs inside report filter list */
+body[data-theme='dark'] .filter-modal-body .input-group .form-control,
+body[data-theme='dark'] .filter-modal-body .form-select,
+body[data-theme='dark'] .filter-modal-body input[type='date'] {
+  background-color: #1c1f24;
+  color: rgba(255,255,255,0.87);
+  border-color: #3a4048;
+}
+
+body[data-theme='dark'] .filter-modal-body ::placeholder {
+  color: rgba(255,255,255,0.6);
+}
+
+/* Checkboxes in dark mode to avoid harsh contrast */
+body[data-theme='dark'] .filter-modal-body .form-check-input,
+body[data-theme='dark'] .filter-modal-body .input-group .form-check-input {
+  background-color: #1c1f24;
+  border-color: #3a4048;
+}
+
+/* Compact checkbox size inside filter modals */
+.filter-modal-body .form-check-input,
+.filter-modal-body .input-group .form-check-input {
+  width: 14px;
+  height: 14px;
+  margin: 0 6px 0 0;
+  border-radius: 3px;
+  box-shadow: none !important;
+}
+
+/* Remove bulky white background around checkbox in InputGroup */
+.filter-modal-body .input-group .input-group-text {
+  background-color: transparent;
+  border: none;
+  padding: 0 4px;
+}
+
+body[data-theme='dark'] .filter-modal-body .input-group .input-group-text {
+  background-color: transparent;
+  border: none;
+  color: rgba(255,255,255,0.87);
+}
+
+/* Light mode refinements for active tab state */
+body[data-theme='light'] .filter-modal-body .nav-pills .nav-link.active,
+body[data-theme='light'] .filter-modal-body .nav-pills .show > .nav-link {
+  background-color: #e9f2ff;
+  color: #0b3d91;
+  border: 1px solid #a7c4ff;
+}
+
+/* Modal header/footer theming for Filter modals */
+body[data-theme='dark'] .filter-modal-content {
+  background-color: #0f1216;
+  color: rgba(255,255,255,0.87);
+  border-color: #3a4048;
+}
+body[data-theme='dark'] .filter-modal-content .modal-header,
+body[data-theme='dark'] .filter-modal-content .modal-footer {
+  background-color: transparent;
+  border-color: #3a4048;
+}
+body[data-theme='dark'] .filter-modal-content .modal-title {
+  color: rgba(255,255,255,0.87);
+}
+body[data-theme='dark'] .filter-modal-content .btn-close {
+  filter: invert(1) brightness(1.2);
+  opacity: 0.7;
+}
+body[data-theme='light'] .filter-modal-content .modal-header,
+body[data-theme='light'] .filter-modal-content .modal-footer {
+  background-color: #ffffff;
+  border-color: #dee2e6;
+}

@@ -1,10 +1,11 @@
-import React, {memo, useEffect, useState} from "react";
+import React, {memo, useEffect, useState, useContext} from "react";
 import {Col, Tab, Row, Button, Nav, Modal, InputGroup, Form} from "react-bootstrap";
 import Container from "react-bootstrap/Container";
 import {useGetSectorListDataQuery} from "../../../api/slices/sectorSlice.js"
 import {useGetCategoryListDataQuery} from "../../../api/slices/categorySlice.js"
 import {faCheckSquare, faFilter, faRefresh} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import { SettingsContext } from "../../../contexts/SettingsContext.jsx";
 
 const navItems = [
   {key: 'filter-report-by-sector', name: 'Sector'},
@@ -22,6 +23,20 @@ const ExpenseFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParam
   const [searchSectors, setSearchSector] = useState("");
   const [searchCategories, setSearchCategories] = useState("");
   const [categories, setCategories] =useState([]);
+  const { themeMode } = useContext(SettingsContext);
+  const isDark = themeMode === "dark";
+  const inputFontSize = "0.875rem";
+  const inputStyle = {
+    backgroundColor: isDark ? "#1c1f24" : "#fff",
+    color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+    borderColor: isDark ? "#3a4048" : "#c5ccd6",
+    fontSize: inputFontSize,
+    minHeight: 36,
+  };
+  const checkboxStyle = {
+    backgroundColor: isDark ? "#1c1f24" : undefined,
+    borderColor: isDark ? "#3a4048" : undefined,
+  };
 
   //fetching sectors and categories.
   const {
@@ -102,13 +117,12 @@ const ExpenseFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParam
 
             </label>
             <div className='form-group mb-1'>
-              <input
-                  className='custom-form-control'
-                  placeholder='search by keywards'
+              <Form.Control
+                  size="sm"
+                  style={inputStyle}
+                  placeholder='search by keywords'
                   value={searchSectors}
-                  onChange={(ev) =>
-                      setSearchSector(ev.target.value)
-                  }
+                  onChange={(ev) => setSearchSector(ev.target.value)}
               />
             </div>
             <span className={'results'}>{`Found ${filteredSectors.length} Results`}</span>
@@ -122,12 +136,13 @@ const ExpenseFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParam
                                              checked={queryParams.sectorIDS.includes(sector.value)}
                                              onChange={e => {
                                                handelSectorIds(e, sector)
-                                             }}/>
+                                             }} style={checkboxStyle}/>
                         <Form.Control
                             type="text"
                             value={sector.label}
                             disabled={true}
                             aria-describedby="basic-addon3"
+                            style={inputStyle}
                         />
                       </InputGroup>
                   )) :
@@ -143,13 +158,12 @@ const ExpenseFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParam
           spin={isFetchingCategory} title={"reload category"} />
         </label>
         <div className='form-group mb-1'>
-          <input
-              className='custom-form-control'
-              placeholder='search by keywards'
+          <Form.Control
+              size="sm"
+              style={inputStyle}
+              placeholder='search by keywords'
               value={searchCategories}
-              onChange={(ev) =>
-                  setSearchCategories(ev.target.value)
-              }
+              onChange={(ev) => setSearchCategories(ev.target.value)}
           />
         </div>
         <span className={'results'}>{`Found ${filteredCategories.length} Results`}</span>
@@ -162,12 +176,13 @@ const ExpenseFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParam
                                          checked={queryParams.categoryIDS.includes(category.value)}
                                          onChange={e => {
                                            handelCategoryIDS(e, category)
-                                         }}/>
+                                         }} style={checkboxStyle}/>
                     <Form.Control
                         type="text"
                         value={category.label}
                         disabled={true}
                         aria-describedby="basic-addon3"
+                        style={inputStyle}
                     />
                   </InputGroup>
               )) :
@@ -187,7 +202,7 @@ const ExpenseFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParam
               onChange={(event) => {
                 const value = event.target.value || '';
                 setQueryParams({...queryParams, orderBy: value});
-              }}>
+              }} style={inputStyle}>
             <option defaultValue>Filter By Order Column</option>
             <option value={'id'}>{'Id'}</option>
             <option value={'date'}>{'Date'}</option>
@@ -207,7 +222,7 @@ const ExpenseFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParam
               onChange={(event) => {
                 const value = event.target.value || '';
                 setQueryParams({...queryParams, order: value});
-              }}>
+              }} style={inputStyle}>
             <option defaultValue>Filter By Order</option>
             <option value={'DESC'}>{'DESCENDING'}</option>
             <option value={'ASC'}>{'ASCENDING'}</option>
@@ -225,7 +240,7 @@ const ExpenseFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParam
               onChange={(event) => {
                 const value = event.target.value || '';
                 setQueryParams({...queryParams, limit: value});
-              }}>
+              }} style={inputStyle}>
             <option defaultValue>Filter By Limit</option>
             <option value={'10'}>{'10'}</option>
             <option value={'20'}>{'20'}</option>
@@ -266,6 +281,7 @@ const ExpenseFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParam
             onHide={closeModal}
             backdrop="static"
             keyboard={false}
+            contentClassName="filter-modal-content"
         >
           <Modal.Header closeButton>
             <Modal.Title>Filters</Modal.Title>

@@ -17,6 +17,7 @@ import TableBody from "@mui/material/TableBody";
 import ActionButtonHelpers from "./ActionButtonHelpers.jsx";
 import Stack from "@mui/material/Stack";
 import Pagination from "@mui/material/Pagination";
+import TablePagination from "@mui/material/TablePagination";
 import * as React from "react";
 import { createElement, isValidElement, memo } from "react";
 import { makeStyles } from "@mui/styles";
@@ -95,38 +96,44 @@ function CommonTable(props) {
         className={"border"}
         action={
           <>
-            {addBTN.linkTo === "route" ? (
-              <Link
-                className="btn-add mr-3"
-                to={addBTN.link}
-                style={{ float: "right" }}
-              >
-                {addBTN.icon} {addBTN.txt}
-              </Link>
-            ) : (
-              <a
-                className="btn-add "
-                onClick={() => addBTN.link()}
-                style={{ boxShadow: "0px" }}
-              >
-                {addBTN.icon} {addBTN.txt}
-              </a>
+            {addBTN && (
+              addBTN.linkTo === "route" ? (
+                <Link
+                  className="btn-add mr-3"
+                  to={addBTN.link}
+                  style={{ float: "right" }}
+                >
+                  {addBTN.icon} {addBTN.txt}
+                </Link>
+              ) : (
+                <a
+                  className="btn-add "
+                  onClick={() => addBTN.link()}
+                  style={{ boxShadow: "0px" }}
+                >
+                  {addBTN.icon} {addBTN.txt}
+                </a>
+              )
             )}
-            <ExpandMore
-                expand={expanded.toString()}
-                onClick={handleExpandClick}
-                aria-expanded={expanded}
-                aria-label="show more"
-            >
-              <ArrowDropDownIcon />
-            </ExpandMore>
+            {filter && (
+              <ExpandMore
+                  expand={expanded.toString()}
+                  onClick={handleExpandClick}
+                  aria-expanded={expanded}
+                  aria-label="show more"
+              >
+                <ArrowDropDownIcon />
+              </ExpandMore>
+            )}
           </>
         }
       />
 
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        {filter()}
-      </Collapse>
+      {filter && (
+        <Collapse in={expanded} timeout="auto" unmountOnExit>
+          {filter()}
+        </Collapse>
+      )}
 
       {loading && <TableLoader row={loaderRow} col={loaderCol}/>}
 
@@ -200,18 +207,32 @@ function CommonTable(props) {
 
       {!loading && table.tableBody.rows.length > 0 && (
         <CardActions>
-          {paginations.totalPages > 1 && (
-            <Stack spacing={2}>
-              <Pagination
+          {paginations?.pageSize && typeof paginations?.onRowsPerPageChange === 'function' ? (
+            <Stack spacing={2} direction="row" alignItems="center" sx={{ width: '100%', justifyContent: 'space-between' }}>
+              <TablePagination
                 component="div"
-                count={paginations.totalPages}
-                variant="outlined"
-                shape="rounded"
-                page={paginations.currentPage}
-                onChange={paginations.handlePageChange}
+                count={paginations.totalCount ?? table.tableBody.rows.length}
+                page={(paginations.currentPage ?? 1) - 1}
+                onPageChange={(event, newPage) => paginations.handlePageChange?.(event, newPage + 1)}
+                rowsPerPage={paginations.pageSize}
+                onRowsPerPageChange={paginations.onRowsPerPageChange}
               />
               <span><small className={'text-muted'}><i>{cardSubTitle}</i></small></span>
             </Stack>
+          ) : (
+            paginations.totalPages > 1 && (
+              <Stack spacing={2}>
+                <Pagination
+                  component="div"
+                  count={paginations.totalPages}
+                  variant="outlined"
+                  shape="rounded"
+                  page={paginations.currentPage}
+                  onChange={paginations.handlePageChange}
+                />
+                <span><small className={'text-muted'}><i>{cardSubTitle}</i></small></span>
+              </Stack>
+            )
           )}
         </CardActions>
       )}
