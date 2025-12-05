@@ -338,12 +338,12 @@ export default function ExpenseList() {
           <span className={"page-title-header"}>Expense Histories</span>
         </Box>
         <Box>
-          <button className={"btn btn-secondary btn-sm ml-2"}>
+          <button className={"btn primary-theme-btn btn-sm ml-2"}>
             <FontAwesomeIcon icon={faDownload} />
           </button>
           <ExpenseExportButton />
           <button
-            className={"btn btn-success btn-sm ml-2"}
+            className={"btn primary-theme-btn btn-sm ml-2"}
             onClick={showExpenseFormFunc}
           >
             <Iconify icon={"eva:plus-fill"} />

@@ -13,6 +13,7 @@
     --muted: #625f6e;
     --light-muted: #9896a0;
     --fundamental-color: #022534;
+    --custom-btn-border-color: #3794a7;
 
 }
 
@@ -814,13 +815,17 @@ section .details span {
 
 /* Dark mode adjustments for custom elements that don't automatically use MUI theme */
 body[data-theme='dark'] {
-    background-color: #121212;
+    /*background-color: #121212;*/
+    /*background-color: #1E293B; !*second choice*!*/
+    background-color: #0B1220; /*3rd choice*/
+
 }
 
 body[data-theme='dark'] .sidebar-form {
+    /*background-color: #0F1724;*/
     background-color: #0F1724;
     color: rgba(255, 255, 255, 0.87);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 2px 10px rgba(0, 0, 0, 0.45);
+    /*box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 2px 10px rgba(0, 0, 0, 0.45);*/ /*For now, no need*/
 }
 
 /* Ensure WizCard adopts dark mode too */
@@ -955,4 +960,15 @@ body[data-theme='dark'] .btn-add {
 }
 body[data-theme='dark'] .btn-add:hover {
     filter: brightness(1.05);
+}
+
+.primary-theme-btn:hover {
+    background-color: var(--fundamental-color);
+    border-color: var(--custom-btn-border-color);
+    color: #FFFFFF;
+}
+.primary-theme-btn {
+    background-color: #3794a7;
+    border-color: var(--fundamental-color);
+    color: #0F172A;
 }
