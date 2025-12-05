@@ -167,4 +167,20 @@ body[data-theme='dark'] .main-header{
     border-bottom: 1px solid #384049;
     color:rgba(255,255,255,0.87);
 }
+body[data-theme='dark'] aside a.active{
+     background-color: #3794a7;
+ }
+body[data-theme='dark'] .aside-menu-item a.active {
+    font-weight: 800;
+    color: #0F172A;
+}
+body[data-theme='dark'] .actionDropDownMenu {
+    /*position: fixed !important;*/
+    z-index: 9999 !important;
+    background-color: var(--fundamental-color);
+}
 
+body[data-theme='dark'] .actionDropDownMenu .dropdown-item:hover {
+    /*position: fixed !important;*/
+    background-color: #0C1A28;
+}

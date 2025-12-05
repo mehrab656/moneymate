@@ -6,9 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="eb82f29d-a946-4d7c-af4f-355ea30ae3ce" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/dist/assets/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/dist/assets/style.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/dist/custom.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/dist/custom.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/public/custom.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/public/custom.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/public/darktheme.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/public/darktheme.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/Layout/DefaultLayout/Header.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/Layout/DefaultLayout/Header.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/helper/ActionButtonHelpers.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/helper/ActionButtonHelpers.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Transactions/Expense/ExpenseList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Transactions/Expense/ExpenseList.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -272,7 +276,7 @@
       <workItem from="1749659574060" duration="55309000" />
       <workItem from="1755799534883" duration="23722000" />
       <workItem from="1759914034257" duration="23268000" />
-      <workItem from="1764705581442" duration="25497000" />
+      <workItem from="1764705581442" duration="30259000" />
     </task>
     <servers />
   </component>

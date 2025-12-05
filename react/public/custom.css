@@ -815,3 +815,13 @@ section .details span {
     /*border-bottom: 1px solid #384049;*/
     color:rgba(0,0,0,0.87);
 }
+.primary-theme-btn {
+    background-color: var(--fundamental-color);
+    border-color: var(--fundamental-color);
+    color: #FFFFFF;
+}
+ .primary-theme-btn:hover {
+    background-color: #1E3B4A;
+    border-color: var(--custom-btn-border-color);
+    color: #FFFFFF;
+}

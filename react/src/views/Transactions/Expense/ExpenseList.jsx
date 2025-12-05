@@ -3,6 +3,7 @@ import Swal from "sweetalert2";
 import { SettingsContext } from "../../../contexts/SettingsContext";
 import MainLoader from "../../../components/loader/MainLoader.jsx";
 import { notification } from "../../../components/ToastNotification.jsx";
+import {faEdit, faEye, faEyeSlash, faThList, faTrash} from "@fortawesome/free-solid-svg-icons";
 
 import {
   useDeleteExpenseMutation,
@@ -14,7 +15,7 @@ import { Col, Form, Row } from "react-bootstrap";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
 import ExpenseDetails from "./ExpenseDetails.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { fa0, faDownload, faFilter } from "@fortawesome/free-solid-svg-icons";
+import {fa0, faDownload, faFilter, faPlus} from "@fortawesome/free-solid-svg-icons";
 import FilteredParameters from "./Components/FilteredParameters.jsx";
 import ListTable from "./Components/ListTable.jsx";
 import ExpenseExportButton from "./Components/ExpenseExportButton.jsx";
@@ -31,6 +32,7 @@ import { useTheme } from '@mui/material/styles';
 import CommonTable from "../../../components/table/CommonTable.jsx";
 import Iconify from "../../../components/Iconify.jsx";
 import Select from "react-select";
+import {AddTwoTone} from "@mui/icons-material";
 
 const defaultQuery = {
   start_date: "",
@@ -294,6 +296,7 @@ export default function ExpenseList() {
       actionFunction: showEditModalFunc,
       permission: "expense_edit",
       textClass: "text-info",
+      icon: faEdit
     },
     {
       actionName: "View",
@@ -302,6 +305,7 @@ export default function ExpenseList() {
       actionFunction: showExpense,
       permission: "expense_view",
       textClass: "text-warning",
+      icon:faEye
     },
     {
       actionName: "Delete",
@@ -310,6 +314,7 @@ export default function ExpenseList() {
       actionFunction: onDelete,
       permission: "expense_delete",
       textClass: "text-danger",
+      icon:faTrash
     },
   ];
 
@@ -346,7 +351,8 @@ export default function ExpenseList() {
             className={"btn primary-theme-btn btn-sm ml-2"}
             onClick={showExpenseFormFunc}
           >
-            <Iconify icon={"eva:plus-fill"} />
+            <FontAwesomeIcon icon={faPlus} />
+
           </button>
         </Box>
       </Box>
