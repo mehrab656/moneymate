@@ -825,3 +825,6 @@ section .details span {
     border-color: var(--custom-btn-border-color);
     color: #FFFFFF;
 }
+ .input-group-text{
+     width: 50%;
+ }

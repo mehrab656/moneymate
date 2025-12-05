@@ -13,7 +13,6 @@ export default function ProfileTab({ settings, handleFunc, submit }) {
     axiosClient
         .get("/upcoming-payments")
         .then(({ data }) => {
-          console.log(data)
         })
         .catch(() => {
           setLoading(false);

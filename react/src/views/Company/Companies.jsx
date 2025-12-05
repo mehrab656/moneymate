@@ -112,8 +112,6 @@ export default function companies() {
   );
 
   const showCompany = (company) => {
-    console.log('showCompany called with company:', company);
-    
     // Pass the component directly, not a function
     showQuickDetails("Details", <CompanyDetails data={company} />);
   };

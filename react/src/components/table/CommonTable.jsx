@@ -105,7 +105,6 @@ export default function StickyHeadTable( {data,isFetching,hasError,tableColumns,
                                     <TableRow hover role="checkbox" tabIndex={-1} key={data.code}>
                                         {tableColumns.map((column) => {
                                             const value = data[column.id];
-                                            console.log(data)
                                             return (
                                                     <TableCell key={column.id} align={column.align}>
                                                         {column.format && typeof value === 'number'

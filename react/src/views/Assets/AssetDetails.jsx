@@ -3,12 +3,6 @@ import { Col, Row, Table, Button } from "react-bootstrap";
 
 const AssetDetails = ({ data }) => {
   const asset = data?.data || data;
-  
-  console.log('asset', asset)
-  console.log('data', data)
-  
-
-  
   if (!asset) {
     return (
       <div className="d-flex justify-content-center align-items-center asset-details-loading">

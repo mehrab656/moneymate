@@ -2,8 +2,6 @@ import React from "react";
 import { Box, Typography, Grid, Paper, Divider } from "@mui/material";
 
 const CompanyDetails = ({ data }) => {
-
-  console.log('data', data)
   if (!data) {
     return (
       <Box p={3}>

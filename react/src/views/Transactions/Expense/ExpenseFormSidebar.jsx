@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import WizCard from "../../../components/WizCard.jsx";
 import MainLoader from "../../../components/loader/MainLoader.jsx";
 import { notification } from "../../../components/ToastNotification.jsx";
-import { Col, Form, Row, Button } from "react-bootstrap";
+import { Col, Form, Row, Button,InputGroup } from "react-bootstrap";
 import {
   useCreateExpenseMutation,
   useGetSingleExpenseDataQuery,
@@ -12,9 +12,10 @@ import { useGetBankDataQuery } from "../../../api/slices/bankSlice.js";
 import { useGetCategoryListDataQuery } from "../../../api/slices/categorySlice.js";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
 import { SettingsContext } from "../../../contexts/SettingsContext.jsx";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faDownload, faTrash} from "@fortawesome/free-solid-svg-icons";
 
-const _initialExpense = {
-  id: null,
+const _initialExpense = [{
   amount: "",
   refundable_amount: "",
   description: "",
@@ -24,10 +25,10 @@ const _initialExpense = {
   attachment: "",
   account: null,
   category: null,
-};
+}];
 
 export default function ExpenseFormSidebar({
-  expenseId,
+  expenseId=null,
   onSuccess,
   showLabel = "true",
   sidebarTitle = null,
@@ -35,7 +36,7 @@ export default function ExpenseFormSidebar({
   colMD = 6,
   colSM = 12,
 }) {
-  const [expense, setExpense] = useState(_initialExpense);
+  const [expenses, setExpenses] = useState(_initialExpense);
   const [loading, setLoading] = useState(false);
   const [accounts, setAccounts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -44,6 +45,41 @@ export default function ExpenseFormSidebar({
   const { closeSidebar } = useSidebarActions();
   const { themeMode } = useContext(SettingsContext);
 
+  const addExpenses = () => {
+    setExpenses([
+      ...expenses,
+      {
+        amount: "",
+        refundable_amount: "",
+        description: "",
+        reference: "",
+        date: "",
+        note: "",
+        attachment: "",
+        account: null,
+        category: null,
+      },
+    ]);
+  };
+
+  const removeExpenses = (index) => {
+    const updatedExpenses = [...expenses];
+    updatedExpenses.splice(index, 1);
+    setExpenses(updatedExpenses);
+  };
+  const handleExpenseInputChange = (e, index) => {
+    const { name, value } = e.target;
+    const updatedExpenses = [...expenses];
+    updatedExpenses[index][name] = value;
+    setExpenses(updatedExpenses);
+  };
+  const handleFileInputChange = (event,index,name) => {
+    const file = event.target.files[0];
+    const updatedExpenses = [...expenses];
+    updatedExpenses[index][name] = file;
+    setExpenses(updatedExpenses);
+
+  };
   // api calls
   const { data: getBankData } = useGetBankDataQuery({
     currentPage: "",
@@ -91,67 +127,69 @@ export default function ExpenseFormSidebar({
     setLoading(true);
     setSaveBtnTxt("Saving...");
 
-    if (!expense?.account?.value) {
-      setSaveBtnTxt("Save");
-      setLoading(false);
-      setErrors((prev) => ({ ...prev, account: ["Account is required."] }));
-      notification("error", "Account required", "Please select an account.");
-      return;
-    }
-    if (!expense?.category?.value) {
-      setSaveBtnTxt("Save");
-      setLoading(false);
-      setErrors((prev) => ({ ...prev, category: ["Category is required."] }));
-      notification("error", "Category required", "Please select a category.");
-      return;
-    }
-    if (!expense?.date) {
-      setSaveBtnTxt("Save");
-      setLoading(false);
-      setErrors((prev) => ({ ...prev, date: ["Date is required."] }));
-      notification("error", "Date required", "Please select a date.");
-      return;
-    }
-    if (!expense?.amount || Number(expense.amount) <= 0) {
-      setSaveBtnTxt("Save");
-      setLoading(false);
-      setErrors((prev) => ({ ...prev, amount: ["Enter a positive amount."] }));
-      notification("error", "Amount invalid", "Please enter a valid amount.");
-      return;
-    }
+    // if (!expense?.account?.value) {
+    //   setSaveBtnTxt("Save");
+    //   setLoading(false);
+    //   setErrors((prev) => ({ ...prev, account: ["Account is required."] }));
+    //   notification("error", "Account required", "Please select an account.");
+    //   return;
+    // }
+    // if (!expense?.category?.value) {
+    //   setSaveBtnTxt("Save");
+    //   setLoading(false);
+    //   setErrors((prev) => ({ ...prev, category: ["Category is required."] }));
+    //   notification("error", "Category required", "Please select a category.");
+    //   return;
+    // }
+    // if (!expense?.date) {
+    //   setSaveBtnTxt("Save");
+    //   setLoading(false);
+    //   setErrors((prev) => ({ ...prev, date: ["Date is required."] }));
+    //   notification("error", "Date required", "Please select a date.");
+    //   return;
+    // }
+    // if (!expense?.amount || Number(expense.amount) <= 0) {
+    //   setSaveBtnTxt("Save");
+    //   setLoading(false);
+    //   setErrors((prev) => ({ ...prev, amount: ["Enter a positive amount."] }));
+    //   notification("error", "Amount invalid", "Please enter a valid amount.");
+    //   return;
+    // }
 
-    const formData = new FormData();
-    formData.append("account_id", expense.account.value);
-    formData.append("amount", expense.amount);
+    const formData  = new FormData();
+    // formData.append("account_id", expense.account.value);
+    // formData.append("amount", expense.amount);
     // Use `refundable_amount` for updates.
     // For creates, default `return_amount` to `refundable_amount` if provided,
     // otherwise fall back to the entered `amount`.
-    if (expense?.id) {
+    if (expenseId) {
       const refundableVal = Number(expense?.refundable_amount ?? 0);
       // Send BOTH to satisfy backend validation and DB mapping on update
       formData.append("refundable_amount", refundableVal);
       formData.append("return_amount", refundableVal);
     } else {
-      const createVal = Number(
-        expense?.refundable_amount !== undefined &&
-          expense?.refundable_amount !== ""
-          ? expense?.refundable_amount
-          : expense?.amount ?? 0
-      );
-      // Send BOTH to satisfy possible backend expectations and DB mapping
-      formData.append("return_amount", createVal);
-      formData.append("refundable_amount", createVal);
+      // const createVal = Number(
+      //   expense?.refundable_amount !== undefined &&
+      //     expense?.refundable_amount !== ""
+      //     ? expense?.refundable_amount
+      //     : expense?.amount ?? 0
+      // );
+      // // Send BOTH to satisfy possible backend expectations and DB mapping
+      // formData.append("return_amount", createVal);
+      // formData.append("refundable_amount", createVal);
     }
-    formData.append("category_id", expense.category.value);
-    formData.append("description", expense.description);
-    formData.append("note", expense.note);
-    formData.append("reference", expense.reference);
-    formData.append("date", expense.date);
-    if (expense.attachment) {
-      formData.append("attachment", expense.attachment);
-    }
+    // formData.append("category_id", expense.category.value);
+    // formData.append("description", expense.description);
+    // formData.append("note", expense.note);
+    // formData.append("reference", expense.reference);
+    // formData.append("date", expense.date);
 
-    const url = expense.id ? `/expense/${expense.id}` : "/expense/add";
+    // if (expense.attachment) {
+    //   formData.append("attachment", expense.attachment);
+    // }
+    formData.append('expenses',JSON.stringify(expenses))
+
+    const url = expenseId ? `/expense/${expenseId}` : "/expense/add";
     try {
       const data = await createExpense({ url, formData }).unwrap();
       notification("success", data?.message, data?.description);
@@ -173,10 +211,7 @@ export default function ExpenseFormSidebar({
     }
   };
 
-  const handleFileInputChange = (event) => {
-    const file = event.target.files[0];
-    setExpense({ ...expense, attachment: file });
-  };
+
 
   // Enforce consistent font size for inputs and selects
   const inputFontSize = "0.875rem";
@@ -221,263 +256,251 @@ export default function ExpenseFormSidebar({
     <div style={{ fontSize: "0.875rem" }}>
       <MainLoader loaderVisible={loading} />
       {sidebarTitle && <h6>{sidebarTitle ? sidebarTitle : ""}</h6>}
-      <WizCard className="animated fadeInDown">
-        <Form onSubmit={(e) => expenseSubmit(e, false)}>
-          <Row>
-            <Col xs={12}>
-              <Form.Group className="mb-3" controlId="Expense Description">
-                {showLabel && (
-                  <Form.Label
-                    style={{ marginBottom: 0 }}
-                    className="custom-form-label"
-                  >
-                    Description
-                  </Form.Label>
-                )}
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  value={expense.description ?? ""}
-                  name="description"
-                  style={{ fontSize: inputFontSize }}
-                  onChange={(e) =>
-                    setExpense({ ...expense, description: e.target.value })
-                  }
-                  placeholder="Enter description"
-                />
-              </Form.Group>
-            </Col>
-          </Row>
+        <Form>
+          {expenses.map((expense,index) => (
+                  <div>
+                    <Row>
+                      <Col xs={colXS} md={colMD} sm={colSM}>
+                        <InputGroup className="mb-3" size={'sm'}>
+                          {showLabel &&
+                              <InputGroup.Text>Description</InputGroup.Text>
+                          }
+                          <Form.Control as="textarea" aria-label="Description"
+                                        placeholder={"Description"}
+                                        value={expense.description ?? ""}
+                                        name="note"
+                                        style={{fontSize: inputFontSize}}
+                                        onChange={(e) => handleExpenseInputChange(e,index)}
+                          />
+                        </InputGroup>
+                      </Col>
+                      <Col xs={colXS} md={colMD} sm={colSM}>
+                        <InputGroup className="mb-3" size={'sm'}>
+                          {showLabel &&
+                              <InputGroup.Text>Note</InputGroup.Text>
+                          }
+                          <Form.Control as="textarea" aria-label="Note"
+                                        placeholder={"Note"}
+                                        value={expense.note ?? ""}
+                                        name="note"
+                                        style={{fontSize: inputFontSize}}
+                                        onChange={(e) => handleExpenseInputChange(e,index)}
 
-          <Row>
-            <Col xs={12} md={6}>
-              <Form.Group className="mb-3" controlId="amount">
-                {showLabel && (
-                  <Form.Label
-                    style={{ marginBottom: 0 }}
-                    className="custom-form-label"
-                  >
-                    Amount
-                  </Form.Label>
-                )}
-                <Form.Control
-                  type="number"
-                  placeholder="Expense Amount"
-                  value={expense.amount}
-                  style={{ fontSize: inputFontSize }}
-                  onChange={(e) =>
-                    setExpense({ ...expense, amount: e.target.value })
-                  }
-                />
-                {errors.amount && (
-                  <p className="error-message">{errors.amount[0]}</p>
-                )}
-              </Form.Group>
-            </Col>
-            <Col xs={12} md={6}>
-              <Form.Group className="mb-3" controlId="refundable_amount">
-                {showLabel && (
-                  <Form.Label
-                    style={{ marginBottom: 0 }}
-                    className="custom-form-label"
-                  >
-                    Refundable Amount
-                  </Form.Label>
-                )}
-                <Form.Control
-                  type="number"
-                  placeholder="Refundable Amount"
-                  value={expense.refundable_amount}
-                  style={{ fontSize: inputFontSize }}
-                  onChange={(e) =>
-                    setExpense({
-                      ...expense,
-                      refundable_amount: e.target.value,
-                    })
-                  }
-                />
-              </Form.Group>
-            </Col>
-          </Row>
+                          />
+                        </InputGroup>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col xs={12} md={6}>
+                        <InputGroup className="mb-3" size={'sm'}>
+                          {
+                              showLabel &&
+                              <InputGroup.Text id="amount">Amount</InputGroup.Text>
+                          }
+                          <Form.Control
+                              placeholder="Expense Amount"
+                              aria-label="Expense Amount"
+                              aria-describedby="amount"
+                              type="number"
+                              value={expense.amount}
+                              // style={{ fontSize: inputFontSize }}
+                              onChange={(e) => handleExpenseInputChange(e,index)}
 
-          <Row>
-            <Col xs={colXS} md={colMD}>
-              <Form.Group className="mb-3" controlId="account">
-                {showLabel && (
-                  <Form.Label
-                    style={{ marginBottom: 0 }}
-                    className="custom-form-label"
-                  >
-                    Account
-                  </Form.Label>
-                )}
+                          />
+                          {errors.amount && (
+                              <p className="error-message">{errors.amount[0]}</p>
+                          )}
+                        </InputGroup>
+                      </Col>
 
-                <Select
-                  classNamePrefix="select"
-                  value={expense.account}
-                  isSearchable
-                  name="account"
-                  options={accounts}
-                  styles={selectStyles}
-                  placeholder={"Select Bank Account"}
-                  onChange={(e) => {
-                    setExpense({ ...expense, account: e });
-                    if (errors.account && e?.value) {
-                      const next = { ...errors };
-                      delete next.account;
-                      setErrors(next);
-                    }
-                  }}
-                />
-                {errors.account && (
-                  <p className="error-message">{errors.account[0]}</p>
-                )}
-              </Form.Group>
-            </Col>
-            <Col xs={colXS} md={colMD}>
-              <Form.Group className="mb-3" controlId="category_id">
-                {showLabel && (
-                  <Form.Label
-                    style={{ marginBottom: 0 }}
-                    className="custom-form-label"
-                  >
-                    Category
-                  </Form.Label>
-                )}
-                <Select
-                  classNamePrefix="select"
-                  value={expense.category}
-                  isSearchable
-                  name="category_id"
-                  styles={selectStyles}
-                  isLoading={categoryIsFetching}
-                  options={categories}
-                  onChange={(e) => {
-                    setExpense({ ...expense, category: e });
-                    if (errors.category && e?.value) {
-                      const next = { ...errors };
-                      delete next.category;
-                      setErrors(next);
-                    }
-                  }}
-                />
-                {errors.category && (
-                  <p className="error-message">{errors.category[0]}</p>
-                )}
-              </Form.Group>
-            </Col>
-          </Row>
+                      <Col xs={12} md={6}>
+                        <InputGroup className="mb-3" size={'sm'}>
+                          {
+                              showLabel &&
+                              <InputGroup.Text id="refundable_amount">Refundable Amount</InputGroup.Text>
+                          }
+                          <Form.Control
+                              placeholder="Refundable Amount"
+                              aria-label="Refundable Amount"
+                              aria-describedby="refundable_amount"
+                              type="number"
+                              value={expense.refundable_amount}
+                              // style={{ fontSize: inputFontSize }}
+                              onChange={(e) => handleExpenseInputChange(e,index)}
 
-          <Row>
-            <Col xs={12} md={6}>
-              <Form.Group className="mb-3" controlId="date">
-                {showLabel && (
-                  <Form.Label
-                    style={{ marginBottom: 0 }}
-                    className="custom-form-label"
-                  >
-                    Date
-                  </Form.Label>
-                )}
-                <Form.Control
-                  type="date"
-                  value={expense.date}
-                  style={{ fontSize: inputFontSize }}
-                  onChange={(e) =>
-                    setExpense({ ...expense, date: e.target.value })
-                  }
-                />
-              </Form.Group>
-            </Col>
-            <Col xs={12} md={6}>
-              <Form.Group className="mb-3" controlId="reference">
-                {showLabel && (
-                  <Form.Label
-                    style={{ marginBottom: 0 }}
-                    className="custom-form-label"
-                  >
-                    Reference
-                  </Form.Label>
-                )}
+                          />
+                        </InputGroup>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col xs={colXS} md={colMD}>
+                        <Form.Group className="mb-3" controlId="account">
+                          <Select
+                              classNamePrefix="select"
+                              value={expense.account}
+                              isSearchable
+                              name="account"
+                              options={accounts}
+                              styles={selectStyles}
+                              placeholder={"Select Bank Account"}
+                              onChange={(e) => {
+                                handleExpenseInputChange(e,index);
+                                if (errors.account && e?.value) {
+                                  const next = {...errors};
+                                  delete next.account;
+                                  setErrors(next);
+                                }
+                              }}
+                          />
+                          {errors.account && (
+                              <p className="error-message">{errors.account[0]}</p>
+                          )}
+                        </Form.Group>
+                      </Col>
+                      <Col xs={colXS} md={colMD}>
+                        <InputGroup className="mb-3" size={'sm'}>
+                          {
+                              showLabel &&
+                              <InputGroup.Text id="category_id">Category</InputGroup.Text>
+                          }
+                          <Select
+                              classNamePrefix="select"
+                              value={expense.category}
+                              isSearchable
+                              name="category_id"
+                              styles={selectStyles}
+                              isLoading={categoryIsFetching}
+                              options={categories}
+                              onChange={(e) => {
+                                handleExpenseInputChange(e,index);
+                                if (errors.category && e?.value) {
+                                  const next = {...errors};
+                                  delete next.category;
+                                  setErrors(next);
+                                }
+                              }}
+                          />
+                          {errors.category && (
+                              <p className="error-message">{errors.category[0]}</p>
+                          )}
+                        </InputGroup>
 
-                <Form.Control
-                  type="text"
-                  placeholder="i.g: 50 AED"
-                  value={expense.reference ?? ""}
-                  style={{ fontSize: inputFontSize }}
-                  onChange={(e) =>
-                    setExpense({ ...expense, reference: e.target.value })
-                  }
-                />
-              </Form.Group>
-            </Col>
-          </Row>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col xs={12} md={6}>
+                        <InputGroup className="mb-3" size={'sm'}>
+                          {
+                              showLabel &&
+                              <InputGroup.Text id="date">Date</InputGroup.Text>
+                          }
+                          <Form.Control
+                              placeholder="Date"
+                              aria-label="Date"
+                              aria-describedby="date"
+                              type="date"
+                              value={expense.date}
+                              // style={{ fontSize: inputFontSize }}
+                              onChange={(e) =>
+                                  handleExpenseInputChange(e,index)
+                              }
+                          />
+                        </InputGroup>
+                      </Col>
+                      <Col xs={12} md={6}>
+                        <InputGroup className="mb-3" size={'sm'}>
+                          {
+                              showLabel &&
+                              <InputGroup.Text id="reference">Reference</InputGroup.Text>
+                          }
+                          <Form.Control
+                              placeholder="Reference"
+                              aria-label="Reference"
+                              aria-describedby="reference"
+                              type="text"
+                              value={expense.date}
+                              // style={{ fontSize: inputFontSize }}
+                              onChange={(e) =>
+                                  handleExpenseInputChange(e,index)
+                              }
+                          />
+                        </InputGroup>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col xs={colXS} md={colMD}>
+                        <InputGroup className="mb-3" size={'sm'}>
+                          <Form.Control
+                              placeholder="Add Attachment"
+                              aria-label="Add Attachment"
+                              aria-describedby="reference"
+                              type="file"
+                              onChange={(e)=>{
+                                handleFileInputChange(e,index,'attachment')
+                              }}
+                          />
+                        </InputGroup>
 
-          <Row>
-            <Col xs={colXS} md={colMD}>
-              <Form.Group className="mb-3" controlId="note">
-                {showLabel && (
-                  <Form.Label
-                    style={{ marginBottom: 0 }}
-                    className="custom-form-label"
-                  >
-                    Note
-                  </Form.Label>
-                )}
+                      </Col>
+                      {
+                        index >0 &&
+                          <Col xs={colXS} md={colMD}>
+                            <Button
+                                variant="danger"
+                                size="sm"
+                                onClick={() => removeExpenses(index)}
+                                className="flex-shrink-0 float-end"
 
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  value={expense.note ?? ""}
-                  name="note"
-                  style={{ fontSize: inputFontSize }}
-                  onChange={(e) =>
-                    setExpense({ ...expense, note: e.target.value })
-                  }
-                />
-              </Form.Group>
-            </Col>
+                            >
+                              <FontAwesomeIcon icon={faTrash} />
 
-            <Col xs={colXS} md={colMD}>
-              <Form.Group className="mb-3">
-                {showLabel && <Form.Label>Add Attachment</Form.Label>}
-                <Form.Control
-                  type="file"
-                  onChange={handleFileInputChange}
-                  style={{ fontSize: inputFontSize }}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <Row className="g-2">
-            <Col xs={12}>
-              <div className="d-flex flex-column flex-sm-row gap-2 justify-content-end">
-                {expense.id ? (
-                  <Button
+                            </Button>
+                          </Col>
+                      }
+                    </Row>
+                    <hr/>
+                  </div>
+              )
+          )}
+        </Form>
+      <Row className="g-2">
+        <Col xs={12}>
+          <div className="d-flex flex-column flex-sm-row gap-2 justify-content-end">
+            {expenseId ? (
+                <Button
                     className={"primary-theme-btn btn-sm"}
                     type="submit"
                     variant="primary"
                     disabled={loading}
-                  >
-                    {loading ? "Updating..." : "Update Expense"}
-                  </Button>
-                ) : (
+                >
+                  {loading ? "Updating..." : "Update Expense"}
+                </Button>
+            ) : (
+                <>
                   <Button
-                    className={"primary-theme-btn btn-sm"}
-                    type="button"
-                    variant="primary"
-                    disabled={loading}
-                    onClick={(e) => expenseSubmit(e, true)}
+                      className={"primary-theme-btn btn-sm"}
+                      type="button"
+                      variant="primary"
+                      onClick={addExpenses}
                   >
-                    {loading ? "Saving..." : "Add Expense"}
+                    {"Add More"}
                   </Button>
-                )}
-              </div>
-            </Col>
-          </Row>
-        </Form>
-      </WizCard>
+                  <Button
+                      className={"primary-theme-btn btn-sm"}
+                      type="button"
+                      variant="primary"
+                      disabled={loading}
+                      onClick={(e) => expenseSubmit(e, true)}
+                  >
+                    {loading ? "Saving..." : "Submit"}
+                  </Button>
+                </>
+
+            )}
+          </div>
+        </Col>
+      </Row>
+
     </div>
   );
 }
