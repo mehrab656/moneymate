@@ -512,12 +512,12 @@ export default function IncomeFormSidebar({
             <Col xs={12}>
               <div className="d-flex flex-column flex-sm-row gap-2 justify-content-end">
                 {incomeId ? (
-                  <Button type="submit" variant="primary" disabled={loading}>
+                  <Button className="primary-theme-btn" type="submit" variant="primary" disabled={loading}>
                     {loading ? "Updating..." : "Update Income"}
                   </Button>
                 ) : (
                   <>
-                    <Button type="submit" variant="primary" disabled={loading}>
+                    <Button className="primary-theme-btn" type="submit" variant="primary" disabled={loading}>
                       {loading ? "Saving..." : "Add Income"}
                     </Button>
                     {/* <Button

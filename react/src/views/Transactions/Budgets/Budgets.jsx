@@ -486,10 +486,10 @@ export default function Budgets() {
                 </Modal.Body>
                 <Modal.Footer>
 
-                    <Button className="btn-sm" variant="primary" onClick={budgetSubmit}>
+                    <Button className="primary-theme-btn btn-sm" variant="primary" onClick={budgetSubmit}>
                         Save
                     </Button>
-                    <Button className="btn-sm" variant="secondary" onClick={handleCloseModal}>
+                    <Button className="primary-theme-btn btn-sm" variant="secondary" onClick={handleCloseModal}>
                         Close
                     </Button>
                 </Modal.Footer>

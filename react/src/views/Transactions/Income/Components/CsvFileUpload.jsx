@@ -246,7 +246,7 @@ export default function CsvFileUpload({handelCloseModal}) {
                     {/*<ProgressBar striped variant={"success"} now={csvProgressStatus} label={`${csvProgressStatus}%`}/>*/}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button className="btn-sm load" variant="primary"
+                    <Button className="primary-theme-btn btn-sm load" variant="primary"
                             onClick={submitCSVFile}>
                         {csvBtnTxt}
                     </Button>
