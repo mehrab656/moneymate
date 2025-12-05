@@ -355,10 +355,10 @@ export default function Return() {
                     </form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button className="btn-sm" variant="primary" onClick={submitForUpdate}>
+                    <Button className="primary-theme-btn btn-sm" variant="primary" onClick={submitForUpdate}>
                         Update
                     </Button>
-                    <Button className="btn-sm" variant="secondary" onClick={handleCloseModal}>
+                    <Button className="primary-theme-btn btn-sm" variant="secondary" onClick={handleCloseModal}>
                         Close
                     </Button>
                 </Modal.Footer>

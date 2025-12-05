@@ -2456,8 +2456,23 @@ body[data-theme='dark'] .filter-modal-content {
   background-color: #0f1216;
   color: rgba(255,255,255,0.87);
   border-color: #3a4048;
+  /* Ensure Bootstrap modal header uses the intended dark color */
+  --bs-modal-header-bg: #0C1A28;
+  --bs-modal-header-border-color: #0C1A28;
 }
-body[data-theme='dark'] .filter-modal-content .modal-header,
+body[data-theme='dark'] .filter-modal-content .modal-header {
+  background-color: #0C1A28;
+  border-color: #0C1A28;
+  /* Hard override in case variables are not respected */
+  background: #0C1A28 !important;
+  border-bottom-color: #0C1A28 !important;
+}
+
+/* Stronger specificity to ensure exact header color in dark mode */
+body[data-theme='dark'] .modal-content.filter-modal-content > .modal-header {
+  background-color: #0C1A28 !important;
+  border-bottom-color: #0C1A28 !important;
+}
 body[data-theme='dark'] .filter-modal-content .modal-footer {
   background-color: transparent;
   border-color: #3a4048;

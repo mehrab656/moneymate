@@ -283,12 +283,12 @@ export default function IncomeList() {
           <span className={"page-title-header"}>Income Histories</span>
         </Box>
         <Box>
-          <button className={"btn btn-secondary btn-sm ml-2"}>
+          <button className={"btn primary-theme-btn btn-sm ml-2"}>
             <FontAwesomeIcon icon={faDownload} />
           </button>
           <IncomeExportButton />
           <button
-            className={"btn btn-success btn-sm ml-2"}
+            className={"btn primary-theme-btn btn-sm ml-2"}
             onClick={showIncomeFormFunc}
           >
             <Iconify icon={"eva:plus-fill"} />
@@ -307,7 +307,7 @@ export default function IncomeList() {
           >
             <Box display="flex">
               <button
-                className={"btn btn-primary btn-sm mr-2"}
+                className={"btn primary-theme-btn btn-sm mr-2"}
                 onClick={toggleFilterModal}
               >
                 <FontAwesomeIcon icon={faFilter} />

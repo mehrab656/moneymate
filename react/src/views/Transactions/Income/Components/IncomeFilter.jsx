@@ -407,10 +407,10 @@ const IncomeFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParams
             </Container>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="danger" onClick={resetFilter}>
+            <Button variant="danger" className="primary-theme-btn" onClick={resetFilter}>
               Reset
             </Button>
-            <Button variant="info" onClick={submitFilter}>Filter</Button>
+            <Button variant="info" className="primary-theme-btn" onClick={submitFilter}>Filter</Button>
           </Modal.Footer>
         </Modal>
       </>

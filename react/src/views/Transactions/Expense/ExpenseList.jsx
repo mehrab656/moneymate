@@ -363,7 +363,7 @@ export default function ExpenseList() {
             >
               <Box display="flex">
                 <button
-                  className={"btn btn-primary btn-sm mr-2"}
+                  className={"btn primary-theme-btn btn-sm mr-2"}
                   onClick={toggleFilterModal}
                 >
                   <FontAwesomeIcon icon={faFilter} />

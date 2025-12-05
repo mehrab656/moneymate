@@ -455,7 +455,7 @@ export default function ExpenseFormSidebar({
               <div className="d-flex flex-column flex-sm-row gap-2 justify-content-end">
                 {expense.id ? (
                   <Button
-                    className={"btn-sm"}
+                    className={"primary-theme-btn btn-sm"}
                     type="submit"
                     variant="primary"
                     disabled={loading}
@@ -464,7 +464,7 @@ export default function ExpenseFormSidebar({
                   </Button>
                 ) : (
                   <Button
-                    className={"btn-sm"}
+                    className={"primary-theme-btn btn-sm"}
                     type="button"
                     variant="primary"
                     disabled={loading}
