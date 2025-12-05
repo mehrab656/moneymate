@@ -5,11 +5,13 @@ import './index.css'
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-datepicker/dist/react-datepicker.css";
 import "../public/custom.css";
+import "../public/darktheme.css"
 
 import {ContextProvider} from "./contexts/ContextProvider.jsx";
 import {SettingsProvider} from "./contexts/SettingsContext.jsx";
 import {SidebarProvider} from "./contexts/SidebarContext.jsx";
 import 'react-tooltip/dist/react-tooltip.css';
+
 
 import { Provider } from "react-redux";
 
