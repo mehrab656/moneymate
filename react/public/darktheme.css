@@ -161,3 +161,10 @@ body[data-theme='dark'] .primary-theme-btn:hover {
     border-color: var(--custom-btn-border-color);
     color: #FFFFFF;
 }
+body[data-theme='dark'] .main-header{
+
+    background-color: #0C1A28;
+    border-bottom: 1px solid #384049;
+    color:rgba(255,255,255,0.87);
+}
+

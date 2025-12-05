@@ -809,5 +809,9 @@ section .details span {
     max-height: 420px;
     overflow: auto;
 }
+.main-header{
 
-
+    /*background-color: ;*/
+    /*border-bottom: 1px solid #384049;*/
+    color:rgba(0,0,0,0.87);
+}

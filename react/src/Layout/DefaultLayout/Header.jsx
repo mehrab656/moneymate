@@ -131,9 +131,9 @@ const Header = ({
 
   return (
     <header
-      className="header-container py-3 shadow-sm"
+      className="header-container py-3 shadow-sm main-header"
       style={{
-        backgroundColor: themeMode === 'dark' ? '#262a32' : theme.palette.background.paper,
+        backgroundColor: theme.palette.background.paper,
         borderBottom: `1px solid ${themeMode === 'dark' ? '#384049' : theme.palette.divider}`,
         color: themeMode === 'dark' ? 'rgba(255,255,255,0.87)' : 'rgba(0,0,0,0.87)',
       }}
