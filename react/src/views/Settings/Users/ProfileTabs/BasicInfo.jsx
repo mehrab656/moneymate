@@ -2,9 +2,13 @@ import { Tab, Form, Card, Row, Col, Button } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import axiosClient from "../../../../axios-client.js";
 import { useStateContext } from "../../../../contexts/ContextProvider.jsx";
-import { useUpdateBasicInfoMutation, useUpdateMyBasicInfoMutation, useGetSingleUserDataQuery } from "../../../../api/slices/userSlice.js";
+import {
+  useUpdateBasicInfoMutation,
+  useUpdateMyBasicInfoMutation,
+  useGetSingleUserDataQuery,
+} from "../../../../api/slices/userSlice.js";
 import { notification } from "../../../../components/ToastNotification.jsx";
-import {useParams} from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const _initials = {
   id: null,
@@ -21,10 +25,13 @@ const _initials = {
 export default function BasicInfo({ user }) {
   const [data, setData] = useState(_initials);
   const [btnText, setBtnText] = useState("Update");
-  let {id} = useParams();
+  let { id } = useParams();
   const [updateBasicData] = useUpdateBasicInfoMutation();
   const [updateMyBasicData] = useUpdateMyBasicInfoMutation();
-  const {data: getUserData } = useGetSingleUserDataQuery({ id }, { skip: !id });
+  const { data: getUserData } = useGetSingleUserDataQuery(
+    { id },
+    { skip: !id }
+  );
   const [currentProfilePicture, setCurrentProfilePicture] = useState(null);
   const { setUser } = useStateContext();
 
@@ -47,7 +54,6 @@ export default function BasicInfo({ user }) {
     }
     return false;
   };
-
 
   const updateBasicInfo = async (event) => {
     event.preventDefault();
@@ -100,7 +106,8 @@ export default function BasicInfo({ user }) {
         dob: getUserData.dob ?? "",
         gender: getUserData.gender ?? "",
         phone: getUserData.phone ?? "",
-        emergency_contract: (getUserData.emergency_contact ?? getUserData.emergency_contract) ?? "",
+        emergency_contract:
+          getUserData.emergency_contact ?? getUserData.emergency_contract ?? "",
         email: getUserData.email ?? "",
       }));
       setCurrentProfilePicture(getUserData.avatar ?? null);
@@ -113,7 +120,8 @@ export default function BasicInfo({ user }) {
         dob: user.dob ?? "",
         gender: user.gender ?? "",
         phone: user.phone ?? "",
-        emergency_contract: (user.emergency_contact ?? user.emergency_contract) ?? "",
+        emergency_contract:
+          user.emergency_contact ?? user.emergency_contract ?? "",
         email: user.email ?? "",
       }));
       setCurrentProfilePicture(user.avatar ?? null);
@@ -132,171 +140,184 @@ export default function BasicInfo({ user }) {
         <Card>
           <Card.Title className={"mb-5"}>Basic Info</Card.Title>
           <Form>
-                      <Row>
-                        <Col xs={12} sm={12}>
-                          <Form.Group className="mb-3" controlId="username">
-                            <Form.Label
-                                style={{ marginBottom: "0px" }}
-                                className="custom-form-label"
-                            >
-                              Username
-                            </Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="i.g: johndoe"
-                                value={data.username}
-                                onChange={(e) => {
-                                  setData({ ...data, username: e.target.value });
-                                }}
-                            />
-                          </Form.Group>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col xs={6} sm={6}>
-                          <Form.Group className="mb-3" controlId="first_name">
-                            <Form.Label
-                                style={{ marginBottom: "0px" }}
-                                className="custom-form-label"
-                            >
-                              First Name
-                            </Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="i.g: John Doe"
-                                value={data.first_name}
-                                onChange={(e) => {
-                                  setData({ ...data, first_name: e.target.value });
-                                }}
-                            />
-                          </Form.Group>
-                        </Col>
-                        <Col xs={6} sm={6}>
-                          <Form.Group className="mb-3" controlId="last_name">
-                            <Form.Label
-                                style={{ marginBottom: "0px" }}
-                                className="custom-form-label"
-                            >
-                              Last Name
-                            </Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="i.g: John Doe"
-                                value={data.last_name}
-                                onChange={(e) => {
-                                  setData({ ...data, last_name: e.target.value });
-                                }}
-                            />
-                          </Form.Group>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col xs={6} sm={6}>
-                          <Form.Group className="mb-3">
-                            <Form.Label
-                                style={{ marginBottom: "0px" }}
-                                className="custom-form-label"
-                            >
-                              Gender
-                            </Form.Label>
-                            <Form.Select
-                                aria-label="gender"
-                                value={data.gender || ""}
-                                onChange={(e) => {
-                                  setData({ ...data, gender: e.target.value });
-                                }}
-                            >
-                              <option value="">Select Gender</option>
-                              <option value="man">Man</option>
-                              <option value="woman">Women</option>
-                            </Form.Select>
-                          </Form.Group>
-                        </Col>
-                        <Col xs={6} sm={6}>
-                          <Form.Group className="mb-3">
-                            <Form.Label
-                                style={{ marginBottom: "0px" }}
-                                className="custom-form-label"
-                            >
-                              Date of Birth
-                            </Form.Label>
-                            <Form.Control
-                                type="date"
-                                placeholder="YYYY-MM-DD"
-                                value={data.dob || ""}
-                                onChange={(e) => {
-                                  setData({ ...data, dob: e.target.value });
-                                }}
-                            />
-                          </Form.Group>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col xs={8} sm={8}>
-                          <Form.Group className="mb-3" controlId="phone">
-                            <Form.Label style={{ marginBottom: "0px" }} className="custom-form-label">
-                              Phone
-                            </Form.Label>
-                            <Form.Control
-                              type="text"
-                              placeholder="i.g: +971212312..."
-                              value={data.phone}
-                              onChange={(e) => {
-                                setData({ ...data, phone: e.target.value });
-                              }}
-                            />
-                          </Form.Group>
-                          <Form.Group className="mb-3" controlId="emergency_contract">
-                            <Form.Label style={{ marginBottom: "0px" }} className="custom-form-label">
-                              Emergency Contact
-                            </Form.Label>
-                            <Form.Control
-                              type="text"
-                              placeholder="i.g: +88123123...."
-                              value={data.emergency_contract}
-                              onChange={(e) => {
-                                setData({ ...data, emergency_contract: e.target.value });
-                              }}
-                            />
-                          </Form.Group>
-                          <Form.Group className="mb-3">
-                            <Form.Label style={{ marginBottom: "0px" }} className="custom-form-label">
-                              Email
-                            </Form.Label>
-                            <Form.Control
-                              type="text"
-                              placeholder="i.g: john.dow@exm.co...."
-                              value={data.email}
-                              onChange={(e) => {
-                                setData({ ...data, email: e.target.value });
-                              }}
-                            />
-                          </Form.Group>
-                        </Col>
-                        <Col xs={4} sm={4}>
-                          <div className={"user-profile-section"}>
-                            <div style={{marginTop: "20px"}}>
-                              {currentProfilePicture && (
-                                <img
-                                  src={currentProfilePicture}
-                                  alt="Uploaded"
-                                  style={{
-                                    width: "200px",
-                                    height: "200px",
-                                    borderRadius: "10px",
-                                    objectFit: "cover"
-                                  }}
-                                />
-                              )}
-                            </div>
-                            <input type="file" accept="image/*" onChange={handleImageChange}/>
-                          </div>
-                        </Col>
-                      </Row>
-                      <Button onClick={(e) => updateBasicInfo(e)} className="custom-btn">
-                        {btnText}
-                      </Button>
-                    </Form>
+            <Row>
+              <Col xs={12} sm={12}>
+                <Form.Group className="mb-3" controlId="username">
+                  <Form.Label
+                    style={{ marginBottom: "0px" }}
+                    className="custom-form-label"
+                  >
+                    Username
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="i.g: johndoe"
+                    value={data.username}
+                    onChange={(e) => {
+                      setData({ ...data, username: e.target.value });
+                    }}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col xs={6} sm={6}>
+                <Form.Group className="mb-3" controlId="first_name">
+                  <Form.Label
+                    style={{ marginBottom: "0px" }}
+                    className="custom-form-label"
+                  >
+                    First Name
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="i.g: John Doe"
+                    value={data.first_name}
+                    onChange={(e) => {
+                      setData({ ...data, first_name: e.target.value });
+                    }}
+                  />
+                </Form.Group>
+              </Col>
+              <Col xs={6} sm={6}>
+                <Form.Group className="mb-3" controlId="last_name">
+                  <Form.Label
+                    style={{ marginBottom: "0px" }}
+                    className="custom-form-label"
+                  >
+                    Last Name
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="i.g: John Doe"
+                    value={data.last_name}
+                    onChange={(e) => {
+                      setData({ ...data, last_name: e.target.value });
+                    }}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col xs={6} sm={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label
+                    style={{ marginBottom: "0px" }}
+                    className="custom-form-label"
+                  >
+                    Gender
+                  </Form.Label>
+                  <Form.Select
+                    aria-label="gender"
+                    value={data.gender || ""}
+                    onChange={(e) => {
+                      setData({ ...data, gender: e.target.value });
+                    }}
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="man">Man</option>
+                    <option value="woman">Women</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col xs={6} sm={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label
+                    style={{ marginBottom: "0px" }}
+                    className="custom-form-label"
+                  >
+                    Date of Birth
+                  </Form.Label>
+                  <Form.Control
+                    type="date"
+                    placeholder="YYYY-MM-DD"
+                    value={data.dob || ""}
+                    onChange={(e) => {
+                      setData({ ...data, dob: e.target.value });
+                    }}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col xs={8} sm={8}>
+                <Form.Group className="mb-3" controlId="phone">
+                  <Form.Label
+                    style={{ marginBottom: "0px" }}
+                    className="custom-form-label"
+                  >
+                    Phone
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="i.g: +971212312..."
+                    value={data.phone}
+                    onChange={(e) => {
+                      setData({ ...data, phone: e.target.value });
+                    }}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="emergency_contract">
+                  <Form.Label
+                    style={{ marginBottom: "0px" }}
+                    className="custom-form-label"
+                  >
+                    Emergency Contact
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="i.g: +88123123...."
+                    value={data.emergency_contract}
+                    onChange={(e) => {
+                      setData({ ...data, emergency_contract: e.target.value });
+                    }}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label
+                    style={{ marginBottom: "0px" }}
+                    className="custom-form-label"
+                  >
+                    Email
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="i.g: john.dow@exm.co...."
+                    value={data.email}
+                    onChange={(e) => {
+                      setData({ ...data, email: e.target.value });
+                    }}
+                  />
+                </Form.Group>
+              </Col>
+              <Col xs={4} sm={4}>
+                <div className={"user-profile-section"}>
+                  <div style={{ marginTop: "20px" }}>
+                    {currentProfilePicture && (
+                      <img
+                        src={currentProfilePicture}
+                        alt="Uploaded"
+                        style={{
+                          width: "200px",
+                          height: "200px",
+                          borderRadius: "10px",
+                          objectFit: "cover",
+                        }}
+                      />
+                    )}
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                  />
+                </div>
+              </Col>
+            </Row>
+            <Button onClick={(e) => updateBasicInfo(e)} className="custom-btn">
+              {btnText}
+            </Button>
+          </Form>
         </Card>
       </Tab.Pane>
     </>
