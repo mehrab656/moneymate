@@ -21,6 +21,7 @@ const SidebarContainer = () => {
     sx,
     headerSx,
     contentSx,
+    footerActions,
     closeSidebar,
   } = useSidebar();
 
@@ -39,6 +40,7 @@ const SidebarContainer = () => {
       sx={sx}
       headerSx={headerSx}
       contentSx={contentSx}
+      footerActions={footerActions}
     >
       {content}
     </GlobalSidebar>

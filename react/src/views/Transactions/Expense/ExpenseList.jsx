@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import Swal from "sweetalert2";
 import { SettingsContext } from "../../../contexts/SettingsContext";
 import MainLoader from "../../../components/loader/MainLoader.jsx";
@@ -86,6 +86,7 @@ export default function ExpenseList() {
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [searchTerms, setSearchTerms] = useState("");
   const [errors, setErrors] = useState({});
+  const quickExpenseRef = useRef(null);
 
   const [showFilterModal, setShowFilterModal] = useState(false); //important
   const [expense, setExpense] = useState({
@@ -195,16 +196,26 @@ export default function ExpenseList() {
     setIsPaginate(true);
   };
   const showExpenseFormFunc = () => {
-    // open in GlobalSidebar large content
+    const createRef = React.createRef();
+    const formId = "expense-form-global";
     showLargeContent(
       "Add New Expense",
       <ExpenseFormSidebar
+        ref={createRef}
         expenseId={null}
+        formId={formId}
         onSuccess={() => {
           setIsPaginate(true);
           refetch();
         }}
-      />
+      />, {
+        footerActions: (
+          <div className="d-flex gap-2">
+            <Button variant="contained" size="small" onClick={() => createRef.current?.addExpenses()}>Add More</Button>
+            <Button variant="contained" size="small" type="submit" form={formId}>Submit</Button>
+          </div>
+        )
+      }
     );
   };
 
@@ -214,15 +225,23 @@ export default function ExpenseList() {
   };
   const showEditModalFunc = (expense) => {
     setExpense(expense);
+    const formId = "expense-form-global";
     showLargeContent(
       "Edit Expense",
       <ExpenseFormSidebar
         expenseId={expense.id}
+        formId={formId}
         onSuccess={() => {
           setIsPaginate(true);
           refetch();
         }}
-      />
+      />, {
+        footerActions: (
+          <div className="d-flex gap-2">
+            <Button variant="contained" size="small" type="submit" form={formId}>Update Expense</Button>
+          </div>
+        )
+      }
     );
   };
 
@@ -451,6 +470,7 @@ export default function ExpenseList() {
             <div className={"sidebar-form quick-expense-card"} style={{ padding: "10px" }}>
               <div className={"sidebar-form-content"}>
                 <ExpenseFormSidebar
+                  ref={quickExpenseRef}
                   expenseId={null}
                   onSuccess={() => {
                     setIsPaginate(true);
@@ -460,6 +480,13 @@ export default function ExpenseList() {
                   showLabel={false}
                   colXS={12}
                   colMD={12}
+                  formId="quick-expense-form"
+                  footerActions={(
+                    <div className="d-flex gap-2">
+                      <Button variant="contained" size="small" onClick={() => quickExpenseRef.current?.addExpenses()}>Add More</Button>
+                      <Button variant="contained" size="small" type="submit" form="quick-expense-form">Submit</Button>
+                    </div>
+                  )}
                 />
               </div>
             </div>

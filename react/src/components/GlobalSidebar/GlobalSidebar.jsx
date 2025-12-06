@@ -7,7 +7,8 @@ import {
   useTheme,
   useMediaQuery,
   Divider,
-  Slide
+  Slide,
+  Button
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 
@@ -35,6 +36,8 @@ const GlobalSidebar = ({
   sx = {},
   headerSx = {},
   contentSx = {},
+  footerActions = null,
+  footerSx = {},
   ...props
 }) => {
   const theme = useTheme();
@@ -76,6 +79,7 @@ const GlobalSidebar = ({
           // backgroundColor: theme.palette.background.paper,
           // backgroundColor: '#0F1724',
           backgroundColor: '#010f27',
+          backgroundImage: 'none',
           ...sx,
         },
         zIndex: theme.zIndex.drawer + 1,
@@ -158,6 +162,23 @@ const GlobalSidebar = ({
           >
             {children}
           </Box>
+           {/* Sticky footer actions area */}
+           {footerActions && (
+             <Box
+               sx={{
+                 display: 'flex',
+                 justifyContent: 'flex-end',
+                 p: 2,
+                 borderTop: `1px solid ${theme.palette.divider}`,
+                 backgroundColor: '#022534',
+                 position: 'sticky',
+                 bottom: 0,
+                 ...footerSx,
+               }}
+             >
+               {footerActions}
+             </Box>
+           )}
         </Box>
       </Slide>
     </Drawer>

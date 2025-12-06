@@ -28,6 +28,7 @@ export const SidebarProvider = ({ children }) => {
     sx: {},
     headerSx: {},
     contentSx: {},
+    footerActions: null,
     onClose: null,
   });
 

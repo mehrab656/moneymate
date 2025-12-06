@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useImperativeHandle, forwardRef } from "react";
 import WizCard from "../../../components/WizCard.jsx";
 import MainLoader from "../../../components/loader/MainLoader.jsx";
 import { notification } from "../../../components/ToastNotification.jsx";
@@ -29,7 +29,9 @@ const _initialExpense = [
   },
 ];
 
-export default function ExpenseFormSidebar({
+export const EXPENSE_FORM_ID = "expense-form-sidebar-form";
+
+const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
   expenseId = null,
   onSuccess,
   showLabel = "true",
@@ -37,7 +39,9 @@ export default function ExpenseFormSidebar({
   colXS = 12,
   colMD = 6,
   colSM = 12,
-}) {
+  footerActions = null,
+  formId: formIdProp = null,
+}, ref) {
   const [expenses, setExpenses] = useState(_initialExpense);
   const [loading, setLoading] = useState(false);
   const [accounts, setAccounts] = useState([]);
@@ -46,6 +50,8 @@ export default function ExpenseFormSidebar({
   const [errors, setErrors] = useState({});
   const { closeSidebar } = useSidebarActions();
   const { themeMode } = useContext(SettingsContext);
+
+  const formId = formIdProp || EXPENSE_FORM_ID;
 
   const addExpenses = () => {
     setExpenses([
@@ -144,6 +150,11 @@ export default function ExpenseFormSidebar({
       setExpense(getSingleExpenseData.data);
     }
   }, [expenseId, getSingleExpenseData, getBankData, getCategoryListData]);
+
+  // Expose imperative API for parent to trigger internal actions
+  useImperativeHandle(ref, () => ({
+    addExpenses,
+  }));
 
   // Do NOT set automatic default date; user must choose explicitly in create mode
 
@@ -308,7 +319,7 @@ export default function ExpenseFormSidebar({
     <div className="px-2 expense-sidebar" style={{ fontSize: "0.875rem", overflowX: "hidden" }}>
       <MainLoader loaderVisible={loading} />
       {sidebarTitle && <h6>{sidebarTitle ? sidebarTitle : ""}</h6>}
-      <Form onSubmit={(e) => expenseSubmit(e, true)}>
+      <Form id={formId} onSubmit={(e) => expenseSubmit(e, true)}>
         <div className="sidebar-scroll-content">
         {expenses.map((expense, index) => (
           <div>
@@ -504,45 +515,35 @@ export default function ExpenseFormSidebar({
                 </Col>
               )}
             </Row>
-            {index > 0 && 
-            <hr />}
+            {index < expenses.length - 1 && (
+              <hr />
+            )}
           </div>
         ))}
         </div>
-        <div className="sidebar-fixed-footer">
-          <div className="d-flex flex-column flex-sm-row gap-2 justify-content-end">
-            {expenseId ? (
-              <Button
-                className={"primary-theme-btn btn-sm"}
-                type="submit"
-                variant="primary"
-                disabled={loading}
-              >
-                {loading ? "Updating..." : "Update Expense"}
-              </Button>
-            ) : (
-              <>
-                <Button
-                  className={"primary-theme-btn btn-sm"}
-                  type="button"
-                  variant="primary"
-                  onClick={addExpenses}
-                >
-                  {"Add More"}
-                </Button>
-                <Button
-                  className={"primary-theme-btn btn-sm"}
-                  type="submit"
-                  variant="primary"
-                  disabled={loading}
-                >
-                  {loading ? "Saving..." : "Submit"}
-                </Button>
-              </>
-            )}
+        {/* Local footer actions (e.g., Quick Expense) via prop */}
+        {footerActions && (
+          <div
+            className="sidebar-fixed-footer"
+            style={{
+              position: "sticky",
+              bottom: 0,
+              // No background or border for Quick Expense local footer
+              backgroundColor: "transparent",
+              borderTop: "none",
+              padding: "12px",
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: "8px",
+              zIndex: 2,
+            }}
+          >
+            {footerActions}
           </div>
-        </div>
+        )}
       </Form>
     </div>
   );
-}
+});
+
+export default ExpenseFormSidebar;

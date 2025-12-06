@@ -184,3 +184,144 @@ body[data-theme='dark'] .actionDropDownMenu .dropdown-item:hover {
     /*position: fixed !important;*/
     background-color: #0C1A28;
 }
+/* Dark mode overrides: Input Group Text */
+.input-group .input-group-text {
+  background-color: #2b3035;
+  color: #dee2e6;
+  border-color: #2b3035;
+}
+
+/* Dark mode overrides: File input "Choose file" button */
+/* Bootstrap 5 and modern browsers */
+.input-group .form-control[type="file"]::file-selector-button,
+.form-control[type="file"]::file-selector-button {
+  background-color: #2b3035;
+  color: #dee2e6;
+  border-color: #2b3035;
+}
+
+/* WebKit fallback (Safari/older Chromium) */
+.input-group .form-control[type="file"]::-webkit-file-upload-button,
+.form-control[type="file"]::-webkit-file-upload-button {
+  background-color: #2b3035;
+  color: #dee2e6;
+  border-color: #2b3035;
+}
+
+/* Ensure file input control itself matches borders/colors */
+.input-group .form-control[type="file"],
+.form-control[type="file"] {
+  background-color: #2b3035;
+  color: #dee2e6;
+  border-color: #2b3035;
+}
+
+/* Bootstrap 4 custom-file support */
+.custom-file-label {
+  background-color: #2b3035;
+  color: #dee2e6;
+  border-color: #2b3035;
+}
+.custom-file-input:focus ~ .custom-file-label {
+  border-color: #2b3035;
+  box-shadow: none;
+}
+.form-control[type="file"]:hover,
+.form-control[type="file"]:focus,
+.form-control[type="file"]:active,
+.input-group .form-control[type="file"]:hover,
+.input-group .form-control[type="file"]:focus,
+.input-group .form-control[type="file"]:active {
+  background-color: #2b3035 !important;
+  color: #dee2e6 !important;
+  border-color: #2b3035 !important;
+  box-shadow: none !important;
+}
+/* Enforce dark styles on input-group text hover/focus/active */
+.input-group .input-group-text:hover,
+.input-group .input-group-text:focus,
+.input-group .input-group-text:active {
+  background-color: #2b3035 !important;
+  color: #dee2e6 !important;
+  border-color: #2b3035 !important;
+}
+
+/* Darken the file input value area ("No file chosen") */
+input[type="file"],
+.form-control[type="file"],
+.input-group .form-control[type="file"] {
+  background-color: #2b3035 !important;
+  color: #dee2e6 !important;
+  border-color: #2b3035 !important;
+}
+
+/* Keep dark on interaction */
+input[type="file"]:hover,
+input[type="file"]:focus,
+input[type="file"]:active,
+.form-control[type="file"]:hover,
+.form-control[type="file"]:focus,
+.form-control[type="file"]:active,
+.input-group .form-control[type="file"]:hover,
+.input-group .form-control[type="file"]:focus,
+.input-group .form-control[type="file"]:active {
+  background-color: #2b3035 !important;
+  color: #dee2e6 !important;
+  border-color: #2b3035 !important;
+  box-shadow: none !important;
+}
+
+/* Ensure the file selector button stays dark across states */
+input[type="file"]::file-selector-button,
+input[type="file"]::file-selector-button:hover,
+input[type="file"]::file-selector-button:focus,
+input[type="file"]::file-selector-button:active,
+.form-control[type="file"]::file-selector-button,
+.form-control[type="file"]::file-selector-button:hover,
+.form-control[type="file"]::file-selector-button:focus,
+.form-control[type="file"]::file-selector-button:active,
+.input-group .form-control[type="file"]::file-selector-button,
+.input-group .form-control[type="file"]::file-selector-button:hover,
+.input-group .form-control[type="file"]::file-selector-button:focus,
+.input-group .form-control[type="file"]::file-selector-button:active {
+  background-color: #2b3035 !important;
+  color: #dee2e6 !important;
+  border-color: #2b3035 !important;
+}
+
+/* WebKit fallback for the button */
+input[type="file"]::-webkit-file-upload-button,
+input[type="file"]::-webkit-file-upload-button:hover,
+input[type="file"]::-webkit-file-upload-button:focus,
+input[type="file"]::-webkit-file-upload-button:active,
+.form-control[type="file"]::-webkit-file-upload-button,
+.form-control[type="file"]::-webkit-file-upload-button:hover,
+.form-control[type="file"]::-webkit-file-upload-button:focus,
+.form-control[type="file"]::-webkit-file-upload-button:active,
+.input-group .form-control[type="file"]::-webkit-file-upload-button,
+.input-group .form-control[type="file"]::-webkit-file-upload-button:hover,
+.input-group .form-control[type="file"]::-webkit-file-upload-button:focus,
+.input-group .form-control[type="file"]::-webkit-file-upload-button:active {
+  background-color: #2b3035 !important;
+  color: #dee2e6 !important;
+  border-color: #2b3035 !important;
+}
+/* Dark mode: File input value area should be darker (#1c1f24) */
+input[type="file"],
+.form-control[type="file"],
+.input-group .form-control[type="file"] {
+  background-color: #1c1f24 !important;
+}
+
+input[type="file"]:hover,
+input[type="file"]:focus,
+input[type="file"]:active,
+.form-control[type="file"]:hover,
+.form-control[type="file"]:focus,
+.form-control[type="file"]:active,
+.input-group .form-control[type="file"]:hover,
+.input-group .form-control[type="file"]:focus,
+.input-group .form-control[type="file"]:active {
+  background-color: #1c1f24 !important;
+  box-shadow: none !important;
+}
