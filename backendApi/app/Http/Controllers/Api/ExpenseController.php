@@ -30,6 +30,7 @@ use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Throwable;
+use Validator;
 
 class ExpenseController extends Controller
 {
@@ -134,116 +135,137 @@ class ExpenseController extends Controller
      * @return JsonResponse
      * @throws Throwable
      */
-    public function add(ExpenseRequest $request): JsonResponse
+    public function add(Request $request): JsonResponse
     {
 
-        $expense = $request->validated();
-        // If client sends `return_amount` on create, map it to `refundable_amount`
-        $incomingReturn = $request->input('return_amount');
-        if ($incomingReturn !== null && (empty($expense['refundable_amount']) || !isset($expense['refundable_amount']))) {
-            $expense['refundable_amount'] = $incomingReturn;
-        }
 
-        $category = Category::where('slug',$expense['category_id'])->first();
-        if (!$category){
-            return response()->json([
-                'message' => 'Not Found!',
-                'description' => "Category was not found!",
-            ], 400);
+        $expenses = $request->input('expenses');
+        if ($expenses) {
+            $expenses = json_decode($expenses, true);
         }
-
-        //check balance amount to make a valid expense
-        $bankAccount = BankAccount::where('slug',$expense['account_id'])->first();
-        if (!$bankAccount){
-            return response()->json([
-                'message' => 'Not Found!',
-                'description' => "Bank account was not found!",
-            ], 400);
+        $validator = Validator::make($expenses, [
+            '*.description' => 'required|string',
+            '*.note' => 'nullable|string',
+            '*.amount' => 'required|numeric',
+            '*.refundable_amount' => 'nullable|numeric',
+            '*.account' => 'nullable',
+            '*.category' => 'nullable',
+            '*.date' => 'required|date',
+            '*.reference' => 'nullable|string',
+            '*.attachment' => 'nullable|string',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
         }
-        if ($bankAccount->balance < $request->amount) {
-            return response()->json([
-                'message' => 'Error!',
-                'description' => 'Insufficient amount to make this expense.',
-            ], 400);
-        }
-
-        // Check Budget for this expense
-        $budgetCategory = BudgetCategory::where('category_id', $request->category_id)->first();
-
-        if ($budgetCategory) {
-            $budget = Budget::find($budgetCategory->budget_id);
-            if ($budget && $expense['amount'] > $budget->amount) {
-                return response()->json([
-                    'message' => 'Error!',
-                    'description' => 'There is no sufficient budget for this category',
-                ]);
-            }
-        }
-
-        if ($request->hasFile('attachment')) {
-            $attachment = $request->file('attachment');
-            $filename = time() . '.' . $attachment->getClientOriginalExtension();
-            $attachment->storeAs('files', $filename);
-            $expense['attachment'] = $filename; // Store only the filename
-        }
-
         try {
-            $oldAccountBalance = $bankAccount->balance;
             DB::beginTransaction();
-            $expenseDate = Carbon::parse($expense['date'])->format('Y-m-d');
-            $expense = Expense::create([
-                'slug' => Uuid::uuid4(),
-                'user_id' => Auth::user()->id,
-                'company_id' => Auth::user()->primary_company,
-                'account_id' => $bankAccount->id,
-                'amount' => $expense['amount'],
-                'refundable_amount' => $expense['refundable_amount'] ?? 0,
-                'category_id' => $category->id,
-                'description' => $expense['description'],
-                'note' => $expense['note'],
-                'reference' => array_key_exists('reference', $expense) ? $expense['reference'] : null,
-                'date' => $expenseDate,
-                'attachment' => array_key_exists('attachment', $expense) ? $expense['attachment'] : null
-            ]);
+            foreach ($expenses as $index => $expense) {
 
-            // Check if expense category falls within any budget's categories
-            $budgets = Budget::where('start_date', '<=', Carbon::now())
-                ->where('company_id', Auth::user()->primary_company)
-                ->with('categories')
-                ->get();
+                $category = Category::where('slug', $expense['category'])->first();
+                if (!$category) {
+                    return response()->json([
+                        'message' => 'Not Found!',
+                        'description' => "Category was not found!",
+                        'index' => $index,
+                    ], 400);
+                }
 
-            foreach ($budgets as $budget) {
-                if ($budget->categories->contains('id', $expense['category_id']) && $this->isWithinTimeRange($budget->start_date, $budget->end_date, $expenseDate)) {
-                    // Add entry to the new table
-                    BudgetExpense::create([
-                        'user_id' => Auth::user()->id,
-                        'budget_id' => $budget->id,
-                        'category_id' => $expense['category_id'],
-                        'amount' => $expense['amount'],
-                    ]);
+                $bankAccount = BankAccount::where('slug', $expense['account'])->first();
+                if (!$bankAccount) {
+                    return response()->json([
+                        'message' => 'Not Found!',
+                        'description' => "Bank account was not found!",
+                        'index' => $index,
 
-                    // Reduce budget amount if the date matches
-                    if (Carbon::parse($expense['created_at'])->isSameDay(Carbon::now())) {
-                        $budget->updated_amount -= $expense['amount'];
-                        $budget->save();
+                    ], 400);
+                }
+
+                //check balance amount to make a valid expense
+                if ($bankAccount->balance < $expense['amount']) {
+                    return response()->json([
+                        'message' => 'Error!',
+                        'description' => 'Insufficient amount to make this expense.',
+                        'index' => $index,
+                    ], 400);
+                }
+
+                // Check Budget for this expense
+                $budgetCategory = BudgetCategory::where('category_id', ['category_id'])->first(); //@fix me
+
+                if ($budgetCategory) {
+                    $budget = Budget::find($budgetCategory->budget_id);
+                    if ($budget && $expense['amount'] > $budget->amount) {
+                        return response()->json([
+                            'message' => 'Error!',
+                            'description' => 'There is no sufficient budget for this category',
+                        ]);
                     }
                 }
+
+                if ($request->hasFile('attachment')) {
+                    $attachment = $request->file('attachment');
+                    $filename = time() . '.' . $attachment->getClientOriginalExtension();
+                    $attachment->storeAs('files', $filename);
+                    $expense['attachment'] = $filename; // Store only the filename
+                }
+
+                $oldAccountBalance = $bankAccount->balance;
+                $expenseDate = Carbon::parse($expense['date'])->format('Y-m-d');
+
+
+                $expense = Expense::create([
+                    'slug' => Uuid::uuid4(),
+                    'user_id' => Auth::user()->id,
+                    'company_id' => Auth::user()->primary_company,
+                    'account_id' => $bankAccount->id,
+                    'amount' => $expense['amount'],
+                    'refundable_amount' => $expense['refundable_amount'] ?? 0,
+                    'category_id' => $category->id,
+                    'description' => $expense['description'],
+                    'note' => $expense['note'],
+                    'reference' => array_key_exists('reference', $expense) ? $expense['reference'] : null,
+                    'date' => $expenseDate,
+                    'attachment' => array_key_exists('attachment', $expense) ? $expense['attachment'] : null
+                ]);
+
+                // Check if expense category falls within any budget's categories
+                $budgets = Budget::where('start_date', '<=', Carbon::now())
+                    ->where('company_id', Auth::user()->primary_company)
+                    ->with('categories')
+                    ->get();
+
+                foreach ($budgets as $budget) {
+                    if ($budget->categories->contains('id', $expense['category_id']) && $this->isWithinTimeRange($budget->start_date, $budget->end_date, $expenseDate)) {
+                        // Add entry to the new table
+                        BudgetExpense::create([
+                            'user_id' => Auth::user()->id,
+                            'budget_id' => $budget->id,
+                            'category_id' => $expense['category_id'],
+                            'amount' => $expense['amount'],
+                        ]);
+
+                        // Reduce budget amount if the date matches
+                        if (Carbon::parse($expense['created_at'])->isSameDay(Carbon::now())) {
+                            $budget->updated_amount -= $expense['amount'];
+                            $budget->save();
+                        }
+                    }
+                }
+
+                // Update the balance of the bank account
+                $bankAccount->balance -= $expense['amount'];
+                $bankAccount->save();
+
+                storeActivityLog([
+                    'object_id' => $expense['id'],
+                    'log_type' => 'create',
+                    'module' => 'expense',
+                    'descriptions' => "",
+                    'data_records' => array_merge(json_decode(json_encode($expense), true), ['old_account_balance' => $oldAccountBalance, 'new_account_balance' => $bankAccount->balance]),
+                ]);
             }
 
-            // Update the balance of the bank account
-            $bankAccount->balance -= $request->amount;
-            $bankAccount->save();
-
-            storeActivityLog([
-                'object_id' => $expense['id'],
-                'log_type' => 'create',
-                'module' => 'expense',
-                'descriptions' => "",
-                'data_records' => array_merge(json_decode(json_encode($expense), true), ['old_account_balance' => $oldAccountBalance, 'new_account_balance' => $bankAccount->balance]),
-            ]);
-
             DB::commit();
-
         } catch (Exception $e) {
             DB::rollBack();
 
