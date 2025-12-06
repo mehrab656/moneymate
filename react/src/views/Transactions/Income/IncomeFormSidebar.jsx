@@ -80,12 +80,24 @@ export default function IncomeFormSidebar({
   const inputFontSize = "0.875rem";
   const isDark = themeMode === "dark";
   const selectStyles = {
-    control: (base) => ({
+    container: (base) => ({
+      ...base,
+      width: "100%",
+      flex: 1,
+      minWidth: 0,
+    }),
+    control: (base, state) => ({
       ...base,
       fontSize: inputFontSize,
       minHeight: 38,
       backgroundColor: isDark ? "#1c1f24" : "#fff",
-      borderColor: isDark ? "#3a4048" : "#c5ccd6",
+      borderColor: isDark
+        ? state.isFocused ? "#4a515b" : "#3a4048"
+        : state.isFocused ? "#7aa2d2" : "#c5ccd6",
+      boxShadow: "none",
+      ":hover": {
+        borderColor: isDark ? "#4a515b" : "#7aa2d2",
+      },
       color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
     }),
     singleValue: (base) => ({
@@ -108,10 +120,27 @@ export default function IncomeFormSidebar({
       fontSize: inputFontSize,
       backgroundColor: isDark ? "#23262b" : "#fff",
     }),
-    option: (base) => ({
+    menuList: (base) => ({
+      ...base,
+      backgroundColor: isDark ? "#23262b" : "#fff",
+      paddingTop: 0,
+      paddingBottom: 0,
+    }),
+    option: (base, state) => ({
       ...base,
       fontSize: inputFontSize,
       color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+      backgroundColor: isDark
+        ? state.isSelected
+          ? "#0C1A28"
+          : state.isFocused
+            ? "#2d3238"
+            : "#23262b"
+        : state.isSelected
+          ? "#e7f0fb"
+          : state.isFocused
+            ? "#f2f2f2"
+            : "#fff",
     }),
   };
 
@@ -227,7 +256,7 @@ export default function IncomeFormSidebar({
     (income?.income_type?.value ?? "") === "reservation";
 
   return (
-    <div style={{ fontSize: "0.875rem" }}>
+    <div className="px-2" style={{ fontSize: "0.875rem", overflowX: "hidden" }}>
       <MainLoader loaderVisible={loading} />
       {sidebarTitle && <h6>{sidebarTitle ? sidebarTitle : ""}</h6>}
       <WizCard className="animated fadeInDown">
@@ -299,7 +328,7 @@ export default function IncomeFormSidebar({
                   name="account"
                   options={accounts}
                   styles={selectStyles}
-                  placeholder={"Select Bank Account"}
+                  placeholder={"Select BANK ACCOUNT"}
                   onChange={(e) => {
                     setIncome({ ...income, account: e });
                     if (errors.account && e?.value) {
@@ -335,7 +364,7 @@ export default function IncomeFormSidebar({
                   isLoading={categoryIsFetching}
                   options={categories}
                   styles={selectStyles}
-                  placeholder={"Select Category"}
+                  placeholder={"Select CATEGORY"}
                   onChange={(e) => {
                     setIncome({ ...income, category: e });
                     if (errors.category && e?.value) {

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import WizCard from "../../../components/WizCard.jsx";
 import MainLoader from "../../../components/loader/MainLoader.jsx";
 import { notification } from "../../../components/ToastNotification.jsx";
-import { Col, Form, Row, Button,InputGroup } from "react-bootstrap";
+import { Col, Form, Row, Button, InputGroup } from "react-bootstrap";
 import {
   useCreateExpenseMutation,
   useGetSingleExpenseDataQuery,
@@ -12,23 +12,25 @@ import { useGetBankDataQuery } from "../../../api/slices/bankSlice.js";
 import { useGetCategoryListDataQuery } from "../../../api/slices/categorySlice.js";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
 import { SettingsContext } from "../../../contexts/SettingsContext.jsx";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faDownload, faTrash} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDownload, faTrash } from "@fortawesome/free-solid-svg-icons";
 
-const _initialExpense = [{
-  description: "",
-  note: "",
-  amount: "",
-  refundable_amount: "",
-  account: null,
-  category: null,
-  date: "",
-  reference: "",
-  attachment: "",
-}];
+const _initialExpense = [
+  {
+    description: "",
+    note: "",
+    amount: "",
+    refundable_amount: "",
+    account: null,
+    category: null,
+    date: "",
+    reference: "",
+    attachment: "",
+  },
+];
 
 export default function ExpenseFormSidebar({
-  expenseId=null,
+  expenseId = null,
   onSuccess,
   showLabel = "true",
   sidebarTitle = null,
@@ -67,15 +69,33 @@ export default function ExpenseFormSidebar({
     updatedExpenses.splice(index, 1);
     setExpenses(updatedExpenses);
   };
-  const handleExpenseInputChange = (e, index) => {
-    const { name, value } = e.target;
+  const handleExpenseInputChange = (e, index, fieldName) => {
     const updatedExpenses = [...expenses];
-    console.log({name,value})
 
-    updatedExpenses[index][name] = value;
+    // Native inputs use event.target; react-select passes the selected option object
+    if (e && e.target) {
+      const { name, value } = e.target;
+      updatedExpenses[index][name] = value;
+    } else {
+      const name = fieldName; // explicit field name for react-select
+      const option = e;
+      // Normalize to always store { value, label } for selects
+      const normalized =
+        option && typeof option === "object"
+          ? {
+              value: option?.value ?? option?.slug ?? option?.id ?? null,
+              label:
+                option?.label ??
+                option?.name ??
+                option?.category_name ??
+                String(option?.id ?? ""),
+            }
+          : { value: option ?? null, label: String(option ?? "") };
+      updatedExpenses[index][name] = normalized;
+    }
     setExpenses(updatedExpenses);
   };
-  const handleFileInputChange = (event,index,name) => {
+  const handleFileInputChange = (event, index, name) => {
     const file = event.target.files[0];
     const updatedExpenses = [...expenses];
     updatedExpenses[index][name] = file;
@@ -98,22 +118,25 @@ export default function ExpenseFormSidebar({
   useEffect(() => {
     if (getBankData?.data?.length > 0) {
       const modifiedAccounts = getBankData.data.map(
-        ({ id, bank_name, account_number }) => ({
-          value: id,
+        ({ slug, id, bank_name, account_number }) => ({
+          // Prefer slug as value; fallback to id if slug missing
+          value: slug ?? id ?? account_number ?? null,
           label: `${bank_name}(${account_number})`,
         })
       );
       setAccounts(modifiedAccounts);
     }
     if (getCategoryListData?.data?.length > 0) {
-      const modifiedCategories = getCategoryListData.data.map((c) => ({
-        value: c?.value ?? c?.id,
-        label:
-          c?.label ??
-          c?.name ??
-          c?.category_name ??
-          String(c?.id ?? "Category"),
-      }));
+      const modifiedCategories = getCategoryListData.data.map((c) => {
+        const label =
+          c?.label ?? c?.name ?? c?.category_name ?? String(c?.id ?? "Category");
+        let val = c?.slug ?? c?.id ?? c?.value ?? null;
+        // Avoid using a display label as the value; prefer slug/id
+        if (val && String(val).trim() === String(label).trim()) {
+          val = c?.slug ?? c?.id ?? null;
+        }
+        return { value: val, label };
+      });
       setCategories(modifiedCategories);
       // Do NOT preselect a default category for create mode
     }
@@ -158,7 +181,7 @@ export default function ExpenseFormSidebar({
     //   return;
     // }
 
-    const formData  = new FormData();
+    const formData = new FormData();
     // formData.append("account_id", expense.account.value);
     // formData.append("amount", expense.amount);
     // Use `refundable_amount` for updates.
@@ -189,7 +212,7 @@ export default function ExpenseFormSidebar({
     // if (expense.attachment) {
     //   formData.append("attachment", expense.attachment);
     // }
-    formData.append('expenses',JSON.stringify(expenses))
+    formData.append("expenses", JSON.stringify(expenses));
 
     const url = expenseId ? `/expense/${expenseId}` : "/expense/add";
     try {
@@ -213,18 +236,28 @@ export default function ExpenseFormSidebar({
     }
   };
 
-
-
   // Enforce consistent font size for inputs and selects
   const inputFontSize = "0.875rem";
   const isDark = themeMode === "dark";
   const selectStyles = {
-    control: (base) => ({
+    container: (base) => ({
+      ...base,
+      width: "100%",
+      flex: 1,
+      minWidth: 0,
+    }),
+    control: (base, state) => ({
       ...base,
       fontSize: inputFontSize,
       minHeight: 38,
       backgroundColor: isDark ? "#1c1f24" : "#fff",
-      borderColor: isDark ? "#3a4048" : "#c5ccd6",
+      borderColor: isDark
+        ? state.isFocused ? "#4a515b" : "#3a4048"
+        : state.isFocused ? "#7aa2d2" : "#c5ccd6",
+      boxShadow: "none",
+      ":hover": {
+        borderColor: isDark ? "#4a515b" : "#7aa2d2",
+      },
       color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
     }),
     singleValue: (base) => ({
@@ -247,266 +280,269 @@ export default function ExpenseFormSidebar({
       fontSize: inputFontSize,
       backgroundColor: isDark ? "#23262b" : "#fff",
     }),
-    option: (base) => ({
+    menuList: (base) => ({
+      ...base,
+      backgroundColor: isDark ? "#23262b" : "#fff",
+      paddingTop: 0,
+      paddingBottom: 0,
+    }),
+    option: (base, state) => ({
       ...base,
       fontSize: inputFontSize,
       color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+      backgroundColor: isDark
+        ? state.isSelected
+          ? "#0C1A28"
+          : state.isFocused
+            ? "#2d3238"
+            : "#23262b"
+        : state.isSelected
+          ? "#e7f0fb"
+          : state.isFocused
+            ? "#f2f2f2"
+            : "#fff",
     }),
   };
 
   return (
-    <div style={{ fontSize: "0.875rem" }}>
+    <div className="px-2 expense-sidebar" style={{ fontSize: "0.875rem", overflowX: "hidden" }}>
       <MainLoader loaderVisible={loading} />
       {sidebarTitle && <h6>{sidebarTitle ? sidebarTitle : ""}</h6>}
-        <Form>
-          {expenses.map((expense,index) => (
-                  <div>
-                    <Row>
-                      <Col xs={colXS} md={colMD} sm={colSM}>
-                        <InputGroup className="mb-3" size={'sm'}>
-                          {showLabel &&
-                              <InputGroup.Text>Description</InputGroup.Text>
-                          }
-                          <Form.Control as="textarea" aria-label="Description"
-                                        placeholder={"Description"}
-                                        value={expense.description ?? ""}
-                                        name="description"
-                                        style={{fontSize: inputFontSize}}
-                                        onChange={(e) => handleExpenseInputChange(e,index)}
-                          />
-                        </InputGroup>
-                      </Col>
-                      <Col xs={colXS} md={colMD} sm={colSM}>
-                        <InputGroup className="mb-3" size={'sm'}>
-                          {showLabel &&
-                              <InputGroup.Text>Note</InputGroup.Text>
-                          }
-                          <Form.Control as="textarea" aria-label="Note"
-                                        placeholder={"Note"}
-                                        value={expense.note ?? ""}
-                                        name="note"
-                                        style={{fontSize: inputFontSize}}
-                                        onChange={(e) => handleExpenseInputChange(e,index)}
+      <Form onSubmit={(e) => expenseSubmit(e, true)}>
+        <div className="sidebar-scroll-content">
+        {expenses.map((expense, index) => (
+          <div>
+            <Row>
+              <Col xs={colXS} md={colMD} sm={colSM}>
+                <InputGroup className="mb-3" size={"sm"}>
+                  {showLabel && <InputGroup.Text>Description</InputGroup.Text>}
+                  <Form.Control
+                    as="textarea"
+                    aria-label="Description"
+                    placeholder={"Description"}
+                    value={expense.description ?? ""}
+                    name="description"
+                    style={{ fontSize: inputFontSize }}
+                    onChange={(e) => handleExpenseInputChange(e, index)}
+                  />
+                </InputGroup>
+              </Col>
+              <Col xs={colXS} md={colMD} sm={colSM}>
+                <InputGroup className="mb-3" size={"sm"}>
+                  {showLabel && <InputGroup.Text>Note</InputGroup.Text>}
+                  <Form.Control
+                    as="textarea"
+                    aria-label="Note"
+                    placeholder={"Note"}
+                    value={expense.note ?? ""}
+                    name="note"
+                    style={{ fontSize: inputFontSize }}
+                    onChange={(e) => handleExpenseInputChange(e, index)}
+                  />
+                </InputGroup>
+              </Col>
+            </Row>
+            <Row>
+              <Col xs={12} md={6}>
+                <InputGroup className="mb-3" size={"sm"}>
+                  {showLabel && (
+                    <InputGroup.Text id="amount">Amount</InputGroup.Text>
+                  )}
+                  <Form.Control
+                    placeholder="Expense Amount"
+                    aria-label="Expense Amount"
+                    aria-describedby="amount"
+                    name={"amount"}
+                    type="number"
+                    value={expense.amount}
+                    // style={{ fontSize: inputFontSize }}
+                    onChange={(e) => handleExpenseInputChange(e, index)}
+                  />
+                  {errors.amount && (
+                    <p className="error-message">{errors.amount[0]}</p>
+                  )}
+                </InputGroup>
+              </Col>
 
-                          />
-                        </InputGroup>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col xs={12} md={6}>
-                        <InputGroup className="mb-3" size={'sm'}>
-                          {
-                              showLabel &&
-                              <InputGroup.Text id="amount">Amount</InputGroup.Text>
-                          }
-                          <Form.Control
-                              placeholder="Expense Amount"
-                              aria-label="Expense Amount"
-                              aria-describedby="amount"
-                              name={'amount'}
-                              type="number"
-                              value={expense.amount}
-                              // style={{ fontSize: inputFontSize }}
-                              onChange={(e) => handleExpenseInputChange(e,index)}
-
-                          />
-                          {errors.amount && (
-                              <p className="error-message">{errors.amount[0]}</p>
-                          )}
-                        </InputGroup>
-                      </Col>
-
-                      <Col xs={12} md={6}>
-                        <InputGroup className="mb-3" size={'sm'}>
-                          {
-                              showLabel &&
-                              <InputGroup.Text id="refundable_amount">Refundable Amount</InputGroup.Text>
-                          }
-                          <Form.Control
-                              placeholder="Refundable Amount"
-                              aria-label="Refundable Amount"
-                              aria-describedby="refundable_amount"
-                              name="refundable_amount"
-                              type="number"
-                              value={expense.refundable_amount}
-                              // style={{ fontSize: inputFontSize }}
-                              onChange={(e) => handleExpenseInputChange(e,index)}
-
-                          />
-                        </InputGroup>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col xs={colXS} md={colMD}>
-                        <Form.Group className="mb-3" controlId="account">
-                          <Select
-                              classNamePrefix="select"
-                              value={expense.account}
-                              isSearchable
-                              name="account"
-                              options={accounts}
-                              styles={selectStyles}
-                              placeholder={"Select Bank Account"}
-                              onChange={(e) => {
-                                handleExpenseInputChange(e,index);
-                                if (errors.account && e?.value) {
-                                  const next = {...errors};
-                                  delete next.account;
-                                  setErrors(next);
-                                }
-                              }}
-                          />
-                          {errors.account && (
-                              <p className="error-message">{errors.account[0]}</p>
-                          )}
-                        </Form.Group>
-                      </Col>
-                      <Col xs={colXS} md={colMD}>
-                        <InputGroup className="mb-3" size={'sm'}>
-                          {
-                              showLabel &&
-                              <InputGroup.Text id="category_id">Category</InputGroup.Text>
-                          }
-                          <Select
-                              classNamePrefix="select"
-                              value={expense.category}
-                              isSearchable
-                              name="category"
-                              styles={selectStyles}
-                              isLoading={categoryIsFetching}
-                              options={categories}
-                              onChange={(e) => {
-                                handleExpenseInputChange(e,index);
-                                if (errors.category && e?.value) {
-                                  const next = {...errors};
-                                  delete next.category;
-                                  setErrors(next);
-                                }
-                              }}
-                          />
-                          {errors.category && (
-                              <p className="error-message">{errors.category[0]}</p>
-                          )}
-                        </InputGroup>
-
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col xs={12} md={6}>
-                        <InputGroup className="mb-3" size={'sm'}>
-                          {
-                              showLabel &&
-                              <InputGroup.Text id="date">Date</InputGroup.Text>
-                          }
-                          <Form.Control
-                              placeholder="Date"
-                              aria-label="Date"
-                              aria-describedby="date"
-                              name="date"
-                              type="date"
-                              value={expense.date}
-                              // style={{ fontSize: inputFontSize }}
-                              onChange={(e) =>
-                                  handleExpenseInputChange(e,index)
-                              }
-                          />
-                        </InputGroup>
-                      </Col>
-                      <Col xs={12} md={6}>
-                        <InputGroup className="mb-3" size={'sm'}>
-                          {
-                              showLabel &&
-                              <InputGroup.Text id="reference">Reference</InputGroup.Text>
-                          }
-                          <Form.Control
-                              placeholder="Reference"
-                              aria-label="Reference"
-                              aria-describedby="reference"
-                              name="reference"
-                              type="text"
-                              value={expense.reference}
-                              // style={{ fontSize: inputFontSize }}
-                              onChange={(e) =>
-                                  handleExpenseInputChange(e,index)
-                              }
-                          />
-                        </InputGroup>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col xs={colXS} md={colMD}>
-                        <InputGroup className="mb-3" size={'sm'}>
-                          <Form.Control
-                              placeholder="Add Attachment"
-                              aria-label="Add Attachment"
-                              name="attachment"
-                              type="file"
-                              onChange={(e)=>{
-                                handleFileInputChange(e,index,'attachment')
-                              }}
-                          />
-                        </InputGroup>
-
-                      </Col>
-                      {
-                        index >0 &&
-                          <Col xs={colXS} md={colMD}>
-                            <Button
-                                variant="danger"
-                                size="sm"
-                                onClick={() => removeExpenses(index)}
-                                className="flex-shrink-0 float-end"
-
-                            >
-                              <FontAwesomeIcon icon={faTrash} />
-
-                            </Button>
-                          </Col>
+              <Col xs={12} md={6}>
+                <InputGroup className="mb-3" size={"sm"}>
+                  {showLabel && (
+                    <InputGroup.Text id="refundable_amount">
+                      Refundable Amount
+                    </InputGroup.Text>
+                  )}
+                  <Form.Control
+                    placeholder="Refundable Amount"
+                    aria-label="Refundable Amount"
+                    aria-describedby="refundable_amount"
+                    name="refundable_amount"
+                    type="number"
+                    value={expense.refundable_amount}
+                    // style={{ fontSize: inputFontSize }}
+                    onChange={(e) => handleExpenseInputChange(e, index)}
+                  />
+                </InputGroup>
+              </Col>
+            </Row>
+            <Row>
+              <Col xs={colXS} md={colMD}>
+                <InputGroup className="mb-3" size={"sm"}>
+                  {showLabel && (
+                    <InputGroup.Text id="account">Bank Account</InputGroup.Text>
+                  )}
+                  <Select
+                    classNamePrefix="select"
+                    value={expense.account}
+                    isSearchable
+                    name="account"
+                    options={accounts}
+                    styles={selectStyles}
+                    placeholder={"Select account"}
+                    onChange={(option) => {
+                      handleExpenseInputChange(option, index, 'account');
+                      if (errors.account && option?.value) {
+                        const next = { ...errors };
+                        delete next.account;
+                        setErrors(next);
                       }
-                    </Row>
-                    <hr/>
-                  </div>
-              )
-          )}
-        </Form>
-      <Row className="g-2">
-        <Col xs={12}>
+                    }}
+                  />
+                  {errors.account && (
+                    <p className="error-message">{errors.account[0]}</p>
+                  )}
+                </InputGroup>
+              </Col>
+              <Col xs={colXS} md={colMD}>
+                <InputGroup className="mb-3" size={"sm"}>
+                  {showLabel && (
+                    <InputGroup.Text id="category_id">Category</InputGroup.Text>
+                  )}
+                  <Select
+                    classNamePrefix="select"
+                    value={expense.category}
+                    isSearchable
+                    name="category"
+                    styles={selectStyles}
+                    isLoading={categoryIsFetching}
+                    options={categories}
+                    placeholder={"Select Category"}
+                    onChange={(option) => {
+                      handleExpenseInputChange(option, index, 'category');
+                      if (errors.category && option?.value) {
+                        const next = { ...errors };
+                        delete next.category;
+                        setErrors(next);
+                      }
+                    }}
+                  />
+                  {errors.category && (
+                    <p className="error-message">{errors.category[0]}</p>
+                  )}
+                </InputGroup>
+              </Col>
+            </Row>
+            <Row>
+              <Col xs={12} md={6}>
+                <InputGroup className="mb-3" size={"sm"}>
+                  {showLabel && (
+                    <InputGroup.Text id="date">Date</InputGroup.Text>
+                  )}
+                  <Form.Control
+                    placeholder="Date"
+                    aria-label="Date"
+                    aria-describedby="date"
+                    name="date"
+                    type="date"
+                    value={expense.date}
+                    // style={{ fontSize: inputFontSize }}
+                    onChange={(e) => handleExpenseInputChange(e, index)}
+                  />
+                </InputGroup>
+              </Col>
+              <Col xs={12} md={6}>
+                <InputGroup className="mb-3" size={"sm"}>
+                  {showLabel && (
+                    <InputGroup.Text id="reference">Reference</InputGroup.Text>
+                  )}
+                  <Form.Control
+                    placeholder="Reference"
+                    aria-label="Reference"
+                    aria-describedby="reference"
+                    name="reference"
+                    type="text"
+                    value={expense.reference}
+                    // style={{ fontSize: inputFontSize }}
+                    onChange={(e) => handleExpenseInputChange(e, index)}
+                  />
+                </InputGroup>
+              </Col>
+            </Row>
+            <Row>
+              <Col xs={colXS} md={colMD}>
+                <InputGroup className="mb-3" size={"sm"}>
+                  <Form.Control
+                    placeholder="Add Attachment"
+                    aria-label="Add Attachment"
+                    name="attachment"
+                    type="file"
+                    onChange={(e) => {
+                      handleFileInputChange(e, index, "attachment");
+                    }}
+                  />
+                </InputGroup>
+              </Col>
+              {index > 0 && (
+                <Col xs={colXS} md={colMD}>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => removeExpenses(index)}
+                    className="flex-shrink-0 float-end"
+                  >
+                    <FontAwesomeIcon icon={faTrash} />
+                  </Button>
+                </Col>
+              )}
+            </Row>
+            {index > 0 && 
+            <hr />}
+          </div>
+        ))}
+        </div>
+        <div className="sidebar-fixed-footer">
           <div className="d-flex flex-column flex-sm-row gap-2 justify-content-end">
             {expenseId ? (
-                <Button
-                    className={"primary-theme-btn btn-sm"}
-                    type="submit"
-                    variant="primary"
-                    disabled={loading}
-                >
-                  {loading ? "Updating..." : "Update Expense"}
-                </Button>
+              <Button
+                className={"primary-theme-btn btn-sm"}
+                type="submit"
+                variant="primary"
+                disabled={loading}
+              >
+                {loading ? "Updating..." : "Update Expense"}
+              </Button>
             ) : (
-                <>
-                  <Button
-                      className={"primary-theme-btn btn-sm"}
-                      type="button"
-                      variant="primary"
-                      onClick={addExpenses}
-                  >
-                    {"Add More"}
-                  </Button>
-                  <Button
-                      className={"primary-theme-btn btn-sm"}
-                      type="button"
-                      variant="primary"
-                      disabled={loading}
-                      onClick={(e) => expenseSubmit(e, true)}
-                  >
-                    {loading ? "Saving..." : "Submit"}
-                  </Button>
-                </>
-
+              <>
+                <Button
+                  className={"primary-theme-btn btn-sm"}
+                  type="button"
+                  variant="primary"
+                  onClick={addExpenses}
+                >
+                  {"Add More"}
+                </Button>
+                <Button
+                  className={"primary-theme-btn btn-sm"}
+                  type="submit"
+                  variant="primary"
+                  disabled={loading}
+                >
+                  {loading ? "Saving..." : "Submit"}
+                </Button>
+              </>
             )}
           </div>
-        </Col>
-      </Row>
-
+        </div>
+      </Form>
     </div>
   );
 }
