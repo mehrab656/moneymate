@@ -2488,3 +2488,44 @@ body[data-theme='light'] .filter-modal-content .modal-footer {
   background-color: #ffffff;
   border-color: #dee2e6;
 }
+
+/* Dark mode: ensure calendar icon in date inputs is white */
+body[data-theme='dark'] input[type='date']::-webkit-calendar-picker-indicator,
+body[data-theme='dark'] .input-group .form-control[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.2);
+  opacity: 0.9;
+}
+
+/* Improve date text visibility in dark mode where needed */
+body[data-theme='dark'] input[type='date'],
+body[data-theme='dark'] .input-group .form-control[type='date'] {
+  color: rgba(255, 255, 255, 0.87);
+}
+
+/* Sidebar actions fixed at bottom, content scrolls */
+.expense-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  position: relative;
+}
+.expense-sidebar .sidebar-scroll-content {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 64px; /* room for sticky buttons */
+}
+.expense-sidebar .sidebar-fixed-footer {
+  position: sticky;
+  bottom: 0; /* pin to bottom of scroll area */
+  padding: 8px 16px;
+  border-top: none;
+  background-color: transparent;
+  box-shadow: none;
+  z-index: 4;
+}
+body[data-theme='dark'] .expense-sidebar .sidebar-fixed-footer {
+  border-top-color: transparent;
+  background-color: transparent;
+}
