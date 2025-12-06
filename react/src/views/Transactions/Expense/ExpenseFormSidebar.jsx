@@ -16,15 +16,15 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faDownload, faTrash} from "@fortawesome/free-solid-svg-icons";
 
 const _initialExpense = [{
+  description: "",
+  note: "",
   amount: "",
   refundable_amount: "",
-  description: "",
-  reference: "",
-  date: "",
-  note: "",
-  attachment: "",
   account: null,
   category: null,
+  date: "",
+  reference: "",
+  attachment: "",
 }];
 
 export default function ExpenseFormSidebar({
@@ -70,6 +70,8 @@ export default function ExpenseFormSidebar({
   const handleExpenseInputChange = (e, index) => {
     const { name, value } = e.target;
     const updatedExpenses = [...expenses];
+    console.log({name,value})
+
     updatedExpenses[index][name] = value;
     setExpenses(updatedExpenses);
   };
@@ -78,8 +80,8 @@ export default function ExpenseFormSidebar({
     const updatedExpenses = [...expenses];
     updatedExpenses[index][name] = file;
     setExpenses(updatedExpenses);
-
   };
+
   // api calls
   const { data: getBankData } = useGetBankDataQuery({
     currentPage: "",
@@ -268,7 +270,7 @@ export default function ExpenseFormSidebar({
                           <Form.Control as="textarea" aria-label="Description"
                                         placeholder={"Description"}
                                         value={expense.description ?? ""}
-                                        name="note"
+                                        name="description"
                                         style={{fontSize: inputFontSize}}
                                         onChange={(e) => handleExpenseInputChange(e,index)}
                           />
@@ -301,6 +303,7 @@ export default function ExpenseFormSidebar({
                               placeholder="Expense Amount"
                               aria-label="Expense Amount"
                               aria-describedby="amount"
+                              name={'amount'}
                               type="number"
                               value={expense.amount}
                               // style={{ fontSize: inputFontSize }}
@@ -323,6 +326,7 @@ export default function ExpenseFormSidebar({
                               placeholder="Refundable Amount"
                               aria-label="Refundable Amount"
                               aria-describedby="refundable_amount"
+                              name="refundable_amount"
                               type="number"
                               value={expense.refundable_amount}
                               // style={{ fontSize: inputFontSize }}
@@ -367,7 +371,7 @@ export default function ExpenseFormSidebar({
                               classNamePrefix="select"
                               value={expense.category}
                               isSearchable
-                              name="category_id"
+                              name="category"
                               styles={selectStyles}
                               isLoading={categoryIsFetching}
                               options={categories}
@@ -398,6 +402,7 @@ export default function ExpenseFormSidebar({
                               placeholder="Date"
                               aria-label="Date"
                               aria-describedby="date"
+                              name="date"
                               type="date"
                               value={expense.date}
                               // style={{ fontSize: inputFontSize }}
@@ -417,8 +422,9 @@ export default function ExpenseFormSidebar({
                               placeholder="Reference"
                               aria-label="Reference"
                               aria-describedby="reference"
+                              name="reference"
                               type="text"
-                              value={expense.date}
+                              value={expense.reference}
                               // style={{ fontSize: inputFontSize }}
                               onChange={(e) =>
                                   handleExpenseInputChange(e,index)
@@ -433,7 +439,7 @@ export default function ExpenseFormSidebar({
                           <Form.Control
                               placeholder="Add Attachment"
                               aria-label="Add Attachment"
-                              aria-describedby="reference"
+                              name="attachment"
                               type="file"
                               onChange={(e)=>{
                                 handleFileInputChange(e,index,'attachment')

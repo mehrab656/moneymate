@@ -167,7 +167,6 @@ class ExpenseController extends Controller
             ], 400);
         }
 
-
         // Check Budget for this expense
         $budgetCategory = BudgetCategory::where('category_id', $request->category_id)->first();
 
@@ -180,7 +179,6 @@ class ExpenseController extends Controller
                 ]);
             }
         }
-
 
         if ($request->hasFile('attachment')) {
             $attachment = $request->file('attachment');
