@@ -6,13 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="eb82f29d-a946-4d7c-af4f-355ea30ae3ce" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/public/custom.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/public/custom.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/components/GlobalSidebar/GlobalSidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/components/GlobalSidebar/GlobalSidebar.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/components/table/CommonTable.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/components/table/CommonTable.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Assets/AssetDetails.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Assets/AssetDetails.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Company/Companies.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Company/Companies.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Company/CompanyDetails.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Company/CompanyDetails.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Settings/Settings/Components/ProfileTab.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Settings/Settings/Components/ProfileTab.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/views/Transactions/Expense/ExpenseFormSidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Transactions/Expense/ExpenseFormSidebar.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -278,7 +272,7 @@
       <workItem from="1755799534883" duration="23722000" />
       <workItem from="1759914034257" duration="23268000" />
       <workItem from="1764705581442" duration="30259000" />
-      <workItem from="1764964769912" duration="8972000" />
+      <workItem from="1764964769912" duration="11878000" />
     </task>
     <servers />
   </component>
@@ -300,7 +294,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="php">
           <url>file://$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php</url>
-          <line>391</line>
+          <line>389</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="php">
