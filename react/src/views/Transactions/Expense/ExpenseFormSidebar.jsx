@@ -48,6 +48,70 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
   const [categories, setCategories] = useState([]);
   const [saveBtnTxt, setSaveBtnTxt] = useState("Save");
   const [errors, setErrors] = useState({});
+
+  // Render server-side validation errors for a given expense index.
+  // Supports both dot-notated keys (e.g., "0.description") and nested objects.
+  const renderIndexErrors = (idx) => {
+    try {
+      const messages = [];
+      if (errors && typeof errors === "object") {
+        Object.entries(errors).forEach(([key, value]) => {
+          if (key.startsWith(`${idx}.`)) {
+            const vals = Array.isArray(value) ? value : [value];
+            messages.push(...vals);
+          } else if (String(key) === String(idx) && value && typeof value === "object") {
+            Object.values(value).forEach((v) => {
+              const vals = Array.isArray(v) ? v : [v];
+              messages.push(...vals);
+            });
+          }
+        });
+      }
+      if (!messages.length) return null;
+      return (
+        <div className="text-danger" style={{ fontSize: "0.85rem", marginTop: 6 }}>
+          {messages.map((m, i) => (
+            <div key={`err-${idx}-${i}`}>{m}</div>
+          ))}
+        </div>
+      );
+    } catch (e) {
+      return null;
+    }
+  };
+  const renderFieldErrors = (idx, field) => {
+    try {
+      const msgs = [];
+      const e = errors || {};
+      const dotKey = `${idx}.${field}`;
+      const pushVals = (val) => {
+        if (Array.isArray(val)) msgs.push(...val);
+        else if (val) msgs.push(String(val));
+      };
+      if (e[dotKey]) pushVals(e[dotKey]);
+      if (e[idx] && typeof e[idx] === "object" && e[idx][field]) pushVals(e[idx][field]);
+      if (e[field]) pushVals(e[field]);
+      const cleaned = msgs.map((m) => m.replaceAll(`${idx}.`, ""));
+      if (!cleaned.length) return null;
+      return (
+        <div className="text-danger" style={{ fontSize: "0.85rem", marginTop: errorMarginTop }}>
+          {cleaned.map((m, i) => (
+            <div key={`ferr-${idx}-${field}-${i}`}>{m}</div>
+          ))}
+        </div>
+      );
+    } catch {
+      return null;
+    }
+  };
+  const hasFieldError = (idx, field) => {
+    const e = errors || {};
+    return Boolean(
+      e[`${idx}.${field}`] ||
+      (e[idx] && typeof e[idx] === "object" && e[idx][field]) ||
+      e[field]
+    );
+  };
   const { closeSidebar } = useSidebarActions();
   const { themeMode } = useContext(SettingsContext);
 
@@ -82,6 +146,20 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
     if (e && e.target) {
       const { name, value } = e.target;
       updatedExpenses[index][name] = value;
+      // Clear any server-side error for this field at this index
+      setErrors((prev) => {
+        if (!prev || typeof prev !== "object") return prev;
+        const next = { ...prev };
+        const key = `${index}.${name}`;
+        if (next[key]) delete next[key];
+        if (next[index] && typeof next[index] === "object") {
+          const nested = { ...next[index] };
+          if (nested[name]) delete nested[name];
+          if (Object.keys(nested).length) next[index] = nested; else delete next[index];
+        }
+        if (next[name]) delete next[name]; // fallback for non-indexed keys
+        return next;
+      });
     } else {
       const name = fieldName; // explicit field name for react-select
       const option = e;
@@ -98,6 +176,20 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
             }
           : { value: option ?? null, label: String(option ?? "") };
       updatedExpenses[index][name] = normalized;
+      // Clear any server-side error for this select at this index
+      setErrors((prev) => {
+        if (!prev || typeof prev !== "object") return prev;
+        const next = { ...prev };
+        const key = `${index}.${name}`;
+        if (next[key]) delete next[key];
+        if (next[index] && typeof next[index] === "object") {
+          const nested = { ...next[index] };
+          if (nested[name]) delete nested[name];
+          if (Object.keys(nested).length) next[index] = nested; else delete next[index];
+        }
+        if (next[name]) delete next[name]; // fallback for non-indexed keys
+        return next;
+      });
     }
     setExpenses(updatedExpenses);
   };
@@ -106,6 +198,21 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
     const updatedExpenses = [...expenses];
     updatedExpenses[index][name] = file;
     setExpenses(updatedExpenses);
+
+    // Clear any server-side error for this attachment field
+    setErrors((prev) => {
+      if (!prev || typeof prev !== "object") return prev;
+      const next = { ...prev };
+      const key1 = `${index}.${name}`;
+      if (next[key1]) delete next[key1];
+      if (next[index] && typeof next[index] === "object") {
+        const nested = { ...next[index] };
+        if (nested[name]) delete nested[name];
+        if (Object.keys(nested).length) next[index] = nested; else delete next[index];
+      }
+      if (next[name]) delete next[name];
+      return next;
+    });
   };
 
   // api calls
@@ -220,17 +327,29 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
     // formData.append("reference", expense.reference);
     // formData.append("date", expense.date);
 
-    // if (expense.attachment) {
-    //   formData.append("attachment", expense.attachment);
-    // }
-    formData.append("expenses", JSON.stringify(expenses));
+    // Keep JSON payload unchanged in shape but EXCLUDE attachment field
+    const jsonExpenses = expenses.map((exp) => {
+      const out = { ...exp };
+      if ("attachment" in out) delete out.attachment;
+      return out;
+    });
+    formData.append("expenses", JSON.stringify(jsonExpenses));
+    // Only append attachments so files serialize correctly alongside JSON
+    expenses.forEach((exp, idx) => {
+      const p = `expenses[${idx}]`;
+      if (exp.attachment instanceof File) {
+        formData.append(`${p}[attachment]`, exp.attachment);
+      }
+    });
 
     const url = expenseId ? `/expense/${expenseId}` : "/expense/add";
     try {
       const data = await createExpense({ url, formData }).unwrap();
       notification("success", data?.message, data?.description);
       if (stay) {
-        setExpense({ ..._initialExpense });
+        // Reset form rows on success in create mode
+        setExpenses(_initialExpense);
+        setErrors({});
       } else {
         onSuccess?.();
         closeSidebar();
@@ -242,6 +361,18 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
         err?.message || "An error occurred",
         err?.description || "Please try again later."
       );
+      // Capture server-side validation errors to render under each row.
+      // Some backends return `{ errors: {...} }`, others return the errors object directly.
+      const payload = err?.errorData;
+      let serverErrors = null;
+      if (payload && typeof payload === "object") {
+        if (payload.errors && typeof payload.errors === "object") {
+          serverErrors = payload.errors;
+        } else {
+          serverErrors = payload; // raw errors object (e.g., {"0.description": [..]})
+        }
+      }
+      if (serverErrors && typeof serverErrors === "object") setErrors(serverErrors);
     } finally {
       setLoading(false);
     }
@@ -249,6 +380,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
 
   // Enforce consistent font size for inputs and selects
   const inputFontSize = "0.875rem";
+  const errorMarginTop = 2;
   const isDark = themeMode === "dark";
   const selectStyles = {
     container: (base) => ({
@@ -325,7 +457,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
           <div>
             <Row>
               <Col xs={colXS} md={colMD} sm={colSM}>
-                <InputGroup className="mb-3" size={"sm"}>
+                <InputGroup className={hasFieldError(index, "description") ? "mb-1" : "mb-3"} size={"sm"}>
                   {showLabel && <InputGroup.Text>Description</InputGroup.Text>}
                   <Form.Control
                     as="textarea"
@@ -337,6 +469,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
                     onChange={(e) => handleExpenseInputChange(e, index)}
                   />
                 </InputGroup>
+                {renderFieldErrors(index, "description")}
               </Col>
               <Col xs={colXS} md={colMD} sm={colSM}>
                 <InputGroup className="mb-3" size={"sm"}>
@@ -355,7 +488,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
             </Row>
             <Row>
               <Col xs={12} md={6}>
-                <InputGroup className="mb-3" size={"sm"}>
+                <InputGroup className={hasFieldError(index, "amount") ? "mb-1" : "mb-3"} size={"sm"}>
                   {showLabel && (
                     <InputGroup.Text id="amount">Amount</InputGroup.Text>
                   )}
@@ -369,14 +502,12 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
                     // style={{ fontSize: inputFontSize }}
                     onChange={(e) => handleExpenseInputChange(e, index)}
                   />
-                  {errors.amount && (
-                    <p className="error-message">{errors.amount[0]}</p>
-                  )}
                 </InputGroup>
+                {renderFieldErrors(index, "amount")}
               </Col>
 
               <Col xs={12} md={6}>
-                <InputGroup className="mb-3" size={"sm"}>
+                <InputGroup className={hasFieldError(index, "refundable_amount") ? "mb-1" : "mb-3"} size={"sm"}>
                   {showLabel && (
                     <InputGroup.Text id="refundable_amount">
                       Refundable Amount
@@ -393,11 +524,12 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
                     onChange={(e) => handleExpenseInputChange(e, index)}
                   />
                 </InputGroup>
+                {renderFieldErrors(index, "refundable_amount")}
               </Col>
             </Row>
             <Row>
               <Col xs={colXS} md={colMD}>
-                <InputGroup className="mb-3" size={"sm"}>
+                <InputGroup className={hasFieldError(index, "account") ? "mb-1" : "mb-3"} size={"sm"}>
                   {showLabel && (
                     <InputGroup.Text id="account">Bank Account</InputGroup.Text>
                   )}
@@ -418,13 +550,11 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
                       }
                     }}
                   />
-                  {errors.account && (
-                    <p className="error-message">{errors.account[0]}</p>
-                  )}
                 </InputGroup>
+                {renderFieldErrors(index, "account")}
               </Col>
               <Col xs={colXS} md={colMD}>
-                <InputGroup className="mb-3" size={"sm"}>
+                <InputGroup className={hasFieldError(index, "category") ? "mb-1" : "mb-3"} size={"sm"}>
                   {showLabel && (
                     <InputGroup.Text id="category_id">Category</InputGroup.Text>
                   )}
@@ -446,15 +576,13 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
                       }
                     }}
                   />
-                  {errors.category && (
-                    <p className="error-message">{errors.category[0]}</p>
-                  )}
                 </InputGroup>
+                {renderFieldErrors(index, "category")}
               </Col>
             </Row>
             <Row>
               <Col xs={12} md={6}>
-                <InputGroup className="mb-3" size={"sm"}>
+                <InputGroup className={hasFieldError(index, "date") ? "mb-1" : "mb-3"} size={"sm"}>
                   {showLabel && (
                     <InputGroup.Text id="date">Date</InputGroup.Text>
                   )}
@@ -469,9 +597,10 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
                     onChange={(e) => handleExpenseInputChange(e, index)}
                   />
                 </InputGroup>
+                {renderFieldErrors(index, "date")}
               </Col>
               <Col xs={12} md={6}>
-                <InputGroup className="mb-3" size={"sm"}>
+                <InputGroup className={hasFieldError(index, "reference") ? "mb-1" : "mb-3"} size={"sm"}>
                   {showLabel && (
                     <InputGroup.Text id="reference">Reference</InputGroup.Text>
                   )}
@@ -486,11 +615,12 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
                     onChange={(e) => handleExpenseInputChange(e, index)}
                   />
                 </InputGroup>
+                {renderFieldErrors(index, "reference")}
               </Col>
             </Row>
             <Row>
               <Col xs={colXS} md={colMD}>
-                <InputGroup className="mb-3" size={"sm"}>
+                <InputGroup className={hasFieldError(index, "attachment") ? "mb-1" : "mb-3"} size={"sm"}>
                   <Form.Control
                     placeholder="Add Attachment"
                     aria-label="Add Attachment"
@@ -501,6 +631,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
                     }}
                   />
                 </InputGroup>
+                {renderFieldErrors(index, "attachment")}
               </Col>
               {index > 0 && (
                 <Col xs={colXS} md={colMD}>
