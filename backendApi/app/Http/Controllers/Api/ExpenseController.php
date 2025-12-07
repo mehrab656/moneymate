@@ -148,11 +148,11 @@ class ExpenseController extends Controller
             '*.note' => 'nullable|string',
             '*.amount' => 'required|numeric',
             '*.refundable_amount' => 'nullable|numeric',
-            '*.account' => 'nullable',
-            '*.category' => 'nullable',
+            '*.account' => 'required',
+            '*.category' => 'required',
             '*.date' => 'required|date',
             '*.reference' => 'nullable|string',
-            '*.attachment' => 'nullable|string',
+            '*.attachment' => 'nullable',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
