@@ -6,6 +6,7 @@ import {useGetCategoryListDataQuery} from "../../../api/slices/categorySlice.js"
 import {faCheckSquare, faFilter, faRefresh} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import { SettingsContext } from "../../../contexts/SettingsContext.jsx";
+import Select from "react-select";
 
 const navItems = [
   {key: 'filter-report-by-sector', name: 'Sector'},
@@ -32,6 +33,69 @@ const ExpenseFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParam
     borderColor: isDark ? "#3a4048" : "#c5ccd6",
     fontSize: inputFontSize,
     minHeight: 36,
+  };
+  const selectStyles = {
+    container: (base) => ({
+      ...base,
+      width: "100%",
+      minWidth: 0,
+    }),
+    control: (base, state) => ({
+      ...base,
+      fontSize: inputFontSize,
+      minHeight: 36,
+      backgroundColor: isDark ? "#1c1f24" : "#fff",
+      borderColor: isDark
+        ? state.isFocused ? "#4a515b" : "#3a4048"
+        : state.isFocused ? "#7aa2d2" : "#c5ccd6",
+      boxShadow: "none",
+      ":hover": {
+        borderColor: isDark ? "#4a515b" : "#7aa2d2",
+      },
+      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+    }),
+    singleValue: (base) => ({
+      ...base,
+      fontSize: inputFontSize,
+      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+    }),
+    input: (base) => ({
+      ...base,
+      fontSize: inputFontSize,
+      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+    }),
+    placeholder: (base) => ({
+      ...base,
+      fontSize: inputFontSize,
+      color: isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)",
+    }),
+    menu: (base) => ({
+      ...base,
+      fontSize: inputFontSize,
+      backgroundColor: isDark ? "#23262b" : "#fff",
+    }),
+    menuList: (base) => ({
+      ...base,
+      backgroundColor: isDark ? "#23262b" : "#fff",
+      paddingTop: 0,
+      paddingBottom: 0,
+    }),
+    option: (base, state) => ({
+      ...base,
+      fontSize: inputFontSize,
+      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+      backgroundColor: isDark
+        ? state.isSelected
+          ? "#0C1A28"
+          : state.isFocused
+            ? "#2d3238"
+            : "#23262b"
+        : state.isSelected
+          ? "#e7f0fb"
+          : state.isFocused
+            ? "#f2f2f2"
+            : "#fff",
+    }),
   };
   const checkboxStyle = {
     backgroundColor: isDark ? "#1c1f24" : undefined,
@@ -195,60 +259,81 @@ const ExpenseFilter = ({showModal,closeModal,resetFilter,submitFilter,queryParam
           <label className="custom-form-label" htmlFor="expense-filter-order-by">
             Order By
           </label>
-          <select
-              className="form-control"
-              name="expense-filter-order-by"
-              value={queryParams.orderBy}
-              onChange={(event) => {
-                const value = event.target.value || '';
-                setQueryParams({...queryParams, orderBy: value});
-              }} style={inputStyle}>
-            <option defaultValue>Filter By Order Column</option>
-            <option value={'id'}>{'Id'}</option>
-            <option value={'date'}>{'Date'}</option>
-            <option value={'amount'}>{'Amount'}</option>
-            <option value={'refundable_amount'}>{'Refundable Amount'}</option>
-            <option value={'refunded_amount'}>{'Refunded Amount'}</option>
-          </select>
+          <Select
+            classNamePrefix="select"
+            name="expense-filter-order-by"
+            value={(
+              [
+                {value:'id',label:'Id'},
+                {value:'date',label:'Date'},
+                {value:'amount',label:'Amount'},
+                {value:'refundable_amount',label:'Refundable Amount'},
+                {value:'refunded_amount',label:'Refunded Amount'}
+              ].find(opt => opt.value === (queryParams.orderBy || '')) || null
+            )}
+            onChange={(opt) => {
+              const value = opt?.value || '';
+              setQueryParams({...queryParams, orderBy: value});
+            }}
+            options={[
+              {value:'id',label:'Id'},
+              {value:'date',label:'Date'},
+              {value:'amount',label:'Amount'},
+              {value:'refundable_amount',label:'Refundable Amount'},
+              {value:'refunded_amount',label:'Refunded Amount'},
+            ]}
+            placeholder={"Filter By Order Column"}
+            styles={selectStyles}
+            isSearchable={false}
+          />
         </div>
 
         <div className="form-group">
           <label className="custom-form-label" htmlFor="expense-filter-order">Order</label>
-          <select
-              className="form-control"
-              value={queryParams.order}
-              id="order"
-              name="order"
-              onChange={(event) => {
-                const value = event.target.value || '';
-                setQueryParams({...queryParams, order: value});
-              }} style={inputStyle}>
-            <option defaultValue>Filter By Order</option>
-            <option value={'DESC'}>{'DESCENDING'}</option>
-            <option value={'ASC'}>{'ASCENDING'}</option>
-          </select>
+          <Select
+            classNamePrefix="select"
+            id="order"
+            name="order"
+            value={(
+              [
+                {value:'DESC',label:'DESCENDING'},
+                {value:'ASC',label:'ASCENDING'}
+              ].find(opt => opt.value === (queryParams.order || '')) || null
+            )}
+            onChange={(opt) => {
+              const value = opt?.value || '';
+              setQueryParams({...queryParams, order: value});
+            }}
+            options={[
+              {value:'DESC',label:'DESCENDING'},
+              {value:'ASC',label:'ASCENDING'},
+            ]}
+            placeholder={"Filter By Order"}
+            styles={selectStyles}
+            isSearchable={false}
+          />
         </div>
 
         <div className="form-group">
           <label className="custom-form-label" htmlFor="expense-filter-limit">
             Limit
           </label>
-          <select
-              className="form-control"
-              name="expense-filter-limit"
-              value={queryParams.limit}
-              onChange={(event) => {
-                const value = event.target.value || '';
-                setQueryParams({...queryParams, limit: value});
-              }} style={inputStyle}>
-            <option defaultValue>Filter By Limit</option>
-            <option value={'10'}>{'10'}</option>
-            <option value={'20'}>{'20'}</option>
-            <option value={'50'}>{'50'}</option>
-            <option value={'100'}>{'100'}</option>
-            <option value={'500'}>{'500'}</option>
-            <option value={'1000'}>{'1000'}</option>
-          </select>
+          <Select
+            classNamePrefix="select"
+            name="expense-filter-limit"
+            value={(
+              [10,20,50,100,500,1000].map(n=>({value:String(n),label:String(n)}))
+                .find(opt => opt.value === (String(queryParams.limit || '') || '')) || null
+            )}
+            onChange={(opt) => {
+              const value = opt?.value || '';
+              setQueryParams({...queryParams, limit: value});
+            }}
+            options={[10,20,50,100,500,1000].map(n=>({value:String(n),label:String(n)}))}
+            placeholder={"Filter By Limit"}
+            styles={selectStyles}
+            isSearchable={false}
+          />
         </div>
       </Tab.Pane>)
     }

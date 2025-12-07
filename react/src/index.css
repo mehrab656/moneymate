@@ -523,46 +523,72 @@ aside a.active {
 
 
 select {
-
     outline: 0;
-    background: #ffffff;
     width: 100%;
-    border: 2px solid #e6e6e6;
+    border: 1px solid rgba(15, 23, 36, 0.08);
     margin: 0 0 15px;
-    padding: 15px;
+    padding: .375rem .75rem;
     box-sizing: border-box;
     font-size: 14px;
-    transition: all 0.3s;
+    transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+    background-color: #FFFFFF; /* light mode aligns with Expense */
+    color: #0B1726;
+}
+
+body[data-theme='dark'] select {
+    background-color: #1c1f24; /* match ExpenseFilter inputStyle */
+    color: rgba(255,255,255,0.87);
+    border-color: #3a4048;
+}
+
+body[data-theme='light'] select {
+    background-color: #FFFFFF;
+    color: rgba(0,0,0,0.87);
+    border-color: #c5ccd6;
 }
 
 select:focus {
     outline: none;
-    border-color: #80bdff;
-    box-shadow: 0 0 0 .2rem rgba(0, 123, 255, .25);
+    border-color: rgba(15, 23, 36, 0.24);
+    box-shadow: 0 0 0 .2rem rgba(15, 23, 36, 0.08);
 }
 
+body[data-theme='dark'] select:focus {
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 0 0 .2rem rgba(255, 255, 255, 0.08);
+}
 
+/* Theme-aware option styling (native select) */
 select option {
     width: 100%;
     padding: .375rem .75rem;
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.5;
-    color: #495057;
-    background-color: #c31010;
+    color: inherit;
+    background-color: #FFFFFF; /* light option bg same as Expense */
     border: none;
     transition: background-color .15s ease-in-out, color .15s ease-in-out;
 }
 
-select option:hover {
-    background-color: #e9ecef;
-    color: #212529;
+body[data-theme='dark'] select option {
+    background-color: #1c1f24; /* match ExpenseFilter inputStyle */
+    color: rgba(255,255,255,0.87);
 }
 
-select option:focus {
-    background-color: #007bff;
-    color: #fff;
-    outline: none;
+/* Hover/selected tint per theme aligned to Expense UI */
+body[data-theme='light'] select option:hover,
+body[data-theme='light'] select option:focus,
+body[data-theme='light'] select option:checked {
+    background-color: #e9f2ff; /* matches filter tab active tint */
+    color: rgba(0,0,0,0.87);
+}
+
+body[data-theme='dark'] select option:hover,
+body[data-theme='dark'] select option:focus,
+body[data-theme='dark'] select option:checked {
+    background-color: #242831; /* subtle lift over #1c1f24 */
+    color: #FFFFFF;
 }
 
 
@@ -2610,4 +2636,87 @@ body[data-theme='dark'] .input-group .form-control[type='date'] {
 body[data-theme='dark'] .expense-sidebar .sidebar-fixed-footer {
   border-top-color: transparent;
   background-color: transparent;
+}
+
+/* Themed table styles for Dashboard "Active Budget Information" */
+.custom-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.custom-table th,
+.custom-table td {
+  padding: 12px 14px;
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+
+.custom-table thead th {
+  font-weight: 600;
+}
+
+/* Dark mode */
+body[data-theme='dark'] .custom-table {
+  background-color: #0F1724;
+  color: rgba(230, 238, 248, 0.92);
+}
+body[data-theme='dark'] .custom-table thead th {
+  background-color: #0F1724;
+  color: rgba(255, 255, 255, 0.87);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+body[data-theme='dark'] .custom-table td,
+body[data-theme='dark'] .custom-table th {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+/* Ensure body rows use darker panel bg for contrast */
+body[data-theme='dark'] .custom-table tbody tr,
+body[data-theme='dark'] .custom-table tbody td {
+  background-color: #121A2A !important;
+}
+body[data-theme='dark'] .custom-table td {
+  color: rgba(230, 238, 248, 0.92);
+}
+/* Remove outer white border from table element in dark mode */
+body[data-theme='dark'] table.table-bordered.custom-table {
+  border: 0 !important;
+}
+body[data-theme='dark'] .custom-table tbody tr:hover {
+  background-color: #162034;
+}
+body[data-theme='dark'] .custom-table tbody tr:nth-child(even) {
+  background-color: #0F1724;
+}
+
+/* Light mode */
+body[data-theme='light'] .custom-table {
+  background-color: #FFFFFF;
+  color: #0B1726;
+}
+body[data-theme='light'] .custom-table thead th {
+  background-color: #FFFFFF; /* paper */
+  color: #0B1726;
+  border-color: rgba(15, 23, 36, 0.08);
+}
+body[data-theme='light'] .custom-table td,
+body[data-theme='light'] .custom-table th {
+  border: 1px solid rgba(15, 23, 36, 0.08);
+}
+body[data-theme='light'] .custom-table tbody tr:hover {
+  background-color: #F1F6FE;
+}
+body[data-theme='light'] .custom-table tbody tr:nth-child(even) {
+  background-color: #FFFFFF; /* default paper, no zebra tint */
+}
+
+/* Align numeric columns for readability */
+.custom-table tbody td:nth-child(2),
+.custom-table tbody td:nth-child(3),
+.custom-table thead th:nth-child(2),
+.custom-table thead th:nth-child(3) {
+  text-align: right;
+}
+.custom-table tr.text-center td:nth-child(2),
+.custom-table tr.text-center td:nth-child(3) {
+  text-align: right;
 }

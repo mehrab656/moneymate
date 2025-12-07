@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { notification } from "../../components/ToastNotification.jsx";
@@ -33,13 +33,14 @@ const _initialCompany = {
   logo: null,
 };
 
-export default function CompanyFormSidebar({ companyId = null, onSuccess }) {
+export default forwardRef(function CompanyFormSidebar({ companyId = null, onSuccess, formId: formIdProp = null, hideInternalFooter = false }, ref) {
   const [companyData, setCompanyData] = useState(_initialCompany);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
   const { closeSidebar } = useSidebarActions();
   const [createCompany] = useCreateCompanyMutation();
+  const formId = formIdProp || "company-form-sidebar-form";
   
   // api call
   const {
@@ -239,6 +240,18 @@ export default function CompanyFormSidebar({ companyId = null, onSuccess }) {
     }
   };
 
+  // Expose imperative methods for sticky footer actions
+  useImperativeHandle(ref, () => ({
+    save: () => {
+      // Programmatic submit that keeps the sidebar open
+      companySubmit({ preventDefault: () => {} }, true);
+    },
+    saveAndExit: () => {
+      // Programmatic submit that closes the sidebar
+      companySubmit({ preventDefault: () => {} }, false);
+    },
+  }));
+
   if (singleCompanyFetching) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: "200px" }}>
@@ -251,7 +264,7 @@ export default function CompanyFormSidebar({ companyId = null, onSuccess }) {
 
   return (
     <div className="company-form-sidebar">
-      <Form onSubmit={(e) => companySubmit(e, false)}>
+      <Form id={formId} onSubmit={(e) => companySubmit(e, true)}>
         {/* Company Name */}
         <Form.Group className="form-group">
           <Form.Label>Company Name *</Form.Label>
@@ -495,41 +508,43 @@ export default function CompanyFormSidebar({ companyId = null, onSuccess }) {
           )}
         </Form.Group>
 
-        {/* Form Actions */}
-        <div className="form-actions">
-          <div className="d-flex gap-2">
-            {companyData.id ? (
-              <Button
-                variant="warning"
-                onClick={(e) => companySubmit(e, false)}
-                disabled={loading}
-                className="flex-fill"
-              >
-                Update
-              </Button>
-            ) : (
-              <>
+        {/* Form Actions (hidden when using sticky footer) */}
+        {!hideInternalFooter && (
+          <div className="form-actions">
+            <div className="d-flex gap-2">
+              {companyData.id ? (
                 <Button
-                  variant="primary"
-                  onClick={(e) => companySubmit(e, true)}
-                  disabled={loading}
-                  className="flex-fill"
-                >
-                  Save
-                </Button>
-                <Button
-                  variant="secondary"
+                  variant="warning"
                   onClick={(e) => companySubmit(e, false)}
                   disabled={loading}
                   className="flex-fill"
                 >
-                  Save and Exit
+                  Update
                 </Button>
-              </>
-            )}
+              ) : (
+                <>
+                  <Button
+                    variant="primary"
+                    onClick={(e) => companySubmit(e, true)}
+                    disabled={loading}
+                    className="flex-fill"
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={(e) => companySubmit(e, false)}
+                    disabled={loading}
+                    className="flex-fill"
+                  >
+                    Save and Exit
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </Form>
     </div>
   );
-}
+});
