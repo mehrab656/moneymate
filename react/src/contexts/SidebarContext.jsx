@@ -38,6 +38,10 @@ export const SidebarProvider = ({ children }) => {
       ...prevState,
       isOpen: true,
       ...config,
+      // Ensure footer actions do not persist across different contents
+      footerActions: Object.prototype.hasOwnProperty.call(config, 'footerActions')
+        ? config.footerActions
+        : null,
     }));
   }, []);
 
@@ -46,6 +50,8 @@ export const SidebarProvider = ({ children }) => {
     setSidebarState(prevState => ({
       ...prevState,
       isOpen: false,
+      // Clear any footer actions when closing
+      footerActions: null,
     }));
   }, []);
 

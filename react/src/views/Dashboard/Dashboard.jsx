@@ -37,11 +37,30 @@ export default function Dashboard() {
     dashboardDataFetching || expenseGraphDataFetching || budgetPieDataFetching;
   const currency = default_currency !== undefined ? default_currency : "";
 
+  const formatCurrency = (cur, amount) => {
+    if (
+      amount === null ||
+      amount === undefined ||
+      amount === "" ||
+      amount === "null"
+    ) {
+      return `${cur} —`;
+    }
+    const num = Number(amount);
+    if (Number.isNaN(num)) {
+      return `${cur} —`;
+    }
+    return `${cur} ${num.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  };
+
   return (
     <>
       <MainLoader loaderVisible={isLoading} />
-      {dashboardDataFetching  && <DashboardCardLoader />}
-      {!dashboardDataFetching  && (
+      {dashboardDataFetching && <DashboardCardLoader />}
+      {!dashboardDataFetching && (
         <div className="mb-4">
           <div className="row g-4">
             <div className="col-md-6 col-lg-4">
@@ -116,7 +135,7 @@ export default function Dashboard() {
         </div>
       )}
 
-     {/* chart */}
+      {/* chart */}
       <div className="row">
         <div className="col-12 col-md-7">
           <WizCard className="animated fadeInDown">
@@ -147,7 +166,7 @@ export default function Dashboard() {
             </h1>
             <table className="table table-bordered custom-table">
               <thead>
-                <tr className={"text-center"}>
+                <tr>
                   <th>Budget Name</th>
                   <th>Proposed Amount</th>
                   <th>Available Amount</th>
@@ -167,15 +186,19 @@ export default function Dashboard() {
                   {getDashboardData?.active_budget &&
                     getDashboardData?.active_budget.length > 0 &&
                     getDashboardData?.active_budget.map((budget) => (
-                      <tr key={budget.id} className={"text-center"}>
+                      <tr key={budget.id}>
                         <td>{budget.budget_name}</td>
                         <td>
-                          {default_currency +
-                            " " +
-                            budget.original_budget_amount}
+                          {formatCurrency(
+                            default_currency,
+                            budget.original_budget_amount
+                          )}
                         </td>
                         <td>
-                          {default_currency + " " + budget.amount_available}
+                          {formatCurrency(
+                            default_currency,
+                            budget.amount_available
+                          )}
                         </td>
                       </tr>
                     ))}

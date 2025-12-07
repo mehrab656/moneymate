@@ -3,9 +3,9 @@ import { useContext, useEffect, useState } from "react";
 import { SettingsContext } from "../../contexts/SettingsContext.jsx";
 import Swal from "sweetalert2";
 import MainLoader from "../../components/loader/MainLoader.jsx";
-import { faBuildingFlag } from "@fortawesome/free-solid-svg-icons";
+import { faBuildingFlag, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { checkPermission } from "../../helper/HelperFunctions.js";
-import CommonTable from "../../helper/CommonTable.jsx";
+import CommonTable from "../../components/table/CommonTable.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   useDeleteCompanyMutation,
@@ -15,6 +15,9 @@ import CompanyFilter from "./CompanyFilter.jsx";
 import CompanyFormSidebar from "./CompanyFormSidebar.jsx";
 import { useSidebarActions } from "../../components/GlobalSidebar";
 import CompanyDetails from "./CompanyDetails.jsx";
+import { Card, Box, Button, Collapse, IconButton } from "@mui/material";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { useTheme } from "@mui/material/styles";
 
 const _initialCompanyData = {
   id: null,
@@ -36,6 +39,7 @@ const defaultQuery = {
   limit: 10,
 };
 export default function companies() {
+  const theme = useTheme();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const { applicationSettings, userRole, userPermission } =
@@ -48,6 +52,7 @@ export default function companies() {
   const [query, setQuery] = useState(defaultQuery);
   const [hasFilter, setHasFilter] = useState(false);
   const [showCompanyForm, setShowCompanyForm] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
   const { num_data_per_page, default_currency } = applicationSettings;
   const { showQuickDetails, showQuickForm } = useSidebarActions();
   const TABLE_HEAD = [
@@ -58,8 +63,14 @@ export default function companies() {
     { id: "activity", label: "Activity", align: "left" },
   ];
 
-  const pageSize = num_data_per_page;
-  const totalPages = Math.ceil(totalCount / pageSize);
+  // page size derived from query limit with fallback to app setting
+  const pageSize =
+    Number(query.limit) > 0
+      ? Number(query.limit)
+      : num_data_per_page
+      ? num_data_per_page
+      : 10;
+  const totalPages = Math.ceil((totalCount || 0) / (pageSize || 10));
 
   // api call
   const {
@@ -75,6 +86,7 @@ export default function companies() {
 
   useEffect(() => {
     document.title = "Company List";
+    // Normalize response envelopes if needed
     if (getCompanyData?.data) {
       setCompanies(getCompanyData.data);
       setTotalCount(getCompanyData.total);
@@ -84,6 +96,13 @@ export default function companies() {
     }
     setIsPaginate(false);
   }, [getCompanyData, currentPage]);
+
+  // sync initial limit with app settings
+  useEffect(() => {
+    if (num_data_per_page && num_data_per_page > 0) {
+      setQuery((prev) => ({ ...prev, limit: num_data_per_page }));
+    }
+  }, [num_data_per_page]);
 
   const resetFilterParameter = () => {
     setQuery(defaultQuery);
@@ -119,23 +138,98 @@ export default function companies() {
     setCurrentPage(value);
     setIsPaginate(true);
   };
+  const handleRowsPerPageChange = (event) => {
+    const newSize = parseInt(event.target.value, 10);
+    setQuery((prev) => ({ ...prev, limit: newSize }));
+    setCurrentPage(1);
+    setIsPaginate(true);
+  };
   const showIncomeFormFunc = () => {
-    showQuickDetails("Create Company", <CompanyFormSidebar 
-      companyId={null} 
-      onSuccess={() => {
-        // Refresh the companies list after successful creation
-        refetch();
-      }} 
-    />);
+    const createRef = React.createRef();
+    const formId = "company-form-global";
+    showQuickDetails(
+      "Create Company",
+      <CompanyFormSidebar
+        ref={createRef}
+        companyId={null}
+        formId={formId}
+        hideInternalFooter={true}
+        onSuccess={() => {
+          // Refresh the companies list after successful creation
+          refetch();
+        }}
+      />, {
+        footerActions: (
+          <div className="d-flex gap-2">
+            <Button
+              variant="contained"
+              size="small"
+              type="submit"
+              form={formId}
+              sx={{
+                backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[300] : undefined,
+                color: theme.palette.mode === 'light' ? theme.palette.text.primary : undefined,
+                '&:hover': {
+                  backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[400] : undefined,
+                },
+              }}
+            >
+              Save
+            </Button>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => createRef.current?.saveAndExit()}
+              sx={{
+                backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[300] : undefined,
+                color: theme.palette.mode === 'light' ? theme.palette.text.primary : undefined,
+                '&:hover': {
+                  backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[400] : undefined,
+                },
+              }}
+            >
+              Save and Exit
+            </Button>
+          </div>
+        )
+      }
+    );
   };
   const showEditModalFunc = (company) => {
-    showQuickDetails("Edit Company", <CompanyFormSidebar 
-      companyId={company.id} 
-      onSuccess={() => {
-        // Refresh the companies list after successful update
-        refetch();
-      }} 
-    />);
+    const editRef = React.createRef();
+    const formId = "company-form-global";
+    showQuickDetails(
+      "Edit Company",
+      <CompanyFormSidebar
+        ref={editRef}
+        companyId={company.id}
+        formId={formId}
+        hideInternalFooter={true}
+        onSuccess={() => {
+          // Refresh the companies list after successful update
+          refetch();
+        }}
+      />, {
+        footerActions: (
+          <div className="d-flex gap-2">
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => editRef.current?.saveAndExit()}
+              sx={{
+                backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[300] : undefined,
+                color: theme.palette.mode === 'light' ? theme.palette.text.primary : undefined,
+                '&:hover': {
+                  backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[400] : undefined,
+                },
+              }}
+            >
+              Update
+            </Button>
+          </div>
+        )
+      }
+    );
   };
   const closeCreateModalFunc = () => {
     setShowCompanyForm(false);
@@ -194,39 +288,63 @@ export default function companies() {
   ];
   return (
     <div>
-      <MainLoader loaderVisible={showMainLoader} />
-      <CommonTable
-        cardTitle={"List of Companies"}
-        addBTN={{
-          permission: checkPermission("company_create"),
-          txt: "Create New",
-          icon: <FontAwesomeIcon icon={faBuildingFlag} />, //"faBuildingFlag",
-          linkTo: "modal",
-          link: showIncomeFormFunc,
+      <MainLoader loaderVisible={companyDataFetching} />
+
+      <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span className={"page-title-header"}>Companies</span>
+        {checkPermission("company_create") && (
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            <button className={"btn primary-theme-btn btn-sm ml-2"} onClick={showIncomeFormFunc}>
+              <FontAwesomeIcon icon={faPlus} />
+            </button>
+            <IconButton size="small" aria-label="toggle filter" onClick={() => setShowFilter((s) => !s)}>
+              <ArrowDropDownIcon />
+            </IconButton>
+          </Box>
+        )}
+      </Box>
+
+      <Collapse in={showFilter} timeout="auto" unmountOnExit>
+        <Box sx={{ px: 2, mb: 2 }}>
+          <CompanyFilter
+            placeHolderTxt="Search by name..."
+            query={query}
+            setQuery={setQuery}
+            resetFilterParameter={resetFilterParameter}
+          />
+        </Box>
+      </Collapse>
+
+      <Card
+        sx={{
+          p: 5,
+          backgroundColor: theme.palette.background.paper,
+          color: theme.palette.text.primary,
+          borderRadius: 2,
+          border: `1px solid ${theme.palette.divider}`,
+          '& .MuiTableContainer-root': { backgroundColor: theme.palette.background.paper },
+          '& .MuiPaper-root': { backgroundColor: theme.palette.background.paper },
+          '& .MuiTableCell-root': { color: theme.palette.text.primary },
         }}
-        paginations={{
-          totalPages: totalPages,
-          totalCount: totalCount,
-          currentPage: currentPage,
-          handlePageChange: handlePageChange,
-        }}
-        table={{
-          size: "small",
-          ariaLabel: "company table",
-          showIdColumn: userRole === "admin" ?? false,
-          tableColumns: TABLE_HEAD,
-          tableBody: {
-            loading: loading,
-            loadingColSpan: 6, //Table head length + 1
-            rows: filteredCompanies, //rendering data
-          },
-          actionButtons: actionParams,
-        }}
-        filter={filter}
-        loading={companyDataFetching}
-        loaderRow={query?.limit}
-        loaderCol={5}
-      />
+        style={{ padding: "0px" }}
+      >
+        <CommonTable
+          data={filteredCompanies}
+          tableColumns={TABLE_HEAD}
+          actionButtons={actionParams}
+          pagination={{
+            totalPages: totalPages ?? 0,
+            totalCount: totalCount,
+            currentPage: currentPage,
+            handlePageChange: handlePageChange,
+            pageSize: pageSize,
+            onRowsPerPageChange: handleRowsPerPageChange,
+          }}
+          cardSubTitle={`Page-${currentPage} (showing ${filteredCompanies.length} results from ${totalCount})`}
+          isFetching={companyDataFetching}
+          hasError={companyDataError}
+        />
+      </Card>
 
       {/* CompanyForm modal is no longer needed as it's handled by sidebar */}
     </div>

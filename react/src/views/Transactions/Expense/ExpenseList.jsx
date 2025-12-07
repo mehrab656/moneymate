@@ -211,8 +211,35 @@ export default function ExpenseList() {
       />, {
         footerActions: (
           <div className="d-flex gap-2">
-            <Button variant="contained" size="small" onClick={() => createRef.current?.addExpenses()}>Add More</Button>
-            <Button variant="contained" size="small" type="submit" form={formId}>Submit</Button>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => createRef.current?.addExpenses()}
+              sx={{
+                backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[300] : undefined,
+                color: theme.palette.mode === 'light' ? theme.palette.text.primary : undefined,
+                '&:hover': {
+                  backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[400] : undefined,
+                },
+              }}
+            >
+              Add More
+            </Button>
+            <Button
+              variant="contained"
+              size="small"
+              type="submit"
+              form={formId}
+              sx={{
+                backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[300] : undefined,
+                color: theme.palette.mode === 'light' ? theme.palette.text.primary : undefined,
+                '&:hover': {
+                  backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[400] : undefined,
+                },
+              }}
+            >
+              Submit
+            </Button>
           </div>
         )
       }
@@ -238,7 +265,21 @@ export default function ExpenseList() {
       />, {
         footerActions: (
           <div className="d-flex gap-2">
-            <Button variant="contained" size="small" type="submit" form={formId}>Update Expense</Button>
+            <Button
+              variant="contained"
+              size="small"
+              type="submit"
+              form={formId}
+              sx={{
+                backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[300] : undefined,
+                color: theme.palette.mode === 'light' ? theme.palette.text.primary : undefined,
+                '&:hover': {
+                  backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[400] : undefined,
+                },
+              }}
+            >
+              Update Expense
+            </Button>
           </div>
         )
       }
