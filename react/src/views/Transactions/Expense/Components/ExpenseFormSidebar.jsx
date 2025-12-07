@@ -300,6 +300,17 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
     // }
 
     const formData = new FormData();
+    // formData.append("account_id", expense.account.value);
+    // formData.append("amount", expense.amount);
+    // Use `refundable_amount` for updates.
+    // For creates, default `return_amount` to `refundable_amount` if provided,
+    // otherwise fall back to the entered `amount`.
+
+    // formData.append("category_id", expense.category.value);
+    // formData.append("description", expense.description);
+    // formData.append("note", expense.note);
+    // formData.append("reference", expense.reference);
+    // formData.append("date", expense.date);
 
     // Keep JSON payload unchanged in shape but EXCLUDE attachment field
     const jsonExpenses = expenses.map((exp) => {
