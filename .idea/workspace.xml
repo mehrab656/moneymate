@@ -6,6 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="eb82f29d-a946-4d7c-af4f-355ea30ae3ce" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Transactions/Expense/ExpenseFormSidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Transactions/Expense/Components/ExpenseFormSidebar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Transactions/Expense/ExpenseList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Transactions/Expense/ExpenseList.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -207,6 +210,7 @@
       <recent name="$PROJECT_DIR$/assets" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/react/src/views/Transactions/Expense/Components" />
       <recent name="$PROJECT_DIR$/react/public" />
     </key>
   </component>
@@ -270,7 +274,7 @@
       <workItem from="1755799534883" duration="23722000" />
       <workItem from="1759914034257" duration="23268000" />
       <workItem from="1764705581442" duration="30259000" />
-      <workItem from="1764964769912" duration="23934000" />
+      <workItem from="1764964769912" duration="32791000" />
     </task>
     <servers />
   </component>
@@ -292,7 +296,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="php">
           <url>file://$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php</url>
-          <line>411</line>
+          <line>416</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="php">

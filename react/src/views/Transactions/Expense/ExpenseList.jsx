@@ -3,36 +3,29 @@ import Swal from "sweetalert2";
 import { SettingsContext } from "../../../contexts/SettingsContext";
 import MainLoader from "../../../components/loader/MainLoader.jsx";
 import { notification } from "../../../components/ToastNotification.jsx";
-import {faEdit, faEye, faEyeSlash, faThList, faTrash} from "@fortawesome/free-solid-svg-icons";
+import {faEdit, faEye, faTrash} from "@fortawesome/free-solid-svg-icons";
 
 import {
   useDeleteExpenseMutation,
   useGetExpenseDataQuery,
 } from "../../../api/slices/expenseSlice.js";
 import ExpenseFilter from "./ExpenseFilter.jsx";
-import ExpenseFormSidebar from "./ExpenseFormSidebar.jsx";
+import ExpenseFormSidebar from "./Components/ExpenseFormSidebar.jsx";
 import { Col, Form, Row } from "react-bootstrap";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
 import ExpenseDetails from "./ExpenseDetails.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {fa0, faDownload, faFilter, faPlus} from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faFilter, faPlus} from "@fortawesome/free-solid-svg-icons";
 import FilteredParameters from "./Components/FilteredParameters.jsx";
-import ListTable from "./Components/ListTable.jsx";
 import ExpenseExportButton from "./Components/ExpenseExportButton.jsx";
 
 import {
   Box,
   Card,
-  CardActions,
-  CardContent,
-  CardHeader,
   Button,
 } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 import CommonTable from "../../../components/table/CommonTable.jsx";
-import Iconify from "../../../components/Iconify.jsx";
-import Select from "react-select";
-import {AddTwoTone} from "@mui/icons-material";
 
 const defaultQuery = {
   start_date: "",
@@ -78,14 +71,11 @@ export default function ExpenseList() {
   const [expenses, setExpenses] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(1);
-  const [showModal, setShowModal] = useState(false);
-  const [showMainLoader, setShowMainLoader] = useState(false);
   const [isPaginate, setIsPaginate] = useState(false);
   const [query, setQuery] = useState(defaultQuery);
   const [hasFilter, setHasFilter] = useState(true);
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [searchTerms, setSearchTerms] = useState("");
-  const [errors, setErrors] = useState({});
   const quickExpenseRef = useRef(null);
 
   const [showFilterModal, setShowFilterModal] = useState(false); //important
@@ -114,9 +104,7 @@ export default function ExpenseList() {
     // Use GlobalSidebar quick details view
     showQuickDetails("Expense Details", <ExpenseDetails data={expense} />);
   };
-  const handleCloseModal = () => {
-    setShowModal(false);
-  };
+
   const { applicationSettings, userRole } = useContext(SettingsContext);
   const { num_data_per_page, default_currency } = applicationSettings;
 
@@ -173,13 +161,8 @@ export default function ExpenseList() {
     if (normalizedList.length > 0 || isDataFetching) {
       setExpenses(normalizedList);
       setTotalCount(normalizedTotal);
-      setShowMainLoader(false);
-    } else if (hasDataFetchingError) {
-      setShowMainLoader(false);
-      setExpenses([]);
     } else {
-      // Still fetching or empty results
-      setShowMainLoader(isDataFetching);
+      setExpenses([]);
     }
     setIsPaginate(false);
   }, [getExpenseData, isDataFetching, hasDataFetchingError, currentPage]);
@@ -488,20 +471,6 @@ export default function ExpenseList() {
                   isFetching={isDataFetching}
                   hasError={hasDataFetchingError}
                 />
-                {/*<ListTable expenses={modifiedFilteredExpenses}*/}
-                {/*           tableColumns={TABLE_HEAD}*/}
-                {/*           actionBtns={actionParams}*/}
-                {/*           loading={loading}*/}
-                {/*           paginations={{*/}
-                {/*               totalPages: totalPages??0,*/}
-                {/*               totalCount: totalCount,*/}
-                {/*               currentPage: currentPage,*/}
-                {/*               handlePageChange: handlePageChange,*/}
-                {/*           }}*/}
-                {/*           cardSubTitle={`Page-${currentPage} (showing ${modifiedFilteredExpenses.length} results from ${totalCount})`}*/}
-                {/*           isFetching={isDataFetching}*/}
-                {/*           hasError={hasDataFetchingError}*/}
-                {/*/>*/}
               </Card>
             </Box>
           </Row>

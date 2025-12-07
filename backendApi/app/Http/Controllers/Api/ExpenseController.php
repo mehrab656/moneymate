@@ -202,10 +202,14 @@ class ExpenseController extends Controller
                     }
                 }
 
-                if ($request->hasFile('attachment')) {
-                    $attachment = $request->file('attachment');
+                if ($request->file("attachments_$index")) {
+
+                    $attachment = $request->file("attachments_$index");
+
                     $filename = time() . '.' . $attachment->getClientOriginalExtension();
-                    $attachment->storeAs('files', $filename);
+                    $attachment->move('expense', $filename);
+
+//                   $attachment->storeAs('files', $filename);
                     $expense['attachment'] = $filename; // Store only the filename
                 }
 
@@ -379,8 +383,8 @@ class ExpenseController extends Controller
                 'description' => 'Missing Id!'
             ], 403);
         }
-        $income = Expense::where(['slug' => $id, 'company_id' => Auth::user()->primary_company])->first();
-        if (!$income) {
+        $expense = Expense::where(['slug' => $id, 'company_id' => Auth::user()->primary_company])->get()->toArray();
+        if (!$expense) {
             return response()->json([
                 'message' => 'Not Found',
                 'description' => 'Expense not found!'
@@ -388,7 +392,8 @@ class ExpenseController extends Controller
         }
 
         return response()->json([
-            'data' => ExpenseResource::make($income),
+//            'data' => ExpenseResource::make($expense),
+            'data' => $expense,
         ]);
     }
     public function exportExpenseCsv(): BinaryFileResponse
@@ -573,59 +578,101 @@ class ExpenseController extends Controller
      * @throws Exception
      */
 
-    public function update(UpdateExpenseRequest $request,$id): JsonResponse
+    public function update(Request $request): JsonResponse
     {
-        $data = $request->validated();
-        $expense = Expense::where('slug',$id)->get()->first();
-        if (!$expense){
-            return response()->json([
-                'message' => 'Not Found!',
-                'description' => "Associative expense data was not found!",
-            ], 400);
+        $expenses = $request->input('expenses');
+        if ($expenses) {
+            $expenses = json_decode($expenses, true);
         }
-        $category = Category::where('slug',$data['category_id'])->first();
-        if (!$category){
-            return response()->json([
-                'message' => 'Not Found!',
-                'description' => "Category was not found!",
-            ], 400);
-        }
-        if ($request->hasFile('attachment')) {
-            $attachmentFile = $request->file('attachment');
 
-            if ($attachmentFile instanceof UploadedFile) {
-                // Delete the old attachment file, if it exists
-                $this->deleteAttachmentFile($expense);
-                $filename = time() . '.' . $attachmentFile->getClientOriginalExtension(); // Specify the new filename
-                $data['attachment'] = $filename;
-            } else {
-                // Handle the case where the attachment field is not a file
-                $data['attachment'] = null;
+        $validator = Validator::make($expenses, [
+            '*.description' => 'required|string',
+            '*.note' => 'nullable|string',
+            '*.amount' => 'required|numeric',
+            '*.refundable_amount' => 'nullable|numeric',
+            '*.account' => 'nullable',
+            '*.category' => 'nullable',
+            '*.date' => 'required|date',
+            '*.reference' => 'nullable|string',
+            '*.attachment' => 'nullable',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+        try {
+            DB::beginTransaction();
+            foreach ($expenses as $index => $expense) {
+
+                $associativeOldExpense = Expense::where('slug', $expense['slug'])->get()->first();
+                if (!$associativeOldExpense){
+                    return response()->json([
+                        'message' => 'Not Found!',
+                        'description' => "Associative expense data was not found!",
+                        'index' => $index,
+                    ], 400);
+                }
+                $category = Category::where('id',$expense['category'])->first();
+                if (!$category){
+                    return response()->json([
+                        'message' => 'Not Found!',
+                        'description' => "Category was not found!",
+                        'index' => $index,
+                    ], 400);
+                }
+                if ($request->file("attachments_$index")) {
+
+                    $attachment = $request->file("attachments_$index");
+
+                    $filename = time() . '.' . $attachment->getClientOriginalExtension();
+                    $attachment->move('expense', $filename);
+
+//                   $attachment->storeAs('files', $filename);
+                    $expense['attachment'] = $filename; // Store only the filename
+                }
+                dd($category);
+
+                // Retrieve the original amount from the database
+                $oldAmount = $expense->amount;
+                $oldBankAccount = BankAccount::find($expense->account_id);
+
+                if (!$oldBankAccount){
+                    return response()->json([
+                        'message' => 'Not Found!',
+                        'description' => "Associated bank account was not found",
+                    ], 400);
+                }
+
+                $newBankAccount = BankAccount::where('slug',$data['account_id'])->first();
+                if (!$newBankAccount){
+                    return response()->json([
+                        'message' => 'Not Found!',
+                        'description' => "Bank account was not found!",
+                    ], 400);
+                }
+
+                $data['account_id'] = $newBankAccount->id;
+                $data['category_id'] = $category->id;
+                $data['user_id'] = Auth::user()->id;
+                dd($expense);
+
+
+
+
+
             }
-        }
 
-        // Retrieve the original amount from the database
-        $oldAmount = $expense->amount;
-        $oldBankAccount = BankAccount::find($expense->account_id);
 
-        if (!$oldBankAccount){
+            DB::commit();
+        }catch (Exception $e) {
+            DB::rollBack();
             return response()->json([
-                'message' => 'Not Found!',
-                'description' => "Associated bank account was not found",
+                'message' => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
+                'error' => 'error'
             ], 400);
         }
 
-        $newBankAccount = BankAccount::where('slug',$data['account_id'])->first();
-        if (!$newBankAccount){
-            return response()->json([
-                'message' => 'Not Found!',
-                'description' => "Bank account was not found!",
-            ], 400);
-        }
 
-        $data['account_id'] = $newBankAccount->id;
-        $data['category_id'] = $category->id;
-        $data['user_id'] = Auth::user()->id;
+
 
         unset($data['account']);
         unset($data['category']);

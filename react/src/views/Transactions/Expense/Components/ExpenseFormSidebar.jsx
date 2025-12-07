@@ -1,17 +1,17 @@
 import React, { useEffect, useState, useContext, useImperativeHandle, forwardRef } from "react";
-import WizCard from "../../../components/WizCard.jsx";
-import MainLoader from "../../../components/loader/MainLoader.jsx";
-import { notification } from "../../../components/ToastNotification.jsx";
+import WizCard from "../../../../components/WizCard.jsx";
+import MainLoader from "../../../../components/loader/MainLoader.jsx";
+import { notification } from "../../../../components/ToastNotification.jsx";
 import { Col, Form, Row, Button, InputGroup } from "react-bootstrap";
 import {
   useCreateExpenseMutation,
   useGetSingleExpenseDataQuery,
-} from "../../../api/slices/expenseSlice.js";
+} from "../../../../api/slices/expenseSlice.js";
 import Select from "react-select";
-import { useGetBankDataQuery } from "../../../api/slices/bankSlice.js";
-import { useGetCategoryListDataQuery } from "../../../api/slices/categorySlice.js";
-import { useSidebarActions } from "../../../components/GlobalSidebar";
-import { SettingsContext } from "../../../contexts/SettingsContext.jsx";
+import { useGetBankDataQuery } from "../../../../api/slices/bankSlice.js";
+import { useGetCategoryListDataQuery } from "../../../../api/slices/categorySlice.js";
+import { useSidebarActions } from "../../../../components/GlobalSidebar/index.js";
+import { SettingsContext } from "../../../../contexts/SettingsContext.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload, faTrash } from "@fortawesome/free-solid-svg-icons";
 
@@ -38,9 +38,9 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
   sidebarTitle = null,
   colXS = 12,
   colMD = 6,
-  colSM = 12,
+  colSM = 12, formType='single',
   footerActions = null,
-  formId: formIdProp = null,
+      formId: formIdProp = null,
 }, ref) {
   const [expenses, setExpenses] = useState(_initialExpense);
   const [loading, setLoading] = useState(false);
@@ -254,7 +254,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
       // Do NOT preselect a default category for create mode
     }
     if (expenseId && getSingleExpenseData?.data) {
-      setExpense(getSingleExpenseData.data);
+      setExpenses(getSingleExpenseData.data);
     }
   }, [expenseId, getSingleExpenseData, getBankData, getCategoryListData]);
 
@@ -300,32 +300,6 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
     // }
 
     const formData = new FormData();
-    // formData.append("account_id", expense.account.value);
-    // formData.append("amount", expense.amount);
-    // Use `refundable_amount` for updates.
-    // For creates, default `return_amount` to `refundable_amount` if provided,
-    // otherwise fall back to the entered `amount`.
-    if (expenseId) {
-      const refundableVal = Number(expense?.refundable_amount ?? 0);
-      // Send BOTH to satisfy backend validation and DB mapping on update
-      formData.append("refundable_amount", refundableVal);
-      formData.append("return_amount", refundableVal);
-    } else {
-      // const createVal = Number(
-      //   expense?.refundable_amount !== undefined &&
-      //     expense?.refundable_amount !== ""
-      //     ? expense?.refundable_amount
-      //     : expense?.amount ?? 0
-      // );
-      // // Send BOTH to satisfy possible backend expectations and DB mapping
-      // formData.append("return_amount", createVal);
-      // formData.append("refundable_amount", createVal);
-    }
-    // formData.append("category_id", expense.category.value);
-    // formData.append("description", expense.description);
-    // formData.append("note", expense.note);
-    // formData.append("reference", expense.reference);
-    // formData.append("date", expense.date);
 
     // Keep JSON payload unchanged in shape but EXCLUDE attachment field
     const jsonExpenses = expenses.map((exp) => {
@@ -336,9 +310,8 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
     formData.append("expenses", JSON.stringify(jsonExpenses));
     // Only append attachments so files serialize correctly alongside JSON
     expenses.forEach((exp, idx) => {
-      const p = `expenses[${idx}]`;
       if (exp.attachment instanceof File) {
-        formData.append(`${p}[attachment]`, exp.attachment);
+        formData.append(`attachments_${idx}`, exp.attachment);
       }
     });
 
