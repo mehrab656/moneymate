@@ -54,7 +54,7 @@ export default function companies() {
   const [showCompanyForm, setShowCompanyForm] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const { num_data_per_page, default_currency } = applicationSettings;
-  const { showQuickDetails, showQuickForm } = useSidebarActions();
+  const { showLargeContent, showQuickDetails } = useSidebarActions();
   const TABLE_HEAD = [
     { id: "name", label: "Name", align: "left" },
     { id: "phone", label: "Phone", align: "left" },
@@ -144,10 +144,10 @@ export default function companies() {
     setCurrentPage(1);
     setIsPaginate(true);
   };
-  const showIncomeFormFunc = () => {
+  const showCompanyFormFunc = () => {
     const createRef = React.createRef();
     const formId = "company-form-global";
-    showQuickDetails(
+    showLargeContent(
       "Create Company",
       <CompanyFormSidebar
         ref={createRef}
@@ -198,7 +198,7 @@ export default function companies() {
   const showEditModalFunc = (company) => {
     const editRef = React.createRef();
     const formId = "company-form-global";
-    showQuickDetails(
+    showLargeContent(
       "Edit Company",
       <CompanyFormSidebar
         ref={editRef}
@@ -294,7 +294,7 @@ export default function companies() {
         <span className={"page-title-header"}>Companies</span>
         {checkPermission("company_create") && (
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-            <button className={"btn primary-theme-btn btn-sm ml-2"} onClick={showIncomeFormFunc}>
+            <button className={"btn primary-theme-btn btn-sm ml-2"} onClick={showCompanyFormFunc}>
               <FontAwesomeIcon icon={faPlus} />
             </button>
             <IconButton size="small" aria-label="toggle filter" onClick={() => setShowFilter((s) => !s)}>
