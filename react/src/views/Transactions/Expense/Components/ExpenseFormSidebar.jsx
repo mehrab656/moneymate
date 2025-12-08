@@ -21,7 +21,7 @@ const _initialExpense = () => ({
   description: "",
   note: "",
   amount: "",
-  refundable_amount: 0,
+  refundable_amount: "",
   account: null,
   category: null,
   date: "",

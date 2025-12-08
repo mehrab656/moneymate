@@ -33,6 +33,11 @@ body {
     border-radius: 12px;
 }
 
+/* Override card padding only for Quick Income sidebar to match Quick Expense */
+.quick-income-card .wiz-card {
+    padding: 0; /* wrapper provides the 10px spacing */
+}
+
 .summary-value {
     display: block;
     font-size: 20px !important;

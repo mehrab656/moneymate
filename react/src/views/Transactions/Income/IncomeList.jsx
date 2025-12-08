@@ -16,8 +16,8 @@ import {
   faFilter,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
-import { Form } from "react-bootstrap";
-import { Box, Card, useTheme } from "@mui/material";
+import { Form, Row, Col } from "react-bootstrap";
+import { Box, Card, Button, useTheme } from "@mui/material";
 import CommonTable from "../../../components/table/CommonTable.jsx";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
 import FilteredParameters from "../Expense/Components/FilteredParameters.jsx";
@@ -132,15 +132,26 @@ export default function IncomeList() {
   };
   const showIncomeFormFunc = () => {
     // Open Income form in GlobalSidebar large content
+    const createRef = React.createRef();
+    const formId = "income-form-global";
     showLargeContent(
       "Add New Income",
       <IncomeFormSidebar
+        ref={createRef}
         incomeId={null}
+        formId={formId}
         onSuccess={() => {
           setIsPaginate(true);
           refetch();
         }}
-      />
+      />, {
+        footerActions: (
+          <div className="d-flex gap-2">
+            <Button variant="contained" size="small" onClick={() => createRef.current?.addIncomes()}>Add More</Button>
+            <Button variant="contained" size="small" type="submit" form={formId}>Submit</Button>
+          </div>
+        )
+      }
     );
   };
   const showCsvIncomeFormFunc = () => {
@@ -156,15 +167,30 @@ export default function IncomeList() {
   };
   const showEditModalFunc = (income) => {
     setIncome(income);
+    const formId = "income-form-global";
     showLargeContent(
       "Edit Income",
       <IncomeFormSidebar
         incomeId={income.id}
+        formId={formId}
         onSuccess={() => {
           setIsPaginate(true);
           refetch();
         }}
-      />
+      />, {
+        footerActions: (
+          <div className="d-flex gap-2">
+            <Button
+              variant="contained"
+              size="small"
+              type="submit"
+              form={formId}
+            >
+              Update Income
+            </Button>
+          </div>
+        )
+      }
     );
   };
 
@@ -296,8 +322,8 @@ export default function IncomeList() {
         </Box>
       </Box>
 
-      <div className="row">
-        <div className={"col-md-9"}>
+      <Row>
+        <Col xs={12} sm={12} md={9}>
           <div
             style={{
               padding: "10px",
@@ -354,28 +380,35 @@ export default function IncomeList() {
               hasError={incomeDataError}
             />
           </Card>
-        </div>
-        <div className={"col-md-3"}>
-          <div
-            className={"sidebar-form quick-income-card"}
-            style={{ padding: "10px" }}
-          >
-            <div className={"sidebar-form-content"}>
-              <IncomeFormSidebar
-                incomeId={null}
-                onSuccess={() => {
-                  setIsPaginate(true);
-                  refetch();
-                }}
-                sidebarTitle="Quick Income"
-                showLabel={false}
-                colXS={12}
-                colMD={12}
-              />
+        </Col>
+        <Col xs={12} sm={12} md={3} >
+          <Row>
+            <div
+              className={"sidebar-form quick-income-card"}
+            >
+              <div className={"sidebar-form-content"}>
+                <IncomeFormSidebar
+                  incomeId={null}
+                  onSuccess={() => {
+                    setIsPaginate(true);
+                    refetch();
+                  }}
+                  sidebarTitle="Quick Income"
+                  showLabel={false}
+                  colXS={12}
+                  colMD={12}
+                  formId="quick-income-form"
+                  footerActions={(
+                    <div className="d-flex gap-2">
+                      <Button variant="contained" size="small" type="submit" form="quick-income-form">Submit</Button>
+                    </div>
+                  )}
+                />
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
+          </Row>
+        </Col>
+      </Row>
 
       {/* Income create/edit handled via GlobalSidebar */}
       {showCsvForm && (
