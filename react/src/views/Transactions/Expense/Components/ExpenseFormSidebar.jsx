@@ -14,6 +14,7 @@ import { useSidebarActions } from "../../../../components/GlobalSidebar/index.js
 import { SettingsContext } from "../../../../contexts/SettingsContext.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { isImageUrl } from "../../../../helper/media.js";
 
 
 const _initialExpense = () => ({
@@ -26,6 +27,7 @@ const _initialExpense = () => ({
   date: "",
   reference: "",
   attachment: "",
+  attachment_preview_url: "",
 });
 
 export const EXPENSE_FORM_ID = "expense-form-sidebar-form";
@@ -94,6 +96,11 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
 
   const removeExpenses = (index) => {
     const updatedExpenses = [...expenses];
+    // Revoke any object URL for the row being removed to prevent leaks
+    const prevUrl = updatedExpenses[index]?.attachment_preview_url;
+    if (prevUrl) {
+      try { URL.revokeObjectURL(prevUrl); } catch {}
+    }
     updatedExpenses.splice(index, 1);
     setExpenses(updatedExpenses);
   };
@@ -155,7 +162,13 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
   const handleFileInputChange = (event, index, name) => {
     const file = event.target.files[0];
     const updatedExpenses = expenses.map((row) => ({ ...row }));
+    // Cleanup any previous preview URL before setting a new file
+    const prevUrl = updatedExpenses[index]?.attachment_preview_url;
+    if (prevUrl) {
+      try { URL.revokeObjectURL(prevUrl); } catch {}
+    }
     updatedExpenses[index][name] = file;
+    updatedExpenses[index].attachment_preview_url = file ? URL.createObjectURL(file) : "";
     setExpenses(updatedExpenses);
 
     // Clear any server-side error for this attachment field
@@ -297,6 +310,12 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
       const data = await createExpense({ url, formData }).unwrap();
       notification("success", data?.message, data?.description);
       if (stay) {
+        // Revoke any object URLs before resetting to avoid memory leaks
+        try {
+          expenses.forEach((exp) => {
+            if (exp?.attachment_preview_url) URL.revokeObjectURL(exp.attachment_preview_url);
+          });
+        } catch {}
         try { formRef.current?.reset(); } catch {}
         setExpenses([_initialExpense()]);
         setErrors({});
@@ -396,6 +415,8 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
             : "#fff",
     }),
   };
+
+  // isImageUrl imported from helper/media.js
 
   return (
     <div className="px-2 expense-sidebar" style={{ fontSize: "0.875rem", overflowX: "hidden" }}>
@@ -582,16 +603,42 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
                   />
                 </InputGroup>
                 {/* Attachment preview for edit and selection */}
-                {expense.attachment && (
+                {(expense.attachment || expense.attachment_preview_url) && (
                   <div style={{ marginTop: 4 }}>
                     {expense.attachment instanceof File ? (
-                      <small>Selected file: {expense.attachment.name}</small>
+                      expense.attachment_preview_url ? (
+                        <img
+                          src={expense.attachment_preview_url}
+                          alt="Uploaded"
+                          style={{
+                            width: "200px",
+                            height: "200px",
+                            borderRadius: "10px",
+                            objectFit: "cover",
+                          }}
+                        />
+                      ) : (
+                        <small>Selected file: {expense.attachment.name}</small>
+                      )
                     ) : (
                       typeof expense.attachment === "string" && expense.attachment.trim() ? (
-                        <small>
-                          Current attachment: {" "}
-                          <a href={expense.attachment} target="_blank" rel="noopener noreferrer">View</a>
-                        </small>
+                        isImageUrl(expense.attachment) ? (
+                          <img
+                            src={expense.attachment}
+                            alt="Uploaded"
+                            style={{
+                              width: "200px",
+                              height: "200px",
+                              borderRadius: "10px",
+                              objectFit: "cover",
+                            }}
+                          />
+                        ) : (
+                          <small>
+                            Current attachment: {" "}
+                            <a href={expense.attachment} target="_blank" rel="noopener noreferrer">View</a>
+                          </small>
+                        )
                       ) : null
                     )}
                   </div>
