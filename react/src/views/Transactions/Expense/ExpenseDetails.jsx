@@ -123,6 +123,33 @@ export default function ExpenseDetails({ expenseId = null, data = null }) {
           </Grid>
         </Grid>
       </Paper>
+      <Paper elevation={1} sx={{ p: 2 }}>
+        <Typography variant="h6" color="primary" gutterBottom>
+          Attachment
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Typography variant="body2" color="text.secondary">
+
+            </Typography>
+            <Typography variant="body1" fontWeight="medium">
+              <div className={"image-preview"}>
+                <img
+                    src={expense.attachment}
+                    alt="Uploaded"
+                    style={{
+                      width: "200px",
+                      height: "200px",
+                      borderRadius: "10px",
+                      objectFit: "cover"
+                    }}
+                />
+              </div>
+            </Typography>
+          </Grid>
+
+        </Grid>
+      </Paper>
     </Box>
   );
 }
