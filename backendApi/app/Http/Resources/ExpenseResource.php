@@ -41,7 +41,7 @@ class ExpenseResource extends JsonResource
             'amount' => $this->amount,
             'refundable_amount' => $this->refundable_amount,
             'refunded_amount' => $this->refunded_amount,
-            'attachment' => $this->attachment,
+            'attachment' => asset('expense/'.$this->attachment),
             'description' => $this->description,
             'date' => $this->date,
             'note' => $this->note,

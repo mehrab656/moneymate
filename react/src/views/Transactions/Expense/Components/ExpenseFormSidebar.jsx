@@ -435,7 +435,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
     <div className="px-2 expense-sidebar" style={{ fontSize: "0.875rem", overflowX: "hidden" }}>
       <MainLoader loaderVisible={loading} />
       {sidebarTitle && <h6>{sidebarTitle ? sidebarTitle : ""}</h6>}
-      <Form id={formId} onSubmit={(e) => expenseSubmit(e, true)}>
+      <Form id={formId} onSubmit={(e) => expenseSubmit(e, false)}>
         <div className="sidebar-scroll-content">
         {expenses.map((expense, index) => (
           <div>
