@@ -493,7 +493,7 @@ export default function ExpenseList() {
                   formId="quick-expense-form"
                   footerActions={(
                     <div className="d-flex gap-2">
-                      <Button variant="contained" size="small" onClick={() => quickExpenseRef.current?.addExpenses()}>Add More</Button>
+                      {/* <Button variant="contained" size="small" onClick={() => quickExpenseRef.current?.addExpenses()}>Add More</Button> */}
                       <Button variant="contained" size="small" type="submit" form="quick-expense-form">Submit</Button>
                     </div>
                   )}

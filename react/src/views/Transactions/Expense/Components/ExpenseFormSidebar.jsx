@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useImperativeHandle, forwardRef } from "react";
+import React, { useEffect, useState, useContext, useImperativeHandle, forwardRef, useRef } from "react";
 import WizCard from "../../../../components/WizCard.jsx";
 import MainLoader from "../../../../components/loader/MainLoader.jsx";
 import { notification } from "../../../../components/ToastNotification.jsx";
@@ -15,19 +15,18 @@ import { SettingsContext } from "../../../../contexts/SettingsContext.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload, faTrash } from "@fortawesome/free-solid-svg-icons";
 
-const _initialExpense = [
-  {
-    description: "",
-    note: "",
-    amount: "",
-    refundable_amount: "",
-    account: null,
-    category: null,
-    date: "",
-    reference: "",
-    attachment: "",
-  },
-];
+
+const _initialExpense = () => ({
+  description: "",
+  note: "",
+  amount: "",
+  refundable_amount: 0,
+  account: null,
+  category: null,
+  date: "",
+  reference: "",
+  attachment: "",
+});
 
 export const EXPENSE_FORM_ID = "expense-form-sidebar-form";
 
@@ -42,43 +41,13 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
   footerActions = null,
       formId: formIdProp = null,
 }, ref) {
-  const [expenses, setExpenses] = useState(_initialExpense);
+  const [expenses, setExpenses] = useState([_initialExpense()]);
   const [loading, setLoading] = useState(false);
   const [accounts, setAccounts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [saveBtnTxt, setSaveBtnTxt] = useState("Save");
   const [errors, setErrors] = useState({});
 
-  // Render server-side validation errors for a given expense index.
-  // Supports both dot-notated keys (e.g., "0.description") and nested objects.
-  const renderIndexErrors = (idx) => {
-    try {
-      const messages = [];
-      if (errors && typeof errors === "object") {
-        Object.entries(errors).forEach(([key, value]) => {
-          if (key.startsWith(`${idx}.`)) {
-            const vals = Array.isArray(value) ? value : [value];
-            messages.push(...vals);
-          } else if (String(key) === String(idx) && value && typeof value === "object") {
-            Object.values(value).forEach((v) => {
-              const vals = Array.isArray(v) ? v : [v];
-              messages.push(...vals);
-            });
-          }
-        });
-      }
-      if (!messages.length) return null;
-      return (
-        <div className="text-danger" style={{ fontSize: "0.85rem", marginTop: 6 }}>
-          {messages.map((m, i) => (
-            <div key={`err-${idx}-${i}`}>{m}</div>
-          ))}
-        </div>
-      );
-    } catch (e) {
-      return null;
-    }
-  };
   const renderFieldErrors = (idx, field) => {
     try {
       const msgs = [];
@@ -114,24 +83,13 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
   };
   const { closeSidebar } = useSidebarActions();
   const { themeMode } = useContext(SettingsContext);
+  const formRef = useRef(null);
+  const loadedExpenseIdRef = useRef(null);
 
   const formId = formIdProp || EXPENSE_FORM_ID;
 
   const addExpenses = () => {
-    setExpenses([
-      ...expenses,
-      {
-        amount: "",
-        refundable_amount: "",
-        description: "",
-        reference: "",
-        date: "",
-        note: "",
-        attachment: "",
-        account: null,
-        category: null,
-      },
-    ]);
+    setExpenses([...expenses, _initialExpense()]);
   };
 
   const removeExpenses = (index) => {
@@ -140,7 +98,8 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
     setExpenses(updatedExpenses);
   };
   const handleExpenseInputChange = (e, index, fieldName) => {
-    const updatedExpenses = [...expenses];
+    // Clone row objects to avoid mutating frozen/cache-backed objects
+    const updatedExpenses = expenses.map((row) => ({ ...row }));
 
     // Native inputs use event.target; react-select passes the selected option object
     if (e && e.target) {
@@ -195,7 +154,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
   };
   const handleFileInputChange = (event, index, name) => {
     const file = event.target.files[0];
-    const updatedExpenses = [...expenses];
+    const updatedExpenses = expenses.map((row) => ({ ...row }));
     updatedExpenses[index][name] = file;
     setExpenses(updatedExpenses);
 
@@ -228,11 +187,11 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
   );
   const [createExpense] = useCreateExpenseMutation();
 
+  // Populate accounts and categories when API results arrive.
   useEffect(() => {
     if (getBankData?.data?.length > 0) {
       const modifiedAccounts = getBankData.data.map(
         ({ slug, id, bank_name, account_number }) => ({
-          // Prefer slug as value; fallback to id if slug missing
           value: slug ?? id ?? account_number ?? null,
           label: `${bank_name}(${account_number})`,
         })
@@ -244,19 +203,26 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
         const label =
           c?.label ?? c?.name ?? c?.category_name ?? String(c?.id ?? "Category");
         let val = c?.slug ?? c?.id ?? c?.value ?? null;
-        // Avoid using a display label as the value; prefer slug/id
         if (val && String(val).trim() === String(label).trim()) {
           val = c?.slug ?? c?.id ?? null;
         }
         return { value: val, label };
       });
       setCategories(modifiedCategories);
-      // Do NOT preselect a default category for create mode
     }
+  }, [getBankData, getCategoryListData]);
+
+  // Load initial expense rows for edit mode, without clobbering user edits
+  useEffect(() => {
     if (expenseId && getSingleExpenseData?.data) {
-      setExpenses(getSingleExpenseData.data);
+      const payload = getSingleExpenseData.data;
+      const rows = Array.isArray(payload) ? payload : [payload];
+      if (loadedExpenseIdRef.current !== expenseId) {
+        loadedExpenseIdRef.current = expenseId;
+        setExpenses(rows);
+      }
     }
-  }, [expenseId, getSingleExpenseData, getBankData, getCategoryListData]);
+  }, [expenseId, getSingleExpenseData]);
 
   // Expose imperative API for parent to trigger internal actions
   useImperativeHandle(ref, () => ({
@@ -331,8 +297,8 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
       const data = await createExpense({ url, formData }).unwrap();
       notification("success", data?.message, data?.description);
       if (stay) {
-        // Reset form rows on success in create mode
-        setExpenses(_initialExpense);
+        try { formRef.current?.reset(); } catch {}
+        setExpenses([_initialExpense()]);
         setErrors({});
       } else {
         onSuccess?.();
@@ -435,7 +401,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
     <div className="px-2 expense-sidebar" style={{ fontSize: "0.875rem", overflowX: "hidden" }}>
       <MainLoader loaderVisible={loading} />
       {sidebarTitle && <h6>{sidebarTitle ? sidebarTitle : ""}</h6>}
-      <Form id={formId} onSubmit={(e) => expenseSubmit(e, true)}>
+      <Form ref={formRef} id={formId} onSubmit={(e) => expenseSubmit(e, Boolean(footerActions))}>
         <div className="sidebar-scroll-content">
         {expenses.map((expense, index) => (
           <div>
@@ -615,6 +581,21 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
                     }}
                   />
                 </InputGroup>
+                {/* Attachment preview for edit and selection */}
+                {expense.attachment && (
+                  <div style={{ marginTop: 4 }}>
+                    {expense.attachment instanceof File ? (
+                      <small>Selected file: {expense.attachment.name}</small>
+                    ) : (
+                      typeof expense.attachment === "string" && expense.attachment.trim() ? (
+                        <small>
+                          Current attachment: {" "}
+                          <a href={expense.attachment} target="_blank" rel="noopener noreferrer">View</a>
+                        </small>
+                      ) : null
+                    )}
+                  </div>
+                )}
                 {renderFieldErrors(index, "attachment")}
               </Col>
               {index > 0 && (

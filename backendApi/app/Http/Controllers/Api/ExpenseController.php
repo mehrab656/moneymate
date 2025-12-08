@@ -148,11 +148,11 @@ class ExpenseController extends Controller
             '*.note' => 'nullable|string',
             '*.amount' => 'required|numeric',
             '*.refundable_amount' => 'nullable|numeric',
-            '*.account' => 'required',
-            '*.category' => 'required',
+            '*.account' => 'nullable',
+            '*.category' => 'nullable',
             '*.date' => 'required|date',
             '*.reference' => 'nullable|string',
-            '*.attachment' => 'nullable',
+            '*.attachment' => 'nullable|string',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
@@ -202,18 +202,14 @@ class ExpenseController extends Controller
                     }
                 }
 
-                if ($request->file("attachments_$index")) {
-
-                    $attachment = $request->file("attachments_$index");
-
+                if ($request->hasFile('attachment')) {
+                    $attachment = $request->file('attachment');
                     $filename = time() . '.' . $attachment->getClientOriginalExtension();
-                    $attachment->move('expense', $filename);
-
-//                   $attachment->storeAs('files', $filename);
+                    $attachment->storeAs('files', $filename);
                     $expense['attachment'] = $filename; // Store only the filename
                 }
 
-                $previousAccountBalance = $bankAccount->balance;
+                $oldAccountBalance = $bankAccount->balance;
                 $expenseDate = Carbon::parse($expense['date'])->format('Y-m-d');
 
 
@@ -265,7 +261,7 @@ class ExpenseController extends Controller
                     'log_type' => 'create',
                     'module' => 'expense',
                     'descriptions' => "",
-                    'data_records' => array_merge(json_decode(json_encode($expense), true), ['old_account_balance' => $previousAccountBalance, 'new_account_balance' => $bankAccount->balance]),
+                    'data_records' => array_merge(json_decode(json_encode($expense), true), ['old_account_balance' => $oldAccountBalance, 'new_account_balance' => $bankAccount->balance]),
                 ]);
             }
 
@@ -383,8 +379,8 @@ class ExpenseController extends Controller
                 'description' => 'Missing Id!'
             ], 403);
         }
-        $expense = Expense::where(['slug' => $id, 'company_id' => Auth::user()->primary_company])->get()->toArray();
-        if (!$expense) {
+        $income = Expense::where(['slug' => $id, 'company_id' => Auth::user()->primary_company])->first();
+        if (!$income) {
             return response()->json([
                 'message' => 'Not Found',
                 'description' => 'Expense not found!'
@@ -392,8 +388,7 @@ class ExpenseController extends Controller
         }
 
         return response()->json([
-//            'data' => ExpenseResource::make($expense),
-            'data' => $expense,
+            'data' => ExpenseResource::make($income),
         ]);
     }
     public function exportExpenseCsv(): BinaryFileResponse
@@ -578,120 +573,62 @@ class ExpenseController extends Controller
      * @throws Exception
      */
 
-    public function update(Request $request): JsonResponse
+    public function update(UpdateExpenseRequest $request,$id): JsonResponse
     {
-        $expenses = $request->input('expenses');
-        if ($expenses) {
-            $expenses = json_decode($expenses, true);
-        }
-
-        $validator = Validator::make($expenses, [
-            '*.description' => 'required|string',
-            '*.note' => 'nullable|string',
-            '*.amount' => 'required|numeric',
-            '*.refundable_amount' => 'nullable|numeric',
-            '*.account' => 'nullable',
-            '*.category' => 'nullable',
-            '*.date' => 'required|date',
-            '*.reference' => 'nullable|string',
-            '*.attachment' => 'nullable',
-        ]);
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-        try {
-            DB::beginTransaction();
-            foreach ($expenses as $index => $expense) {
-
-                $associativeOldExpense = Expense::where('slug', $expense['slug'])->get()->first();
-                if (!$associativeOldExpense){
-                    return response()->json([
-                        'message' => 'Not Found!',
-                        'description' => "Associative expense data was not found!",
-                        'index' => $index,
-                    ], 400);
-                }
-                $category = Category::where('slug',$expense['category'])->first();
-                if (!$category){
-                    return response()->json([
-                        'message' => 'Not Found!',
-                        'description' => "Category was not found!",
-                        'index' => $index,
-                    ], 400);
-                }
-                if ($request->file("attachments_$index")) {
-
-                    $attachment = $request->file("attachments_$index");
-
-                    $filename = time() . '.' . $attachment->getClientOriginalExtension();
-                    $attachment->move('expense', $filename);
-
-//                   $attachment->storeAs('files', $filename);
-                    $expense['attachment'] = $filename; // Store only the filename
-                }
-                // Retrieve the original amount from the database
-                $previousAmount = $associativeOldExpense->amount;
-                $previousBankAccount = BankAccount::find($associativeOldExpense->account_id);
-
-                if (!$previousBankAccount){
-                    return response()->json([
-                        'message' => 'Not Found!',
-                        'description' => "Associated bank account was not found",
-                    ], 400);
-                }
-                $newBankAccount = BankAccount::where('slug',$expense['account'])->first();
-                if (!$newBankAccount){
-                    return response()->json([
-                        'message' => 'Not Found!',
-                        'description' => "Bank account was not found!",
-                        'index' => $index,
-                    ], 400);
-                }
-
-                $data['account_id'] = $newBankAccount->id;
-                $data['category_id'] = $category->id;
-                $data['user_id'] = Auth::user()->id;
-
-                $expense->fill($data); // Use fill() instead of update()
-
-                dd($expense);
-
-                $expense->save();
-                $accountBalance = 0;
-                $previousBankAccount->balance += $previousAmount;
-                $previousBankAccount->save();
-
-                $newBankAccount->balance -= $data['amount'];
-                $newBankAccount->save();
-                $accountBalance = $newBankAccount->balance;
-
-                storeActivityLog([
-                    'object_id' => $expense->id,
-                    'log_type' => 'edit',
-                    'module' => 'expense',
-                    'descriptions' => "",
-                    'data_records' => array_merge(json_decode(json_encode($expense), true), ['account_balance' => $accountBalance]),
-                ]);
-                dd($category);
-
-
-
-
-
-
-
-
-            }
-
-
-            DB::commit();
-        }catch (Exception $e) {
-            DB::rollBack();
+        $data = $request->validated();
+        $expense = Expense::where('slug',$id)->get()->first();
+        if (!$expense){
             return response()->json([
-                'message' => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
-                'error' => 'error'
+                'message' => 'Not Found!',
+                'description' => "Associative expense data was not found!",
             ], 400);
         }
+        $category = Category::where('slug',$data['category_id'])->first();
+        if (!$category){
+            return response()->json([
+                'message' => 'Not Found!',
+                'description' => "Category was not found!",
+            ], 400);
+        }
+        if ($request->hasFile('attachment')) {
+            $attachmentFile = $request->file('attachment');
+
+            if ($attachmentFile instanceof UploadedFile) {
+                // Delete the old attachment file, if it exists
+                $this->deleteAttachmentFile($expense);
+                $filename = time() . '.' . $attachmentFile->getClientOriginalExtension(); // Specify the new filename
+                $data['attachment'] = $filename;
+            } else {
+                // Handle the case where the attachment field is not a file
+                $data['attachment'] = null;
+            }
+        }
+
+        // Retrieve the original amount from the database
+        $oldAmount = $expense->amount;
+        $oldBankAccount = BankAccount::find($expense->account_id);
+
+        if (!$oldBankAccount){
+            return response()->json([
+                'message' => 'Not Found!',
+                'description' => "Associated bank account was not found",
+            ], 400);
+        }
+
+        $newBankAccount = BankAccount::where('slug',$data['account_id'])->first();
+        if (!$newBankAccount){
+            return response()->json([
+                'message' => 'Not Found!',
+                'description' => "Bank account was not found!",
+            ], 400);
+        }
+
+        $data['account_id'] = $newBankAccount->id;
+        $data['category_id'] = $category->id;
+        $data['user_id'] = Auth::user()->id;
+
+        unset($data['account']);
+        unset($data['category']);
 
         // Map API field `return_amount` to the actual DB column `refundable_amount`
         // and remove `return_amount` to prevent SQL errors on non-existent column.
@@ -700,23 +637,37 @@ class ExpenseController extends Controller
             unset($data['return_amount']);
         }
 
+        $expense->fill($data); // Use fill() instead of update()
 
+        $expense->save();
 
+        $accountBalance = 0;
+        $oldBankAccount->balance += $oldAmount;
+        $oldBankAccount->save();
 
+        $newBankAccount->balance -= $data['amount'];
+        $newBankAccount->save();
+        $accountBalance = $newBankAccount->balance;
 
-//        if ($previousBankAccount->id != $newBankAccount->id) {
+//        if ($oldBankAccount->id != $newBankAccount->id) {
 //        } else {
 //            $bankAccount = BankAccount::where('slug',$data['account_id'])->first();
 //            return response()->json([
 //                'message' => 'Test',
 //                'description' =>$data['account_id'],
 //            ],400);
-//            $bankAccount->balance += $previousAmount;
+//            $bankAccount->balance += $oldAmount;
 //            $bankAccount->balance -= $data['amount'];
 //            $bankAccount->save();
 //            $accountBalance = $bankAccount->balance;
 //        }
-
+        storeActivityLog([
+            'object_id' => $expense->id,
+            'log_type' => 'edit',
+            'module' => 'expense',
+            'descriptions' => "",
+            'data_records' => array_merge(json_decode(json_encode($expense), true), ['account_balance' => $accountBalance]),
+        ]);
 
         // return new ExpenseResource( $expense );
         return response()->json([
