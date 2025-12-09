@@ -335,52 +335,113 @@ const IncomeFormSidebar = forwardRef(function IncomeFormSidebar({
     setLoading(true);
     setErrors({});
 
-    const formData = new FormData();
-    // Keep JSON payload unchanged in shape but EXCLUDE attachment field
-    const jsonIncomes = incomes.map((inc) => {
-      const out = { ...inc };
-      if ("attachment" in out) delete out.attachment;
-      return out;
-    });
-    formData.append("incomes", JSON.stringify(jsonIncomes));
-    // Append files so they serialize correctly alongside JSON
-    incomes.forEach((inc, idx) => {
-      if (inc.attachment instanceof File) {
-        formData.append(`attachments_${idx}`, inc.attachment);
-      }
-    });
+    const isUpdate = Boolean(incomeId);
 
-    const url = incomeId ? `/income/${incomeId}` : "/income/add";
+    // Helper to build FormData for a single row
+    const buildFormDataForRow = (row) => {
+      const fd = new FormData();
+      const accountSlug = row?.account?.value ?? "";
+      const categorySlug = row?.category?.value ?? "";
+      const amountVal = row?.amount ?? "";
+      const descriptionVal = row?.description ?? "";
+      const noteVal = row?.note ?? "";
+      const referenceVal = row?.reference?.value ?? row?.reference ?? "";
+      const dateVal = row?.date ?? "";
+      const incomeTypeVal = row?.income_type?.value ?? row?.income_type ?? "";
+      const checkinDateVal = row?.checkin_date ?? "";
+      const checkoutDateVal = row?.checkout_date ?? "";
+      const depositVal = row?.deposit ?? "";
+
+      if (descriptionVal !== undefined) fd.append("description", descriptionVal);
+      if (accountSlug) fd.append("account", accountSlug);
+      if (amountVal !== undefined && amountVal !== null) fd.append("amount", amountVal);
+      if (categorySlug) fd.append("category", categorySlug);
+      if (noteVal !== undefined) fd.append("note", noteVal);
+      if (referenceVal !== undefined) fd.append("reference", referenceVal);
+      if (dateVal !== undefined) fd.append("date", dateVal);
+      if (incomeTypeVal !== undefined) fd.append("income_type", incomeTypeVal);
+      if (checkinDateVal) fd.append("checkin_date", checkinDateVal);
+      if (checkoutDateVal) fd.append("checkout_date", checkoutDateVal);
+      if (depositVal) fd.append("deposit", depositVal);
+      if (row?.attachment instanceof File) {
+        fd.append("attachment", row.attachment);
+      }
+      return fd;
+    };
+
     try {
-      const data = await createIncome({ url, formData }).unwrap();
-      notification("success", data?.message, data?.description);
-      if (stay) {
-        // Revoke any object URLs before resetting
-        try {
-          incomes.forEach((inc) => {
-            if (inc?.attachment_preview_url) URL.revokeObjectURL(inc.attachment_preview_url);
-          });
-        } catch {}
-        try { formRef.current?.reset(); } catch {}
-        setIncomes([_initialIncome()]);
-        setErrors({});
+      if (isUpdate) {
+        const formData = buildFormDataForRow(incomes[0] || {});
+        const url = `/income/${incomeId}`;
+        const data = await createIncome({ url, formData }).unwrap();
+        notification("success", data?.message, data?.description);
+        if (stay) {
+          try {
+            incomes.forEach((inc) => {
+              if (inc?.attachment_preview_url) URL.revokeObjectURL(inc.attachment_preview_url);
+            });
+          } catch {}
+          try { formRef.current?.reset(); } catch {}
+          setIncomes([_initialIncome()]);
+          setErrors({});
+        } else {
+          onSuccess?.();
+          closeSidebar();
+        }
       } else {
-        onSuccess?.();
-        closeSidebar();
+        // Create flow: send each row as its own request (backend expects single income per call)
+        const url = "/income/add";
+        const newErrors = {};
+        let successCount = 0;
+        for (let idx = 0; idx < incomes.length; idx++) {
+          const row = incomes[idx] || {};
+          const formData = buildFormDataForRow(row);
+          try {
+            const data = await createIncome({ url, formData }).unwrap();
+            successCount += 1;
+          } catch (err) {
+            const payload = err?.errorData;
+            let serverErrors = null;
+            if (payload && typeof payload === "object") {
+              if (payload.errors && typeof payload.errors === "object") serverErrors = payload.errors;
+              else serverErrors = payload;
+            }
+            if (serverErrors && typeof serverErrors === "object") {
+              // Map errors to row-specific keys for inline display
+              Object.keys(serverErrors).forEach((k) => {
+                newErrors[`${idx}.${k}`] = serverErrors[k];
+              });
+              // Also attach grouped errors under the index for convenience
+              newErrors[idx] = serverErrors;
+            }
+            notification(
+              "error",
+              err?.message || "An error occurred",
+              err?.description || "Please check required fields and try again."
+            );
+            setErrors(newErrors);
+            // Stop processing subsequent rows on first failure to avoid partial submission confusion
+            throw err;
+          }
+        }
+
+        if (successCount > 0) {
+          notification("success", "Success!", `Added ${successCount} income(s).`);
+          if (stay) {
+            try {
+              incomes.forEach((inc) => {
+                if (inc?.attachment_preview_url) URL.revokeObjectURL(inc.attachment_preview_url);
+              });
+            } catch {}
+            try { formRef.current?.reset(); } catch {}
+            setIncomes([_initialIncome()]);
+            setErrors({});
+          } else {
+            onSuccess?.();
+            closeSidebar();
+          }
+        }
       }
-    } catch (err) {
-      const payload = err?.errorData;
-      let serverErrors = null;
-      if (payload && typeof payload === "object") {
-        if (payload.errors && typeof payload.errors === "object") serverErrors = payload.errors;
-        else serverErrors = payload;
-      }
-      if (serverErrors && typeof serverErrors === "object") setErrors(serverErrors);
-      notification(
-        "error",
-        err?.message || "An error occurred",
-        err?.description || "Please try again later."
-      );
     } finally {
       setLoading(false);
     }

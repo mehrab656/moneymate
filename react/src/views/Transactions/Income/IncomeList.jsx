@@ -230,8 +230,19 @@ export default function IncomeList() {
         ? getIncomeData.count
         : normalizedList.length;
 
-    if (normalizedList.length > 0 || incomeDataFetching) {
-      setIncomes(normalizedList);
+    // compute readable income type for the Sector column
+    const withSectorType = normalizedList.map((income) => {
+      const incomeTypeText =
+        income?.income_type?.label ??
+        income?.income_type?.value ??
+        income?.income_type ??
+        income?.type ??
+        "";
+      return { ...income, sector: incomeTypeText };
+    });
+
+    if (withSectorType.length > 0 || incomeDataFetching) {
+      setIncomes(withSectorType);
       setTotalCount(normalizedTotal);
       setShowMainLoader(false);
     } else if (incomeDataError) {
@@ -384,7 +395,7 @@ export default function IncomeList() {
         <Col xs={12} sm={12} md={3} >
           <Row>
             <div
-              className={"sidebar-form quick-income-card"}
+              className={"sidebar-form quick-income-card"} style={{ padding: "8px" }}
             >
               <div className={"sidebar-form-content"}>
                 <IncomeFormSidebar

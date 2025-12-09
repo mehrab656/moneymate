@@ -56,13 +56,13 @@ const TABLE_HEAD = [
     minWidth: 170,
     format: (value) => value.toFixed(2),
   },
-  {
-    id: "refunded_amount",
-    label: "Refunded Amount",
-    align: "right",
-    minWidth: 170,
-    format: (value) => value.toFixed(2),
-  },
+  // {
+  //   id: "refunded_amount",
+  //   label: "Refunded Amount",
+  //   align: "right",
+  //   minWidth: 170,
+  //   format: (value) => value.toFixed(2),
+  // },
 ];
 
 export default function ExpenseList() {
