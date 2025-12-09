@@ -26,6 +26,7 @@ import {
 } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 import CommonTable from "../../../components/table/CommonTable.jsx";
+import SidebarFooterButtons from "../../../components/SidebarFooterButtons.jsx";
 
 const defaultQuery = {
   start_date: "",
@@ -193,37 +194,12 @@ export default function ExpenseList() {
         }}
       />, {
         footerActions: (
-          <div className="d-flex gap-2">
-            <Button
-              variant="contained"
-              size="small"
-              onClick={() => createRef.current?.addExpenses()}
-              sx={{
-                backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[300] : undefined,
-                color: theme.palette.mode === 'light' ? theme.palette.text.primary : undefined,
-                '&:hover': {
-                  backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[400] : undefined,
-                },
-              }}
-            >
-              Add More
-            </Button>
-            <Button
-              variant="contained"
-              size="small"
-              type="submit"
-              form={formId}
-              sx={{
-                backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[300] : undefined,
-                color: theme.palette.mode === 'light' ? theme.palette.text.primary : undefined,
-                '&:hover': {
-                  backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[400] : undefined,
-                },
-              }}
-            >
-              Submit
-            </Button>
-          </div>
+          <SidebarFooterButtons
+            actions={[
+              { label: "Add More", type: "button", onClick: () => createRef.current?.addExpenses() },
+              { label: "Submit", type: "submit", formId },
+            ]}
+          />
         )
       }
     );
@@ -247,23 +223,9 @@ export default function ExpenseList() {
         }}
       />, {
         footerActions: (
-          <div className="d-flex gap-2">
-            <Button
-              variant="contained"
-              size="small"
-              type="submit"
-              form={formId}
-              sx={{
-                backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[300] : undefined,
-                color: theme.palette.mode === 'light' ? theme.palette.text.primary : undefined,
-                '&:hover': {
-                  backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[400] : undefined,
-                },
-              }}
-            >
-              Update Expense
-            </Button>
-          </div>
+          <SidebarFooterButtons
+            actions={[{ label: "Update Expense", type: "submit", formId }]}
+          />
         )
       }
     );
@@ -492,10 +454,9 @@ export default function ExpenseList() {
                   colMD={12}
                   formId="quick-expense-form"
                   footerActions={(
-                    <div className="d-flex gap-2">
-                      {/* <Button variant="contained" size="small" onClick={() => quickExpenseRef.current?.addExpenses()}>Add More</Button> */}
-                      <Button variant="contained" size="small" type="submit" form="quick-expense-form">Submit</Button>
-                    </div>
+                    <SidebarFooterButtons
+                      actions={[{ label: "Submit", type: "submit", formId: "quick-expense-form" }]}
+                    />
                   )}
                 />
               </div>

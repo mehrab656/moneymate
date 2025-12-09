@@ -18,6 +18,7 @@ import CompanyDetails from "./CompanyDetails.jsx";
 import { Card, Box, Button, Collapse, IconButton } from "@mui/material";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useTheme } from "@mui/material/styles";
+import SidebarFooterButtons from "../../components/SidebarFooterButtons.jsx";
 
 const _initialCompanyData = {
   id: null,
@@ -108,16 +109,7 @@ export default function companies() {
     setQuery(defaultQuery);
     setHasFilter(!hasFilter);
   };
-  const filter = () => {
-    return (
-      <CompanyFilter
-        placeHolderTxt="Search by name..."
-        query={query}
-        setQuery={setQuery}
-        resetFilterParameter={resetFilterParameter}
-      />
-    );
-  };
+ 
 
   const filteredCompanies = companies.filter(
     (company) =>
@@ -160,37 +152,12 @@ export default function companies() {
         }}
       />, {
         footerActions: (
-          <div className="d-flex gap-2">
-            <Button
-              variant="contained"
-              size="small"
-              type="submit"
-              form={formId}
-              sx={{
-                backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[300] : undefined,
-                color: theme.palette.mode === 'light' ? theme.palette.text.primary : undefined,
-                '&:hover': {
-                  backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[400] : undefined,
-                },
-              }}
-            >
-              Save
-            </Button>
-            <Button
-              variant="contained"
-              size="small"
-              onClick={() => createRef.current?.saveAndExit()}
-              sx={{
-                backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[300] : undefined,
-                color: theme.palette.mode === 'light' ? theme.palette.text.primary : undefined,
-                '&:hover': {
-                  backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[400] : undefined,
-                },
-              }}
-            >
-              Save and Exit
-            </Button>
-          </div>
+          <SidebarFooterButtons
+            actions={[
+              { label: "Save", type: "submit", formId },
+              { label: "Save and Exit", type: "button", onClick: () => createRef.current?.saveAndExit() },
+            ]}
+          />
         )
       }
     );
@@ -211,29 +178,12 @@ export default function companies() {
         }}
       />, {
         footerActions: (
-          <div className="d-flex gap-2">
-            <Button
-              variant="contained"
-              size="small"
-              onClick={() => editRef.current?.saveAndExit()}
-              sx={{
-                backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[300] : undefined,
-                color: theme.palette.mode === 'light' ? theme.palette.text.primary : undefined,
-                '&:hover': {
-                  backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[400] : undefined,
-                },
-              }}
-            >
-              Update
-            </Button>
-          </div>
+          <SidebarFooterButtons
+            actions={[{ label: "Update", type: "button", onClick: () => editRef.current?.saveAndExit() }]}
+          />
         )
       }
     );
-  };
-  const closeCreateModalFunc = () => {
-    setShowCompanyForm(false);
-    setCompany({});
   };
 
   const onDelete = async (u) => {

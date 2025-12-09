@@ -19,6 +19,7 @@ import { useSidebarActions } from "../../components/GlobalSidebar";
 import { Box, Card, Collapse, IconButton, Button } from "@mui/material";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useTheme } from "@mui/material/styles";
+import SidebarFooterButtons from "../../components/SidebarFooterButtons.jsx";
 
 const TABLE_HEAD = [
   { id: "name", label: " Category Name", align: "left" },
@@ -149,37 +150,12 @@ export default function Categories() {
         }}
       />, {
         footerActions: (
-          <div className="d-flex gap-2">
-            <Button
-              variant="contained"
-              size="small"
-              type="submit"
-              form={formId}
-              sx={{
-                backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[300] : undefined,
-                color: theme.palette.mode === 'light' ? theme.palette.text.primary : undefined,
-                '&:hover': {
-                  backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[400] : undefined,
-                },
-              }}
-            >
-              Save
-            </Button>
-            <Button
-              variant="contained"
-              size="small"
-              onClick={() => createRef.current?.saveAndExit()}
-              sx={{
-                backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[300] : undefined,
-                color: theme.palette.mode === 'light' ? theme.palette.text.primary : undefined,
-                '&:hover': {
-                  backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[400] : undefined,
-                },
-              }}
-            >
-              Save and Exit
-            </Button>
-          </div>
+          <SidebarFooterButtons
+            actions={[
+              { label: "Save", type: "submit", formId: formId },
+              { label: "Save and Exit", type: "button", onClick: () => createRef.current?.saveAndExit() },
+            ]}
+          />
         )
       }
     );
@@ -201,22 +177,11 @@ export default function Categories() {
         }}
       />, {
         footerActions: (
-          <div className="d-flex gap-2">
-            <Button
-              variant="contained"
-              size="small"
-              onClick={() => editRef.current?.saveAndExit()}
-              sx={{
-                backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[300] : undefined,
-                color: theme.palette.mode === 'light' ? theme.palette.text.primary : undefined,
-                '&:hover': {
-                  backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[400] : undefined,
-                },
-              }}
-            >
-              Update
-            </Button>
-          </div>
+          <SidebarFooterButtons
+            actions={[
+              { label: "Update", type: "button", onClick: () => editRef.current?.saveAndExit() },
+            ]}
+          />
         )
       }
     );

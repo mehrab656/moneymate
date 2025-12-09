@@ -18,6 +18,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Form, Row, Col } from "react-bootstrap";
 import { Box, Card, Button, useTheme } from "@mui/material";
+import SidebarFooterButtons from "../../../components/SidebarFooterButtons.jsx";
 import CommonTable from "../../../components/table/CommonTable.jsx";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
 import FilteredParameters from "../Expense/Components/FilteredParameters.jsx";
@@ -146,10 +147,12 @@ export default function IncomeList() {
         }}
       />, {
         footerActions: (
-          <div className="d-flex gap-2">
-            <Button variant="contained" size="small" onClick={() => createRef.current?.addIncomes()}>Add More</Button>
-            <Button variant="contained" size="small" type="submit" form={formId}>Submit</Button>
-          </div>
+          <SidebarFooterButtons
+            actions={[
+              { label: "Add More", type: "button", onClick: () => createRef.current?.addIncomes() },
+              { label: "Submit", type: "submit", formId },
+            ]}
+          />
         )
       }
     );
@@ -179,16 +182,9 @@ export default function IncomeList() {
         }}
       />, {
         footerActions: (
-          <div className="d-flex gap-2">
-            <Button
-              variant="contained"
-              size="small"
-              type="submit"
-              form={formId}
-            >
-              Update Income
-            </Button>
-          </div>
+          <SidebarFooterButtons
+            actions={[{ label: "Update Income", type: "submit", formId }]}
+          />
         )
       }
     );
@@ -410,9 +406,9 @@ export default function IncomeList() {
                   colMD={12}
                   formId="quick-income-form"
                   footerActions={(
-                    <div className="d-flex gap-2">
-                      <Button variant="contained" size="small" type="submit" form="quick-income-form">Submit</Button>
-                    </div>
+                    <SidebarFooterButtons
+                      actions={[{ label: "Submit", type: "submit", formId: "quick-income-form" }]}
+                    />
                   )}
                 />
               </div>
