@@ -4,21 +4,26 @@ import { useStateContext } from "../../contexts/ContextProvider.jsx";
 import { SettingsContext } from "../../contexts/SettingsContext.jsx";
 import MainLoader from "../../components/loader/MainLoader.jsx";
 import { notification } from "../../components/ToastNotification.jsx";
-import { faBuildingFlag } from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   useDeleteCategoryMutation,
   useGetCategoryDataQuery,
+  useGetCategorySectorListDataQuery,
 } from "../../api/slices/categorySlice.js";
 import { checkPermission } from "../../helper/HelperFunctions.js";
-import CommonTable from "../../helper/CommonTable.jsx";
+import CommonTable from "../../components/table/CommonTable.jsx";
 import CategoryFilter from "./CategoryFilter.jsx";
 import CategoryFormSidebar from "./CategoryFormSidebar.jsx";
 import { useSidebarActions } from "../../components/GlobalSidebar";
+import { Box, Card, Collapse, IconButton, Button } from "@mui/material";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { useTheme } from "@mui/material/styles";
 
 const TABLE_HEAD = [
   { id: "name", label: " Category Name", align: "left" },
   { id: "type", label: "Category Type", align: "left" },
+  { id: "sector_name", label: "Sector", align: "left" },
 ];
 
 const defaultQuery = {
@@ -30,6 +35,7 @@ const defaultQuery = {
 };
 
 export default function Categories() {
+  const theme = useTheme();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
@@ -39,11 +45,13 @@ export default function Categories() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showMainLoader, setShowMainLoader] = useState(false);
   const [hasFilter, setHasFilter] = useState(false);
+  const [sectors, setSectors] = useState([]);
+  const [showFilter, setShowFilter] = useState(false);
 
   const { applicationSettings, userRole, userPermission } =
     useContext(SettingsContext);
   const { num_data_per_page } = applicationSettings;
-  const { showQuickDetails } = useSidebarActions();
+  const { showQuickDetails, showQuickForm } = useSidebarActions();
 
   const pageSize =
     Number(query.limit) > 0
@@ -60,9 +68,15 @@ export default function Categories() {
     isError: categoryDataError,
     refetch,
   } = useGetCategoryDataQuery(
-    { currentPage, pageSize, query },
+    { currentPage, pageSize, query, companyId: localStorage.getItem("CURRENT_COMPANY") || "" },
     { skip: !pageSize, refetchOnMountOrArgChange: isPaginate }
   );
+
+  // Load sector list (company-scoped)
+  const {
+    data: sectorListData,
+    isFetching: sectorListFetching,
+  } = useGetCategorySectorListDataQuery();
 
   const { user, token } = useStateContext();
   const [deleteCategory] = useDeleteCategoryMutation();
@@ -70,7 +84,11 @@ export default function Categories() {
   useEffect(() => {
     document.title = "Categories";
     if (getCategoryData?.data) {
-      setCategories(getCategoryData.data);
+      const normalized = getCategoryData.data.map((cat) => ({
+        ...cat,
+        code: cat.id,
+      }));
+      setCategories(normalized);
       setTotalCount(getCategoryData.total);
       setShowMainLoader(false);
     } else {
@@ -78,6 +96,13 @@ export default function Categories() {
     }
     setIsPaginate(false);
   }, [getCategoryData, currentPage]);
+
+  // Populate sectors from sector list API
+  useEffect(() => {
+    if (sectorListData?.data) {
+      setSectors(sectorListData.data);
+    }
+  }, [sectorListData]);
 
   const resetFilterParameter = () => {
     setQuery(defaultQuery);
@@ -95,35 +120,105 @@ export default function Categories() {
   };
 
   const filteredcategories = categories.filter((category) =>
-    category.name.toLowerCase().includes(searchTerm.toLowerCase())
+    category.name.toLowerCase().includes((query.searchTerm || "").toLowerCase())
   );
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
     setIsPaginate(true);
   };
+  const handleRowsPerPageChange = (event) => {
+    const newSize = parseInt(event.target.value, 10);
+    setQuery((prev) => ({ ...prev, limit: newSize }));
+    setCurrentPage(1);
+    setIsPaginate(true);
+  };
 
   // Functions for sidebar operations
   const showFormFunc = () => {
-    showQuickDetails(
+    const createRef = React.createRef();
+    const formId = "category-form-global";
+    showQuickForm(
       "Add Category",
-      <CategoryFormSidebar 
+      <CategoryFormSidebar
+        ref={createRef}
+        formId={formId}
+        hideInternalFooter={true}
         onSuccess={() => {
           refetch();
         }}
-      />
+      />, {
+        footerActions: (
+          <div className="d-flex gap-2">
+            <Button
+              variant="contained"
+              size="small"
+              type="submit"
+              form={formId}
+              sx={{
+                backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[300] : undefined,
+                color: theme.palette.mode === 'light' ? theme.palette.text.primary : undefined,
+                '&:hover': {
+                  backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[400] : undefined,
+                },
+              }}
+            >
+              Save
+            </Button>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => createRef.current?.saveAndExit()}
+              sx={{
+                backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[300] : undefined,
+                color: theme.palette.mode === 'light' ? theme.palette.text.primary : undefined,
+                '&:hover': {
+                  backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[400] : undefined,
+                },
+              }}
+            >
+              Save and Exit
+            </Button>
+          </div>
+        )
+      }
     );
   };
 
   const showEditModalFunc = (categoryData) => {
-    showQuickDetails(
+    const editRef = React.createRef();
+    const formId = "category-form-global";
+    // Use the same reliable quick form sidebar used for Add
+    showQuickForm(
       "Edit Category",
-      <CategoryFormSidebar 
+      <CategoryFormSidebar
+        ref={editRef}
         categoryId={categoryData.id}
+        formId={formId}
+        hideInternalFooter={true}
         onSuccess={() => {
           refetch();
         }}
-      />
+      />, {
+        footerActions: (
+          <div className="d-flex gap-2">
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => editRef.current?.saveAndExit()}
+              sx={{
+                backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[300] : undefined,
+                color: theme.palette.mode === 'light' ? theme.palette.text.primary : undefined,
+                '&:hover': {
+                  backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[400] : undefined,
+                },
+              }}
+            >
+              Update
+            </Button>
+          </div>
+        )
+      }
     );
   };
 
@@ -185,38 +280,59 @@ export default function Categories() {
   return (
     <div>
       <MainLoader loaderVisible={categoryDataFetching} />
-      <CommonTable
-        cardTitle={"List of Categories"}
-        addBTN={{
-          permission: checkPermission("company_create"),
-          txt: "Create New",
-          icon: <FontAwesomeIcon icon={faBuildingFlag} />, //"faBuildingFlag",
-          linkTo: "modal",
-          link: showFormFunc,
+
+      <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span className={"page-title-header"}>Categories</span>
+        {checkPermission("company_create") && (
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            <button className={"btn primary-theme-btn btn-sm ml-2"} onClick={showFormFunc}>
+              <FontAwesomeIcon icon={faPlus} />
+            </button>
+            <IconButton size="small" aria-label="toggle filter" onClick={() => setShowFilter((s) => !s)}>
+              <ArrowDropDownIcon />
+            </IconButton>
+          </Box>
+        )}
+      </Box>
+
+      <Collapse in={showFilter} timeout="auto" unmountOnExit>
+        <Box sx={{ px: 2, mb: 2 }}>
+          <CategoryFilter
+            placeHolderTxt="Search by name..."
+            query={query}
+            setQuery={setQuery}
+            resetFilterParameter={resetFilterParameter}
+          />
+        </Box>
+      </Collapse>
+
+      <Card
+        sx={{
+          p: 5,
+          backgroundColor: theme.palette.background.paper,
+          color: theme.palette.text.primary,
+          borderRadius: 2,
+          border: `1px solid ${theme.palette.divider}`,
+          '& .MuiTableContainer-root': { backgroundColor: theme.palette.background.paper },
+          '& .MuiPaper-root': { backgroundColor: theme.palette.background.paper },
+          '& .MuiTableCell-root': { color: theme.palette.text.primary },
         }}
-        paginations={{
-          totalPages: totalPages,
-          totalCount: totalCount,
-          currentPage: currentPage,
-          handlePageChange: handlePageChange,
-        }}
-        table={{
-          size: "small",
-          ariaLabel: "company table",
-          showIdColumn: userRole === "admin" ?? false,
-          tableColumns: TABLE_HEAD,
-          tableBody: {
-            loading: loading,
-            loadingColSpan: 6, //Table head length + 1
-            rows: filteredcategories, //rendering data
-          },
-          actionButtons: actionParams,
-        }}
-        filter={filter}
-        loading={categoryDataFetching}
-        loaderRow={query?.limit}
-        loaderCol={5}
-      />
+        style={{ padding: "0px" }}
+      >
+        <CommonTable
+          data={filteredcategories}
+          tableColumns={TABLE_HEAD}
+          actionButtons={actionParams}
+          pagination={{
+            totalPages: totalPages ?? 0,
+            totalCount: totalCount,
+            currentPage: currentPage,
+            handlePageChange: handlePageChange,
+            pageSize: pageSize,
+            onRowsPerPageChange: handleRowsPerPageChange,
+          }}
+        />
+      </Card>
     </div>
   );
 }

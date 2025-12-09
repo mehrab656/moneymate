@@ -26,6 +26,8 @@ class CategoryResource extends JsonResource
             'name' => $this->name,
             'type' => $this->type,
             'sector_id' => $this->sector_id,
+            // Convenience field for UI: sector name from relation
+            'sector_name' => optional($this->sector)->name,
         ];
     }
 }

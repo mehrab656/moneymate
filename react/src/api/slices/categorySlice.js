@@ -7,9 +7,9 @@ export const categorySlice = createApi({
   tagTypes: ["category"],
   endpoints: (builder) => ({
     getCategoryData: builder.query({
-      query: ({ currentPage, pageSize, query }) => {
+      query: ({ currentPage, pageSize, query, companyId }) => {
         return {
-          url: `/categories?page=${currentPage}&pageSize=${pageSize}&selectedSectorId=${query?.selectedSectorId}&categoryType=${query?.type}`,
+          url: `/categories?page=${currentPage}&pageSize=${pageSize}&selectedSectorId=${query?.selectedSectorId}&categoryType=${query?.type}&company_id=${companyId ?? ""}`,
           method: "GET",
         };
       },

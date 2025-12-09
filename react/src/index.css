@@ -1630,6 +1630,75 @@ taskList {
     margin-bottom: 1rem;
 }
 
+/* Category Form Sidebar Styles (match company theme) */
+.category-form-sidebar {
+    padding: 20px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+}
+
+.category-form-sidebar .form-group {
+    margin-bottom: 1rem;
+}
+
+.category-form-sidebar .form-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.category-form-sidebar .form-control,
+.category-form-sidebar .form-select {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+}
+
+/* Ensure Category sidebar inputs/selects follow dark/light theme like Company */
+body[data-theme='dark'] .category-form-sidebar .input-group .form-control,
+body[data-theme='dark'] .category-form-sidebar .form-select {
+    background-color: #1c1f24 !important;
+    color: rgba(255, 255, 255, 0.87) !important;
+    border-color: #3a4048 !important;
+}
+body[data-theme='dark'] .category-form-sidebar .input-group .input-group-text {
+    background-color: #2b3035 !important;
+    color: #dee2e6 !important;
+    border-color: #2b3035 !important;
+}
+body[data-theme='dark'] .category-form-sidebar .form-select:focus,
+body[data-theme='dark'] .category-form-sidebar .input-group .form-control:focus {
+    box-shadow: none;
+    border-color: #4a515b !important;
+}
+/* Dark dropdown options for native select (best-effort, varies by browser) */
+body[data-theme='dark'] .category-form-sidebar select option {
+    background-color: #23262b;
+    color: rgba(255, 255, 255, 0.87);
+}
+
+body[data-theme='light'] .category-form-sidebar .input-group .form-control,
+body[data-theme='light'] .category-form-sidebar .form-select {
+    background-color: #ffffff;
+    color: rgba(0, 0, 0, 0.87);
+    border-color: #c5ccd6;
+}
+
+.category-form-sidebar .error-message {
+    color: #dc3545;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+@media (max-width: 768px) {
+    .category-form-sidebar {
+        padding: 15px;
+    }
+    .category-form-sidebar .form-control,
+    .category-form-sidebar .form-select {
+        font-size: 0.85rem;
+    }
+}
+
 .company-form-sidebar .form-label {
     font-weight: 600;
     margin-bottom: 0.5rem;

@@ -70,7 +70,7 @@ export default function Sectors() {
   const [subTitle, setSubTitle] = useState("");
   const [showDetails, setShowDetails] = useState(false);
   const [hasFilter, setHasFilter] = useState(false);
-  const [showFilter, setShowFilter] = useState(false);
+  const [showFilter, setShowFilter] = useState(true);
 
   const { num_data_per_page, default_currency } = applicationSettings;
 
@@ -498,16 +498,16 @@ export default function Sectors() {
       {/* Header with Add button and Filter toggle */}
       <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span className={"page-title-header"}>Sectors</span>
-        {checkPermission("sector_create") && (
-          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          {checkPermission("sector_create") && (
             <button className={"btn primary-theme-btn btn-sm ml-2"} onClick={showSectorFormFunc}>
               <Iconify icon={"eva:plus-fill"} />
             </button>
-            <IconButton size="small" aria-label="toggle filter" onClick={() => setShowFilter((s) => !s)}>
-              <ArrowDropDownIcon />
-            </IconButton>
-          </Box>
-        )}
+          )}
+          <IconButton size="small" aria-label="toggle filter" onClick={() => setShowFilter((s) => !s)}>
+            <ArrowDropDownIcon />
+          </IconButton>
+        </Box>
       </Box>
 
       {/* Collapsible filter */}

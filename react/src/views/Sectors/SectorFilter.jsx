@@ -48,6 +48,10 @@ export default function SectorFilter(props) {
       boxShadow: isDark ? "0 6px 12px rgba(0,0,0,0.35)" : "0 6px 12px rgba(0,0,0,0.15)",
     }),
     menuList: (base) => ({ ...base, backgroundColor: isDark ? "#23262b" : "#fff" }),
+    menuPortal: (base) => ({
+      ...base,
+      zIndex: 9999,
+    }),
     option: (base, state) => ({
       ...base,
       backgroundColor: state.isSelected
@@ -94,6 +98,8 @@ export default function SectorFilter(props) {
                   classNamePrefix="select"
                   styles={selectStyles}
                   isClearable
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
                   value={
                     accounts?.length
                       ? accounts
@@ -158,6 +164,8 @@ export default function SectorFilter(props) {
                   classNamePrefix="select"
                   styles={selectStyles}
                   isSearchable={false}
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
                   value={[
                     { value: "rent", label: "Rent" },
                     { value: "contract_start_date", label: "Contract starting date" },
@@ -183,6 +191,8 @@ export default function SectorFilter(props) {
                   classNamePrefix="select"
                   styles={selectStyles}
                   isSearchable={false}
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
                   value={[
                     { value: "ASC", label: "Ascending" },
                     { value: "DESC", label: "Descending" },
@@ -206,6 +216,8 @@ export default function SectorFilter(props) {
                   classNamePrefix="select"
                   styles={selectStyles}
                   isSearchable={false}
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
                   value={[10, 20, 50, 100, 500, 1000]
                     .map((n) => ({ value: n, label: String(n) }))
                     .find((opt) => opt.value === (Number(query?.limit) || 10)) || null}

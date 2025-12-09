@@ -9,7 +9,7 @@ export const useSidebarActions = () => {
   const sidebar = useSidebar();
 
   // Quick form display with common configurations
-  const showQuickForm = useCallback((FormComponent, title, options = {}) => {
+  const showQuickForm = useCallback((title, FormComponent, options = {}) => {
     sidebar.showForm(FormComponent, {
       title,
       width: 'md',

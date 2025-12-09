@@ -35,6 +35,7 @@ class CategoryController extends Controller {
 
         // Use Eloquent to return Category models instead of stdClass
         $query = Category::query()
+            ->with('sector')
             ->select('categories.*')
             ->join('sectors', 'categories.sector_id', '=', 'sectors.id')
             ->where('sectors.company_id', '=', Auth::user()->primary_company);
