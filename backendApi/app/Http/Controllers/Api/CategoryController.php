@@ -16,6 +16,7 @@ use Hamcrest\Description;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class CategoryController extends Controller {
 
@@ -83,6 +84,9 @@ class CategoryController extends Controller {
                 }
             }
         }
+
+        // Generate a UUID slug and persist it
+        $categoryData['slug'] = (string) Str::uuid();
 
         $category = $this->categoryRepository->create( $categoryData );
         storeActivityLog( [

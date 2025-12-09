@@ -31,6 +31,8 @@ class CategoryRequest extends FormRequest
             ],
             'type' => 'required|in:income,expense',
             'sector_id' => 'required',
+            // Allow optional slug coming from UI; will be normalized server-side
+            'slug' => 'nullable|string',
         ];
     }
 

@@ -74,6 +74,8 @@ const IncomeFormSidebar = forwardRef(function IncomeFormSidebar({
   const formRef = useRef(null);
   const formId = formIdProp || INCOME_FORM_ID;
 
+  console.log('incomes', incomes);
+
   const { data: getBankData } = useGetBankDataQuery({
     currentPage: "",
     pageSize: 100,
@@ -206,14 +208,18 @@ const IncomeFormSidebar = forwardRef(function IncomeFormSidebar({
       setAccounts(modifiedAccounts);
     }
     if (getCategoryListData?.data?.length > 0) {
-      const modifiedCategories = getCategoryListData.data.map((c) => ({
-        value: c?.value ?? c?.id ?? c?.slug,
-        label:
-          c?.label ??
-          c?.name ??
-          c?.category_name ??
-          String(c?.id ?? "Category"),
-      }));
+      const modifiedCategories = getCategoryListData.data.map((c) => {
+        const label =
+          c?.label ?? c?.name ?? c?.category_name ?? String(c?.id ?? "Category");
+        let val = c?.slug ?? c?.id ?? c?.value ?? null;
+        // Prefer a stable key; if not available, fall back to label to avoid null
+        if (!val) val = label;
+        // If API returns value identical to label, prefer slug/id when available
+        if (val && String(val).trim() === String(label).trim()) {
+          val = c?.slug ?? c?.id ?? val;
+        }
+        return { value: val, label };
+      });
       setCategories(modifiedCategories);
     }
     if (incomeId && getSingleIncomeData?.data) {
@@ -262,17 +268,24 @@ const IncomeFormSidebar = forwardRef(function IncomeFormSidebar({
     } else {
       const name = fieldName;
       const option = e;
-      const normalized =
+      // Normalize to always store { value, label } for selects
+      const normalizedValue =
         option && typeof option === "object"
-          ? {
-              value: option?.value ?? option?.slug ?? option?.id ?? null,
-              label:
-                option?.label ??
-                option?.name ??
-                option?.category_name ??
-                String(option?.id ?? ""),
-            }
-          : { value: option ?? null, label: String(option ?? "") };
+          ? option?.value?.value ?? option?.value?.id ?? option?.value ?? option?.slug ?? option?.id ?? option?.label ?? null
+          : option ?? null;
+      const normalizedLabel =
+        option && typeof option === "object"
+          ? option?.label ?? option?.name ?? option?.category_name ?? String(option?.id ?? "")
+          : String(option ?? "");
+      let normalized = { value: normalizedValue, label: normalizedLabel };
+      // If value ends up equal to label, prefer slug/id when available
+      if (
+        normalized?.value &&
+        normalized?.label &&
+        String(normalized.value).trim() === String(normalized.label).trim()
+      ) {
+        normalized.value = option?.slug ?? option?.id ?? normalized.value;
+      }
       updatedRows[index][name] = normalized;
       setErrors((prev) => {
         if (!prev || typeof prev !== "object") return prev;
@@ -321,26 +334,6 @@ const IncomeFormSidebar = forwardRef(function IncomeFormSidebar({
     event.preventDefault();
     setLoading(true);
     setErrors({});
-    // Minimal client-side validation for first row (others handled server-side)
-    const first = incomes[0] || {};
-    if (!first?.account?.value) {
-      setLoading(false);
-      setErrors((prev) => ({ ...prev, account: ["Account is required."] }));
-      notification("error", "Account required", "Please select an account.");
-      return;
-    }
-    if (!first?.category?.value) {
-      setLoading(false);
-      setErrors((prev) => ({ ...prev, category: ["Category is required."] }));
-      notification("error", "Category required", "Please select a category.");
-      return;
-    }
-    if (!first?.amount || Number(first.amount) <= 0) {
-      setLoading(false);
-      setErrors((prev) => ({ ...prev, amount: ["Enter a positive amount."] }));
-      notification("error", "Amount invalid", "Please enter a valid amount.");
-      return;
-    }
 
     const formData = new FormData();
     // Keep JSON payload unchanged in shape but EXCLUDE attachment field
