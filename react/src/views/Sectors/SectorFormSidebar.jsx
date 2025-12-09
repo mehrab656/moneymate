@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Form, Button, Row, Col, Table } from "react-bootstrap";
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from "react";
+import { Form, Button, Row, Col, Table, InputGroup } from "react-bootstrap";
 import { notification } from "../../components/ToastNotification.jsx";
 import { useSidebarActions } from "../../components/GlobalSidebar";
 import {
@@ -33,7 +33,7 @@ const _initialChannels = [
   { channel_name: "", reference_id: "", listing_date: "" },
 ];
 
-export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
+export default forwardRef(function SectorFormSidebar({ sectorId = null, onSuccess, formId: formIdProp = null, hideInternalFooter = false }, ref) {
   const [formData, setFormData] = useState(_initialSector);
   const [payments, setPayments] = useState(_initialPayments);
   const [channels, setChannels] = useState(_initialChannels);
@@ -43,6 +43,7 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
   const [loading, setLoading] = useState(false);
 
   const { closeSidebar } = useSidebarActions();
+  const formId = formIdProp || "sector-form-sidebar-form";
   const [createSector] = useCreateSectorMutation();
 
   const {
@@ -263,6 +264,18 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
     }
   };
 
+  // Expose imperative methods for sticky footer actions (Save / Save and Exit)
+  useImperativeHandle(ref, () => ({
+    save: () => {
+      // Programmatic submit that keeps the sidebar open
+      sectorSubmit({ preventDefault: () => {} }, true);
+    },
+    saveAndExit: () => {
+      // Programmatic submit that closes the sidebar
+      sectorSubmit({ preventDefault: () => {} }, false);
+    },
+  }));
+
   if (singleSectorFetching) {
     return (
       <div className="d-flex justify-content-center align-items-center sector-form-sidebar-loading">
@@ -275,28 +288,32 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
 
   return (
     <div className="sector-form-sidebar">
-      <Form onSubmit={(e) => sectorSubmit(e, false)}>
+      <Form id={formId} onSubmit={(e) => sectorSubmit(e, true)}>
         {/* Sector Information */}
         <div className="mb-4">
           <h5 className="mb-3">Sector Information</h5>
           <Row className="g-3">
             <Col xs={12} md={6}>
-              <Form.Group className="form-group mb-3">
-                <Form.Label>Sector Name *</Form.Label>
+              <InputGroup className={errors.name ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="sector_name">Sector Name *</InputGroup.Text>
                 <Form.Control
                   type="text"
+                  aria-label="Sector Name"
+                  aria-describedby="sector_name"
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
                   required
                 />
-                {errors.name && <p className="error-message">{errors.name[0]}</p>}
-              </Form.Group>
+              </InputGroup>
+              {errors.name && <p className="error-message">{errors.name[0]}</p>}
             </Col>
             <Col xs={12} md={6}>
-              <Form.Group className="form-group mb-3">
-                <Form.Label>Payment Account *</Form.Label>
+              <InputGroup className={errors.bank_account_id ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="payment_account">Payment Account *</InputGroup.Text>
                 <Form.Select
+                  aria-label="Payment Account"
+                  aria-describedby="payment_account"
                   name="bank_account_id"
                   value={formData.bank_account_id}
                   onChange={handleInputChange}
@@ -313,47 +330,53 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
                     <option disabled>No account was found</option>
                   )}
                 </Form.Select>
-                {errors.bank_account_id && (
-                  <p className="error-message">{errors.bank_account_id[0]}</p>
-                )}
-              </Form.Group>
+              </InputGroup>
+              {errors.bank_account_id && (
+                <p className="error-message">{errors.bank_account_id[0]}</p>
+              )}
             </Col>
 
             <Col xs={12} md={6}>
-              <Form.Group className="form-group mb-3">
-                <Form.Label>Contract Start Date *</Form.Label>
+              <InputGroup className={errors.contract_start_date ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="contract_start_date">Contract Start Date *</InputGroup.Text>
                 <Form.Control
                   type="date"
+                  aria-label="Contract Start Date"
+                  aria-describedby="contract_start_date"
                   name="contract_start_date"
                   value={formData.contract_start_date}
                   onChange={handleInputChange}
                   required
                 />
-                {errors.contract_start_date && (
-                  <p className="error-message">{errors.contract_start_date[0]}</p>
-                )}
-              </Form.Group>
+              </InputGroup>
+              {errors.contract_start_date && (
+                <p className="error-message">{errors.contract_start_date[0]}</p>
+              )}
             </Col>
             <Col xs={12} md={6}>
-              <Form.Group className="form-group mb-3">
-                <Form.Label>Contract End Date *</Form.Label>
+              <InputGroup className={errors.contract_end_date ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="contract_end_date">Contract End Date *</InputGroup.Text>
                 <Form.Control
                   type="date"
+                  aria-label="Contract End Date"
+                  aria-describedby="contract_end_date"
                   name="contract_end_date"
                   value={formData.contract_end_date}
                   onChange={handleInputChange}
                   required
                 />
-                {errors.contract_end_date && (
-                  <p className="error-message">{errors.contract_end_date[0]}</p>
-                )}
-              </Form.Group>
+              </InputGroup>
+              {errors.contract_end_date && (
+                <p className="error-message">{errors.contract_end_date[0]}</p>
+              )}
             </Col>
 
             <Col xs={12} md={6}>
-              <Form.Group className="form-group mb-3">
-                <Form.Label>Contract Period (months) *</Form.Label>
+              <InputGroup className={errors.contract_period ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="contract_period">Contract Period (months) *</InputGroup.Text>
                 <Form.Select
+                  aria-label="Contract Period (months)"
+                  aria-describedby="contract_period"
                   name="contract_period"
                   value={formData.contract_period}
                   onChange={handleInputChange}
@@ -363,10 +386,10 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
                     <option key={i + 1} value={i + 1}>{i + 1}</option>
                   ))}
                 </Form.Select>
-                {errors.contract_period && (
-                  <p className="error-message">{errors.contract_period[0]}</p>
-                )}
-              </Form.Group>
+              </InputGroup>
+              {errors.contract_period && (
+                <p className="error-message">{errors.contract_period[0]}</p>
+              )}
             </Col>
           </Row>
         </div>
@@ -376,117 +399,133 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
           <h5 className="mb-3">Electricity & Internet</h5>
           <Row className="g-3">
             <Col xs={12} md={6}>
-              <Form.Group className="form-group mb-3">
-                <Form.Label>Electricity Premises No</Form.Label>
+              <InputGroup className={errors.el_premises_no ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="el_premises_no">Electricity Premises No</InputGroup.Text>
                 <Form.Control
                   type="text"
+                  aria-label="Electricity Premises No"
+                  aria-describedby="el_premises_no"
                   name="el_premises_no"
                   value={formData.el_premises_no}
                   onChange={handleInputChange}
                 />
-                {errors.el_premises_no && (
-                  <p className="error-message">{errors.el_premises_no[0]}</p>
-                )}
-              </Form.Group>
+              </InputGroup>
+              {errors.el_premises_no && (
+                <p className="error-message">{errors.el_premises_no[0]}</p>
+              )}
             </Col>
             <Col xs={12} md={6}>
-              <Form.Group className="form-group mb-3">
-                <Form.Label>Electricity Business Acc No</Form.Label>
+              <InputGroup className={errors.el_business_acc_no ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="el_business_acc_no">Electricity Business Acc No</InputGroup.Text>
                 <Form.Control
                   type="text"
+                  aria-label="Electricity Business Acc No"
+                  aria-describedby="el_business_acc_no"
                   name="el_business_acc_no"
                   value={formData.el_business_acc_no}
                   onChange={handleInputChange}
                 />
-                {errors.el_business_acc_no && (
-                  <p className="error-message">{errors.el_business_acc_no[0]}</p>
-                )}
-              </Form.Group>
+              </InputGroup>
+              {errors.el_business_acc_no && (
+                <p className="error-message">{errors.el_business_acc_no[0]}</p>
+              )}
             </Col>
             <Col xs={12} md={6}>
-              <Form.Group className="form-group mb-3">
-                <Form.Label>Electricity Acc No</Form.Label>
+              <InputGroup className={errors.el_acc_no ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="el_acc_no">Electricity Acc No</InputGroup.Text>
                 <Form.Control
                   type="text"
+                  aria-label="Electricity Acc No"
+                  aria-describedby="el_acc_no"
                   name="el_acc_no"
                   value={formData.el_acc_no}
                   onChange={handleInputChange}
                 />
-                {errors.el_acc_no && (
-                  <p className="error-message">{errors.el_acc_no[0]}</p>
-                )}
-              </Form.Group>
+              </InputGroup>
+              {errors.el_acc_no && (
+                <p className="error-message">{errors.el_acc_no[0]}</p>
+              )}
             </Col>
             <Col xs={12} md={6}>
-              <Form.Group className="form-group mb-3">
-                <Form.Label>Electricity Billing Date</Form.Label>
+              <InputGroup className={errors.el_billing_date ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="el_billing_date">Electricity Billing Date</InputGroup.Text>
                 <Form.Control
                   type="date"
+                  aria-label="Electricity Billing Date"
+                  aria-describedby="el_billing_date"
                   name="el_billing_date"
                   value={formData.el_billing_date}
                   onChange={handleInputChange}
                 />
-                {errors.el_billing_date && (
-                  <p className="error-message">{errors.el_billing_date[0]}</p>
-                )}
-              </Form.Group>
+              </InputGroup>
+              {errors.el_billing_date && (
+                <p className="error-message">{errors.el_billing_date[0]}</p>
+              )}
             </Col>
             <Col xs={12}>
-              <Form.Group className="form-group mb-3">
-                <Form.Label>Electricity Note</Form.Label>
+              <InputGroup className="mb-3" size="sm">
+                <InputGroup.Text id="el_note">Electricity Note</InputGroup.Text>
                 <Form.Control
                   as="textarea"
                   rows={2}
+                  aria-label="Electricity Note"
+                  aria-describedby="el_note"
                   name="el_note"
                   value={formData.el_note}
                   onChange={handleInputChange}
                   className="sector-form-sidebar-mobile-textarea"
                 />
-              </Form.Group>
+              </InputGroup>
             </Col>
           </Row>
 
           <Row className="g-3 mt-2">
             <Col xs={12} md={6}>
-              <Form.Group className="form-group mb-3">
-                <Form.Label>Internet Account No</Form.Label>
+              <InputGroup className={errors.internet_acc_no ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="internet_acc_no">Internet Account No</InputGroup.Text>
                 <Form.Control
                   type="text"
+                  aria-label="Internet Account No"
+                  aria-describedby="internet_acc_no"
                   name="internet_acc_no"
                   value={formData.internet_acc_no}
                   onChange={handleInputChange}
                 />
-                {errors.internet_acc_no && (
-                  <p className="error-message">{errors.internet_acc_no[0]}</p>
-                )}
-              </Form.Group>
+              </InputGroup>
+              {errors.internet_acc_no && (
+                <p className="error-message">{errors.internet_acc_no[0]}</p>
+              )}
             </Col>
             <Col xs={12} md={6}>
-              <Form.Group className="form-group mb-3">
-                <Form.Label>Internet Billing Date</Form.Label>
+              <InputGroup className={errors.internet_billing_date ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="internet_billing_date">Internet Billing Date</InputGroup.Text>
                 <Form.Control
                   type="date"
+                  aria-label="Internet Billing Date"
+                  aria-describedby="internet_billing_date"
                   name="internet_billing_date"
                   value={formData.internet_billing_date}
                   onChange={handleInputChange}
                 />
-                {errors.internet_billing_date && (
-                  <p className="error-message">{errors.internet_billing_date[0]}</p>
-                )}
-              </Form.Group>
+              </InputGroup>
+              {errors.internet_billing_date && (
+                <p className="error-message">{errors.internet_billing_date[0]}</p>
+              )}
             </Col>
             <Col xs={12}>
-              <Form.Group className="form-group mb-3">
-                <Form.Label>Internet Note</Form.Label>
+              <InputGroup className="mb-3" size="sm">
+                <InputGroup.Text id="int_note">Internet Note</InputGroup.Text>
                 <Form.Control
                   as="textarea"
                   rows={2}
+                  aria-label="Internet Note"
+                  aria-describedby="int_note"
                   name="int_note"
                   value={formData.int_note}
                   onChange={handleInputChange}
                   className="sector-form-sidebar-mobile-textarea"
                 />
-              </Form.Group>
+              </InputGroup>
             </Col>
           </Row>
         </div>
@@ -743,33 +782,35 @@ export default function SectorFormSidebar({ sectorId = null, onSuccess }) {
             {errors?.categories && <p className="error-message mt-2">{errors?.categories[0]}</p>}
           </div>
 
-        {/* Submit Buttons */}
-        <Row className="g-2">
-          <Col xs={12}>
-            <div className="d-flex flex-column flex-sm-row gap-2 justify-content-end">
-              {sectorId ? (
-                <Button variant="primary" type="submit" disabled={loading} className="flex-fill flex-sm-fill-0">
-                  {loading ? "Updating..." : "Update Sector"}
-                </Button>
-              ) : (
-                <>
-                  <Button
-                    variant="outline-primary"
-                    onClick={(e) => sectorSubmit(e, true)}
-                    disabled={loading}
-                    className="flex-fill flex-sm-fill-0"
-                  >
-                    {loading ? "Creating..." : "Create & Add More"}
-                  </Button>
+        {/* Submit Buttons (hidden when using sticky footer) */}
+        {!hideInternalFooter && (
+          <Row className="g-2">
+            <Col xs={12}>
+              <div className="d-flex flex-column flex-sm-row gap-2 justify-content-end">
+                {sectorId ? (
                   <Button variant="primary" type="submit" disabled={loading} className="flex-fill flex-sm-fill-0">
-                    {loading ? "Creating..." : "Create & Close"}
+                    {loading ? "Updating..." : "Update Sector"}
                   </Button>
-                </>
-              )}
-            </div>
-          </Col>
-        </Row>
+                ) : (
+                  <>
+                    <Button
+                      variant="outline-primary"
+                      onClick={(e) => sectorSubmit(e, true)}
+                      disabled={loading}
+                      className="flex-fill flex-sm-fill-0"
+                    >
+                      {loading ? "Creating..." : "Create & Add More"}
+                    </Button>
+                    <Button variant="primary" type="submit" disabled={loading} className="flex-fill flex-sm-fill-0">
+                      {loading ? "Creating..." : "Create & Close"}
+                    </Button>
+                  </>
+                )}
+              </div>
+            </Col>
+          </Row>
+        )}
       </Form>
     </div>
   );
-}
+});

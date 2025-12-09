@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Card, Stack, Row, Col, Form, Button } from "react-bootstrap";
+import { Card, Stack, Row, Col, Form, Button, InputGroup } from "react-bootstrap";
 import { SettingsContext } from "../../contexts/SettingsContext.jsx";
 import Select from "react-select";
 
@@ -73,16 +73,15 @@ export default function CompanyFilter(props) {
   }, [localSearchTerm, setQuery]);
   return (
     <>
-     <Card className="p-3">
+     <Card className="p-3" style={{ borderBottom: '1px solid' }}>
       <Stack gap={3}>
         {/* Form Inputs */}
         <Row className="g-3">
           <Col md={4}>
-            <Form.Group controlId="search">
-              <Form.Label className="custom-form-label" style={{ marginBottom: "0px" }}>
-                Search
-              </Form.Label>
+            <InputGroup className="mb-3" size="sm">
+              <InputGroup.Text id="company_search">Search</InputGroup.Text>
               <Form.Control
+                aria-describedby="company_search"
                 type="text"
                 size="sm"
                 value={localSearchTerm}
@@ -90,28 +89,28 @@ export default function CompanyFilter(props) {
                 placeholder={placeHolderTxt}
                 style={{ ...inputStyle, textTransform: "capitalize" }}
               />
-            </Form.Group>
+            </InputGroup>
           </Col>
           <Col md={2}>
-            <Form.Group controlId="order">
-              <Form.Label className="custom-form-label" style={{ marginBottom: "0px" }}>
-                Order
-              </Form.Label>
-              <Select
-                classNamePrefix="select"
-                styles={selectStyles}
-                isSearchable={false}
-                value={
-                  [{ value: "ASC", label: "Ascending" }, { value: "DESC", label: "Descending" }]
-                    .find((opt) => opt.value === (query?.orderBy || "DESC")) || null
-                }
-                onChange={(opt) => setQuery({ ...query, orderBy: opt?.value })}
-                options={[
-                  { value: "ASC", label: "Ascending" },
-                  { value: "DESC", label: "Descending" },
-                ]}
-              />
-            </Form.Group>
+            <InputGroup className="mb-3" size="sm">
+              <InputGroup.Text id="company_order">Order</InputGroup.Text>
+              <div className="flex-grow-1">
+                <Select
+                  classNamePrefix="select"
+                  styles={selectStyles}
+                  isSearchable={false}
+                  value={
+                    [{ value: "ASC", label: "Ascending" }, { value: "DESC", label: "Descending" }]
+                      .find((opt) => opt.value === (query?.orderBy || "DESC")) || null
+                  }
+                  onChange={(opt) => setQuery({ ...query, orderBy: opt?.value })}
+                  options={[
+                    { value: "ASC", label: "Ascending" },
+                    { value: "DESC", label: "Descending" },
+                  ]}
+                />
+              </div>
+            </InputGroup>
           </Col>
 
           {/* <Col md={2}>

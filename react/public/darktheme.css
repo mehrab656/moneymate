@@ -66,6 +66,50 @@ body[data-theme='dark'] .MuiTableCell-root {
     color: rgba(255, 255, 255, 0.87);
 }
 
+/* Sector form: ensure Payment Schedule and Listing Channels use dark surfaces */
+body[data-theme='dark'] .sector-form-sidebar-desktop-container,
+body[data-theme='dark'] .sector-form-sidebar-mobile-container {
+    background-color: transparent;
+}
+
+/* Table container and cells */
+body[data-theme='dark'] .sector-form-sidebar-table {
+    background-color: #0F1724;
+    color: rgba(255, 255, 255, 0.87);
+    border-color: #384049;
+}
+body[data-theme='dark'] .sector-form-sidebar-table thead th {
+    background-color: #0C1A28;
+    color: rgba(255, 255, 255, 0.87);
+    border-color: #384049;
+}
+body[data-theme='dark'] .sector-form-sidebar-table tbody td {
+    background-color: #0F1724;
+    color: rgba(255, 255, 255, 0.87);
+    border-color: #384049;
+}
+body[data-theme='dark'] .sector-form-sidebar-table tr {
+    background-color: #0F1724;
+}
+
+/* Mobile cards for payments/channels */
+body[data-theme='dark'] .sector-form-sidebar-card {
+    background-color: #0F1724 !important;
+    color: rgba(255, 255, 255, 0.87) !important;
+    border-color: #384049 !important;
+}
+body[data-theme='dark'] .sector-form-sidebar-card-row .form-control,
+body[data-theme='dark'] .sector-form-sidebar-cell .form-control {
+    background-color: #1c1f24;
+    color: rgba(255, 255, 255, 0.87);
+    border-color: #3a4048;
+}
+
+/* Remove zebra striping light background in dark mode */
+body[data-theme='dark'] .table-striped tbody tr:nth-of-type(odd) {
+    background-color: #0F1724;
+}
+
 /* Themed inputs for dark/light */
 body[data-theme='dark'] .form-control,
 body[data-theme='dark'] .form-select,

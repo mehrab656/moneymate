@@ -8,10 +8,12 @@ import { checkPermission, compareDates } from "../../helper/HelperFunctions.js";
 import SummeryCard from "../../helper/SummeryCard.jsx";
 import { notification } from "../../components/ToastNotification.jsx";
 
-import { Box, Button } from "@mui/material";
+import { Box, Button, Card, Collapse, IconButton } from "@mui/material";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { useTheme } from "@mui/material/styles";
 
 import Iconify from "../../components/Iconify.jsx";
-import CommonTable from "../../helper/CommonTable.jsx";
+import CommonTable from "../../components/table/CommonTable.jsx";
 import { useSidebarActions } from "../../components/GlobalSidebar";
 import {
   useChangePaymentStatusMutation,
@@ -49,6 +51,7 @@ const defaultQuery = {
   limit: 10,
 };
 export default function Sectors() {
+  const theme = useTheme();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const { applicationSettings, userRole, userPermission } =
@@ -67,6 +70,7 @@ export default function Sectors() {
   const [subTitle, setSubTitle] = useState("");
   const [showDetails, setShowDetails] = useState(false);
   const [hasFilter, setHasFilter] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
 
   const { num_data_per_page, default_currency } = applicationSettings;
 
@@ -77,11 +81,12 @@ export default function Sectors() {
     { id: "internet", label: "Next internet Bill", align: "left" },
     { id: "cheque", label: "Next Payment", align: "left" },
   ];
-  const pageSize = num_data_per_page;
-  const totalPages = Math.ceil(totalCount / pageSize);
+  // page size derived from query limit with fallback to app setting
+  const pageSize = Number(query.limit) > 0 ? Number(query.limit) : (num_data_per_page || 10);
+  const totalPages = Math.ceil((totalCount || 0) / (pageSize || 10));
 
   //api call
-  const { data: getSectorsData, isFetching: sectorDataFetching } =
+  const { data: getSectorsData, isFetching: sectorDataFetching, isError: sectorDataError } =
     useGetSectorsDataQuery(
       { currentPage, pageSize, query: query },
       { skip: !pageSize, refetchOnMountOrArgChange: isPaginate }
@@ -101,6 +106,13 @@ export default function Sectors() {
     }
     setIsPaginate(false);
   }, [getSectorsData, currentPage]);
+
+  // sync initial limit with app settings
+  useEffect(() => {
+    if (num_data_per_page && num_data_per_page > 0) {
+      setQuery((prev) => ({ ...prev, limit: num_data_per_page }));
+    }
+  }, [num_data_per_page]);
 
   const showViewModalFunc = (sector) => {
     setShowDetails(true);
@@ -143,6 +155,14 @@ export default function Sectors() {
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
+    setIsPaginate(true);
+  };
+
+  const handleRowsPerPageChange = (event) => {
+    const newSize = parseInt(event.target.value, 10);
+    setQuery((prev) => ({ ...prev, limit: newSize }));
+    setCurrentPage(1);
+    setIsPaginate(true);
   };
 
   const Toast = Swal.mixin({
@@ -330,14 +350,38 @@ export default function Sectors() {
   );
   const showEditModalFunc = (sector) => {
     setSector(sector);
+    const editRef = React.createRef();
+    const formId = "sector-form-global";
     showLargeContent(
       "Edit Sector",
       <SectorFormSidebar
+        ref={editRef}
         sectorId={sector.id}
+        formId={formId}
+        hideInternalFooter={true}
         onSuccess={() => {
           setIsPaginate(true);
         }}
-      />
+      />, {
+        footerActions: (
+          <div className="d-flex gap-2">
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => editRef.current?.saveAndExit()}
+              sx={{
+                backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[300] : undefined,
+                color: theme.palette.mode === 'light' ? theme.palette.text.primary : undefined,
+                '&:hover': {
+                  backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[400] : undefined,
+                },
+              }}
+            >
+              Update
+            </Button>
+          </div>
+        )
+      }
     );
   };
   const showContractExtendFunc = (sector) => {
@@ -392,14 +436,53 @@ export default function Sectors() {
     },
   ];
   const showSectorFormFunc = () => {
+    const createRef = React.createRef();
+    const formId = "sector-form-global";
     showLargeContent(
       "Create Sector",
       <SectorFormSidebar
+        ref={createRef}
         sectorId={null}
+        formId={formId}
+        hideInternalFooter={true}
         onSuccess={() => {
           setIsPaginate(true);
         }}
-      />
+      />, {
+        footerActions: (
+          <div className="d-flex gap-2">
+            <Button
+              variant="contained"
+              size="small"
+              type="submit"
+              form={formId}
+              sx={{
+                backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[300] : undefined,
+                color: theme.palette.mode === 'light' ? theme.palette.text.primary : undefined,
+                '&:hover': {
+                  backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[400] : undefined,
+                },
+              }}
+            >
+              Save
+            </Button>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => createRef.current?.saveAndExit()}
+              sx={{
+                backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[300] : undefined,
+                color: theme.palette.mode === 'light' ? theme.palette.text.primary : undefined,
+                '&:hover': {
+                  backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[400] : undefined,
+                },
+              }}
+            >
+              Save and Exit
+            </Button>
+          </div>
+        )
+      }
     );
   };
   const closeSectorModalFunc = () => {
@@ -412,39 +495,57 @@ export default function Sectors() {
   return (
     <div>
       <MainLoader loaderVisible={showMainLoader} />
-      <CommonTable
-        cardTitle={"List of Sectors"}
-        cardSubTitle={subTitle}
-        addBTN={{
-          permission: checkPermission("sector_create"),
-          txt: "New Sector",
-          icon: <Iconify icon={"eva:plus-fill"} />, //"faBuildingFlag",
-          linkTo: "modal",
-          link: showSectorFormFunc,
+      {/* Header with Add button and Filter toggle */}
+      <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span className={"page-title-header"}>Sectors</span>
+        {checkPermission("sector_create") && (
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            <button className={"btn primary-theme-btn btn-sm ml-2"} onClick={showSectorFormFunc}>
+              <Iconify icon={"eva:plus-fill"} />
+            </button>
+            <IconButton size="small" aria-label="toggle filter" onClick={() => setShowFilter((s) => !s)}>
+              <ArrowDropDownIcon />
+            </IconButton>
+          </Box>
+        )}
+      </Box>
+
+      {/* Collapsible filter */}
+      <Collapse in={showFilter} timeout="auto" unmountOnExit>
+        <Box sx={{ px: 2, mb: 2 }}>{filters()}</Box>
+      </Collapse>
+
+      {/* Card-wrapped modern table */}
+      <Card
+        sx={{
+          p: 5,
+          backgroundColor: theme.palette.background.paper,
+          color: theme.palette.text.primary,
+          borderRadius: 2,
+          border: `1px solid ${theme.palette.divider}`,
+          '& .MuiTableContainer-root': { backgroundColor: theme.palette.background.paper },
+          '& .MuiPaper-root': { backgroundColor: theme.palette.background.paper },
+          '& .MuiTableCell-root': { color: theme.palette.text.primary },
         }}
-        paginations={{
-          totalPages: totalPages,
-          totalCount: totalCount,
-          currentPage: currentPage,
-          handlePageChange: handlePageChange,
-        }}
-        table={{
-          size: "small",
-          ariaLabel: "sector table",
-          showIdColumn: userRole === "admin" ?? false,
-          tableColumns: TABLE_HEAD,
-          tableBody: {
-            loading: sectorDataFetching,
-            loadingColSpan: 3,
-            rows: modifiedSectors, //rendering data
-          },
-          actionButtons: actionParams,
-        }}
-        filter={filters}
-        loading={sectorDataFetching}
-        loaderRow={query?.limit}
-        loaderCol={3}
-      />
+        style={{ padding: "0px" }}
+      >
+        <CommonTable
+          data={modifiedSectors}
+          tableColumns={TABLE_HEAD}
+          actionButtons={actionParams}
+          pagination={{
+            totalPages: totalPages ?? 0,
+            totalCount: totalCount,
+            currentPage: currentPage,
+            handlePageChange: handlePageChange,
+            pageSize: pageSize,
+            onRowsPerPageChange: handleRowsPerPageChange,
+          }}
+          cardSubTitle={`Page-${currentPage} (showing ${modifiedSectors.length} results from ${totalCount})`}
+          isFetching={sectorDataFetching}
+          hasError={sectorDataError}
+        />
+      </Card>
 
       {/* Sector creation/editing now handled in GlobalSidebar via SectorFormSidebar */}
 
