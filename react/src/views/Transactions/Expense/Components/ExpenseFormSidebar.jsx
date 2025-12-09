@@ -279,33 +279,46 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
     // }
 
     const formData = new FormData();
-    // formData.append("account_id", expense.account.value);
-    // formData.append("amount", expense.amount);
-    // Use `refundable_amount` for updates.
-    // For creates, default `return_amount` to `refundable_amount` if provided,
-    // otherwise fall back to the entered `amount`.
 
-    // formData.append("category_id", expense.category.value);
-    // formData.append("description", expense.description);
-    // formData.append("note", expense.note);
-    // formData.append("reference", expense.reference);
-    // formData.append("date", expense.date);
+    // Build payloads per endpoint shape:
+    // - Create: send `expenses` array JSON with optional attachments_* files
+    // - Update: send flattened fields expected by UpdateExpenseRequest
+    const isUpdate = Boolean(expenseId);
+    if (isUpdate) {
+      const row = expenses[0] || {};
+      const accountSlug = row?.account?.value ?? "";
+      const categorySlug = row?.category?.value ?? "";
+      const amountVal = row?.amount ?? "";
+      const returnAmount = row?.refundable_amount ?? 0; // backend requires `return_amount`
 
-    // Keep JSON payload unchanged in shape but EXCLUDE attachment field
-    const jsonExpenses = expenses.map((exp) => {
-      const out = { ...exp };
-      if ("attachment" in out) delete out.attachment;
-      return out;
-    });
-    formData.append("expenses", JSON.stringify(jsonExpenses));
-    // Only append attachments so files serialize correctly alongside JSON
-    expenses.forEach((exp, idx) => {
-      if (exp.attachment instanceof File) {
-        formData.append(`attachments_${idx}`, exp.attachment);
+      if (accountSlug) formData.append("account_id", accountSlug);
+      if (categorySlug) formData.append("category_id", categorySlug);
+      if (amountVal !== undefined && amountVal !== null) formData.append("amount", amountVal);
+      formData.append("return_amount", returnAmount);
+      if (row?.description !== undefined) formData.append("description", row.description ?? "");
+      if (row?.note !== undefined) formData.append("note", row.note ?? "");
+      if (row?.reference !== undefined) formData.append("reference", row.reference ?? "");
+      if (row?.date !== undefined) formData.append("date", row.date ?? "");
+      if (row?.attachment instanceof File) {
+        formData.append("attachment", row.attachment);
       }
-    });
+    } else {
+      // Create flow: keep JSON payload unchanged in shape but EXCLUDE attachment field
+      const jsonExpenses = expenses.map((exp) => {
+        const out = { ...exp };
+        if ("attachment" in out) delete out.attachment;
+        return out;
+      });
+      formData.append("expenses", JSON.stringify(jsonExpenses));
+      // Only append attachments so files serialize correctly alongside JSON
+      expenses.forEach((exp, idx) => {
+        if (exp.attachment instanceof File) {
+          formData.append(`attachments_${idx}`, exp.attachment);
+        }
+      });
+    }
 
-    const url = expenseId ? `/expense/${expenseId}` : "/expense/add";
+    const url = isUpdate ? `/expense/${expenseId}` : "/expense/add";
     try {
       const data = await createExpense({ url, formData }).unwrap();
       notification("success", data?.message, data?.description);
@@ -341,7 +354,23 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
           serverErrors = payload; // raw errors object (e.g., {"0.description": [..]})
         }
       }
-      if (serverErrors && typeof serverErrors === "object") setErrors(serverErrors);
+      // Remap backend keys to local field names for inline display
+      if (serverErrors && typeof serverErrors === "object") {
+        const remapped = {};
+        Object.entries(serverErrors).forEach(([key, val]) => {
+          let newKey = key;
+          // Map top-level keys
+          if (key === "account_id") newKey = "account";
+          else if (key === "category_id") newKey = "category";
+          else if (key === "return_amount") newKey = "refundable_amount";
+          // Map indexed keys like "0.account_id" -> "0.account"
+          else if (/\.account_id$/.test(key)) newKey = key.replace(/\.account_id$/, ".account");
+          else if (/\.category_id$/.test(key)) newKey = key.replace(/\.category_id$/, ".category");
+          else if (/\.return_amount$/.test(key)) newKey = key.replace(/\.return_amount$/, ".refundable_amount");
+          remapped[newKey] = val;
+        });
+        setErrors(remapped);
+      }
     } finally {
       setLoading(false);
     }
