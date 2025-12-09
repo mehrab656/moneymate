@@ -22,7 +22,7 @@ import {
   useGetSectorsDataQuery,
 } from "../../api/slices/sectorSlice.js";
 import ContractExtendForm from "./ContractExtendForm.jsx";
-import Show from "./Show.jsx";
+import SectorDetails from "./SectorDetails.jsx";
 import SectorFormSidebar from "./SectorFormSidebar.jsx";
 import SectorFilter from "./SectorFilter.jsx";
 
@@ -69,7 +69,7 @@ export default function Sectors() {
   const [showContractExtend, setShowContractExtendModal] = useState(false);
   const [showMainLoader, setShowMainLoader] = useState(false);
   const [subTitle, setSubTitle] = useState("");
-  const [showDetails, setShowDetails] = useState(false);
+  // details handled via GlobalSidebar
   const [hasFilter, setHasFilter] = useState(false);
   const [showFilter, setShowFilter] = useState(true);
 
@@ -116,8 +116,8 @@ export default function Sectors() {
   }, [num_data_per_page]);
 
   const showViewModalFunc = (sector) => {
-    setShowDetails(true);
     setSector(sector);
+    showQuickDetails("Details", <SectorDetails data={sector} currency={default_currency} />);
   };
 
   const filteredSectors = sectors.filter((sector) =>
@@ -387,7 +387,7 @@ export default function Sectors() {
   };
   
   // Sidebar actions
-  const { showLargeContent } = useSidebarActions();
+  const { showLargeContent, showQuickDetails } = useSidebarActions();
   const actionParams = [
     {
       actionName: "Edit",
@@ -466,9 +466,7 @@ export default function Sectors() {
     setShowSectorForm(false);
     setSector({});
   };
-  const closeShowDetailsModal = () => {
-    setShowDetails(false);
-  };
+  // details sidebar manages its own close via context
   return (
     <div>
       <MainLoader loaderVisible={showMainLoader} />
@@ -532,13 +530,7 @@ export default function Sectors() {
           element={sector}
         />
       )}
-      {showDetails && (
-        <Show
-          handleCloseModal={closeShowDetailsModal}
-          element={sector}
-          currency={default_currency}
-        />
-      )}
+      {/* Details are displayed via GlobalSidebar using SectorDetails */}
 
       {
         showHelperModelType && (
