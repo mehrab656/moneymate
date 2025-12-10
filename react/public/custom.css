@@ -830,6 +830,160 @@ section .details span {
     border-color: var(--custom-btn-border-color);
     color: #FFFFFF;
 }
- .input-group-text{
+.input-group-text{
      width: 50%;
  }
+
+/* ===== Responsive menubar & sidebar behavior ===== */
+/* Default: show Bootstrap left sidebar, hide MUI top menubar */
+.top-menubar { display: none; }
+
+/* At widths <= 1382px: hide left sidebar and show top menubar */
+@media screen and (max-width: 1382px) {
+  aside.wrapping-aside { display: none !important; }
+  .wrapper>.wrapping-body { width: 100% !important; }
+  .top-menubar { display: block; }
+  /* Exception: keep sidebar visible inside Offcanvas */
+  .offcanvas aside.wrapping-aside { display: block !important; width: 280px; }
+  .offcanvas .aside-content { height: 100%; }
+  .offcanvas .aside-menu { margin: 0; }
+}
+
+/* Hide TopMenubar on very small screens (<992px) */
+@media screen and (max-width: 991.98px) {
+  .top-menubar { display: none !important; }
+}
+
+/* Header sidebar toggle: visible up to 1136px */
+.header-sidebar-toggle { display: none; }
+@media screen and (max-width: 1136px) {
+  .header-sidebar-toggle { display: inline-flex !important; }
+}
+
+/* Ensure Offcanvas overlays the header and content properly */
+.offcanvas { z-index: 1300 !important; }
+.offcanvas-backdrop { z-index: 1290 !important; }
+
+/* ===== Theme-aware styling for the Top Menubar (MUI + Bootstrap mix) ===== */
+body[data-theme='dark'] .top-menubar {
+  background-color: #1e2630;
+  border-bottom: 1px solid #384049;
+  position: relative;
+  z-index: 1200;
+}
+body[data-theme='light'] .top-menubar {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+  position: relative;
+  z-index: 1200;
+}
+
+.top-menubar .navbar {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  min-height: 42px;
+  overflow: visible; /* allow dropdowns to overflow navbar */
+}
+
+.top-menubar .navbar-nav {
+  gap: 8px;
+  flex-wrap: nowrap;
+  overflow: visible; /* prevent dropdown clipping */
+  white-space: nowrap;
+  min-width: max-content; /* allow container to scroll instead of items overflowing */
+}
+
+.top-menubar .navbar-collapse { width: 100%; overflow: visible; }
+.top-menubar .navbar-collapse { display: block !important; }
+.top-menubar .navbar-toggler,
+.top-menubar .navbar-toggle,
+.top-menubar .navbar .navbar-toggle,
+.top-menubar .navbar .navbar-toggler { display: none !important; }
+
+.top-menubar .menu-scroll {
+  overflow-x: auto; /* horizontal scroll for many items */
+  overflow-y: visible; /* avoid clipping dropdowns */
+  width: 100%;
+  max-width: 100%;
+  display: block;
+  -ms-overflow-style: none; /* IE & old Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.top-menubar .menu-scroll::-webkit-scrollbar { width: 0; height: 0; }
+.top-menubar .menu-scroll::-webkit-scrollbar-thumb { background: transparent; }
+
+.top-menubar .nav-link,
+.top-menubar .dropdown-toggle {
+  font-size: 0.85rem;
+  line-height: 1.2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.top-menubar .nav-link.active { font-weight: 600; }
+
+/* Active state colors for top menubar (theme-aware) */
+/* Active state colors: let component inline styles from cmsTheme drive appearance */
+/* Intentionally no forced color/background here to avoid overriding theme. */
+
+/* Icon color follows active text color */
+.top-menubar .nav-link.active svg,
+.top-menubar .MuiMenuItem-root.active svg { color: inherit; }
+
+/* Hover state to hint active on dropdown items */
+body[data-theme='dark'] .top-menubar .MuiMenuItem-root:hover {
+  background-color: rgba(255,255,255,0.06);
+}
+body[data-theme='light'] .top-menubar .MuiMenuItem-root:hover {
+  background-color: rgba(0,0,0,0.06);
+}
+
+/* Ensure Bootstrap dropdown items also show active if used */
+.top-menubar .dropdown-menu .dropdown-item.active,
+.top-menubar .dropdown-menu .dropdown-item.active:hover {
+  color: var(--bs-primary) !important;
+  background-color: rgba(var(--bs-primary-rgb, 13,110,253), 0.12) !important;
+}
+
+.top-menubar .dropdown-menu {
+  min-width: 220px;
+  border-radius: 8px;
+  z-index: 11000;
+  padding: 0.5rem;
+}
+.top-menubar-menu { z-index: 11000 !important; min-width: 220px; border-radius: 8px; padding: 0.5rem; }
+
+/* Fix dropdown positioning to avoid scroll clipping */
+@media (min-width: 992px) {
+  .top-menubar .navbar-nav .dropdown-menu.show[data-bs-popper] { position: fixed !important; }
+}
+.top-menubar .navbar-nav .dropdown-menu.show[data-bs-popper],
+.top-menubar-menu.show[data-bs-popper] { position: fixed !important; }
+
+/* Theme-aware link colors and menu appearance */
+body[data-theme='dark'] .top-menubar .nav-link,
+body[data-theme='dark'] .top-menubar .dropdown-toggle { color: rgba(255,255,255,0.87); }
+body[data-theme='light'] .top-menubar .nav-link,
+body[data-theme='light'] .top-menubar .dropdown-toggle { color: rgba(0,0,0,0.87); }
+
+body[data-theme='dark'] .top-menubar .dropdown-menu {
+  background-color: var(--bs-dropdown-bg, #2b3038);
+  color: var(--bs-dropdown-color, rgba(255,255,255,0.87));
+  border: 1px solid #384049;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.35);
+}
+body[data-theme='light'] .top-menubar .dropdown-menu {
+  background-color: var(--bs-dropdown-bg, #ffffff);
+  color: var(--bs-dropdown-color, #212529);
+  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+.top-menubar .dropdown-item { white-space: nowrap; }
+
+/* On small screens when collapse would be hidden, keep bar transparent */
+@media (max-width: 991.98px) {
+  body[data-theme='dark'] .top-menubar:not(:has(.navbar-collapse.show)) { background-color: transparent !important; border-bottom: none !important; }
+  body[data-theme='light'] .top-menubar:not(:has(.navbar-collapse.show)) { background-color: transparent !important; border-bottom: none !important; }
+}

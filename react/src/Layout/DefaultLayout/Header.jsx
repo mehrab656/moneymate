@@ -29,7 +29,8 @@ const Header = ({
 }) => {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
-  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 768);
+const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 1136);
+const [isBelow992, setIsBelow992] = useState(window.innerWidth < 992);
 
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -64,7 +65,10 @@ const Header = ({
 
   // Update screen size state on resize
   useEffect(() => {
-    const handleResize = () => setIsLargeScreen(window.innerWidth >= 768);
+const handleResize = () => {
+  setIsLargeScreen(window.innerWidth >= 1136);
+  setIsBelow992(window.innerWidth < 992);
+};
     window.addEventListener("resize", handleResize);
     setOpen(isLargeScreen); // Set initial open state based on screen size
     return () => window.removeEventListener("resize", handleResize);
@@ -319,19 +323,21 @@ const Header = ({
                   onClick={() => setOpen(!open)}
                   aria-controls="finance-collapse"
                   aria-expanded={open}
-                  className="d-md-none ms-3 mb-2"
+                  className="ms-3 mb-2 header-finance-collapse-toggle"
                   style={{cursor: "pointer"}}
               />
           )}
 
           {/* Sidebar Toggle Button */}
-          <FontAwesomeIcon
-              icon={faBars}
-              onClick={toggleSidebar}
-              aria-label="Toggle sidebar"
-              className="d-lg-none ms-3 mb-2"
-              style={{cursor: "pointer"}}
-          />
+          {isBelow992 && (
+            <FontAwesomeIcon
+                icon={faBars}
+                onClick={toggleSidebar}
+                aria-label="Toggle sidebar"
+                className="header-sidebar-toggle ms-3 mb-2"
+                style={{cursor: "pointer"}}
+            />
+          )}
         </Col>
       </Row>
     </header>

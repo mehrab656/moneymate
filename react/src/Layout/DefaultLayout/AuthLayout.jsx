@@ -14,6 +14,7 @@ import { notification } from "../../components/ToastNotification";
 import { Tooltip } from "react-tooltip";
 import SideMenus from "./SideMenus.jsx";
 import Header from "./Header.jsx";
+import TopMenubar from "./TopMenubar.jsx";
 import LeftSideBarSkeleton from "../../components/loader/LeftSideBarSkeleton.jsx";
 import {
   useGetCurrentCompanyDataQuery,
@@ -416,6 +417,8 @@ export default function AuthLayout() {
                     toggleSidebar={handleShowSidebar}
                     onLogout={onLogout}
                   />
+                  {/* Top horizontal menubar (MUI); visibility controlled via CSS at 1382px */}
+                  <TopMenubar isActive={isActive} checkPermission={checkPermission} />
                   <main className="flex-grow-1 py-2">
                     <Outlet />
                   </main>

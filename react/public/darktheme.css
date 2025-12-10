@@ -219,7 +219,7 @@ body[data-theme='dark'] .aside-menu-item a.active {
     color: #0F172A;
 }
 body[data-theme='dark'] .actionDropDownMenu {
-    /*position: fixed !important;*/
+    position: fixed !important;
     z-index: 9999 !important;
     background-color: var(--fundamental-color);
 }
