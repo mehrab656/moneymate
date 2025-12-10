@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext, forwardRef, useImperativeHandle } from "react";
 import { notification } from "../../components/ToastNotification.jsx";
-import { Form, Button, Row, Col, Table } from "react-bootstrap";
+import { Form, Button, Row, Col, Table, InputGroup } from "react-bootstrap";
 import { useSidebarActions } from "../../components/GlobalSidebar";
 import { useCreateAssetMutation, useGetSingleAssetDataQuery } from "../../api/slices/assetSlice.js";
 import { useGetSectorListDataQuery } from "../../api/slices/sectorSlice.js";
 import { useGetBankDataQuery } from "../../api/slices/bankSlice.js";
 import { useGetExpenseCategoriesDataQuery } from "../../api/slices/expenseSlice.js";
+import { SettingsContext } from "../../contexts/SettingsContext.jsx";
+import Select from "react-select";
 
 const _initialAsset = {
   id: null,
@@ -15,7 +17,8 @@ const _initialAsset = {
   date: "",
 };
 
-const _initialAssetData = [
+// Return a fresh copy of the initial asset rows to avoid shared references
+const getInitialAssetRows = () => ([
   {
     name: "",
     description: "",
@@ -26,11 +29,12 @@ const _initialAssetData = [
     total_damage: 0,
     status: true,
   },
-];
+]);
 
-export default function AssetFormSidebar({ assetId = null, onSuccess, asset = null }) {
+export default forwardRef(function AssetFormSidebar({ assetId = null, onSuccess, asset = null, formId: formIdProp = null, hideInternalFooter = false }, ref) {
   const [formData, setFormData] = useState(_initialAsset);
-  const [assets, setAssets] = useState(_initialAssetData);
+  // Use a fresh array/object for initial rows to prevent mutation of the template
+  const [assets, setAssets] = useState(getInitialAssetRows());
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [bankAccounts, setBankAccounts] = useState([]);
@@ -39,6 +43,52 @@ export default function AssetFormSidebar({ assetId = null, onSuccess, asset = nu
 
   const { closeSidebar } = useSidebarActions();
   const [createAsset] = useCreateAssetMutation();
+  const formId = formIdProp || "asset-form-sidebar-form";
+  const { themeMode } = useContext(SettingsContext);
+  const isDark = themeMode === "dark";
+
+  const selectStyles = {
+    container: (base) => ({ ...base, fontSize: 14, width: "100%" }),
+    control: (base, state) => ({
+      ...base,
+      minHeight: 36,
+      height: 36,
+      boxShadow: "none",
+      borderColor: state.isFocused ? (isDark ? "#3a4149" : "#86b7fe") : (isDark ? "#3a4048" : "#c5ccd6"),
+      backgroundColor: isDark ? "#1c1f24" : "#fff",
+      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+      '&:hover': { borderColor: state.isFocused ? (isDark ? "#3a4149" : "#86b7fe") : (isDark ? "#3a4048" : "#c5ccd6") },
+    }),
+    valueContainer: (base) => ({ ...base, padding: "0 8px" }),
+    indicatorsContainer: (base) => ({ ...base, height: 36 }),
+    singleValue: (base) => ({
+      ...base,
+      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+    }),
+    input: (base) => ({ ...base, color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)" }),
+    placeholder: (base) => ({ ...base, color: isDark ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.55)" }),
+    menu: (base) => ({
+      ...base,
+      backgroundColor: isDark ? "#23262b" : "#fff",
+      border: `1px solid ${isDark ? "#2c3238" : "#dee2e6"}`,
+      boxShadow: isDark ? "0 6px 12px rgba(0,0,0,0.35)" : "0 6px 12px rgba(0,0,0,0.15)",
+    }),
+    menuList: (base) => ({ ...base, backgroundColor: isDark ? "#23262b" : "#fff" }),
+    menuPortal: (base) => ({
+      ...base,
+      zIndex: 9999,
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isSelected
+        ? isDark ? "#0C1A28" : "#e7f0fb"
+        : state.isFocused
+          ? isDark ? "#2d3238" : "#f2f2f2"
+          : isDark ? "#23262b" : "#fff",
+      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+      ':active': { backgroundColor: isDark ? "#0C1A28" : "#e7f0fb" },
+    }),
+  };
 
   // API calls
   const {
@@ -126,7 +176,16 @@ export default function AssetFormSidebar({ assetId = null, onSuccess, asset = nu
       setSectors(getSectorListData?.data);
     }
     if (getBankData?.data) {
-      setBankAccounts(getBankData?.data);
+      // Normalize bank accounts to a consistent shape used across the form
+      const normalized = getBankData.data.map(({ account_id, bank_name, account_number, balance }) => ({
+        account_id: String(account_id ?? ""),
+        bank_name: bank_name ?? "",
+        account_number: account_number ?? "",
+        label: `${bank_name ?? ""} - ${account_number ?? ""}`,
+        // store numeric balance for client-side checks
+        balance: (typeof balance === "number") ? balance : Number(String(balance ?? "0").replace(/,/g, "")),
+      }));
+      setBankAccounts(normalized);
     }
   }, [getSectorListData, getBankData]);
 
@@ -145,9 +204,17 @@ export default function AssetFormSidebar({ assetId = null, onSuccess, asset = nu
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSectorChange = (e) => {
+  const handleSectorChange = (opt) => {
     setCategories([]);
-    setFormData({ ...formData, sector_id: e.target.value });
+    setFormData({ ...formData, sector_id: opt?.value || "" });
+  };
+
+  const handleCategorySelect = (opt) => {
+    setFormData({ ...formData, category_id: opt?.value || "" });
+  };
+
+  const handleAccountSelect = (opt) => {
+    setFormData({ ...formData, account_id: opt?.value || "" });
   };
 
   const handleAssetDataInputChange = (e, index) => {
@@ -171,16 +238,7 @@ export default function AssetFormSidebar({ assetId = null, onSuccess, asset = nu
   const addNewAssetRow = () => {
     setAssets([
       ...assets,
-      {
-        name: "",
-        description: "",
-        qty: 0,
-        unit_price: 0,
-        total_price: 0,
-        status: "",
-        total_used: 0,
-        total_damage: 0,
-      },
+      { ...getInitialAssetRows()[0] },
     ]);
   };
 
@@ -260,8 +318,9 @@ export default function AssetFormSidebar({ assetId = null, onSuccess, asset = nu
         onSuccess?.();
         closeSidebar(); // Close the sidebar
       } else {
-        setAssets(_initialAssetData);
-        setFormData(_initialAsset);
+        // Reset to fresh initial values (avoid using a mutated shared template)
+        setAssets(getInitialAssetRows());
+        setFormData({ ..._initialAsset });
       }
     } catch (err) {
       notification(
@@ -273,6 +332,18 @@ export default function AssetFormSidebar({ assetId = null, onSuccess, asset = nu
       setLoading(false);
     }
   };
+
+  // Expose imperative methods for sticky footer actions (Save / Save and Exit)
+  useImperativeHandle(ref, () => ({
+    save: () => {
+      // Programmatic submit that keeps the sidebar open
+      assetSubmit({ preventDefault: () => {} }, true);
+    },
+    saveAndExit: () => {
+      // Programmatic submit that closes the sidebar
+      assetSubmit({ preventDefault: () => {} }, false);
+    },
+  }));
 
   if (singleAssetFetching) {
     return (
@@ -287,7 +358,7 @@ export default function AssetFormSidebar({ assetId = null, onSuccess, asset = nu
   return (
     <div className="asset-form-sidebar">
       
-      <Form onSubmit={(e) => assetSubmit(e, false)}>
+      <Form id={formId} onSubmit={(e) => assetSubmit(e, true)}>
         {/* Sector Information Section */}
         <div className="mb-4">
           <h5 className="mb-3">Sector Information</h5>
@@ -295,99 +366,106 @@ export default function AssetFormSidebar({ assetId = null, onSuccess, asset = nu
           <Row className="g-3">
             {/* Sector */}
             <Col xs={12}>
-              <Form.Group className="form-group mb-3">
-                <Form.Label>Sector *</Form.Label>
-                <Form.Select
-                  value={formData.sector_id}
-                  name="sector_id"
-                  onChange={handleSectorChange}
-                  required
-                >
-                  <option value="">Select Sector</option>
-                  {sectors.length > 0 ? (
-                    sectors.map((sector) => (
-                      <option key={sector.id} value={sector.id}>
-                        {sector.label}
-                      </option>
-                    ))
-                  ) : (
-                    <option disabled>No Sector was found</option>
-                  )}
-                </Form.Select>
-                {errors.sector_id && (
-                  <p className="error-message">{errors.sector_id[0]}</p>
-                )}
-              </Form.Group>
+              <InputGroup className="mb-3" size="sm">
+                <InputGroup.Text id="sector_id_label">Sector *</InputGroup.Text>
+                <div className="flex-grow-1" aria-describedby="sector_id_label">
+                  <Select
+                    classNamePrefix="select"
+                    styles={selectStyles}
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    isClearable
+                    value={
+                      sectors?.length
+                        ? sectors
+                            .map(({ id, label }) => ({ value: id, label }))
+                            .find((opt) => opt.value === (formData?.sector_id || "")) || null
+                        : null
+                    }
+                    onChange={handleSectorChange}
+                    options={sectors.map(({ id, label }) => ({ value: id, label }))}
+                  />
+                </div>
+              </InputGroup>
+              {errors.sector_id && (
+                <p className="error-message">{errors.sector_id[0]}</p>
+              )}
+            </Col>
+
+            {/* Account */}
+             <Col xs={12} md={12}>
+              <InputGroup className="mb-3" size="sm">
+                <InputGroup.Text id="account_id_label">Expense Account *</InputGroup.Text>
+                <div className="flex-grow-1" aria-describedby="account_id_label">
+                  <Select
+                    classNamePrefix="select"
+                    styles={selectStyles}
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    isClearable
+                    value={
+                      bankAccounts?.length
+                        ? bankAccounts
+                            .map(({ account_id, label }) => ({ value: account_id, label }))
+                            .find((opt) => String(opt.value) === String(formData?.account_id || "")) || null
+                        : null
+                    }
+                    onChange={handleAccountSelect}
+                    options={bankAccounts.map(({ account_id, label }) => ({ value: account_id, label }))}
+                  />
+                </div>
+              </InputGroup>
+              {errors.account_id && (
+                <p className="error-message">{errors.account_id[0]}</p>
+              )}
             </Col>
 
             {/* Categories */}
-            <Col xs={12}>
-              <Form.Group className="form-group mb-3">
-                <Form.Label>Categories *</Form.Label>
-                <Form.Select
-                  value={formData.category_id}
-                  name="category_id"
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Select Category</option>
-                  {categories?.length > 0 ? (
-                    categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))
-                  ) : (
-                    <option disabled>Select Sector First</option>
-                  )}
-                </Form.Select>
-                {errors.category_id && (
-                  <p className="error-message">{errors.category_id[0]}</p>
-                )}
-              </Form.Group>
+            <Col xs={12} md={6}>
+              <InputGroup className="mb-3" size="sm">
+                <InputGroup.Text id="category_id_label">Categories *</InputGroup.Text>
+                <div className="flex-grow-1" aria-describedby="category_id_label">
+                  <Select
+                    classNamePrefix="select"
+                    styles={selectStyles}
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    isClearable
+                    value={
+                      categories?.length
+                        ? categories
+                            .map(({ id, name }) => ({ value: id, label: name }))
+                            .find((opt) => opt.value === (formData?.category_id || "")) || null
+                        : null
+                    }
+                    onChange={handleCategorySelect}
+                    options={categories.map(({ id, name }) => ({ value: id, label: name }))}
+                  />
+                </div>
+              </InputGroup>
+              {errors.category_id && (
+                <p className="error-message">{errors.category_id[0]}</p>
+              )}
             </Col>
 
             {/* Date and Account Row - Responsive */}
             <Col xs={12} md={6}>
-              <Form.Group className="form-group mb-3">
-                <Form.Label>Date *</Form.Label>
+              <InputGroup className="mb-3" size="sm">
+                <InputGroup.Text id="date_label">Date *</InputGroup.Text>
                 <Form.Control
                   type="date"
                   name="date"
                   value={formData.date}
                   onChange={handleInputChange}
                   required
+                  aria-describedby="date_label"
                 />
-                {errors.date && (
-                  <p className="error-message">{errors.date[0]}</p>
-                )}
-              </Form.Group>
+              </InputGroup>
+              {errors.date && (
+                <p className="error-message">{errors.date[0]}</p>
+              )}
             </Col>
-            <Col xs={12} md={6}>
-              <Form.Group className="form-group mb-3">
-                <Form.Label>Expense Account *</Form.Label>
-                <Form.Select
-                  value={formData.account_id}
-                  name="account_id"
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Select Account</option>
-                  {bankAccounts.length > 0 ? (
-                    bankAccounts.map((account) => (
-                      <option key={account.account_id} value={account.account_id}>
-                        {account.bank_name} - {account.account_number}
-                      </option>
-                    ))
-                  ) : (
-                    <option disabled>No account was found</option>
-                  )}
-                </Form.Select>
-                {errors.account_id && (
-                  <p className="error-message">{errors.account_id[0]}</p>
-                )}
-              </Form.Group>
-            </Col>
+           
           </Row>
         </div>
 
@@ -396,8 +474,8 @@ export default function AssetFormSidebar({ assetId = null, onSuccess, asset = nu
           <h5 className="mb-3">Asset Details</h5>
           
           {/* Desktop Table - Hidden on mobile */}
-          <div className="d-none d-lg-block asset-form-sidebar-desktop-container">
-            <Table size="sm" bordered className="asset-details-table asset-form-sidebar-table">
+          <div className="d-none d-lg-block sector-form-sidebar-desktop-container">
+            <Table size="sm" bordered className="sector-form-sidebar-table">
               <thead>
                 <tr>
                   <th>Name</th>
@@ -413,7 +491,7 @@ export default function AssetFormSidebar({ assetId = null, onSuccess, asset = nu
                   assets?.length > 0 &&
                   assets.map((asset, index) => (
                     <tr key={"asset-" + index}>
-                      <td className="asset-form-sidebar-cell">
+                      <td className="sector-form-sidebar-cell">
                         <Form.Control
                           type="text"
                           placeholder="e.g: Bed"
@@ -421,10 +499,9 @@ export default function AssetFormSidebar({ assetId = null, onSuccess, asset = nu
                           value={asset.name}
                           onChange={(e) => handleAssetDataInputChange(e, index)}
                           size="sm"
-                          className="asset-form-sidebar-cell"
                         />
                       </td>
-                      <td className="asset-form-sidebar-cell">
+                      <td className="sector-form-sidebar-cell">
                         <Form.Control
                           as="textarea"
                           rows={2}
@@ -433,7 +510,6 @@ export default function AssetFormSidebar({ assetId = null, onSuccess, asset = nu
                           value={asset.description}
                           onChange={(e) => handleAssetDataInputChange(e, index)}
                           size="sm"
-                          className="asset-form-sidebar-textarea"
                         />
                       </td>
                       <td>
@@ -502,11 +578,11 @@ export default function AssetFormSidebar({ assetId = null, onSuccess, asset = nu
           </div>
 
           {/* Mobile Card Layout - Visible only on mobile/tablet */}
-          <div className="d-lg-none asset-form-sidebar-mobile-container">
+          <div className="d-lg-none sector-form-sidebar-mobile-container">
             {assets &&
               assets?.length > 0 &&
               assets.map((asset, index) => (
-                <div key={"asset-card-" + index} className="asset-card mb-3 p-3 border rounded asset-form-sidebar-card">
+                <div key={"asset-card-" + index} className="sector-card mb-3 p-3 border rounded sector-form-sidebar-card">
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <h6 className="mb-0">Asset #{index + 1}</h6>
                     <div className="d-flex gap-1 flex-shrink-0">
@@ -529,7 +605,7 @@ export default function AssetFormSidebar({ assetId = null, onSuccess, asset = nu
                     </div>
                   </div>
                   
-                  <Row className="g-2 asset-form-sidebar-card-row">
+                  <Row className="g-2 sector-form-sidebar-card-row">
                     <Col xs={12}>
                       <Form.Group>
                         <Form.Label className="small">Name *</Form.Label>
@@ -554,7 +630,7 @@ export default function AssetFormSidebar({ assetId = null, onSuccess, asset = nu
                           value={asset.description}
                           onChange={(e) => handleAssetDataInputChange(e, index)}
                           size="sm"
-                          className="asset-form-sidebar-mobile-textarea"
+                          className="sector-form-sidebar-mobile-textarea"
                         />
                       </Form.Group>
                     </Col>
@@ -614,43 +690,45 @@ export default function AssetFormSidebar({ assetId = null, onSuccess, asset = nu
           )}
         </div>
 
-        {/* Submit Buttons - Responsive */}
-        <Row className="g-2">
-          <Col xs={12}>
-            <div className="d-flex flex-column flex-sm-row gap-2 justify-content-end">
-              {assetId ? (
-                <Button
-                  variant="primary"
-                  type="submit"
-                  disabled={loading}
-                  className="flex-fill flex-sm-fill-0"
-                >
-                  {loading ? "Updating..." : "Update Asset"}
-                </Button>
-              ) : (
-                <>
-                  <Button
-                    variant="outline-primary"
-                    onClick={(e) => assetSubmit(e, true)}
-                    disabled={loading}
-                    className="flex-fill flex-sm-fill-0"
-                  >
-                    {loading ? "Creating..." : "Create & Add More"}
-                  </Button>
+        {/* Submit Buttons - Responsive (hidden when using sticky footer) */}
+        {!hideInternalFooter && (
+          <Row className="g-2">
+            <Col xs={12}>
+              <div className="d-flex flex-column flex-sm-row gap-2 justify-content-end">
+                {assetId ? (
                   <Button
                     variant="primary"
                     type="submit"
                     disabled={loading}
                     className="flex-fill flex-sm-fill-0"
                   >
-                    {loading ? "Creating..." : "Create & Close"}
+                    {loading ? "Updating..." : "Update Asset"}
                   </Button>
-                </>
-              )}
-            </div>
-          </Col>
-        </Row>
+                ) : (
+                  <>
+                    <Button
+                      variant="outline-primary"
+                      onClick={(e) => assetSubmit(e, true)}
+                      disabled={loading}
+                      className="flex-fill flex-sm-fill-0"
+                    >
+                      {loading ? "Creating..." : "Create & Add More"}
+                    </Button>
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      disabled={loading}
+                      className="flex-fill flex-sm-fill-0"
+                    >
+                      {loading ? "Creating..." : "Create & Close"}
+                    </Button>
+                  </>
+                )}
+              </div>
+            </Col>
+          </Row>
+        )}
       </Form>
     </div>
   );
-}
+})

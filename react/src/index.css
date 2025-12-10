@@ -2047,6 +2047,55 @@ body[data-theme='light'] .category-form-sidebar .form-select {
     background-color: #eeeeee;
 }
 
+/* Theme-aware overrides for sector cards and asset details */
+body[data-theme='dark'] .sector-card {
+    background-color: #23262b;
+    border: 1px solid #2c3238 !important;
+}
+body[data-theme='dark'] .sector-card h6 {
+    color: rgba(255,255,255,0.87);
+}
+body[data-theme='dark'] .sector-card-header {
+    background-color: #2c3238;
+}
+
+/* AssetDetails themed info blocks */
+.asset-details .info-card {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 12px;
+}
+.asset-details .info-label {
+    font-size: 0.875rem;
+    color: #495057;
+}
+.asset-details .info-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #0B1726;
+}
+body[data-theme='dark'] .asset-details .info-card {
+    background-color: #23262b;
+    border-color: #2c3238;
+}
+body[data-theme='dark'] .asset-details .info-label {
+    color: rgba(255,255,255,0.6);
+}
+body[data-theme='dark'] .asset-details .info-value {
+    color: rgba(255,255,255,0.87);
+}
+
+/* AssetDetails section title (e.g., "Asset Information") */
+.asset-details .section-title {
+    color: #0B1726;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+body[data-theme='dark'] .asset-details .section-title {
+    color: rgba(255,255,255,0.87);
+}
+
 /* SectorFilter Styles */
 .sector-filter-card {
     border-bottom: 1px solid;

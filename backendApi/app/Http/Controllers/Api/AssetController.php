@@ -364,6 +364,94 @@ class AssetController extends Controller
      */
     public function destroy(Asset $asset)
     {
-        //
+        // Route currently targets delete(); keep destroy() for future REST usage.
+        return $this->delete($asset->id);
+    }
+
+    /**
+     * Delete an asset record and reverse the associated expense and bank balance.
+     */
+    public function delete($id): JsonResponse
+    {
+        if (!$id) {
+            return response()->json([
+                'message' => 'Missing Id',
+                'description' => 'Missing asset id!',
+            ], 403);
+        }
+
+        // Ensure asset belongs to the current user's company
+        $asset = Asset::where('assets.id', $id)
+            ->select('assets.*', 'sectors.company_id', 'expenses.account_id as expense_account_id', 'expenses.amount as expense_amount')
+            ->join('sectors', 'assets.sector_id', '=', 'sectors.id')
+            ->leftJoin('expenses', 'assets.expense_id', '=', 'expenses.id')
+            ->first();
+
+        if (!$asset) {
+            return response()->json([
+                'message' => 'Not Found',
+                'description' => 'Asset record was not found',
+            ], 404);
+        }
+
+        if ((int) $asset->company_id !== (int) Auth::user()->primary_company) {
+            return response()->json([
+                'message' => 'Access Denied',
+                'description' => 'You have no permission to delete this resource',
+            ], 403);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // If there is an associated expense, reverse the bank balance and soft-delete the expense
+            if (!empty($asset->expense_id)) {
+                $expense = Expense::find($asset->expense_id);
+                if ($expense) {
+                    $bankAccount = BankAccount::find($expense->account_id);
+                    if ($bankAccount && $expense->amount > 0) {
+                        $bankAccount->balance += $expense->amount;
+                        $bankAccount->save();
+                    }
+
+                    $expense->delete();
+
+                    storeActivityLog([
+                        'object_id' => $expense->id,
+                        'log_type' => 'delete',
+                        'module' => 'expense',
+                        'descriptions' => 'Deleted expense associated with an asset deletion',
+                        'data_records' => array_merge(json_decode(json_encode($expense), true), [
+                            'account_balance' => isset($bankAccount) ? $bankAccount->balance : null,
+                        ]),
+                    ]);
+                }
+            }
+
+            // Delete the asset record
+            $deletedAssetSnapshot = json_decode(json_encode($asset), true);
+            Asset::where('id', $id)->delete();
+
+            storeActivityLog([
+                'object_id' => $id,
+                'log_type' => 'delete',
+                'module' => 'asset',
+                'descriptions' => 'Deleted asset and reversed linked expense/balance',
+                'data_records' => $deletedAssetSnapshot,
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Success!',
+                'description' => 'Asset was deleted',
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Error',
+                'description' => 'Failed to delete Asset. ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }

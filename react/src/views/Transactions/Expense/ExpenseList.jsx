@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useRef } from "react";
-import Swal from "sweetalert2";
+import { useThemedSwal } from "../../../components/SwalConfirm.js";
 import { SettingsContext } from "../../../contexts/SettingsContext";
 import MainLoader from "../../../components/loader/MainLoader.jsx";
 import { notification } from "../../../components/ToastNotification.jsx";
@@ -68,6 +68,7 @@ const TABLE_HEAD = [
 
 export default function ExpenseList() {
   const theme = useTheme();
+  const { fire, confirmDelete } = useThemedSwal();
   const [loading, setLoading] = useState(false);
   const [expenses, setExpenses] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -263,20 +264,13 @@ export default function ExpenseList() {
   );
   const onDelete = (expense) => {
     if (userRole !== "admin") {
-      Swal.fire({
+      fire({
         title: "Permission Denied!",
         text: "Investors are not permitted to delete any data!",
-        icon: "danger",
+        icon: "error",
       });
     } else {
-      Swal.fire({
-        title: "Are you sure?",
-        text: `You will not be able to recover the expense !`,
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Yes, delete it!",
-        cancelButtonText: "Cancel",
-      }).then(async (result) => {
+      confirmDelete('expense', { confirmButtonText: 'Yes, delete it!' }).then(async (result) => {
         if (result.isConfirmed) {
           try {
             const response = await deleteExpense({ id: expense.id }).unwrap(); // Using unwrap for error handling

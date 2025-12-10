@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useContext, useEffect, useState } from "react";
 import { SettingsContext } from "../../contexts/SettingsContext.jsx";
-import Swal from "sweetalert2";
+import { useThemedSwal } from "../../components/SwalConfirm.js";
 import MainLoader from "../../components/loader/MainLoader.jsx";
 import { faBuildingFlag, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { checkPermission } from "../../helper/HelperFunctions.js";
@@ -39,8 +39,9 @@ const defaultQuery = {
   orderBy: "DESC",
   limit: 10,
 };
-export default function companies() {
+export default function Companies() {
   const theme = useTheme();
+  const { fire } = useThemedSwal();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const { applicationSettings, userRole, userPermission } =
@@ -187,14 +188,13 @@ export default function companies() {
   };
 
   const onDelete = async (u) => {
-    Swal.fire({
+    fire({
       title: "Are you sure?",
       text: `You won't be able to revert the deletion of company ${u.name}!`,
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {

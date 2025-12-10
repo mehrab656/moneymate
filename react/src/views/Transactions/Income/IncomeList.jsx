@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import Swal from "sweetalert2";
+import { useThemedSwal } from "../../../components/SwalConfirm.js";
 import { SettingsContext } from "../../../contexts/SettingsContext.jsx";
 import MainLoader from "../../../components/loader/MainLoader.jsx";
 import { notification } from "../../../components/ToastNotification.jsx";
@@ -53,6 +53,7 @@ const TABLE_HEAD = [
 ];
 export default function IncomeList() {
   const theme = useTheme();
+  const { fire, confirmDelete } = useThemedSwal();
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -109,14 +110,7 @@ export default function IncomeList() {
   const [deleteIncome] = useDeleteIncomeMutation();
 
   const onDelete = (income) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You will not be able to recover the income!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "Cancel",
-    }).then(async (result) => {
+    confirmDelete('income', { confirmButtonText: 'Yes, delete it!' }).then(async (result) => {
       if (result.isConfirmed) {
         try {
           const response = await deleteIncome({ id: income.id }).unwrap(); // Using unwrap for error handling

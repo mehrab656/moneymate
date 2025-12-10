@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import axiosClient from "../../axios-client.js";
-import Swal from "sweetalert2";
+import { useThemedSwal } from "../../components/SwalConfirm.js";
 import { useNavigate } from "react-router-dom";
 import { SettingsContext } from "../../contexts/SettingsContext.jsx";
 import MainLoader from "../../components/loader/MainLoader.jsx";
@@ -53,6 +53,7 @@ const defaultQuery = {
 };
 export default function Sectors() {
   const theme = useTheme();
+  const { confirmDelete, mixin } = useThemedSwal();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const { applicationSettings, userRole, userPermission } =
@@ -71,7 +72,7 @@ export default function Sectors() {
   const [subTitle, setSubTitle] = useState("");
   // details handled via GlobalSidebar
   const [hasFilter, setHasFilter] = useState(false);
-  const [showFilter, setShowFilter] = useState(true);
+  const [showFilter, setShowFilter] = useState(false);
 
   const { num_data_per_page, default_currency } = applicationSettings;
 
@@ -125,14 +126,7 @@ export default function Sectors() {
   );
 
   const onDelete = async (sector) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: `You will not be able to recover the sector !`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "Cancel",
-    }).then(async (result) => {
+    confirmDelete('sector', { confirmButtonText: 'Yes, delete it!' }).then(async (result) => {
       if (result.isConfirmed) {
         try {
           const response = await deleteSector({ id: sector.id }).unwrap(); // Using unwrap for error handling
@@ -166,15 +160,15 @@ export default function Sectors() {
     setIsPaginate(true);
   };
 
-  const Toast = Swal.mixin({
+  const Toast = mixin({
     toast: true,
     position: "top-end",
     showConfirmButton: false,
     timer: 3000,
     timerProgressBar: true,
     didOpen: (toast) => {
-      toast.onmouseenter = Swal.stopTimer;
-      toast.onmouseleave = Swal.resumeTimer;
+      toast.onmouseenter = Toast.stopTimer;
+      toast.onmouseleave = Toast.resumeTimer;
     },
   });
 

@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useContext } from "react";
-import Swal from "sweetalert2";
+import { useThemedSwal } from "../../components/SwalConfirm.js";
 import { SettingsContext } from "../../contexts/SettingsContext.jsx";
 import MainLoader from "../../components/loader/MainLoader.jsx";
 import { checkPermission } from "../../helper/HelperFunctions.js";
 import { notification } from "../../components/ToastNotification.jsx";
 
 import Iconify from "../../components/Iconify.jsx";
-import CommonTable from "../../helper/CommonTable.jsx";
+import CommonTable from "../../components/table/CommonTable.jsx";
+import { Box, Card, Collapse, IconButton, useTheme } from "@mui/material";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import {
   useDeleteAssetMutation,
   useGetAssetDataQuery,
@@ -18,6 +20,7 @@ import {
 } from "../../components/GlobalSidebar";
 import AssetFormSidebar from "./AssetFormSidebar.jsx";
 import AssetDetails from "./AssetDetails.jsx";
+import SidebarFooterButtons from "../../components/SidebarFooterButtons.jsx";
 
 const _initialAssetData = {
   id: null,
@@ -35,6 +38,8 @@ const defaultQuery = {
   limit: 10,
 };
 export default function AssetsList() {
+  const theme = useTheme();
+  const { confirmDelete } = useThemedSwal();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
@@ -49,6 +54,7 @@ export default function AssetsList() {
   const [hasFilter, setHasFilter] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
 
   const { num_data_per_page, default_currency } = applicationSettings;
   const { showQuickDetails, showLargeContent, showQuickForm } =
@@ -62,8 +68,8 @@ export default function AssetsList() {
     { id: "date", label: "Date", align: "right" },
     { id: "asset_status", label: "Status", align: "left" },
   ];
-  const pageSize = num_data_per_page;
-  const totalPages = Math.ceil(totalCount / pageSize);
+  const pageSize = Number(query.limit) > 0 ? Number(query.limit) : (num_data_per_page || 10);
+  const totalPages = Math.ceil((totalCount || 0) / (pageSize || 10));
 
   // api call
   const {
@@ -113,14 +119,7 @@ export default function AssetsList() {
   );
 
   const onDelete = async (asset) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: `You will not be able to recover the asset !`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, remove it!",
-      cancelButtonText: "Cancel",
-    }).then(async (result) => {
+    confirmDelete('asset', { confirmButtonText: 'Yes, remove it!' }).then(async (result) => {
       if (result.isConfirmed) {
         try {
           const response = await deleteAsset({ id: asset?.id }).unwrap(); // Using unwrap for error handling
@@ -137,27 +136,66 @@ export default function AssetsList() {
   };
 
   const showAssetFormFunc = () => {
+    const createRef = React.createRef();
+    const formId = "asset-form-global";
     showLargeContent(
       "Create Asset",
       <AssetFormSidebar
+        ref={createRef}
         assetId={null}
+        formId={formId}
+        hideInternalFooter={true}
         onSuccess={() => {
           // Refresh the assets list after successful creation
           setIsPaginate(true);
         }}
-      />
+      />, {
+        footerActions: (
+          <SidebarFooterButtons
+            actions={[
+              {
+                label: "Save",
+                type: "submit",
+                formId: formId,
+              },
+              {
+                label: "Save and Exit",
+                type: "button",
+                onClick: () => createRef.current?.saveAndExit(),
+              },
+            ]}
+          />
+        )
+      }
     );
   };
   const showEditModalFunc = (asset) => {
+    const editRef = React.createRef();
+    const formId = "asset-form-global";
     showLargeContent(
       "Edit Asset",
       <AssetFormSidebar
+        ref={editRef}
         assetId={asset.id}
+        formId={formId}
+        hideInternalFooter={true}
         onSuccess={() => {
           // Refresh the assets list after successful update
           setIsPaginate(true);
         }}
-      />
+      />, {
+        footerActions: (
+          <SidebarFooterButtons
+            actions={[
+              {
+                label: "Update",
+                type: "button",
+                onClick: () => editRef.current?.saveAndExit(),
+              },
+            ]}
+          />
+        )
+      }
     );
   };
   const showAsset = (asset) => {
@@ -170,6 +208,14 @@ export default function AssetsList() {
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
+    setIsPaginate(true);
+  };
+
+  const handleRowsPerPageChange = (event) => {
+    const newSize = parseInt(event.target.value, 10);
+    setQuery((prev) => ({ ...prev, limit: newSize }));
+    setCurrentPage(1);
+    setIsPaginate(true);
   };
 
   const actionParams = [
@@ -221,38 +267,58 @@ export default function AssetsList() {
   return (
     <div>
       <MainLoader loaderVisible={showMainLoader} />
-      <CommonTable
-        cardTitle={"List of Company Assets"}
-        addBTN={{
-          permission: checkPermission("asset_create"),
-          txt: "Create New",
-          icon: <Iconify icon={"eva:plus-fill"} />, //"faBuildingFlag",
-          linkTo: "modal",
-          link: showAssetFormFunc,
+
+      {/* Header with Add button and Filter toggle */}
+      <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span className={"page-title-header"}>Assets</span>
+        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          {checkPermission("asset_create") && (
+            <button className={"btn primary-theme-btn btn-sm ml-2"} onClick={showAssetFormFunc}>
+              <Iconify icon={"eva:plus-fill"} />
+            </button>
+          )}
+          <IconButton size="small" aria-label="toggle filter" onClick={() => setShowFilter((s) => !s)}>
+            <ArrowDropDownIcon />
+          </IconButton>
+        </Box>
+      </Box>
+
+      {/* Collapsible filter */}
+      <Collapse in={showFilter} timeout="auto" unmountOnExit>
+        <Box sx={{ px: 2, mb: 2 }}>{filter()}</Box>
+      </Collapse>
+
+      {/* Card-wrapped modern table to match Sectors */}
+      <Card
+        sx={{
+          p: 5,
+          backgroundColor: theme.palette.background.paper,
+          color: theme.palette.text.primary,
+          borderRadius: 2,
+          border: `1px solid ${theme.palette.divider}`,
+          '& .MuiTableContainer-root': { backgroundColor: theme.palette.background.paper },
+          '& .MuiPaper-root': { backgroundColor: theme.palette.background.paper },
+          '& .MuiTableCell-root': { color: theme.palette.text.primary },
         }}
-        paginations={{
-          totalPages: totalPages,
-          totalCount: totalCount,
-          currentPage: currentPage,
-          handlePageChange: handlePageChange,
-        }}
-        table={{
-          size: "small",
-          ariaLabel: "asset table",
-          showIdColumn: userRole === "admin" ?? false,
-          tableColumns: TABLE_HEAD,
-          tableBody: {
-            loading: loading,
-            loadingColSpan: 8,
-            rows: filteredAssets, //rendering data
-          },
-          actionButtons: actionParams,
-        }}
-        filter={filter}
-        loading={assrtDataFetching}
-        loaderRow={query?.limit}
-        loaderCol={8}
-      />
+        style={{ padding: "0px" }}
+      >
+        <CommonTable
+          data={filteredAssets}
+          tableColumns={TABLE_HEAD}
+          actionButtons={actionParams}
+          pagination={{
+            totalPages: totalPages ?? 0,
+            total: totalCount ?? filteredAssets.length,
+            totalCount: totalCount,
+            currentPage: currentPage,
+            handlePageChange: handlePageChange,
+            pageSize: pageSize,
+            onRowsPerPageChange: handleRowsPerPageChange,
+          }}
+          isFetching={assrtDataFetching}
+          hasError={assetDataError}
+        />
+      </Card>
     </div>
   );
 }

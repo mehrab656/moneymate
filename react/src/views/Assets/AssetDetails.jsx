@@ -16,7 +16,7 @@ const AssetDetails = ({ data }) => {
 
       <div className="mb-4">
         {/* Asset Summary - Responsive */}
-        <div className="balance-section">
+        <div className="balance-section sector-card p-3 border rounded sector-form-sidebar-card">
           <Row className="g-2 asset-details-row">
             <Col xs={12} md={4} className="asset-details-col">
               <div className="info-card">
@@ -71,9 +71,9 @@ const AssetDetails = ({ data }) => {
           <h6 className="section-title text-center">Asset Information</h6>
           
           {/* Desktop Table */}
-          <div className="d-none d-md-block">
+          <div className="d-none d-md-block sector-form-sidebar-desktop-container">
             <div className="table-responsive">
-              <Table bordered className="asset-view-table">
+              <Table bordered className="asset-view-table sector-form-sidebar-table custom-table">
                 <thead>
                   <tr>
                     <th>#</th>
@@ -113,14 +113,14 @@ const AssetDetails = ({ data }) => {
           </div>
           
           {/* Mobile Cards */}
-          <div className="d-md-none">
+          <div className="d-md-none sector-form-sidebar-mobile-container">
             {(() => {
               try {
                 const assetsArray = asset?.assets 
                   ? (typeof asset.assets === 'string' ? JSON.parse(asset.assets) : asset.assets)
                   : [];
                 return Array.isArray(assetsArray) ? assetsArray.map((_asset, index) => (
-                  <div key={index} className="asset-info-card">
+                  <div key={index} className="asset-info-card sector-card p-3 border rounded sector-form-sidebar-card">
                     <div className="d-flex justify-content-between align-items-center mb-2">
                       <h6 className="mb-0">Asset #{index + 1}</h6>
                     </div>

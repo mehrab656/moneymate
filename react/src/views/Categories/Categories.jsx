@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext, useRef } from "react";
-import Swal from "sweetalert2";
+import { useThemedSwal } from "../../components/SwalConfirm.js";
 import { useStateContext } from "../../contexts/ContextProvider.jsx";
 import { SettingsContext } from "../../contexts/SettingsContext.jsx";
 import MainLoader from "../../components/loader/MainLoader.jsx";
@@ -37,6 +37,7 @@ const defaultQuery = {
 
 export default function Categories() {
   const theme = useTheme();
+  const { confirmDelete } = useThemedSwal();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
@@ -188,15 +189,7 @@ export default function Categories() {
   };
 
   const onDelete = (categoryData) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
+    confirmDelete('category', { confirmButtonText: 'Yes, delete it!' }).then(async (result) => {
       if (result.isConfirmed) {
         try {
           const response = await deleteCategory({
