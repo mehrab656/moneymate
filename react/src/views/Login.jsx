@@ -2,9 +2,9 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { createRef, useEffect, useState } from "react";
 import { useStateContext } from "../contexts/ContextProvider.jsx";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import MainLoader from "../components/loader/MainLoader.jsx";
+import { Box, Card, Button, Typography, TextField } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 export default function Login() {
   const naviagte = useNavigate();
@@ -14,6 +14,7 @@ export default function Login() {
   const { setUser, setToken } = useStateContext();
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const theme = useTheme();
 
 
  const togglePasswordVisibility = () => {
@@ -95,51 +96,72 @@ export default function Login() {
   };
 
   return (
-    <div className="login-signup-form animated fadeInDown">
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: theme.palette.background.default,
+        color: theme.palette.text.primary,
+        p: 2,
+      }}
+      className="animated fadeInDown"
+    >
       <MainLoader loaderVisible={loading} />
-      <div className="form">
-        <div className="alert alert-info title">Login into your account</div>
-        <hr />
-        {message && <div className="form-group alert-box">{message}</div>}
+      <Card
+        sx={{
+          width: 420,
+          p: 4,
+          bgcolor: theme.palette.background.paper,
+          color: theme.palette.text.primary,
+          borderRadius: 2,
+          border: `1px solid ${theme.palette.divider}`,
+          boxShadow: "0 6px 24px rgba(0,0,0,0.15)",
+        }}
+      >
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          Login into your account
+        </Typography>
+        {message && (
+          <Typography variant="body2" color="error" sx={{ mb: 2 }}>
+            {message}
+          </Typography>
+        )}
 
         <form onSubmit={onSubmit}>
-          <div className="form-group">
-            <label className="custom-form-label" htmlFor="email">
-              Email
-            </label>
-            <input
-              className="custom-form-control"
-              ref={emailRef}
-              type="email"
-              placeholder="Email"
-            />
-          </div>
+          <TextField
+            label="Email"
+            type="email"
+            inputRef={emailRef}
+            fullWidth
+            margin="normal"
+            variant="filled"
+          />
 
-          <div className="form-group">
-            <label className="custom-form-label" htmlFor="password">
-              Password
-            </label>
-            <div className="password-input">
-              <input
-                className="custom-form-control"
-                ref={passwordRef}
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
-              />
-              <FontAwesomeIcon
-                icon={showPassword ? faEyeSlash : faEye}
-                className="eye-icon"
-                onClick={togglePasswordVisibility}
-              />
-            </div>
-          </div>
+          <TextField
+            label="Password"
+            type={showPassword ? "text" : "password"}
+            inputRef={passwordRef}
+            fullWidth
+            margin="normal"
+            variant="filled"
+          />
 
-          <button className="btn-add btn-block">Login</button>
-          <p className="message">
+          <Box display="flex" alignItems="center" justifyContent="space-between" mt={1}>
+            <Button type="button" variant="text" onClick={togglePasswordVisibility} sx={{ color: theme.palette.text.secondary }}>
+              {showPassword ? "Hide" : "Show"} Password
+            </Button>
+            <Button type="submit" variant="contained">
+              Login
+            </Button>
+          </Box>
+
+          <Typography variant="body2" sx={{ mt: 2 }}>
             Not registered? <Link to="/signup">Create an account</Link>
-          </p>
+          </Typography>
         </form>
-      </div>
-    </div>
+      </Card>
+    </Box>
   );
 }
