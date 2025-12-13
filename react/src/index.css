@@ -2244,6 +2244,37 @@ body[data-theme='dark'] .asset-details .section-title {
     }
 }
 
+/* Responsive Invoice modal */
+.invoice-modal .modal-dialog {
+    max-width: 920px;
+}
+
+body[data-theme='dark'] .invoice-modal .modal-footer .btn {
+    border: 1px solid var(--custom-btn-border-color) !important;
+}
+
+body[data-theme='dark'] .invoice-modal .modal-content {
+    background-color: #0f1216 !important;
+    color: rgba(255,255,255,0.87) !important;
+    border: none !important;
+    border-radius: 10px;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.55) !important;
+}
+body[data-theme='dark'] .invoice-modal .modal-header {
+    background-color: #0f1216 !important;
+    color: rgba(255,255,255,0.87) !important;
+    border-bottom: none !important;
+}
+body[data-theme='dark'] .invoice-modal .modal-body {
+    background-color: #0f1216 !important;
+    color: rgba(255,255,255,0.87) !important;
+}
+body[data-theme='dark'] .invoice-modal .modal-footer {
+    background-color: #0f1216 !important;
+    color: rgba(255,255,255,0.87) !important;
+    border-top: none !important;
+}
+
 /* BudgetFormSidebar Responsive Styles */
 .budget-form-sidebar .modal-dialog {
     margin: 0;

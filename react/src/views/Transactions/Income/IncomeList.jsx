@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import { useThemedSwal } from "../../../components/SwalConfirm.js";
 import { SettingsContext } from "../../../contexts/SettingsContext.jsx";
 import MainLoader from "../../../components/loader/MainLoader.jsx";
@@ -15,8 +15,12 @@ import {
   faDownload,
   faFilter,
   faPlus,
+  faEdit,
+  faThList,
+  faTrash,
+  faEye,
 } from "@fortawesome/free-solid-svg-icons";
-import { Form, Row, Col } from "react-bootstrap";
+import { Form, Row, Col, Modal } from "react-bootstrap";
 import { Box, Card, Button, useTheme } from "@mui/material";
 import SidebarFooterButtons from "../../../components/SidebarFooterButtons.jsx";
 import CommonTable from "../../../components/table/CommonTable.jsx";
@@ -25,6 +29,8 @@ import FilteredParameters from "../Expense/Components/FilteredParameters.jsx";
 import CsvFileUpload from "./Components/CsvFileUpload.jsx";
 import Iconify from "../../../components/Iconify.jsx";
 import IncomeExportButton from "./Components/IncomeExportButton.jsx";
+import GlobalInvoice from "../../../components/GlobalInvoice.jsx";
+import { useReactToPrint } from "react-to-print";
 
 const defaultQuery = {
   type: "",
@@ -72,6 +78,18 @@ export default function IncomeList() {
   const [hasFilter, setHasFilter] = useState(true);
   const [searchTerms, setSearchTerms] = useState("");
   const { showLargeContent, showQuickDetails } = useSidebarActions();
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [invoiceIncome, setInvoiceIncome] = useState(null);
+  const printRef = useRef(null);
+  const [printData, setPrintData] = useState(null);
+  const printInvoice = useReactToPrint({
+    content: () => printRef.current,
+    documentTitle: "income-invoice",
+    pageStyle: `
+      @page { size: A4; margin: 12mm; }
+      body { -webkit-print-color-adjust: exact; color-adjust: exact; }
+    `,
+  });
 
   useEffect(() => {
     if (num_data_per_page > 0) {
@@ -190,6 +208,20 @@ export default function IncomeList() {
     showQuickDetails("Income Details", <IncomeDetails data={income} />);
   };
 
+  const openInvoiceModal = (income) => {
+    setInvoiceIncome(income);
+    setShowInvoiceModal(true);
+  };
+  const closeInvoiceModal = () => {
+    setShowInvoiceModal(false);
+    setInvoiceIncome(null);
+  };
+  const openInvoiceModalFromHeader = () => {
+    const candidate = (incomes && incomes.length > 0) ? incomes[0] : {};
+    setInvoiceIncome(makeInvoiceData(candidate));
+    setShowInvoiceModal(true);
+  };
+
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
     setIsPaginate(true);
@@ -248,6 +280,37 @@ export default function IncomeList() {
     return income.description.toLowerCase().includes(searchTerms.toLowerCase());
   });
 
+  const makeInvoiceData = (income) => {
+    if (!income) return {};
+    const amountNum = Number(income?.amount || 0);
+    const periodStart =
+      income?.checkin_date || query?.start_date || income?.date || "";
+    const periodEnd =
+      income?.checkout_date || query?.end_date || income?.date || "";
+    return {
+      invoice: {
+        date: income?.date || "",
+        number: String(income?.id || ""),
+      },
+      billTo: {
+        contact: "sdfsdasds",
+        company: income?.income_type.label || income?.category_name || "",
+        address1: "df fsfsfdsdf",
+        address2: "dfsfsfsd",
+        phone: "434224232",
+      },
+      items: [
+        {
+          qty: 1,
+          description: `${amountNum.toFixed(2)}(${periodStart} - ${periodEnd}) /month`,
+          amount: amountNum || 0,
+        },
+      ],
+      credit: 0,
+      taxPercent: 0,
+    };
+  };
+
   const actionParams = [
     {
       actionName: "Edit",
@@ -256,6 +319,7 @@ export default function IncomeList() {
       actionFunction: showEditModalFunc,
       permission: "edit_income",
       textClass: "text-info",
+      icon: faEdit,
     },
     {
       actionName: "View",
@@ -264,6 +328,16 @@ export default function IncomeList() {
       actionFunction: showViewModalFunc,
       permission: "income_view",
       textClass: "text-warning",
+      icon: faThList,
+    },
+    {
+      actionName: "Preview Invoice",
+      type: "modal",
+      route: "",
+      actionFunction: (income) => openInvoiceModal(makeInvoiceData(income)),
+      permission: "income_view",
+      textClass: "text-primary",
+      icon: faEye,
     },
     {
       actionName: "Delete",
@@ -272,6 +346,7 @@ export default function IncomeList() {
       actionFunction: onDelete,
       permission: "income_delete",
       textClass: "text-danger",
+      icon: faTrash,
     },
   ];
 
@@ -308,6 +383,7 @@ export default function IncomeList() {
       >
         <Box>
           <span className={"page-title-header"}>Income Histories</span>
+         
         </Box>
         <Box>
           <button className={"btn primary-theme-btn btn-sm ml-2"}>
@@ -430,6 +506,23 @@ export default function IncomeList() {
           setQueryParams={setQuery}
           setHasFilter={setHasFilter}
         />
+      )}
+      {showInvoiceModal && (
+        <Modal centered show={showInvoiceModal} onHide={closeInvoiceModal} size="lg" dialogClassName="invoice-modal">
+          <Modal.Body>
+            <div ref={printRef}>
+              <GlobalInvoice data={invoiceIncome || {}} />
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <button className={"btn primary-theme-btn btn-sm"} onClick={printInvoice}>
+              <FontAwesomeIcon icon={faDownload} /> Download PDF
+            </button>
+            <button className={"btn primary-theme-btn btn-sm"} onClick={closeInvoiceModal}>
+              Close
+            </button>
+          </Modal.Footer>
+        </Modal>
       )}
     </div>
   );

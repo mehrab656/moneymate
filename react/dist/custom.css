@@ -7,11 +7,13 @@
     --info: #26D6EB;
     --warning: #FFAD5F;
     --light: #f5f5f5;
-    --dark: #334155;;
+    --dark: #334155;
+    ;
     --white: #ffffff;
     --muted: #625f6e;
     --light-muted: #9896a0;
-    --fundamental-color: #587885;
+    --fundamental-color: #022534;
+    --custom-btn-border-color: #3794a7;
 
 }
 
@@ -22,10 +24,18 @@ body {
 .wiz-card {
     /*border: 1px solid #dddddd;*/
     padding: 1.5rem;
-    background-color: #FFFFFF;
-    /*box-shadow: var(--common-shadow);*/
-    -webkit-border-radius: .5rem;
-    border-radius: .5rem;
+    /* Light mode default: white surface */
+    background-color: #ffffff;
+    color: rgba(0, 0, 0, 0.87);
+    /* Match MUI Card elevation and radius for visual consistency */
+    box-shadow: 0 4px 8px rgba(16, 24, 40, 0.06);
+    -webkit-border-radius: 12px;
+    border-radius: 12px;
+}
+
+/* Override card padding only for Quick Income sidebar to match Quick Expense */
+.quick-income-card .wiz-card {
+    padding: 0; /* wrapper provides the 10px spacing */
 }
 
 .summary-value {
@@ -163,6 +173,7 @@ h1, h2, h3, h4, h5, h6 {
     margin-top: 5px;
 
 }
+
 .custom-btn:hover {
     background-color: var(--fundamental-color);
 }
@@ -214,7 +225,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 
-.wrapper > .wrapping-aside {
+.wrapper>.wrapping-aside {
     width: 245px;
     background-color: var(--fundamental-color);
     min-height: 100vh;
@@ -225,8 +236,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .wrapping-aside {
-  height: 100vh; 
-  overflow-y: auto; 
+    height: 100vh;
+    overflow-y: auto;
 }
 
 
@@ -234,7 +245,7 @@ h1, h2, h3, h4, h5, h6 {
     padding: 1rem;
 }
 
-.wrapper > .wrapping-body {
+.wrapper>.wrapping-body {
     width: calc(100% - 245px);
     min-height: 100vh;
     margin-left: auto;
@@ -261,7 +272,7 @@ footer {
 
 
 @media screen and (min-width: 992px) {
-    .wrapper.collapsed > .wrapping-body {
+    .wrapper.collapsed>.wrapping-body {
         width: calc(100% - 80px);
     }
 
@@ -280,7 +291,7 @@ footer {
 }
 
 @media screen and (max-width: 991px) {
-    .wrapper.collapsed > .wrapping-body {
+    .wrapper.collapsed>.wrapping-body {
         width: 100%;
     }
 
@@ -356,7 +367,7 @@ footer {
 
 }
 
-.aside-menu-item.menu-active > .aside-link {
+.aside-menu-item.menu-active>.aside-link {
     background-color: rgba(0, 0, 0, 0.2);
 }
 
@@ -403,18 +414,18 @@ footer {
     transition: max-height 0.6s ease, opacity 0.6s ease;
 }
 
-.aside-menu-item.menu-active > .aside-dropdown-menu {
+.aside-menu-item.menu-active>.aside-dropdown-menu {
     max-height: 1000px;
     opacity: 1;
 }
 
-.aside-menu-item:not(.menu-active) > .aside-dropdown-menu {
+.aside-menu-item:not(.menu-active)>.aside-dropdown-menu {
     max-height: 0;
     opacity: 0;
 }
 
 
-.header-dropdown-item{
+.header-dropdown-item {
     color: black;
     text-decoration: none;
 }
@@ -424,7 +435,8 @@ footer {
     background-color: floralwhite;
     border-radius: 10px;
 }
-.section_roll_name{
+
+.section_roll_name {
     text-transform: capitalize !important;
 }
 
@@ -432,19 +444,21 @@ footer {
     padding: inherit;
 }
 
-.actionDropDownMenu{
+.actionDropDownMenu {
     /*position: fixed !important;*/
     z-index: 9999 !important;
 }
 
-.simplebar-placeholder{
+.simplebar-placeholder {
     display: none !important;
 }
-.my-task-card-footer{
+
+.my-task-card-footer {
     display: flex;
     justify-content: space-between;
 }
-.my-task-header{
+
+.my-task-header {
     display: flex;
     justify-content: space-between;
     padding: 10px;
@@ -453,109 +467,129 @@ footer {
     font-weight: 500;
 }
 
-.offcanvas.offcanvas-start{
+.offcanvas.offcanvas-start {
     width: auto !important;
 }
 
 .header-container {
     border-bottom: 1px solid #e0e0e0;
-  }
-  
-  .header-item {
+}
+
+.header-item {
     padding: 5px 10px;
     text-align: center;
     font-size: 0.9rem;
-  }
-  
-  .header-item strong {
+}
+
+.header-item strong {
     color: #333;
     font-weight: bold;
-  }
-  
-  #notification-dropdown, #user-dropdown {
+}
+
+/* Theme-aware header amount colors */
+body[data-theme='light'] .header-item strong {
+    color: rgba(0, 0, 0, 0.87);
+}
+
+#notification-dropdown, #user-dropdown {
     text-align: left;
-  }
-  
-  .header-dropdown-item {
+}
+
+.header-dropdown-item {
     color: #007bff;
-  }
-  
-  .header-dropdown-item:hover {
+}
+
+.header-dropdown-item:hover {
     text-decoration: none;
-  }
-  
-  .header-container .dropdown-menu {
+}
+
+.header-container .dropdown-menu {
     width: 250px;
-  }
-  
-  @media (max-width: 767px) {
+}
+
+@media (max-width: 767px) {
     .header-container {
-      text-align: center;
+        text-align: center;
     }
-  
+
     .header-item {
-      margin-bottom: 8px;
+        margin-bottom: 8px;
     }
-  
+
     .dropdown-menu {
-      width: 100%;
+        width: 100%;
     }
-  }
-  .notification-dropdown .dropdown-menu {
-    width: 100%; /* Full width on smaller screens */
-    max-width: 300px; /* Limit max width on larger screens */
-    max-height: 300px; /* Set max height for dropdown */
-    overflow-y: auto; /* Enable scrolling */
-  }
-  
-  @media (max-width: 576px) {
+}
+
+.notification-dropdown .dropdown-menu {
+    width: 100%;
+    /* Full width on smaller screens */
+    max-width: 300px;
+    /* Limit max width on larger screens */
+    max-height: 300px;
+    /* Set max height for dropdown */
+    overflow-y: auto;
+    /* Enable scrolling */
+}
+
+@media (max-width: 576px) {
     .notification-dropdown .dropdown-menu {
-      width: 90vw; /* Near full-screen width for mobile */
-      max-height: 250px; /* Adjust max height for smaller screens */
+        width: 90vw;
+        /* Near full-screen width for mobile */
+        max-height: 250px;
+        /* Adjust max height for smaller screens */
     }
-  }
-  .notification-item {
+}
+
+.notification-item {
     font-size: 0.9rem;
     padding: 10px;
-    white-space: normal; /* Allow text to wrap */
+    white-space: normal;
+    /* Allow text to wrap */
     word-wrap: break-word;
-  }
-  
-  @media (max-width: 576px) {
+}
+
+@media (max-width: 576px) {
     .notification-dropdown .dropdown-menu {
-      width: 90vw; /* Near full-screen width for mobile */
+        width: 90vw;
+        /* Near full-screen width for mobile */
     }
-    
+
     .notification-item {
-      padding: 8px;
-      font-size: 0.85rem;
+        padding: 8px;
+        font-size: 0.85rem;
     }
-    
+
     .notification-dropdown .dropdown-menu .dropdown-header {
-      font-size: 1rem;
-      padding: 12px;
+        font-size: 1rem;
+        padding: 12px;
     }
-  }
-.upload-box > p{
+}
+
+.upload-box>p {
     text-align: center;
     font-weight: 500;
     margin-top: 10px;
 }
+
 img {
     width: 100%;
 }
-.icon{
+
+.icon {
     height: 90px;
     width: 90px;
 }
-.upload-box{
+
+.upload-box {
     width: 100%;
     background: #fff;
     border-radius: 5px;
     padding: 15px;
-    box-shadow: 7px 7px 12px rgba(0,0,0,0.25);
+    box-shadow: 7px 7px 12px rgba(0, 0, 0, 0.25);
 }
-.upload-box form{
+
+.upload-box form {
     height: 170px;
     display: flex;
     cursor: pointer;
@@ -565,18 +599,19 @@ img {
     justify-content: center;
     flex-direction: column;
     border-radius: 5px;
-    border:2px dashed #0086fe;
+    border: 2px dashed #0086fe;
 }
 
-.upload-box form :where(i,p){
+.upload-box form :where(i, p) {
     color: #0086fe;
 }
-.upload-box form p{
+
+.upload-box form p {
     margin-top: 15px;
     margin-bottom: 15px;
 }
 
-section .row{
+section .row {
     margin-bottom: 10px;
     background: #d5ebff;
     list-style: none;
@@ -586,25 +621,29 @@ section .row{
     align-items: center;
     justify-content: space-between;
 }
-.fileIcon{
+
+.fileIcon {
     color: #0086fe;
     font-size: 30px;
 }
-section .details span{
+
+section .details span {
     font-size: 12px;
 }
-.loading-area .row .content{
+
+.loading-area .row .content {
     width: 100%;
     margin-left: 15px;
 }
-.loading-area .details{
+
+.loading-area .details {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 7px;
 }
 
-.loading-area .content .loading-bar{
+.loading-area .content .loading-bar {
     height: 6px;
     width: 100%;
     margin-bottom: 4px;
@@ -618,102 +657,126 @@ section .details span{
     background: #0086fe;
     border-radius: inherit;
 }
-.upload-area{
+
+.upload-area {
     overflow-y: scroll;
 }
-.upload-area.onprogress{
+
+.upload-area.onprogress {
     max-height: 150px;
 }
-.upload-area::-webkit-scrollbar{
+
+.upload-area::-webkit-scrollbar {
     width: 0px;
 }
-.upload-area .row .content{
+
+.upload-area .row .content {
     display: flex;
     align-items: center;
 }
-.upload-area .row .details{
+
+.upload-area .row .details {
     display: flex;
     margin-left: 15px;
     flex-direction: column;
 }
-.upload-area .row .details{
+
+.upload-area .row .details {
     color: #404040;
     font-size: 11px;
 }
-.upload-area i.fa-check{
+
+.upload-area i.fa-check {
     font-size: 16px;
 }
 
-.welcome-screen-left-div{
+.welcome-screen-left-div {
     color: #fff;
-    background-color: rgba(197,167,135,0.4);
+    background-color: rgba(197, 167, 135, 0.4);
 }
-.welcome-screen-main-div{
+
+.welcome-screen-main-div {
     background-size: cover;
-    background-repeat: no-repeat ;
+    background-repeat: no-repeat;
 }
-.welcome-screen-footer{
+
+.welcome-screen-footer {
     background-color: #022536;
     color: #fff;
 }
-.welcome-screen-footer-right{
+
+.welcome-screen-footer-right {
     display: flex;
     justify-content: flex-end;
 }
-.welcome-screen-footer-left{
+
+.welcome-screen-footer-left {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-.welcome-text{
+
+.welcome-text {
     text-align: justify;
 }
-.slider-image img{
+
+.slider-image img {
     width: 390px;
     height: 256px;
 }
 
 .scrollable-dropdown {
-  max-height: 300px;
-  overflow-y: auto;
+    max-height: 300px;
+    overflow-y: auto;
     z-index: 111111;
 }
+
 .scrollable-submenu {
-  max-height: 180px;
-  overflow-y: auto;
+    max-height: 180px;
+    overflow-y: auto;
 }
 
 /* For Webkit browsers (Chrome, Edge, Safari) */
 .scrollable-submenu::-webkit-scrollbar {
-  width: 6px; /* small width */
+    width: 6px;
+    /* small width */
 }
 
 .scrollable-submenu::-webkit-scrollbar-track {
-  background: transparent; /* track background */
+    background: transparent;
+    /* track background */
 }
 
 .scrollable-submenu::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.5); /* black with 0.5 opacity */
-  border-radius: 3px; /* rounded edges */
+    background-color: rgba(0, 0, 0, 0.5);
+    /* black with 0.5 opacity */
+    border-radius: 3px;
+    /* rounded edges */
 }
 
 /* Optional: hover effect */
 .scrollable-submenu::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.7); /* slightly darker on hover */
+    background-color: rgba(0, 0, 0, 0.7);
+    /* slightly darker on hover */
 }
 
 /* For Firefox */
 .scrollable-submenu {
-  scrollbar-width: thin; /* smaller width */
-  scrollbar-color: rgba(141, 141, 141, 0.5) transparent; /* thumb color / track color */
+    scrollbar-width: thin;
+    /* smaller width */
+    scrollbar-color: rgba(141, 141, 141, 0.5) transparent;
+    /* thumb color / track color */
 }
 
 .aside-menu-item .aside-link, .aside-menu-item a {
     padding: 6px 10px !important;
 }
+
 .nav-pills .nav-link.active {
-    background-color: var(--fundamental-color); /* e.g., #007bff for blue */
+    background-color: var(--fundamental-color);
+    /* e.g., #007bff for blue */
 }
+
 .user-avatar {
     display: flex;
     flex-direction: column;
@@ -721,12 +784,206 @@ section .details span{
     margin-bottom: 10%;
     border-bottom: 2px solid var(--fundamental-color);
 }
-.profile-avatar{
-width: 100px;
+
+.profile-avatar {
+    width: 100px;
     height: 100px;
 }
+
 .user-profile-section {
     text-align: center;
     margin-top: 20px;
     /*border: var(--bs-card-border-width) solid var(--bs-card-border-color);*/
+}
+
+.sidebar-form {
+    background-color: #fff;
+    color: rgba(0, 0, 0, 0.87);
+    -webkit-transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    border-radius: 4px;
+    /* Use a softer, blurred shadow to avoid a thin bottom line */
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: visible; /* allow shadow to render fully */
+    margin-top: 10px;
+    border-radius: 10px;
+}
+
+/* move scroll to inner content to avoid clipping box-shadow */
+.sidebar-form .sidebar-form-content {
+    max-height: 420px;
+    overflow: auto;
+}
+.main-header{
+
+    /*background-color: ;*/
+    /*border-bottom: 1px solid #384049;*/
+    color:rgba(0,0,0,0.87);
+}
+.primary-theme-btn {
+    background-color: var(--fundamental-color);
+    border-color: var(--fundamental-color);
+    color: #FFFFFF;
+}
+ .primary-theme-btn:hover {
+    background-color: #1E3B4A;
+    border-color: var(--custom-btn-border-color);
+    color: #FFFFFF;
+}
+.input-group-text{
+     width: 50%;
+ }
+
+/* ===== Responsive menubar & sidebar behavior ===== */
+/* Default: show Bootstrap left sidebar, hide MUI top menubar */
+.top-menubar { display: none; }
+
+/* At widths <= 1382px: hide left sidebar and show top menubar */
+@media screen and (max-width: 1382px) {
+  aside.wrapping-aside { display: none !important; }
+  .wrapper>.wrapping-body { width: 100% !important; }
+  .top-menubar { display: block; }
+  /* Exception: keep sidebar visible inside Offcanvas */
+  .offcanvas aside.wrapping-aside { display: block !important; width: 280px; }
+  .offcanvas .aside-content { height: 100%; }
+  .offcanvas .aside-menu { margin: 0; }
+}
+
+/* Hide TopMenubar on very small screens (<992px) */
+@media screen and (max-width: 991.98px) {
+  .top-menubar { display: none !important; }
+}
+
+/* Header sidebar toggle: visible up to 1136px */
+.header-sidebar-toggle { display: none; }
+@media screen and (max-width: 1136px) {
+  .header-sidebar-toggle { display: inline-flex !important; }
+}
+
+/* Ensure Offcanvas overlays the header and content properly */
+.offcanvas { z-index: 1300 !important; }
+.offcanvas-backdrop { z-index: 1290 !important; }
+
+/* ===== Theme-aware styling for the Top Menubar (MUI + Bootstrap mix) ===== */
+body[data-theme='dark'] .top-menubar {
+  background-color: #1e2630;
+  border-bottom: 1px solid #384049;
+  position: relative;
+  z-index: 1200;
+}
+body[data-theme='light'] .top-menubar {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+  position: relative;
+  z-index: 1200;
+}
+
+.top-menubar .navbar {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  min-height: 42px;
+  overflow: visible; /* allow dropdowns to overflow navbar */
+}
+
+.top-menubar .navbar-nav {
+  gap: 8px;
+  flex-wrap: nowrap;
+  overflow: visible; /* prevent dropdown clipping */
+  white-space: nowrap;
+  min-width: max-content; /* allow container to scroll instead of items overflowing */
+}
+
+.top-menubar .navbar-collapse { width: 100%; overflow: visible; }
+.top-menubar .navbar-collapse { display: block !important; }
+.top-menubar .navbar-toggler,
+.top-menubar .navbar-toggle,
+.top-menubar .navbar .navbar-toggle,
+.top-menubar .navbar .navbar-toggler { display: none !important; }
+
+.top-menubar .menu-scroll {
+  overflow-x: auto; /* horizontal scroll for many items */
+  overflow-y: visible; /* avoid clipping dropdowns */
+  width: 100%;
+  max-width: 100%;
+  display: block;
+  -ms-overflow-style: none; /* IE & old Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.top-menubar .menu-scroll::-webkit-scrollbar { width: 0; height: 0; }
+.top-menubar .menu-scroll::-webkit-scrollbar-thumb { background: transparent; }
+
+.top-menubar .nav-link,
+.top-menubar .dropdown-toggle {
+  font-size: 0.85rem;
+  line-height: 1.2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.top-menubar .nav-link.active { font-weight: 600; }
+
+/* Active state colors for top menubar (theme-aware) */
+/* Active state colors: let component inline styles from cmsTheme drive appearance */
+/* Intentionally no forced color/background here to avoid overriding theme. */
+
+/* Icon color follows active text color */
+.top-menubar .nav-link.active svg,
+.top-menubar .MuiMenuItem-root.active svg { color: inherit; }
+
+/* Hover state to hint active on dropdown items */
+body[data-theme='dark'] .top-menubar .MuiMenuItem-root:hover {
+  background-color: rgba(255,255,255,0.06);
+}
+body[data-theme='light'] .top-menubar .MuiMenuItem-root:hover {
+  background-color: rgba(0,0,0,0.06);
+}
+
+/* Ensure Bootstrap dropdown items also show active if used */
+.top-menubar .dropdown-menu .dropdown-item.active,
+.top-menubar .dropdown-menu .dropdown-item.active:hover {
+  color: var(--bs-primary) !important;
+  background-color: rgba(var(--bs-primary-rgb, 13,110,253), 0.12) !important;
+}
+
+.top-menubar .dropdown-menu {
+  min-width: 220px;
+  border-radius: 8px;
+  z-index: 11000;
+  padding: 0.5rem;
+}
+.top-menubar-menu { z-index: 11000 !important; min-width: 220px; border-radius: 8px; padding: 0.5rem; }
+
+/* Fix dropdown positioning to avoid scroll clipping */
+@media (min-width: 992px) {
+  .top-menubar .navbar-nav .dropdown-menu.show[data-bs-popper] { position: fixed !important; }
+}
+.top-menubar .navbar-nav .dropdown-menu.show[data-bs-popper],
+.top-menubar-menu.show[data-bs-popper] { position: fixed !important; }
+
+/* Theme-aware link colors and menu appearance */
+body[data-theme='dark'] .top-menubar .nav-link,
+body[data-theme='dark'] .top-menubar .dropdown-toggle { color: rgba(255,255,255,0.87); }
+body[data-theme='light'] .top-menubar .nav-link,
+body[data-theme='light'] .top-menubar .dropdown-toggle { color: rgba(0,0,0,0.87); }
+
+body[data-theme='dark'] .top-menubar .dropdown-menu {
+  background-color: var(--bs-dropdown-bg, #2b3038);
+  color: var(--bs-dropdown-color, rgba(255,255,255,0.87));
+  border: 1px solid #384049;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.35);
+}
+body[data-theme='light'] .top-menubar .dropdown-menu {
+  background-color: var(--bs-dropdown-bg, #ffffff);
+  color: var(--bs-dropdown-color, #212529);
+  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+.top-menubar .dropdown-item { white-space: nowrap; }
+
+/* On small screens when collapse would be hidden, keep bar transparent */
+@media (max-width: 991.98px) {
+  body[data-theme='dark'] .top-menubar:not(:has(.navbar-collapse.show)) { background-color: transparent !important; border-bottom: none !important; }
+  body[data-theme='light'] .top-menubar:not(:has(.navbar-collapse.show)) { background-color: transparent !important; border-bottom: none !important; }
 }
