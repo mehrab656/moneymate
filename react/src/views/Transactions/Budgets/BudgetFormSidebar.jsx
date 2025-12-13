@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Button, Row, Col } from 'react-bootstrap';
+import React, { useState, useEffect, forwardRef, useImperativeHandle, useContext } from 'react';
+import { Form, Button, Row, Col, InputGroup } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
 import { notification } from '../../../components/ToastNotification.jsx';
@@ -10,11 +10,14 @@ import {
   useGetSingleBudgetDataQuery 
 } from '../../../api/slices/budgetSlice.js';
 import { useSidebarActions } from '../../../hooks/useSidebarActions.js';
+import { SettingsContext } from '../../../contexts/SettingsContext.jsx';
 
-const BudgetFormSidebar = ({ 
+export default forwardRef(function BudgetFormSidebar({ 
   budgetId = null, 
-  onSuccess = () => {} 
-}) => {
+  onSuccess = () => {},
+  formId: formIdProp = null,
+  hideInternalFooter = false,
+}, ref) {
   const [budget, setBudget] = useState({
     budget_name: '',
     amount: '',
@@ -28,6 +31,111 @@ const BudgetFormSidebar = ({
   const [loading, setLoading] = useState(false);
 
   const { closeSidebar } = useSidebarActions();
+  const formId = formIdProp || "budget-form-sidebar-form";
+  const { themeMode } = useContext(SettingsContext);
+  const isDark = themeMode === "dark";
+  const inputStyle = {
+    backgroundColor: isDark ? "#1c1f24" : "#fff",
+    color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+    borderColor: isDark ? "#3a4048" : "#c5ccd6",
+    fontSize: "0.875rem",
+    minHeight: 36,
+    height: 36,
+  };
+  const selectStyles = {
+    container: (base) => ({ 
+      ...base, 
+      fontSize: 14,
+      width: "100%",
+      flex: 1,
+      minWidth: 0,
+    }),
+    control: (base, state) => ({
+      ...base,
+      minHeight: 36,
+      height: 36,
+      boxShadow: "none",
+      borderColor: state.isFocused ? (isDark ? "#3a4149" : "#86b7fe") : (isDark ? "#3a4048" : "#c5ccd6"),
+      backgroundColor: isDark ? "#1c1f24" : "#fff",
+      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+      '&:hover': { borderColor: state.isFocused ? (isDark ? "#3a4149" : "#86b7fe") : (isDark ? "#3a4048" : "#c5ccd6") },
+    }),
+    valueContainer: (base) => ({ ...base, padding: "0 8px" }),
+    indicatorsContainer: (base) => ({ ...base, height: 36 }),
+    dropdownIndicator: (base) => ({
+      ...base,
+      color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.6)",
+      ':hover': { color: isDark ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.8)" },
+    }),
+    clearIndicator: (base) => ({
+      ...base,
+      color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.6)",
+      ':hover': { color: isDark ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.8)" },
+    }),
+    indicatorSeparator: (base) => ({
+      ...base,
+      backgroundColor: isDark ? "#3a4048" : "#c5ccd6",
+    }),
+    singleValue: (base) => ({
+      ...base,
+      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+    }),
+    input: (base) => ({ ...base, color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)" }),
+    placeholder: (base) => ({ ...base, color: isDark ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.55)" }),
+    menu: (base) => ({
+      ...base,
+      backgroundColor: isDark ? "#23262b" : "#fff",
+      border: `1px solid ${isDark ? "#2c3238" : "#dee2e6"}`,
+      boxShadow: isDark ? "0 6px 12px rgba(0,0,0,0.35)" : "0 6px 12px rgba(0,0,0,0.15)",
+    }),
+    menuList: (base) => ({ ...base, backgroundColor: isDark ? "#23262b" : "#fff" }),
+    menuPortal: (base) => ({ ...base, zIndex: 2000 }),
+    noOptionsMessage: (base) => ({
+      ...base,
+      color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.6)",
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isSelected
+        ? isDark ? "#0C1A28" : "#e7f0fb"
+        : state.isFocused
+          ? isDark ? "#2d3238" : "#f2f2f2"
+          : isDark ? "#23262b" : "#fff",
+      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+      ':active': { backgroundColor: isDark ? "#0C1A28" : "#e7f0fb" },
+    }),
+    multiValue: (base) => ({
+      ...base,
+      backgroundColor: isDark ? "#2d3238" : "#e9ecef",
+      border: `1px solid ${isDark ? "#3a4048" : "#c5ccd6"}`,
+    }),
+    multiValueLabel: (base) => ({
+      ...base,
+      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+      fontSize: 13,
+    }),
+    multiValueRemove: (base, state) => ({
+      ...base,
+      color: isDark ? "rgba(255,255,255,0.75)" : "rgba(0,0,0,0.6)",
+      ':hover': {
+        backgroundColor: isDark ? "#0C1A28" : "#dc3545",
+        color: "#ffffff",
+      },
+    }),
+  };
+
+  const DateInput = React.forwardRef(({ value, onClick, placeholder, isInvalid }, ref) => (
+    <Form.Control
+      size="sm"
+      value={value || ""}
+      onClick={onClick}
+      placeholder={placeholder}
+      readOnly
+      isInvalid={!!isInvalid}
+      style={inputStyle}
+      ref={ref}
+    />
+  ));
 
   // RTK Query mutations
   const [createBudget, { isLoading: isCreating }] = useCreateBudgetMutation();
@@ -110,13 +218,8 @@ const BudgetFormSidebar = ({
 
   const handleCategoryChange = (selectedOptions) => {
     setSelectedCategories(selectedOptions || []);
-    
-    // Clear categories error
     if (errors.categories) {
-      setErrors(prev => ({
-        ...prev,
-        categories: null
-      }));
+      setErrors(prev => ({ ...prev, categories: null }));
     }
   };
 
@@ -152,7 +255,7 @@ const BudgetFormSidebar = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, stay = true) => {
     e.preventDefault();
     
     if (!validateForm()) {
@@ -163,7 +266,7 @@ const BudgetFormSidebar = ({
     
     const budgetData = {
       ...budget,
-      categories: selectedCategories.map(category => category.value),
+      categories: selectedCategories.map((opt) => opt.value),
     };
 
     try {
@@ -179,22 +282,51 @@ const BudgetFormSidebar = ({
       
       notification('success', result?.message || 'Budget saved successfully', result?.description);
       onSuccess();
-      closeSidebar();
+      if (!stay) {
+        closeSidebar();
+      } else {
+        setBudget({
+          budget_name: '',
+          amount: '',
+          start_date: new Date().toISOString().split('T')[0],
+          end_date: '',
+        });
+        setSelectedCategories([]);
+      }
       
     } catch (error) {
-      console.error('Budget submission error:', error);
-      
-      if (error.data?.errors) {
-        setErrors(error.data.errors);
+      const data = error?.data || {};
+      const serverErrors = data?.errors;
+      const knownFields = ['budget_name','amount','start_date','end_date','categories'];
+      const hasKnownFieldErrors =
+        serverErrors &&
+        typeof serverErrors === 'object' &&
+        Object.keys(serverErrors || {}).some((k) => knownFields.includes(k));
+      if (hasKnownFieldErrors) {
+        setErrors(serverErrors);
       } else {
-        notification('error', error.data?.message || 'An error occurred', error.data?.description);
+        notification('error', data?.message || 'An error occurred', data?.description);
       }
     } finally {
       setLoading(false);
     }
   };
 
+  useImperativeHandle(ref, () => ({
+    save: () => {
+      handleSubmit({ preventDefault: () => {} }, true);
+    },
+    saveAndExit: () => {
+      handleSubmit({ preventDefault: () => {} }, false);
+    },
+  }));
+
   const isFormLoading = loading || isCreating || isUpdating || isFetchingBudget;
+  const errorText = (field) => {
+    const v = errors?.[field];
+    if (!v) return null;
+    return Array.isArray(v) ? v[0] : v;
+  };
 
   if (isFetchingBudget) {
     return (
@@ -208,147 +340,165 @@ const BudgetFormSidebar = ({
 
   return (
     <div className="budget-form-sidebar p-3 p-md-4">
-      <Form onSubmit={handleSubmit}>
+      <Form id={formId} onSubmit={(e) => handleSubmit(e, true)}>
         <Row>
           <Col xs={12}>
-            <Form.Group className="mb-3">
-              <Form.Label className="form-label fw-semibold">
-                Budget Name <span className="text-danger">*</span>
-              </Form.Label>
+            <InputGroup className={errors.budget_name ? "mb-1" : "mb-3"} size="sm">
+              <InputGroup.Text id="budget_name_label">Budget Name *</InputGroup.Text>
               <Form.Control
                 type="text"
-                size="lg"
+                aria-label="Budget Name"
+                aria-describedby="budget_name_label"
                 placeholder="Enter budget name"
                 value={budget.budget_name}
                 onChange={(e) => handleInputChange('budget_name', e.target.value)}
                 isInvalid={!!errors.budget_name}
-                className="form-control-lg"
+                style={inputStyle}
               />
-              <Form.Control.Feedback type="invalid">
-                {errors.budget_name}
-              </Form.Control.Feedback>
-            </Form.Group>
+            </InputGroup>
+            {errorText('budget_name') && <p className="error-message">{errorText('budget_name')}</p>}
           </Col>
           
           <Col xs={12}>
-            <Form.Group className="mb-3">
-              <Form.Label className="form-label fw-semibold">
-                Budget Amount <span className="text-danger">*</span>
-              </Form.Label>
+            <InputGroup className={errors.amount ? "mb-1" : "mb-3"} size="sm">
+              <InputGroup.Text id="budget_amount_label">Budget Amount *</InputGroup.Text>
               <Form.Control
                 type="number"
-                size="lg"
+                aria-label="Budget Amount"
+                aria-describedby="budget_amount_label"
                 step="0.01"
                 min="0"
-                    placeholder="Enter budget amount"
-                    value={budget.amount}
-                    onChange={(e) => handleInputChange('amount', e.target.value)}
-                    isInvalid={!!errors.amount}
-                    className="form-control-lg"
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    {errors.amount}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-              
-              <Col xs={12}>
-                <Form.Group className="mb-3">
-                  <Form.Label className="form-label fw-semibold">
-                    Expense Categories <span className="text-danger">*</span>
-                  </Form.Label>
-                  <Select
-                    isMulti
-                    value={selectedCategories}
-                    options={expenseCategories.map((category) => ({
-                      value: category.id,
-                      label: category.name,
-                    }))}
-                    onChange={handleCategoryChange}
-                    placeholder="Select expense categories"
-                    className={`react-select-container ${errors.categories ? 'is-invalid' : ''}`}
-                    classNamePrefix="react-select"
-                    isSearchable
-                    closeMenuOnSelect={false}
-                  />
-                  {errors.categories && (
-                    <div className="invalid-feedback d-block">
-                      {errors.categories}
-                    </div>
-                  )}
-                </Form.Group>
-              </Col>
-              
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label className="form-label fw-semibold">
-                    Start Date <span className="text-danger">*</span>
-                  </Form.Label>
-                  <DatePicker
-                    selected={budget.start_date ? new Date(budget.start_date) : null}
-                    onChange={(date) => handleDateChange('start_date', date)}
-                    dateFormat="yyyy-MM-dd"
-                    placeholderText="Select start date"
-                    className={`form-control form-control-lg ${errors.start_date ? 'is-invalid' : ''}`}
-                    wrapperClassName="w-100"
-                  />
-                  {errors.start_date && (
-                    <div className="invalid-feedback d-block">
-                      {errors.start_date}
-                    </div>
-                  )}
-                </Form.Group>
-              </Col>
-              
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label className="form-label fw-semibold">
-                    End Date <span className="text-danger">*</span>
-                  </Form.Label>
-                  <DatePicker
-                    selected={budget.end_date ? new Date(budget.end_date) : null}
-                    onChange={(date) => handleDateChange('end_date', date)}
-                    dateFormat="yyyy-MM-dd"
-                    placeholderText="Select end date"
-                    className={`form-control form-control-lg ${errors.end_date ? 'is-invalid' : ''}`}
-                    wrapperClassName="w-100"
-                    minDate={budget.start_date ? new Date(budget.start_date) : null}
-                  />
-                  {errors.end_date && (
-                    <div className="invalid-feedback d-block">
-                      {errors.end_date}
-                    </div>
-                  )}
-                </Form.Group>
-              </Col>
-            </Row>
-            
-            <div className="d-flex gap-2 mt-4">
-              <Button 
-                variant="outline-secondary" 
-                onClick={closeSidebar}
-                disabled={isFormLoading}
-                className="flex-fill"
-              >
-                Cancel
-              </Button>
-              <Button 
-                type="submit"
-                variant="primary" 
-                disabled={isFormLoading}
-                className="flex-fill"
-              >
-                {isFormLoading && (
-                  <div className="spinner-border spinner-border-sm me-2" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
+                placeholder="Enter budget amount"
+                value={budget.amount}
+                onChange={(e) => handleInputChange('amount', e.target.value)}
+                isInvalid={!!errors.amount}
+                style={inputStyle}
+              />
+            </InputGroup>
+            {errorText('amount') && <p className="error-message">{errorText('amount')}</p>}
+          </Col>
+          
+          <Col xs={12}>
+            <InputGroup className={(errors.categories ? "mb-1" : "mb-3") + " flex-nowrap"} size="sm">
+              <InputGroup.Text id="expense_categories_label">Budget Expense Categories *</InputGroup.Text>
+              <div className="flex-grow-1 d-flex" aria-describedby="expense_categories_label" style={{ minWidth: 0 }}>
+                <Select
+                  className="react-select-container w-100"
+                  classNamePrefix="select"
+                  styles={selectStyles}
+                  isMulti
+                  isSearchable={false}
+                  value={selectedCategories}
+                  options={expenseCategories.map((category) => ({
+                    value: category.id,
+                    label: category.name,
+                  }))}
+                  onChange={handleCategoryChange}
+                  placeholder="Categories"
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
+                  closeMenuOnSelect={false}
+                  menuPlacement="auto"
+                />
+              </div>
+            </InputGroup>
+            {errorText('categories') && (<p className="error-message">{errorText('categories')}</p>)}
+          </Col>
+          
+          <Col xs={12}>
+            <InputGroup className={(errors.start_date ? "mb-1" : "mb-3") + " flex-nowrap"} size="sm">
+              <InputGroup.Text id="start_date_label">Start Date *</InputGroup.Text>
+              <div className="flex-grow-1 d-flex" aria-describedby="start_date_label" style={{ minWidth: 0 }}>
+                <DatePicker
+                  selected={budget.start_date ? new Date(budget.start_date) : null}
+                  onChange={(date) => handleDateChange('start_date', date)}
+                  dateFormat="yyyy-MM-dd"
+                  placeholderText="Start Date"
+                  customInput={<DateInput placeholder="Start Date" isInvalid={errors.start_date} />}
+                  wrapperClassName="w-100"
+                  popperClassName="budget-datepicker"
+                  popperPlacement="bottom-start"
+                />
+              </div>
+            </InputGroup>
+            {errorText('start_date') && (<p className="error-message">{errorText('start_date')}</p>)}
+          </Col>
+          
+          <Col xs={12}>
+            <InputGroup className={(errors.end_date ? "mb-1" : "mb-3") + " flex-nowrap"} size="sm">
+              <InputGroup.Text id="end_date_label">End Date</InputGroup.Text>
+              <div className="flex-grow-1 d-flex" aria-describedby="end_date_label" style={{ minWidth: 0 }}>
+                <DatePicker
+                  selected={budget.end_date ? new Date(budget.end_date) : null}
+                  onChange={(date) => handleDateChange('end_date', date)}
+                  dateFormat="yyyy-MM-dd"
+                  placeholderText="End Date"
+                  customInput={<DateInput placeholder="End Date" isInvalid={errors.end_date} />}
+                  wrapperClassName="w-100"
+                  minDate={budget.start_date ? new Date(budget.start_date) : null}
+                  popperClassName="budget-datepicker"
+                  popperPlacement="bottom-start"
+                />
+              </div>
+            </InputGroup>
+            {errorText('end_date') && (<p className="error-message">{errorText('end_date')}</p>)}
+          </Col>
+        </Row>
+        
+        {!hideInternalFooter && (
+          <div className="d-flex gap-2 mt-4">
+            <Button 
+              variant="outline-secondary" 
+              onClick={closeSidebar}
+                  disabled={isFormLoading}
+                  className="flex-fill"
+                >
+                  Cancel
+                </Button>
+                {budgetId ? (
+                  <Button 
+                    type="button"
+                    variant="warning" 
+                    disabled={isFormLoading}
+                    className="flex-fill"
+                    onClick={(e) => handleSubmit(e, false)}
+                  >
+                    {isFormLoading && (
+                      <div className="spinner-border spinner-border-sm me-2" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                      </div>
+                    )}
+                    Update
+                  </Button>
+                ) : (
+                  <>
+                    <Button 
+                      type="submit"
+                      variant="primary" 
+                      disabled={isFormLoading}
+                      className="flex-fill"
+                    >
+                      {isFormLoading && (
+                        <div className="spinner-border spinner-border-sm me-2" role="status">
+                          <span className="visually-hidden">Loading...</span>
+                        </div>
+                      )}
+                      Save
+                    </Button>
+                    <Button 
+                      type="button"
+                      variant="secondary" 
+                      disabled={isFormLoading}
+                      className="flex-fill"
+                      onClick={(e) => handleSubmit(e, false)}
+                    >
+                      Save and Exit
+                    </Button>
+                  </>
                 )}
-                {budgetId ? 'Update Budget' : 'Create Budget'}
-              </Button>
-            </div>
+              </div>
+            )}
           </Form>
         </div>
       );
-    };
-
-    export default BudgetFormSidebar;
+    });

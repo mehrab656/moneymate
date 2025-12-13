@@ -2574,6 +2574,91 @@ body[data-theme='dark'] .asset-details .section-title {
         transition: none;
     }
 }
+
+/* Themed react-datepicker (global) */
+body[data-theme='dark'] .react-datepicker {
+  background-color: #1c1f24;
+  color: rgba(255,255,255,0.87);
+  border: 1px solid #3a4048;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.35);
+}
+body[data-theme='dark'] .react-datepicker__header {
+  background-color: #23262b;
+  border-bottom: 1px solid #3a4048;
+}
+body[data-theme='dark'] .react-datepicker__current-month,
+body[data-theme='dark'] .react-datepicker-time__header,
+body[data-theme='dark'] .react-datepicker-year-header {
+  color: rgba(255,255,255,0.87);
+}
+body[data-theme='dark'] .react-datepicker__day,
+body[data-theme='dark'] .react-datepicker__day-name,
+body[data-theme='dark'] .react-datepicker__time-name {
+  color: rgba(255,255,255,0.87);
+}
+body[data-theme='dark'] .react-datepicker__day--outside-month {
+  color: rgba(255,255,255,0.35);
+}
+body[data-theme='dark'] .react-datepicker__day:hover,
+body[data-theme='dark'] .react-datepicker__day--keyboard-selected {
+  background-color: #2d3238;
+  color: rgba(255,255,255,0.95);
+}
+body[data-theme='dark'] .react-datepicker__day--selected,
+body[data-theme='dark'] .react-datepicker__day--in-range,
+body[data-theme='dark'] .react-datepicker__day--in-selecting-range {
+  background-color: #0C1A28;
+  color: #ffffff;
+}
+body[data-theme='dark'] .react-datepicker__triangle {
+  border-bottom-color: #23262b !important;
+}
+body[data-theme='dark'] .react-datepicker__navigation span::before {
+  border-color: rgba(255,255,255,0.7);
+}
+
+/* Light mode refinements */
+body[data-theme='light'] .react-datepicker {
+  background-color: #fff;
+  color: rgba(0,0,0,0.87);
+  border: 1px solid #dee2e6;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+body[data-theme='light'] .react-datepicker__header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+body[data-theme='light'] .react-datepicker__day--selected,
+body[data-theme='light'] .react-datepicker__day--in-range,
+body[data-theme='light'] .react-datepicker__day--in-selecting-range {
+  background-color: #e7f0fb;
+  color: #0b3d91;
+}
+/* Checkbox group inside BudgetFormSidebar styled like inputs */
+.budget-form-sidebar .checkbox-container {
+  min-height: 36px;
+  padding: 6px 12px;
+}
+body[data-theme='dark'] .budget-form-sidebar .checkbox-container {
+  background-color: #1c1f24;
+  color: rgba(255,255,255,0.87);
+  border: 1px solid #3a4048;
+}
+body[data-theme='light'] .budget-form-sidebar .checkbox-container {
+  background-color: #ffffff;
+  color: rgba(0,0,0,0.87);
+  border: 1px solid #c5ccd6;
+}
+body[data-theme='dark'] .budget-form-sidebar .form-check-input {
+  background-color: #1c1f24;
+  border-color: #3a4048;
+}
+body[data-theme='dark'] .budget-form-sidebar .form-check-label {
+  color: rgba(255,255,255,0.87);
+}
+body[data-theme='light'] .budget-form-sidebar .form-check-label {
+  color: rgba(0,0,0,0.87);
+}
 /* Privacy mode blur for masked amounts */
 .privacy-blur {
   display: inline-block;
