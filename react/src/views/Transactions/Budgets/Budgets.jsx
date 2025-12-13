@@ -21,10 +21,11 @@ import { Container, Row, Col, InputGroup, Form } from "react-bootstrap";
 import SidebarFooterButtons from "../../../components/SidebarFooterButtons.jsx";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useDeleteBudgetMutation } from "../../../api/slices/budgetSlice.js";
+import BudgetDetails from "./BudgetDetails.jsx";
 
 export default function Budgets() {
   const theme = useTheme();
-  const { showLargeContent, showQuickForm } = useSidebarActions();
+  const { showLargeContent, showQuickForm, showQuickDetails } = useSidebarActions();
 
   const [loading, setLoading] = useState(false);
   const [budgets, setBudgets] = useState([]);
@@ -335,7 +336,8 @@ export default function Budgets() {
       actionName: "View",
       type: "modal",
       route: "",
-      actionFunction: (budget) => viewBudget(budget),
+      actionFunction: (budget) =>
+        showQuickDetails("Budget Details", <BudgetDetails data={budget} />),
       permission: "budget_view",
       textClass: "text-warning",
     },
