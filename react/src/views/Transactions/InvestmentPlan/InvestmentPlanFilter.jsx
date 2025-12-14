@@ -5,7 +5,7 @@ import useDebouncedValue from "../../../hooks/useDebouncedValue.js";
 import { SettingsContext } from "../../../contexts/SettingsContext.jsx";
 import Select from "react-select";
 import { useTheme } from "@mui/material/styles";
-import { createSelectStyles } from "../../../styles/formThemeStyles.js";
+import { createSelectStyles, createInputGroupTextStyle } from "../../../styles/formThemeStyles.js";
 
 export default function InvestmentPlanFilter(props) {
   const { query, setQuery, resetFilterParameter, placeHolderTxt } = props;
@@ -13,11 +13,23 @@ export default function InvestmentPlanFilter(props) {
   const { themeMode } = useContext(SettingsContext);
   const theme = useTheme();
   const inputFontSize = "0.875rem";
+  const isDark = themeMode === "dark";
   const inputStyle = {
+    backgroundColor: isDark ? "#1c1f24" : "#fff",
+    color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+    borderColor: isDark ? "#3a4048" : "#c5ccd6",
+    fontSize: inputFontSize,
     minHeight: 36,
   };
 
   const selectStyles = createSelectStyles(theme, inputFontSize);
+  const inputGroupTextStyle = createInputGroupTextStyle(theme);
+  const orderByOptions = [
+    { value: "plan_created_date", label: "Date" },
+    { value: "plan_start_date", label: "Contract Start" },
+    { value: "plan_end_date", label: "Contract End" },
+    { value: "plan_name", label: "Plan Name" },
+  ];
 
   useEffect(() => {
     setLocalSearchTerm(query?.searchTerm || "");
@@ -34,36 +46,39 @@ export default function InvestmentPlanFilter(props) {
           {/* Plan Created */}
           <Col xs={12} md={4}>
             <InputGroup className="mb-3" size="sm">
-              <InputGroup.Text id="plan_created_date">Plan Created</InputGroup.Text>
+              <InputGroup.Text id="plan_created_date" style={inputGroupTextStyle}>Plan Created</InputGroup.Text>
               <Form.Control
                 aria-describedby="plan_created_date"
                 type="date"
                 value={query.plan_created_date || ""}
                 onChange={(e) => setQuery({ ...query, plan_created_date: e.target.value })}
+                style={inputStyle}
               />
             </InputGroup>
           </Col>
           {/* Contract Start */}
           <Col xs={12} md={4}>
             <InputGroup className="mb-3" size="sm">
-              <InputGroup.Text id="plan_start_date">Contract Start</InputGroup.Text>
+              <InputGroup.Text id="plan_start_date" style={inputGroupTextStyle}>Contract Start</InputGroup.Text>
               <Form.Control
                 aria-describedby="plan_start_date"
                 type="date"
                 value={query.plan_start_date || ""}
                 onChange={(e) => setQuery({ ...query, plan_start_date: e.target.value })}
+                style={inputStyle}
               />
             </InputGroup>
           </Col>
           {/* Contract End */}
           <Col xs={12} md={4}>
             <InputGroup className="mb-3" size="sm">
-              <InputGroup.Text id="plan_end_date">Contract End</InputGroup.Text>
+              <InputGroup.Text id="plan_end_date" style={inputGroupTextStyle}>Contract End</InputGroup.Text>
               <Form.Control
                 aria-describedby="plan_end_date"
                 type="date"
                 value={query.plan_end_date || ""}
                 onChange={(e) => setQuery({ ...query, plan_end_date: e.target.value })}
+                style={inputStyle}
               />
             </InputGroup>
           </Col>
@@ -72,7 +87,7 @@ export default function InvestmentPlanFilter(props) {
           {/* Search */}
           <Col xs={12} md={4}>
             <InputGroup className="mb-3" size="sm">
-              <InputGroup.Text id="investment_plan_search">Search</InputGroup.Text>
+              <InputGroup.Text id="investment_plan_search" style={inputGroupTextStyle}>Search</InputGroup.Text>
               <Form.Control
                 aria-describedby="investment_plan_search"
                 type="text"
@@ -84,11 +99,28 @@ export default function InvestmentPlanFilter(props) {
               />
             </InputGroup>
           </Col>
+          <Col xs={12} md={2}>
+            <InputGroup className="mb-3" size="sm">
+              <InputGroup.Text id="investment_order_by" style={inputGroupTextStyle}>Order By</InputGroup.Text>
+              <div className="flex-grow-1">
+                <Select
+                  classNamePrefix="select"
+                  styles={selectStyles}
+                  isSearchable={false}
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
+                  value={orderByOptions.find((opt) => opt.value === (query?.orderBy || "")) || null}
+                  onChange={(opt) => setQuery({ ...query, orderBy: opt?.value || "" })}
+                  options={orderByOptions}
+                />
+              </div>
+            </InputGroup>
+          </Col>
 
           {/* Order Direction */}
           <Col xs={12} md={2}>
             <InputGroup className="mb-3" size="sm">
-              <InputGroup.Text id="investment_order">Order</InputGroup.Text>
+              <InputGroup.Text id="investment_order" style={inputGroupTextStyle}>Order</InputGroup.Text>
               <div className="flex-grow-1">
                 <Select
                   classNamePrefix="select"
@@ -113,7 +145,7 @@ export default function InvestmentPlanFilter(props) {
           {/* Limit */}
           <Col xs={12} md={2}>
             <InputGroup className="mb-3" size="sm">
-              <InputGroup.Text id="investment_limit">Limit</InputGroup.Text>
+              <InputGroup.Text id="investment_limit" style={inputGroupTextStyle}>Limit</InputGroup.Text>
               <div className="flex-grow-1">
                 <Select
                   classNamePrefix="select"

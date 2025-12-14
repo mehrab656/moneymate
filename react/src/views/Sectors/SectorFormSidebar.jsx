@@ -2,6 +2,8 @@ import React, { useEffect, useState, forwardRef, useImperativeHandle } from "rea
 import { Form, Button, Row, Col, Table, InputGroup } from "react-bootstrap";
 import { notification } from "../../components/ToastNotification.jsx";
 import { useSidebarActions } from "../../components/GlobalSidebar";
+import { useTheme } from "@mui/material/styles";
+import { createSelectStyles, createInputGroupTextStyle } from "../../styles/formThemeStyles.js";
 import {
   useCreateSectorMutation,
   useGetSingleSectorDataQuery,
@@ -45,6 +47,8 @@ export default forwardRef(function SectorFormSidebar({ sectorId = null, onSucces
   const { closeSidebar } = useSidebarActions();
   const formId = formIdProp || "sector-form-sidebar-form";
   const [createSector] = useCreateSectorMutation();
+  const theme = useTheme();
+  const inputGroupTextStyle = createInputGroupTextStyle(theme);
 
   const {
     data: singleSectorData,
@@ -295,7 +299,7 @@ export default forwardRef(function SectorFormSidebar({ sectorId = null, onSucces
           <Row className="g-3">
             <Col xs={12} md={6}>
               <InputGroup className={errors.name ? "mb-1" : "mb-3"} size="sm">
-                <InputGroup.Text id="sector_name">Sector Name *</InputGroup.Text>
+                <InputGroup.Text id="sector_name" style={inputGroupTextStyle}>Sector Name *</InputGroup.Text>
                 <Form.Control
                   type="text"
                   aria-label="Sector Name"
@@ -310,7 +314,7 @@ export default forwardRef(function SectorFormSidebar({ sectorId = null, onSucces
             </Col>
             <Col xs={12} md={6}>
               <InputGroup className={errors.bank_account_id ? "mb-1" : "mb-3"} size="sm">
-                <InputGroup.Text id="payment_account">Payment Account *</InputGroup.Text>
+                <InputGroup.Text id="payment_account" style={inputGroupTextStyle}>Payment Account *</InputGroup.Text>
                 <Form.Select
                   aria-label="Payment Account"
                   aria-describedby="payment_account"
@@ -338,7 +342,7 @@ export default forwardRef(function SectorFormSidebar({ sectorId = null, onSucces
 
             <Col xs={12} md={6}>
               <InputGroup className={errors.contract_start_date ? "mb-1" : "mb-3"} size="sm">
-                <InputGroup.Text id="contract_start_date">Contract Start Date *</InputGroup.Text>
+                <InputGroup.Text id="contract_start_date" style={inputGroupTextStyle}>Contract Start Date *</InputGroup.Text>
                 <Form.Control
                   type="date"
                   aria-label="Contract Start Date"
@@ -355,7 +359,7 @@ export default forwardRef(function SectorFormSidebar({ sectorId = null, onSucces
             </Col>
             <Col xs={12} md={6}>
               <InputGroup className={errors.contract_end_date ? "mb-1" : "mb-3"} size="sm">
-                <InputGroup.Text id="contract_end_date">Contract End Date *</InputGroup.Text>
+                <InputGroup.Text id="contract_end_date" style={inputGroupTextStyle}>Contract End Date *</InputGroup.Text>
                 <Form.Control
                   type="date"
                   aria-label="Contract End Date"
@@ -373,7 +377,7 @@ export default forwardRef(function SectorFormSidebar({ sectorId = null, onSucces
 
             <Col xs={12} md={6}>
               <InputGroup className={errors.contract_period ? "mb-1" : "mb-3"} size="sm">
-                <InputGroup.Text id="contract_period">Contract Period (months) *</InputGroup.Text>
+                <InputGroup.Text id="contract_period" style={inputGroupTextStyle}>Contract Period (months) *</InputGroup.Text>
                 <Form.Select
                   aria-label="Contract Period (months)"
                   aria-describedby="contract_period"
@@ -400,7 +404,7 @@ export default forwardRef(function SectorFormSidebar({ sectorId = null, onSucces
           <Row className="g-3">
             <Col xs={12} md={6}>
               <InputGroup className={errors.el_premises_no ? "mb-1" : "mb-3"} size="sm">
-                <InputGroup.Text id="el_premises_no">Electricity Premises No</InputGroup.Text>
+                <InputGroup.Text id="el_premises_no" style={inputGroupTextStyle}>Electricity Premises No</InputGroup.Text>
                 <Form.Control
                   type="text"
                   aria-label="Electricity Premises No"
@@ -416,7 +420,7 @@ export default forwardRef(function SectorFormSidebar({ sectorId = null, onSucces
             </Col>
             <Col xs={12} md={6}>
               <InputGroup className={errors.el_business_acc_no ? "mb-1" : "mb-3"} size="sm">
-                <InputGroup.Text id="el_business_acc_no">Electricity Business Acc No</InputGroup.Text>
+                <InputGroup.Text id="el_business_acc_no" style={inputGroupTextStyle}>Electricity Business Acc No</InputGroup.Text>
                 <Form.Control
                   type="text"
                   aria-label="Electricity Business Acc No"
@@ -432,7 +436,7 @@ export default forwardRef(function SectorFormSidebar({ sectorId = null, onSucces
             </Col>
             <Col xs={12} md={6}>
               <InputGroup className={errors.el_acc_no ? "mb-1" : "mb-3"} size="sm">
-                <InputGroup.Text id="el_acc_no">Electricity Acc No</InputGroup.Text>
+                <InputGroup.Text id="el_acc_no" style={inputGroupTextStyle}>Electricity Acc No</InputGroup.Text>
                 <Form.Control
                   type="text"
                   aria-label="Electricity Acc No"
@@ -448,7 +452,7 @@ export default forwardRef(function SectorFormSidebar({ sectorId = null, onSucces
             </Col>
             <Col xs={12} md={6}>
               <InputGroup className={errors.el_billing_date ? "mb-1" : "mb-3"} size="sm">
-                <InputGroup.Text id="el_billing_date">Electricity Billing Date</InputGroup.Text>
+                <InputGroup.Text id="el_billing_date" style={inputGroupTextStyle}>Electricity Billing Date</InputGroup.Text>
                 <Form.Control
                   type="date"
                   aria-label="Electricity Billing Date"
@@ -464,7 +468,7 @@ export default forwardRef(function SectorFormSidebar({ sectorId = null, onSucces
             </Col>
             <Col xs={12}>
               <InputGroup className="mb-3" size="sm">
-                <InputGroup.Text id="el_note">Electricity Note</InputGroup.Text>
+                <InputGroup.Text id="el_note" style={inputGroupTextStyle}>Electricity Note</InputGroup.Text>
                 <Form.Control
                   as="textarea"
                   rows={2}
@@ -482,7 +486,7 @@ export default forwardRef(function SectorFormSidebar({ sectorId = null, onSucces
           <Row className="g-3 mt-2">
             <Col xs={12} md={6}>
               <InputGroup className={errors.internet_acc_no ? "mb-1" : "mb-3"} size="sm">
-                <InputGroup.Text id="internet_acc_no">Internet Account No</InputGroup.Text>
+                <InputGroup.Text id="internet_acc_no" style={inputGroupTextStyle}>Internet Account No</InputGroup.Text>
                 <Form.Control
                   type="text"
                   aria-label="Internet Account No"
@@ -498,7 +502,7 @@ export default forwardRef(function SectorFormSidebar({ sectorId = null, onSucces
             </Col>
             <Col xs={12} md={6}>
               <InputGroup className={errors.internet_billing_date ? "mb-1" : "mb-3"} size="sm">
-                <InputGroup.Text id="internet_billing_date">Internet Billing Date</InputGroup.Text>
+                <InputGroup.Text id="internet_billing_date" style={inputGroupTextStyle}>Internet Billing Date</InputGroup.Text>
                 <Form.Control
                   type="date"
                   aria-label="Internet Billing Date"
@@ -514,7 +518,7 @@ export default forwardRef(function SectorFormSidebar({ sectorId = null, onSucces
             </Col>
             <Col xs={12}>
               <InputGroup className="mb-3" size="sm">
-                <InputGroup.Text id="int_note">Internet Note</InputGroup.Text>
+                <InputGroup.Text id="int_note" style={inputGroupTextStyle}>Internet Note</InputGroup.Text>
                 <Form.Control
                   as="textarea"
                   rows={2}

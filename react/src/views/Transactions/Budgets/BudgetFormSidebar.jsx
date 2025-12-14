@@ -11,6 +11,8 @@ import {
 } from '../../../api/slices/budgetSlice.js';
 import { useSidebarActions } from '../../../hooks/useSidebarActions.js';
 import { SettingsContext } from '../../../contexts/SettingsContext.jsx';
+import { useTheme } from '@mui/material/styles';
+import { createSelectStyles, createInputGroupTextStyle } from '../../../styles/formThemeStyles.js';
 
 export default forwardRef(function BudgetFormSidebar({ 
   budgetId = null, 
@@ -34,6 +36,8 @@ export default forwardRef(function BudgetFormSidebar({
   const formId = formIdProp || "budget-form-sidebar-form";
   const { themeMode } = useContext(SettingsContext);
   const isDark = themeMode === "dark";
+  const theme = useTheme();
+  const inputGroupTextStyle = createInputGroupTextStyle(theme);
   const inputStyle = {
     backgroundColor: isDark ? "#1c1f24" : "#fff",
     color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
@@ -42,87 +46,7 @@ export default forwardRef(function BudgetFormSidebar({
     minHeight: 36,
     height: 36,
   };
-  const selectStyles = {
-    container: (base) => ({ 
-      ...base, 
-      fontSize: 14,
-      width: "100%",
-      flex: 1,
-      minWidth: 0,
-    }),
-    control: (base, state) => ({
-      ...base,
-      minHeight: 36,
-      height: 36,
-      boxShadow: "none",
-      borderColor: state.isFocused ? (isDark ? "#3a4149" : "#86b7fe") : (isDark ? "#3a4048" : "#c5ccd6"),
-      backgroundColor: isDark ? "#1c1f24" : "#fff",
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-      '&:hover': { borderColor: state.isFocused ? (isDark ? "#3a4149" : "#86b7fe") : (isDark ? "#3a4048" : "#c5ccd6") },
-    }),
-    valueContainer: (base) => ({ ...base, padding: "0 8px" }),
-    indicatorsContainer: (base) => ({ ...base, height: 36 }),
-    dropdownIndicator: (base) => ({
-      ...base,
-      color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.6)",
-      ':hover': { color: isDark ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.8)" },
-    }),
-    clearIndicator: (base) => ({
-      ...base,
-      color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.6)",
-      ':hover': { color: isDark ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.8)" },
-    }),
-    indicatorSeparator: (base) => ({
-      ...base,
-      backgroundColor: isDark ? "#3a4048" : "#c5ccd6",
-    }),
-    singleValue: (base) => ({
-      ...base,
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-    }),
-    input: (base) => ({ ...base, color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)" }),
-    placeholder: (base) => ({ ...base, color: isDark ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.55)" }),
-    menu: (base) => ({
-      ...base,
-      backgroundColor: isDark ? "#23262b" : "#fff",
-      border: `1px solid ${isDark ? "#2c3238" : "#dee2e6"}`,
-      boxShadow: isDark ? "0 6px 12px rgba(0,0,0,0.35)" : "0 6px 12px rgba(0,0,0,0.15)",
-    }),
-    menuList: (base) => ({ ...base, backgroundColor: isDark ? "#23262b" : "#fff" }),
-    menuPortal: (base) => ({ ...base, zIndex: 2000 }),
-    noOptionsMessage: (base) => ({
-      ...base,
-      color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.6)",
-    }),
-    option: (base, state) => ({
-      ...base,
-      backgroundColor: state.isSelected
-        ? isDark ? "#0C1A28" : "#e7f0fb"
-        : state.isFocused
-          ? isDark ? "#2d3238" : "#f2f2f2"
-          : isDark ? "#23262b" : "#fff",
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-      ':active': { backgroundColor: isDark ? "#0C1A28" : "#e7f0fb" },
-    }),
-    multiValue: (base) => ({
-      ...base,
-      backgroundColor: isDark ? "#2d3238" : "#e9ecef",
-      border: `1px solid ${isDark ? "#3a4048" : "#c5ccd6"}`,
-    }),
-    multiValueLabel: (base) => ({
-      ...base,
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-      fontSize: 13,
-    }),
-    multiValueRemove: (base, state) => ({
-      ...base,
-      color: isDark ? "rgba(255,255,255,0.75)" : "rgba(0,0,0,0.6)",
-      ':hover': {
-        backgroundColor: isDark ? "#0C1A28" : "#dc3545",
-        color: "#ffffff",
-      },
-    }),
-  };
+  const selectStyles = createSelectStyles(theme, "0.875rem");
 
   const DateInput = React.forwardRef(({ value, onClick, placeholder, isInvalid }, ref) => (
     <Form.Control
@@ -344,7 +268,7 @@ export default forwardRef(function BudgetFormSidebar({
         <Row>
           <Col xs={12}>
             <InputGroup className={errors.budget_name ? "mb-1" : "mb-3"} size="sm">
-              <InputGroup.Text id="budget_name_label">Budget Name *</InputGroup.Text>
+              <InputGroup.Text id="budget_name_label" style={inputGroupTextStyle}>Budget Name *</InputGroup.Text>
               <Form.Control
                 type="text"
                 aria-label="Budget Name"
@@ -361,7 +285,7 @@ export default forwardRef(function BudgetFormSidebar({
           
           <Col xs={12}>
             <InputGroup className={errors.amount ? "mb-1" : "mb-3"} size="sm">
-              <InputGroup.Text id="budget_amount_label">Budget Amount *</InputGroup.Text>
+              <InputGroup.Text id="budget_amount_label" style={inputGroupTextStyle}>Budget Amount *</InputGroup.Text>
               <Form.Control
                 type="number"
                 aria-label="Budget Amount"
@@ -380,7 +304,7 @@ export default forwardRef(function BudgetFormSidebar({
           
           <Col xs={12}>
             <InputGroup className={(errors.categories ? "mb-1" : "mb-3") + " flex-nowrap"} size="sm">
-              <InputGroup.Text id="expense_categories_label">Budget Expense Categories *</InputGroup.Text>
+              <InputGroup.Text id="expense_categories_label" style={inputGroupTextStyle}>Budget Expense Categories *</InputGroup.Text>
               <div className="flex-grow-1 d-flex" aria-describedby="expense_categories_label" style={{ minWidth: 0 }}>
                 <Select
                   className="react-select-container w-100"
@@ -407,7 +331,7 @@ export default forwardRef(function BudgetFormSidebar({
           
           <Col xs={12}>
             <InputGroup className={(errors.start_date ? "mb-1" : "mb-3") + " flex-nowrap"} size="sm">
-              <InputGroup.Text id="start_date_label">Start Date *</InputGroup.Text>
+              <InputGroup.Text id="start_date_label" style={inputGroupTextStyle}>Start Date *</InputGroup.Text>
               <div className="flex-grow-1 d-flex" aria-describedby="start_date_label" style={{ minWidth: 0 }}>
                 <DatePicker
                   selected={budget.start_date ? new Date(budget.start_date) : null}
@@ -426,7 +350,7 @@ export default forwardRef(function BudgetFormSidebar({
           
           <Col xs={12}>
             <InputGroup className={(errors.end_date ? "mb-1" : "mb-3") + " flex-nowrap"} size="sm">
-              <InputGroup.Text id="end_date_label">End Date</InputGroup.Text>
+              <InputGroup.Text id="end_date_label" style={inputGroupTextStyle}>End Date</InputGroup.Text>
               <div className="flex-grow-1 d-flex" aria-describedby="end_date_label" style={{ minWidth: 0 }}>
                 <DatePicker
                   selected={budget.end_date ? new Date(budget.end_date) : null}

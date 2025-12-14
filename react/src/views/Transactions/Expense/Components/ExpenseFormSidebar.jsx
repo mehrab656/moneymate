@@ -16,7 +16,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { isImageUrl } from "../../../../helper/media.js";
 import { useTheme, alpha } from "@mui/material/styles";
-import { createSelectStyles } from "../../../../styles/formThemeStyles.js";
+import { createSelectStyles, createInputGroupTextStyle } from "../../../../styles/formThemeStyles.js";
 
 
 const _initialExpense = () => ({
@@ -383,6 +383,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
   const inputFontSize = "0.875rem";
   const errorMarginTop = 2;
   const selectStyles = createSelectStyles(theme, inputFontSize);
+  const inputGroupTextStyle = createInputGroupTextStyle(theme);
 
   // isImageUrl imported from helper/media.js
 
@@ -397,7 +398,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
             <Row>
               <Col xs={colXS} md={colMD} sm={colSM}>
                 <InputGroup className={hasFieldError(index, "description") ? "mb-1" : "mb-3"} size={"sm"}>
-                  {showLabel && <InputGroup.Text style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Description</InputGroup.Text>}
+                  {showLabel && <InputGroup.Text style={inputGroupTextStyle}>Description</InputGroup.Text>}
                   <Form.Control
                     as="textarea"
                     aria-label="Description"
@@ -412,7 +413,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
               </Col>
               <Col xs={colXS} md={colMD} sm={colSM}>
                 <InputGroup className="mb-3" size={"sm"}>
-                  {showLabel && <InputGroup.Text style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Note</InputGroup.Text>}
+                  {showLabel && <InputGroup.Text style={inputGroupTextStyle}>Note</InputGroup.Text>}
                   <Form.Control
                     as="textarea"
                     aria-label="Note"
@@ -429,7 +430,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
               <Col xs={12} md={6}>
                 <InputGroup className={hasFieldError(index, "amount") ? "mb-1" : "mb-3"} size={"sm"}>
                   {showLabel && (
-                    <InputGroup.Text id="amount" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Amount</InputGroup.Text>
+                    <InputGroup.Text id="amount" style={inputGroupTextStyle}>Amount</InputGroup.Text>
                   )}
                   <Form.Control
                     placeholder="Expense Amount"
@@ -448,7 +449,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
               <Col xs={12} md={6}>
                 <InputGroup className={hasFieldError(index, "refundable_amount") ? "mb-1" : "mb-3"} size={"sm"}>
                   {showLabel && (
-                    <InputGroup.Text id="refundable_amount" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>
+                    <InputGroup.Text id="refundable_amount" style={inputGroupTextStyle}>
                       Refundable Amount
                     </InputGroup.Text>
                   )}
@@ -470,7 +471,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
               <Col xs={colXS} md={colMD}>
                 <InputGroup className={hasFieldError(index, "account") ? "mb-1" : "mb-3"} size={"sm"}>
                   {showLabel && (
-                    <InputGroup.Text id="account" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Bank Account</InputGroup.Text>
+                    <InputGroup.Text id="account" style={inputGroupTextStyle}>Bank Account</InputGroup.Text>
                   )}
                   <Select
                     classNamePrefix="select"
@@ -495,7 +496,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
               <Col xs={colXS} md={colMD}>
                 <InputGroup className={hasFieldError(index, "category") ? "mb-1" : "mb-3"} size={"sm"}>
                   {showLabel && (
-                    <InputGroup.Text id="category_id" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Category</InputGroup.Text>
+                    <InputGroup.Text id="category_id" style={inputGroupTextStyle}>Category</InputGroup.Text>
                   )}
                   <Select
                     classNamePrefix="select"
@@ -523,7 +524,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
               <Col xs={12} md={6}>
                 <InputGroup className={hasFieldError(index, "date") ? "mb-1" : "mb-3"} size={"sm"}>
                   {showLabel && (
-                    <InputGroup.Text id="date" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Date</InputGroup.Text>
+                    <InputGroup.Text id="date" style={inputGroupTextStyle}>Date</InputGroup.Text>
                   )}
                   <Form.Control
                     placeholder="Date"
@@ -541,7 +542,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
               <Col xs={12} md={6}>
                 <InputGroup className={hasFieldError(index, "reference") ? "mb-1" : "mb-3"} size={"sm"}>
                   {showLabel && (
-                    <InputGroup.Text id="reference" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Reference</InputGroup.Text>
+                    <InputGroup.Text id="reference" style={inputGroupTextStyle}>Reference</InputGroup.Text>
                   )}
                   <Form.Control
                     placeholder="Reference"

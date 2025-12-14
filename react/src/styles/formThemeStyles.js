@@ -71,3 +71,9 @@ export const createSelectStyles = (theme, inputFontSize = "0.875rem") => {
     }),
   };
 };
+
+export const createInputGroupTextStyle = (theme) => {
+  const bg = theme.palette.secondary.main;
+  const fg = theme.palette.getContrastText(bg);
+  return { backgroundColor: bg, color: fg };
+};

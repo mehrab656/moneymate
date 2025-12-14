@@ -8,6 +8,9 @@ import {
 } from "../../../api/slices/investmentSlice.js";
 import { useGetInvestorDataQuery } from "../../../api/slices/userSlice.js";
 import { useGetBankDataQuery } from "../../../api/slices/bankSlice.js";
+import { useTheme } from "@mui/material/styles";
+import { createSelectStyles, createInputGroupTextStyle } from "../../../styles/formThemeStyles.js";
+import Select from "react-select";
 
 const _initialInvestment = {
   investor_id: "",
@@ -27,6 +30,10 @@ export default forwardRef(function InvestmentFormSidebar({ investmentId = null, 
   const { closeSidebar } = useSidebarActions();
   const [createInvestment] = useCreateInvestmentMutation();
   const formId = formIdProp || "investment-form-sidebar-form";
+  const theme = useTheme();
+  const inputGroupTextStyle = createInputGroupTextStyle(theme);
+  const inputFontSize = "0.875rem";
+  const selectStyles = createSelectStyles(theme, inputFontSize);
 
   // API calls
   const {
@@ -160,57 +167,55 @@ export default forwardRef(function InvestmentFormSidebar({ investmentId = null, 
           <Row className="g-3">
             <Col xs={12} md={6}>
               <InputGroup className={errors?.investor_id ? "mb-1" : "mb-3"} size="sm">
-                <InputGroup.Text id="investment_investor">Investor *</InputGroup.Text>
-                <Form.Select
-                  aria-describedby="investment_investor"
-                  name="investor_id"
-                  value={formData.investor_id}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Select Investor</option>
-                  {investors.length > 0 ? (
-                    investors.map((u) => (
-                      <option key={u.value} value={u.value}>
-                        {u.label}
-                      </option>
-                    ))
-                  ) : (
-                    <option disabled>No investor found</option>
-                  )}
-                </Form.Select>
+                <InputGroup.Text id="investment_investor" style={inputGroupTextStyle}>Investor *</InputGroup.Text>
+                <div className="flex-grow-1" aria-describedby="investment_investor">
+                  <Select
+                    classNamePrefix="select"
+                    styles={selectStyles}
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    isSearchable={false}
+                    value={
+                      investors?.length
+                        ? investors.find((opt) => opt.value === (formData?.investor_id || "")) || null
+                        : null
+                    }
+                    onChange={(opt) => setFormData({ ...formData, investor_id: opt?.value || "" })}
+                    options={investors}
+                    placeholder={"Select Investor"}
+                  />
+                </div>
               </InputGroup>
               {errors?.investor_id && (<p className="error-message">{errors?.investor_id[0]}</p>)}
             </Col>
 
             <Col xs={12} md={6}>
               <InputGroup className={errors?.account_id ? "mb-1" : "mb-3"} size="sm">
-                <InputGroup.Text id="investment_account">Bank Account *</InputGroup.Text>
-                <Form.Select
-                  aria-describedby="investment_account"
-                  name="account_id"
-                  value={formData.account_id}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Select Account</option>
-                  {bankAccounts.length > 0 ? (
-                    bankAccounts.map((acc) => (
-                      <option key={acc.value} value={acc.value}>
-                        {acc.label}
-                      </option>
-                    ))
-                  ) : (
-                    <option disabled>No account found</option>
-                  )}
-                </Form.Select>
+                <InputGroup.Text id="investment_account" style={inputGroupTextStyle}>Bank Account *</InputGroup.Text>
+                <div className="flex-grow-1" aria-describedby="investment_account">
+                  <Select
+                    classNamePrefix="select"
+                    styles={selectStyles}
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    isSearchable={false}
+                    value={
+                      bankAccounts?.length
+                        ? bankAccounts.find((opt) => String(opt.value) === String(formData?.account_id || "")) || null
+                        : null
+                    }
+                    onChange={(opt) => setFormData({ ...formData, account_id: opt?.value || "" })}
+                    options={bankAccounts}
+                    placeholder={"Select Account"}
+                  />
+                </div>
               </InputGroup>
               {errors?.account_id && (<p className="error-message">{errors?.account_id[0]}</p>)}
             </Col>
 
             <Col xs={12} md={6}>
               <InputGroup className={errors?.amount ? "mb-1" : "mb-3"} size="sm">
-                <InputGroup.Text id="investment_amount">Amount *</InputGroup.Text>
+                <InputGroup.Text id="investment_amount" style={inputGroupTextStyle}>Amount *</InputGroup.Text>
                 <Form.Control
                   aria-describedby="investment_amount"
                   type="number"
@@ -225,7 +230,7 @@ export default forwardRef(function InvestmentFormSidebar({ investmentId = null, 
 
             <Col xs={12} md={6}>
               <InputGroup className={errors?.investment_date ? "mb-1" : "mb-3"} size="sm">
-                <InputGroup.Text id="investment_date_lbl">Investment Date *</InputGroup.Text>
+                <InputGroup.Text id="investment_date_lbl" style={inputGroupTextStyle}>Investment Date *</InputGroup.Text>
                 <Form.Control
                   aria-describedby="investment_date_lbl"
                   type="date"
@@ -240,7 +245,7 @@ export default forwardRef(function InvestmentFormSidebar({ investmentId = null, 
 
             <Col xs={12}>
               <InputGroup className={errors?.note ? "mb-1" : "mb-3"} size="sm">
-                <InputGroup.Text id="investment_note">Note</InputGroup.Text>
+                <InputGroup.Text id="investment_note" style={inputGroupTextStyle}>Note</InputGroup.Text>
                 <Form.Control
                   as="textarea"
                   rows={3}

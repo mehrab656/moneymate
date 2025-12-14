@@ -22,9 +22,12 @@ import SidebarFooterButtons from "../../../components/SidebarFooterButtons.jsx";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useDeleteBudgetMutation } from "../../../api/slices/budgetSlice.js";
 import BudgetDetails from "./BudgetDetails.jsx";
+import { createSelectStyles, createInputGroupTextStyle } from "../../../styles/formThemeStyles.js";
 
 export default function Budgets() {
   const theme = useTheme();
+  const inputGroupTextStyle = createInputGroupTextStyle(theme);
+  const selectStyles = createSelectStyles(theme, "0.875rem");
   const { showLargeContent, showQuickForm, showQuickDetails } = useSidebarActions();
 
   const [loading, setLoading] = useState(false);
@@ -33,8 +36,16 @@ export default function Budgets() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 
-  const { applicationSettings, userRole } = useContext(SettingsContext);
+  const { applicationSettings, userRole, themeMode } = useContext(SettingsContext);
   const { num_data_per_page, default_currency } = applicationSettings;
+  const isDark = themeMode === "dark";
+  const inputStyle = {
+    backgroundColor: isDark ? "#1c1f24" : "#fff",
+    color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+    borderColor: isDark ? "#3a4048" : "#c5ccd6",
+    fontSize: "0.875rem",
+    minHeight: 36,
+  };
 
   const [pageSize, setPageSize] = useState(num_data_per_page || 10);
   const totalPages = Math.ceil((totalCount || 0) / (pageSize || 10));
@@ -379,7 +390,7 @@ export default function Budgets() {
               size="sm"
               style={{ maxWidth: "520px" }}
             >
-              <InputGroup.Text id="budget_search">Search</InputGroup.Text>
+              <InputGroup.Text id="budget_search" style={inputGroupTextStyle}>Search</InputGroup.Text>
               <Form.Control
                 aria-describedby="budget_search"
                 type="text"
@@ -387,7 +398,7 @@ export default function Budgets() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search budget..."
-                style={{ textTransform: "capitalize" }}
+                style={{ ...inputStyle, textTransform: "capitalize" }}
               />
             </InputGroup>
           </Col>
@@ -525,6 +536,9 @@ export default function Budgets() {
               }))}
               onChange={handleSelectChange}
               isDisabled={viewOnly}
+              styles={selectStyles}
+              menuPortalTarget={document.body}
+              menuPosition="fixed"
             />
             {errors.categories && (
               <p className="error-message mt-2">{errors.categories[0]}</p>

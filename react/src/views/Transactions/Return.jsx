@@ -10,6 +10,7 @@ import CommonTable from "../../components/table/CommonTable.jsx";
 import Select from "react-select";
 import { Card } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { createSelectStyles, createInputGroupTextStyle } from "../../styles/formThemeStyles.js";
 
 export default function Return() {
   const [loading, setLoading] = useState(false);
@@ -26,6 +27,16 @@ export default function Return() {
   const { applicationSettings, userRole } = useContext(SettingsContext);
   const { num_data_per_page, default_currency } = applicationSettings;
   const theme = useTheme();
+  const inputGroupTextStyle = createInputGroupTextStyle(theme);
+  const selectStyles = createSelectStyles(theme, "0.875rem");
+  const isDark = (useContext(SettingsContext)?.themeMode) === "dark";
+  const inputStyle = {
+    backgroundColor: isDark ? "#1c1f24" : "#fff",
+    color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+    borderColor: isDark ? "#3a4048" : "#c5ccd6",
+    fontSize: "0.875rem",
+    minHeight: 36,
+  };
 
   let totals = {
     totalRefundableAmount: 0,
@@ -221,18 +232,20 @@ export default function Return() {
               </Col>
               <Col xs={12} md={8}>
                 <div className="d-flex justify-content-end">
-                  <InputGroup className="mb-3" size="sm" style={{ maxWidth: "520px" }}>
-                    <InputGroup.Text id="returns_search">Search</InputGroup.Text>
-                    <Form.Control
-                      aria-describedby="returns_search"
-                      type="text"
-                      size="sm"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      placeholder="Search Returns..."
-                      style={{ textTransform: "capitalize" }}
-                    />
-                  </InputGroup>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end", width: "100%" }}>
+                    <InputGroup className="mb-3" size="sm" style={{ maxWidth: "520px", flex: "1 1 320px" }}>
+                      <InputGroup.Text id="returns_search" style={inputGroupTextStyle}>Search</InputGroup.Text>
+                      <Form.Control
+                        aria-describedby="returns_search"
+                        type="text"
+                        size="sm"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="Search Returns..."
+                        style={{ ...inputStyle, textTransform: "capitalize" }}
+                      />
+                    </InputGroup>
+                  </div>
                 </div>
               </Col>
 

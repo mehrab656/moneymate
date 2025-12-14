@@ -4,7 +4,7 @@ import {useGetInvestorDataQuery} from "../../../api/slices/userSlice.js";
 import { SettingsContext } from "../../../contexts/SettingsContext.jsx";
 import Select from "react-select";
 import { useTheme } from "@mui/material/styles";
-import { createSelectStyles } from "../../../styles/formThemeStyles.js";
+import { createSelectStyles, createInputGroupTextStyle } from "../../../styles/formThemeStyles.js";
 
 export default function InvestmentFilter(props) {
     const { search, query, setQuery, resetFilterParameter, handelFilter } = props;
@@ -27,6 +27,7 @@ export default function InvestmentFilter(props) {
     }), [isDark]);
 
     const selectStyles = createSelectStyles(theme, "0.875rem");
+    const inputGroupTextStyle = createInputGroupTextStyle(theme);
 
     const investorsOptions = useMemo(() => {
         const list = getInvestorData?.data || [];
@@ -45,7 +46,7 @@ export default function InvestmentFilter(props) {
                     <Row className="g-3">
                         <Col md={4}>
                             <InputGroup className="mb-3" size="sm">
-                                <InputGroup.Text id="investment_investor">Investor</InputGroup.Text>
+                                <InputGroup.Text id="investment_investor" style={inputGroupTextStyle}>Investor</InputGroup.Text>
                                 <div className="flex-grow-1">
                                     <Select
                                         classNamePrefix="select"
@@ -62,7 +63,7 @@ export default function InvestmentFilter(props) {
                         </Col>
                         <Col md={4}>
                             <InputGroup className="mb-3" size="sm">
-                                <InputGroup.Text id="investment_from">From</InputGroup.Text>
+                                <InputGroup.Text id="investment_from" style={inputGroupTextStyle}>From</InputGroup.Text>
                                 <Form.Control
                                     aria-describedby="investment_from"
                                     type="date"
@@ -74,7 +75,7 @@ export default function InvestmentFilter(props) {
                         </Col>
                         <Col md={4}>
                             <InputGroup className="mb-3" size="sm">
-                                <InputGroup.Text id="investment_to">To</InputGroup.Text>
+                                <InputGroup.Text id="investment_to" style={inputGroupTextStyle}>To</InputGroup.Text>
                                 <Form.Control
                                     aria-describedby="investment_to"
                                     type="date"
@@ -89,7 +90,7 @@ export default function InvestmentFilter(props) {
                     <Row className="g-3">
                         <Col md={6}>
                             <InputGroup className="mb-3" size="sm">
-                                <InputGroup.Text id="investment_search">Search</InputGroup.Text>
+                                <InputGroup.Text id="investment_search" style={inputGroupTextStyle}>Search</InputGroup.Text>
                                 <Form.Control
                                     aria-describedby="investment_search"
                                     type="text"
@@ -103,7 +104,7 @@ export default function InvestmentFilter(props) {
                         </Col>
                         <Col md={2}>
                             <InputGroup className="mb-3" size="sm">
-                                <InputGroup.Text id="investment_order_by">Order By</InputGroup.Text>
+                                <InputGroup.Text id="investment_order_by" style={inputGroupTextStyle}>Order By</InputGroup.Text>
                                 <div className="flex-grow-1">
                                     <Select
                                         classNamePrefix="select"
@@ -120,7 +121,7 @@ export default function InvestmentFilter(props) {
                         </Col>
                         <Col md={2}>
                             <InputGroup className="mb-3" size="sm">
-                                <InputGroup.Text id="investment_order">Order</InputGroup.Text>
+                                <InputGroup.Text id="investment_order" style={inputGroupTextStyle}>Order</InputGroup.Text>
                                 <div className="flex-grow-1">
                                     <Select
                                         classNamePrefix="select"

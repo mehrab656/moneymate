@@ -4,6 +4,8 @@ import Select from "react-select";
 import { notification } from "../../components/ToastNotification.jsx";
 import { useSidebarActions } from "../../components/GlobalSidebar";
 import { SettingsContext } from "../../contexts/SettingsContext.jsx";
+import { useTheme } from "@mui/material/styles";
+import { createSelectStyles, createInputGroupTextStyle } from "../../styles/formThemeStyles.js";
 import {
   useCreateCategoryMutation,
   useGetCategorySectorListDataQuery,
@@ -29,46 +31,10 @@ export default forwardRef(function CategoryFormSidebar({ categoryId = null, onSu
   const [updateCategory] = useUpdateCategoryMutation();
   const formId = formIdProp || "category-form-sidebar-form";
   const { themeMode } = useContext(SettingsContext);
-  const isDark = themeMode === "dark";
   const inputFontSize = "0.875rem";
-  const selectStyles = {
-    container: (base) => ({ ...base, fontSize: 14 }),
-    control: (base, state) => ({
-      ...base,
-      minHeight: 36,
-      height: 36,
-      boxShadow: "none",
-      borderColor: state.isFocused ? (isDark ? "#3a4149" : "#86b7fe") : (isDark ? "#3a4048" : "#c5ccd6"),
-      backgroundColor: isDark ? "#1c1f24" : "#fff",
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-      '&:hover': { borderColor: state.isFocused ? (isDark ? "#3a4149" : "#86b7fe") : (isDark ? "#3a4048" : "#c5ccd6") },
-    }),
-    valueContainer: (base) => ({ ...base, padding: "0 8px" }),
-    indicatorsContainer: (base) => ({ ...base, height: 36 }),
-    singleValue: (base) => ({
-      ...base,
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-    }),
-    input: (base) => ({ ...base, color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)" }),
-    placeholder: (base) => ({ ...base, color: isDark ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.55)" }),
-    menu: (base) => ({
-      ...base,
-      backgroundColor: isDark ? "#23262b" : "#fff",
-      border: `1px solid ${isDark ? "#2c3238" : "#dee2e6"}`,
-      boxShadow: isDark ? "0 6px 12px rgba(0,0,0,0.35)" : "0 6px 12px rgba(0,0,0,0.15)",
-    }),
-    menuList: (base) => ({ ...base, backgroundColor: isDark ? "#23262b" : "#fff" }),
-    option: (base, state) => ({
-      ...base,
-      backgroundColor: state.isSelected
-        ? isDark ? "#0C1A28" : "#e7f0fb"
-        : state.isFocused
-          ? isDark ? "#2d3238" : "#f2f2f2"
-          : isDark ? "#23262b" : "#fff",
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-      ':active': { backgroundColor: isDark ? "#0C1A28" : "#e7f0fb" },
-    }),
-  };
+  const theme = useTheme();
+  const selectStyles = createSelectStyles(theme, inputFontSize);
+  const inputGroupTextStyle = createInputGroupTextStyle(theme);
 
   // API calls
   const {
@@ -212,7 +178,7 @@ export default forwardRef(function CategoryFormSidebar({ categoryId = null, onSu
         <Row>
           <Col xs={12} md={12}>
             <InputGroup className={errors.name ? "mb-1" : "mb-3"} size="sm">
-              <InputGroup.Text id="category_name">Category Name *</InputGroup.Text>
+              <InputGroup.Text id="category_name" style={inputGroupTextStyle}>Category Name *</InputGroup.Text>
               <Form.Control
                 placeholder="Enter category name"
                 aria-label="Category Name"
@@ -228,11 +194,13 @@ export default forwardRef(function CategoryFormSidebar({ categoryId = null, onSu
           </Col>
           <Col xs={12} md={12}>
             <InputGroup className={errors.type ? "mb-1" : "mb-3"} size="sm">
-              <InputGroup.Text id="category_type">Category Type *</InputGroup.Text>
-              <div className="flex-grow-1">
+              <InputGroup.Text id="category_type" style={inputGroupTextStyle}>Category Type *</InputGroup.Text>
+              <div className="flex-grow-1" aria-describedby="category_type">
                 <Select
                   classNamePrefix="select"
                   styles={selectStyles}
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
                   isSearchable={false}
                   value={[
                     { value: "income", label: "Income" },
@@ -254,11 +222,13 @@ export default forwardRef(function CategoryFormSidebar({ categoryId = null, onSu
         <Row>
           <Col xs={12} md={12}>
             <InputGroup className={errors.sector_id ? "mb-1" : "mb-3"} size="sm">
-              <InputGroup.Text id="category_sector">Sector *</InputGroup.Text>
-              <div className="flex-grow-1">
+              <InputGroup.Text id="category_sector" style={inputGroupTextStyle}>Sector *</InputGroup.Text>
+              <div className="flex-grow-1" aria-describedby="category_sector">
                 <Select
                   classNamePrefix="select"
                   styles={selectStyles}
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
                   isSearchable
                   value={
                     sectors.length > 0

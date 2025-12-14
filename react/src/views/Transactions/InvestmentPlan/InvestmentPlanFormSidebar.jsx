@@ -5,6 +5,8 @@ import { useSidebarActions } from "../../../components/GlobalSidebar/index.js";
 import axiosClient from "../../../axios-client.js";
 import MainLoader from "../../../components/loader/MainLoader.jsx";
 import { useStateContext } from "../../../contexts/ContextProvider.jsx";
+import { useTheme } from "@mui/material/styles";
+import { createSelectStyles, createInputGroupTextStyle } from "../../../styles/formThemeStyles.js";
 
 /**
  * Sidebar form for creating/updating Investment Plans
@@ -29,6 +31,8 @@ export default forwardRef(function InvestmentPlanFormSidebar({ planId = null, on
   const [tableData, setTableData] = useState([
     { purpose: "", paymentTerms: "", amount: "", refundableAmount: "", remarks: "" },
   ]);
+  const theme = useTheme();
+  const inputGroupTextStyle = createInputGroupTextStyle(theme);
 
   useEffect(() => {
     // Initialize default dates if empty
@@ -155,7 +159,7 @@ export default forwardRef(function InvestmentPlanFormSidebar({ planId = null, on
           <Row className="g-3">
             <Col xs={12} md={6}>
               <InputGroup className={errors.plan_name ? "mb-1" : "mb-3"} size="sm">
-                <InputGroup.Text id="plan_name_label">Plan Name *</InputGroup.Text>
+                <InputGroup.Text id="plan_name_label" style={inputGroupTextStyle}>Plan Name *</InputGroup.Text>
                 <Form.Control
                   type="text"
                   aria-label="Plan Name"
@@ -169,7 +173,7 @@ export default forwardRef(function InvestmentPlanFormSidebar({ planId = null, on
             </Col>
             <Col xs={12} md={6}>
               <InputGroup className={errors.date ? "mb-1" : "mb-3"} size="sm">
-                <InputGroup.Text id="plan_date_label">Plan Date *</InputGroup.Text>
+                <InputGroup.Text id="plan_date_label" style={inputGroupTextStyle}>Plan Date *</InputGroup.Text>
                 <Form.Control
                   type="date"
                   aria-label="Plan Date"
@@ -183,7 +187,7 @@ export default forwardRef(function InvestmentPlanFormSidebar({ planId = null, on
             </Col>
             <Col xs={12} md={6}>
               <InputGroup className={errors.start_date ? "mb-1" : "mb-3"} size="sm">
-                <InputGroup.Text id="start_date_label">Contract Start *</InputGroup.Text>
+                <InputGroup.Text id="start_date_label" style={inputGroupTextStyle}>Contract Start *</InputGroup.Text>
                 <Form.Control
                   type="date"
                   aria-label="Contract Start"
@@ -197,7 +201,7 @@ export default forwardRef(function InvestmentPlanFormSidebar({ planId = null, on
             </Col>
             <Col xs={12} md={6}>
               <InputGroup className={errors.end_date ? "mb-1" : "mb-3"} size="sm">
-                <InputGroup.Text id="end_date_label">Contract End *</InputGroup.Text>
+                <InputGroup.Text id="end_date_label" style={inputGroupTextStyle}>Contract End *</InputGroup.Text>
                 <Form.Control
                   type="date"
                   aria-label="Contract End"

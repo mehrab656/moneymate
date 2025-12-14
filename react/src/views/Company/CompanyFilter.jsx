@@ -2,6 +2,8 @@ import React, { useEffect, useState, useContext } from "react";
 import { Card, Stack, Row, Col, Form, Button, InputGroup } from "react-bootstrap";
 import { SettingsContext } from "../../contexts/SettingsContext.jsx";
 import Select from "react-select";
+import { useTheme } from "@mui/material/styles";
+import { createSelectStyles, createInputGroupTextStyle } from "../../styles/formThemeStyles.js";
 
 export default function CompanyFilter(props) {
   const { search, query, setQuery, resetFilterParameter, placeHolderTxt } = props;
@@ -11,6 +13,7 @@ export default function CompanyFilter(props) {
 
   const { themeMode } = useContext(SettingsContext);
   const isDark = themeMode === "dark";
+  const theme = useTheme();
   const inputFontSize = "0.875rem";
   const inputStyle = {
     backgroundColor: isDark ? "#1c1f24" : "#fff",
@@ -20,44 +23,8 @@ export default function CompanyFilter(props) {
     minHeight: 36,
   };
 
-  const selectStyles = {
-    container: (base) => ({ ...base, fontSize: 14 }),
-    control: (base, state) => ({
-      ...base,
-      minHeight: 36,
-      height: 36,
-      boxShadow: "none",
-      borderColor: state.isFocused ? (isDark ? "#3a4149" : "#86b7fe") : (isDark ? "#3a4048" : "#c5ccd6"),
-      backgroundColor: isDark ? "#1c1f24" : "#fff",
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-      '&:hover': { borderColor: state.isFocused ? (isDark ? "#3a4149" : "#86b7fe") : (isDark ? "#3a4048" : "#c5ccd6") },
-    }),
-    valueContainer: (base) => ({ ...base, padding: "0 8px" }),
-    indicatorsContainer: (base) => ({ ...base, height: 36 }),
-    singleValue: (base) => ({
-      ...base,
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-    }),
-    input: (base) => ({ ...base, color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)" }),
-    placeholder: (base) => ({ ...base, color: isDark ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.55)" }),
-    menu: (base) => ({
-      ...base,
-      backgroundColor: isDark ? "#23262b" : "#fff",
-      border: `1px solid ${isDark ? "#2c3238" : "#dee2e6"}`,
-      boxShadow: isDark ? "0 6px 12px rgba(0,0,0,0.35)" : "0 6px 12px rgba(0,0,0,0.15)",
-    }),
-    menuList: (base) => ({ ...base, backgroundColor: isDark ? "#23262b" : "#fff" }),
-    option: (base, state) => ({
-      ...base,
-      backgroundColor: state.isSelected
-        ? isDark ? "#0C1A28" : "#e7f0fb"
-        : state.isFocused
-          ? isDark ? "#2d3238" : "#f2f2f2"
-          : isDark ? "#23262b" : "#fff",
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-      ':active': { backgroundColor: isDark ? "#0C1A28" : "#e7f0fb" },
-    }),
-  };
+  const selectStyles = createSelectStyles(theme, inputFontSize);
+  const inputGroupTextStyle = createInputGroupTextStyle(theme);
 
   // Keep local input in sync when external reset occurs
   useEffect(() => {
@@ -79,7 +46,7 @@ export default function CompanyFilter(props) {
         <Row className="g-3">
           <Col md={4}>
             <InputGroup className="mb-3" size="sm">
-              <InputGroup.Text id="company_search">Search</InputGroup.Text>
+              <InputGroup.Text id="company_search" style={inputGroupTextStyle}>Search</InputGroup.Text>
               <Form.Control
                 aria-describedby="company_search"
                 type="text"
@@ -93,12 +60,14 @@ export default function CompanyFilter(props) {
           </Col>
           <Col md={2}>
             <InputGroup className="mb-3" size="sm">
-              <InputGroup.Text id="company_order">Order</InputGroup.Text>
+              <InputGroup.Text id="company_order" style={inputGroupTextStyle}>Order</InputGroup.Text>
               <div className="flex-grow-1">
                 <Select
                   classNamePrefix="select"
                   styles={selectStyles}
                   isSearchable={false}
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
                   value={
                     [{ value: "ASC", label: "Ascending" }, { value: "DESC", label: "Descending" }]
                       .find((opt) => opt.value === (query?.orderBy || "DESC")) || null

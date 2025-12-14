@@ -8,6 +8,8 @@ import { useGetBankDataQuery } from "../../api/slices/bankSlice.js";
 import { useGetExpenseCategoriesDataQuery } from "../../api/slices/expenseSlice.js";
 import { SettingsContext } from "../../contexts/SettingsContext.jsx";
 import Select from "react-select";
+import { useTheme } from "@mui/material/styles";
+import { createSelectStyles, createInputGroupTextStyle } from "../../styles/formThemeStyles.js";
 
 const _initialAsset = {
   id: null,
@@ -44,51 +46,12 @@ export default forwardRef(function AssetFormSidebar({ assetId = null, onSuccess,
   const { closeSidebar } = useSidebarActions();
   const [createAsset] = useCreateAssetMutation();
   const formId = formIdProp || "asset-form-sidebar-form";
-  const { themeMode } = useContext(SettingsContext);
-  const isDark = themeMode === "dark";
+  const theme = useTheme();
+  const inputFontSize = "0.875rem";
+  const selectStyles = createSelectStyles(theme, inputFontSize);
+  const inputGroupTextStyle = createInputGroupTextStyle(theme);
 
-  const selectStyles = {
-    container: (base) => ({ ...base, fontSize: 14, width: "100%" }),
-    control: (base, state) => ({
-      ...base,
-      minHeight: 36,
-      height: 36,
-      boxShadow: "none",
-      borderColor: state.isFocused ? (isDark ? "#3a4149" : "#86b7fe") : (isDark ? "#3a4048" : "#c5ccd6"),
-      backgroundColor: isDark ? "#1c1f24" : "#fff",
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-      '&:hover': { borderColor: state.isFocused ? (isDark ? "#3a4149" : "#86b7fe") : (isDark ? "#3a4048" : "#c5ccd6") },
-    }),
-    valueContainer: (base) => ({ ...base, padding: "0 8px" }),
-    indicatorsContainer: (base) => ({ ...base, height: 36 }),
-    singleValue: (base) => ({
-      ...base,
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-    }),
-    input: (base) => ({ ...base, color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)" }),
-    placeholder: (base) => ({ ...base, color: isDark ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.55)" }),
-    menu: (base) => ({
-      ...base,
-      backgroundColor: isDark ? "#23262b" : "#fff",
-      border: `1px solid ${isDark ? "#2c3238" : "#dee2e6"}`,
-      boxShadow: isDark ? "0 6px 12px rgba(0,0,0,0.35)" : "0 6px 12px rgba(0,0,0,0.15)",
-    }),
-    menuList: (base) => ({ ...base, backgroundColor: isDark ? "#23262b" : "#fff" }),
-    menuPortal: (base) => ({
-      ...base,
-      zIndex: 9999,
-    }),
-    option: (base, state) => ({
-      ...base,
-      backgroundColor: state.isSelected
-        ? isDark ? "#0C1A28" : "#e7f0fb"
-        : state.isFocused
-          ? isDark ? "#2d3238" : "#f2f2f2"
-          : isDark ? "#23262b" : "#fff",
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-      ':active': { backgroundColor: isDark ? "#0C1A28" : "#e7f0fb" },
-    }),
-  };
+  
 
   // API calls
   const {
@@ -367,7 +330,7 @@ export default forwardRef(function AssetFormSidebar({ assetId = null, onSuccess,
             {/* Sector */}
             <Col xs={12}>
               <InputGroup className="mb-3" size="sm">
-                <InputGroup.Text id="sector_id_label">Sector *</InputGroup.Text>
+                <InputGroup.Text id="sector_id_label" style={inputGroupTextStyle}>Sector *</InputGroup.Text>
                 <div className="flex-grow-1" aria-describedby="sector_id_label">
                   <Select
                     classNamePrefix="select"
@@ -395,7 +358,7 @@ export default forwardRef(function AssetFormSidebar({ assetId = null, onSuccess,
             {/* Account */}
              <Col xs={12} md={12}>
               <InputGroup className="mb-3" size="sm">
-                <InputGroup.Text id="account_id_label">Expense Account *</InputGroup.Text>
+                <InputGroup.Text id="account_id_label" style={inputGroupTextStyle}>Expense Account *</InputGroup.Text>
                 <div className="flex-grow-1" aria-describedby="account_id_label">
                   <Select
                     classNamePrefix="select"
@@ -423,7 +386,7 @@ export default forwardRef(function AssetFormSidebar({ assetId = null, onSuccess,
             {/* Categories */}
             <Col xs={12} md={6}>
               <InputGroup className="mb-3" size="sm">
-                <InputGroup.Text id="category_id_label">Categories *</InputGroup.Text>
+                <InputGroup.Text id="category_id_label" style={inputGroupTextStyle}>Categories *</InputGroup.Text>
                 <div className="flex-grow-1" aria-describedby="category_id_label">
                   <Select
                     classNamePrefix="select"
@@ -451,7 +414,7 @@ export default forwardRef(function AssetFormSidebar({ assetId = null, onSuccess,
             {/* Date and Account Row - Responsive */}
             <Col xs={12} md={6}>
               <InputGroup className="mb-3" size="sm">
-                <InputGroup.Text id="date_label">Date *</InputGroup.Text>
+                <InputGroup.Text id="date_label" style={inputGroupTextStyle}>Date *</InputGroup.Text>
                 <Form.Control
                   type="date"
                   name="date"

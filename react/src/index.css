@@ -666,6 +666,24 @@ body[data-theme='dark'] .input-group .form-control[type="file"]:focus {
   cursor: pointer;
 }
 
+.company-form-sidebar input[type="file"].file-input-secondary::file-selector-button {
+  background-color: var(--cms-secondary-bg);
+  color: var(--cms-secondary-contrast);
+  border: none;
+  border-radius: 0;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.company-form-sidebar input[type="file"].file-input-secondary::-webkit-file-upload-button {
+  background-color: var(--cms-secondary-bg);
+  color: var(--cms-secondary-contrast);
+  border: none;
+  border-radius: 0;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
 .file-input-secondary::file-selector-button {
   background-color: var(--cms-secondary-bg) !important;
   color: var(--cms-secondary-contrast) !important;
@@ -708,6 +726,25 @@ body[data-theme='dark'] .input-group .form-control[type="file"]:focus {
 
 .expense-sidebar .input-group .form-control.file-input-secondary[type="file"]::-webkit-file-upload-button,
 .income-sidebar .input-group .form-control.file-input-secondary[type="file"]::-webkit-file-upload-button {
+  background-color: var(--cms-secondary-bg) !important;
+  color: var(--cms-secondary-contrast) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 6px 12px !important;
+  cursor: pointer !important;
+}
+
+.company-form-sidebar .input-group .form-control.file-input-secondary[type="file"]::file-selector-button,
+.company-form-sidebar input.form-control.file-input-secondary[type="file"]::file-selector-button {
+  background-color: var(--cms-secondary-bg) !important;
+  color: var(--cms-secondary-contrast) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 6px 12px !important;
+  cursor: pointer !important;
+}
+
+.company-form-sidebar .input-group .form-control.file-input-secondary[type="file"]::-webkit-file-upload-button {
   background-color: var(--cms-secondary-bg) !important;
   color: var(--cms-secondary-contrast) !important;
   border: none !important;

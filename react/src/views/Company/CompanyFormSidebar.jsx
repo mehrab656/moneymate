@@ -4,6 +4,9 @@ import { Form, Button, Row, Col, InputGroup } from "react-bootstrap";
 import { useSidebarActions } from "../../components/GlobalSidebar";
 import { useCreateCompanyMutation, useGetSingleCompanyDataQuery } from "../../api/slices/companySlice.js";
 import { useMemo } from "react";
+import { useTheme } from "@mui/material/styles";
+import { createInputGroupTextStyle } from "../../styles/formThemeStyles.js";
+import { isImageUrl } from "../../helper/media.js";
 
 const companyActivities = [
   "vacation homes rental",
@@ -39,6 +42,8 @@ export default forwardRef(function CompanyFormSidebar({ companyId = null, onSucc
   const { closeSidebar } = useSidebarActions();
   const [createCompany] = useCreateCompanyMutation();
   const formId = formIdProp || "company-form-sidebar-form";
+  const theme = useTheme();
+  const inputGroupTextStyle = createInputGroupTextStyle(theme);
   
   // api call
   const {
@@ -265,22 +270,24 @@ export default forwardRef(function CompanyFormSidebar({ companyId = null, onSucc
       <Form id={formId} onSubmit={(e) => companySubmit(e, true)}>
         <Row>
           <Col xs={12} md={6}>
-            <Form.Group className={errors.name ? "mb-1" : "mb-3"}>
-              <Form.Label>Company Name *</Form.Label>
+            <InputGroup className={errors.name ? "mb-1" : "mb-3"} size="sm">
+              <InputGroup.Text id="company_name" style={inputGroupTextStyle}>Company Name *</InputGroup.Text>
               <Form.Control
+                aria-describedby="company_name"
                 type="text"
                 placeholder="Enter company name"
                 value={companyData.name || ""}
                 onChange={(ev) => setCompanyData({ ...companyData, name: ev.target.value })}
                 required
               />
-            </Form.Group>
+            </InputGroup>
             {errors.name && (<p className="error-message">{errors.name[0]}</p>)}
           </Col>
           <Col xs={12} md={6}>
-            <Form.Group className={errors.phone ? "mb-1" : "mb-3"}>
-              <Form.Label>Phone *</Form.Label>
+            <InputGroup className={errors.phone ? "mb-1" : "mb-3"} size="sm">
+              <InputGroup.Text id="company_phone" style={inputGroupTextStyle}>Phone *</InputGroup.Text>
               <Form.Control
+                aria-describedby="company_phone"
                 type="text"
                 placeholder="Enter phone number"
                 maxLength={16}
@@ -288,29 +295,31 @@ export default forwardRef(function CompanyFormSidebar({ companyId = null, onSucc
                 onChange={(ev) => setCompanyData({ ...companyData, phone: ev.target.value })}
                 required
               />
-            </Form.Group>
+            </InputGroup>
             {errors.phone && (<p className="error-message">{errors.phone[0]}</p>)}
           </Col>
         </Row>
 
         <Row>
           <Col xs={12} md={6}>
-            <Form.Group className={errors.email ? "mb-1" : "mb-3"}>
-              <Form.Label>Email *</Form.Label>
+            <InputGroup className={errors.email ? "mb-1" : "mb-3"} size="sm">
+              <InputGroup.Text id="company_email" style={inputGroupTextStyle}>Email *</InputGroup.Text>
               <Form.Control
+                aria-describedby="company_email"
                 type="email"
                 placeholder="Enter email address"
                 value={companyData.email || ""}
                 onChange={(ev) => setCompanyData({ ...companyData, email: ev.target.value })}
                 required
               />
-            </Form.Group>
+            </InputGroup>
             {errors.email && (<p className="error-message">{errors.email[0]}</p>)}
           </Col>
           <Col xs={12} md={6}>
-            <Form.Group className={errors.activity ? "mb-1" : "mb-3"}>
-              <Form.Label>Activity</Form.Label>
+            <InputGroup className={errors.activity ? "mb-1" : "mb-3"} size="sm">
+              <InputGroup.Text id="company_activity" style={inputGroupTextStyle}>Activity</InputGroup.Text>
               <Form.Select
+                aria-describedby="company_activity"
                 value={companyData.activity || ""}
                 onChange={(ev) => setCompanyData({ ...companyData, activity: ev.target.value })}
               >
@@ -319,16 +328,17 @@ export default forwardRef(function CompanyFormSidebar({ companyId = null, onSucc
                   <option key={index} value={activity}>{activity}</option>
                 ))}
               </Form.Select>
-            </Form.Group>
+            </InputGroup>
             {errors.activity && (<p className="error-message">{errors.activity[0]}</p>)}
           </Col>
         </Row>
 
         <Row>
           <Col xs={12} md={6}>
-            <Form.Group className={errors.license_no ? "mb-1" : "mb-3"}>
-              <Form.Label>License No.</Form.Label>
+            <InputGroup className={errors.license_no ? "mb-1" : "mb-3"} size="sm">
+              <InputGroup.Text id="company_license_no" style={inputGroupTextStyle}>License No.</InputGroup.Text>
               <Form.Control
+                aria-describedby="company_license_no"
                 type="text"
                 placeholder="Enter license number"
                 value={
@@ -338,13 +348,14 @@ export default forwardRef(function CompanyFormSidebar({ companyId = null, onSucc
                 }
                 onChange={(ev) => setCompanyData({ ...companyData, license_no: ev.target.value })}
               />
-            </Form.Group>
+            </InputGroup>
             {errors.license_no && (<p className="error-message">{errors.license_no[0]}</p>)}
           </Col>
           <Col xs={12} md={6}>
-            <Form.Group className={errors.registration_number ? "mb-1" : "mb-3"}>
-              <Form.Label>Registration No.</Form.Label>
+            <InputGroup className={errors.registration_number ? "mb-1" : "mb-3"} size="sm">
+              <InputGroup.Text id="company_registration_number" style={inputGroupTextStyle}>Registration No.</InputGroup.Text>
               <Form.Control
+                aria-describedby="company_registration_number"
                 type="text"
                 placeholder="Enter registration number"
                 value={
@@ -354,75 +365,110 @@ export default forwardRef(function CompanyFormSidebar({ companyId = null, onSucc
                 }
                 onChange={(ev) => setCompanyData({ ...companyData, registration_number: ev.target.value })}
               />
-            </Form.Group>
+            </InputGroup>
             {errors.registration_number && (<p className="error-message">{errors.registration_number[0]}</p>)}
           </Col>
         </Row>
 
         <Row>
           <Col xs={12} md={6}>
-            <Form.Group className={errors.issue_date ? "mb-1" : "mb-3"}>
-              <Form.Label>Issue Date *</Form.Label>
+            <InputGroup className={errors.issue_date ? "mb-1" : "mb-3"} size="sm">
+              <InputGroup.Text id="company_issue_date" style={inputGroupTextStyle}>Issue Date *</InputGroup.Text>
               <Form.Control
+                aria-describedby="company_issue_date"
                 type="date"
                 value={companyData.issue_date || ""}
                 onChange={(ev) => setCompanyData({ ...companyData, issue_date: ev.target.value || null })}
               />
-            </Form.Group>
+            </InputGroup>
             {errors.issue_date && (<p className="error-message">{errors.issue_date[0]}</p>)}
           </Col>
           <Col xs={12} md={6}>
-            <Form.Group className={errors.expiry_date ? "mb-1" : "mb-3"}>
-              <Form.Label>Expiry Date *</Form.Label>
+            <InputGroup className={errors.expiry_date ? "mb-1" : "mb-3"} size="sm">
+              <InputGroup.Text id="company_expiry_date" style={inputGroupTextStyle}>Expiry Date *</InputGroup.Text>
               <Form.Control
+                aria-describedby="company_expiry_date"
                 type="date"
                 value={companyData.expiry_date || ""}
                 onChange={(ev) => setCompanyData({ ...companyData, expiry_date: ev.target.value || null })}
               />
-            </Form.Group>
+            </InputGroup>
             {errors.expiry_date && (<p className="error-message">{errors.expiry_date[0]}</p>)}
           </Col>
         </Row>
 
         <Row>
           <Col xs={12} md={12}>
-            <Form.Group className={errors.address ? "mb-1" : "mb-3"}>
-              <Form.Label>Address</Form.Label>
+            <InputGroup className={errors.address ? "mb-1" : "mb-3"} size="sm">
+              <InputGroup.Text id="company_address" style={inputGroupTextStyle}>Address</InputGroup.Text>
               <Form.Control
+                aria-describedby="company_address"
                 as="textarea"
                 rows={3}
                 placeholder="Enter company address"
                 value={companyData.address || ""}
                 onChange={(ev) => setCompanyData({ ...companyData, address: ev.target.value })}
               />
-            </Form.Group>
+            </InputGroup>
             {errors.address && (<p className="error-message">{errors.address[0]}</p>)}
           </Col>
         </Row>
 
         <Row>
           <Col xs={12} md={6}>
-            <Form.Group className={errors.logo ? "mb-1" : "mb-3"}>
-              <Form.Label>Company Logo</Form.Label>
-              <Form.Control type="file" onChange={handleFileInputChange} accept="image/*" />
-            </Form.Group>
-            {logoPreviewUrl && (
-              <div className="mt-2">
-                <img
-                  src={logoPreviewUrl}
-                  alt="Company Logo Preview"
-                  style={{ maxWidth: "160px", maxHeight: "160px", borderRadius: 8, border: "1px solid #eee" }}
-                />
-                <div>
-                  <Button
-                    variant="outline-secondary"
-                    size="sm"
-                    className="mt-2"
-                    onClick={() => setCompanyData({ ...companyData, logo: null })}
-                  >
-                    Remove Logo
-                  </Button>
-                </div>
+            <InputGroup className={errors.logo ? "mb-1" : "mb-3"} size="sm">
+              <Form.Control
+                aria-describedby="company_logo"
+                type="file"
+                onChange={handleFileInputChange}
+                accept="image/*"
+                placeholder="Add Attachment"
+                aria-label="Add Attachment"
+                name="logo"
+                className="file-input-secondary"
+                style={{
+                  backgroundColor: theme.palette.background.paper,
+                  '--cms-secondary-bg': theme.palette.secondary.main,
+                  '--cms-secondary-contrast': theme.palette.getContrastText(theme.palette.secondary.main),
+                }}
+              />
+            </InputGroup>
+            {(companyData.logo || logoPreviewUrl) && (
+              <div style={{ marginTop: 4 }}>
+                {companyData.logo instanceof File ? (
+                  logoPreviewUrl ? (
+                    <img
+                      src={logoPreviewUrl}
+                      alt="Uploaded"
+                      style={{
+                        width: "200px",
+                        height: "200px",
+                        borderRadius: "10px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : (
+                    <small>Selected file: {companyData.logo.name}</small>
+                  )
+                ) : (
+                  logoPreviewUrl && (isImageUrl(logoPreviewUrl) ? (
+                    <img
+                      src={logoPreviewUrl}
+                      alt="Uploaded"
+                      style={{
+                        width: "200px",
+                        height: "200px",
+                        borderRadius: "10px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : (
+                    <small>
+                      Current attachment:{" "}
+                      <a href={logoPreviewUrl} target="_blank" rel="noopener noreferrer">View</a>
+                    </small>
+                  ))
+                )}
               </div>
             )}
             {errors.logo && (<p className="error-message">{errors.logo[0]}</p>)}
