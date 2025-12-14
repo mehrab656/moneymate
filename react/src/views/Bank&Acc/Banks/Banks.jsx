@@ -2,10 +2,8 @@ import React, {useContext, useEffect, useState} from "react";
 import axiosClient from "../../../axios-client.js";
 import {Link} from "react-router-dom";
 import Swal from 'sweetalert2';
-import WizCard from "../../../components/WizCard.jsx";
-import {Button, Modal} from "react-bootstrap";
+import {Button, Modal, Form, InputGroup} from "react-bootstrap";
 import {useStateContext} from "../../../contexts/ContextProvider.jsx";
-import Pagination from "react-bootstrap/Pagination";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faBank, faEdit, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {SettingsContext} from "../../../contexts/SettingsContext.jsx";
@@ -16,6 +14,10 @@ import { useSidebarActions } from "../../../components/GlobalSidebar";
 import BankDetails from "./BankDetails.jsx";
 import BankFormSidebar from "./BankFormSidebar.jsx";
 import useDebouncedValue from "../../../hooks/useDebouncedValue.js";
+import CommonTable from "../../../components/table/CommonTable.jsx";
+import { useTheme } from "@mui/material/styles";
+import { createInputGroupTextStyle } from "../../../styles/formThemeStyles.js";
+import SidebarFooterButtons from "../../../components/SidebarFooterButtons.jsx";
 
 export default function Banks() {
     const [loading, setLoading] = useState(false);
@@ -31,17 +33,43 @@ export default function Banks() {
         bank_name: ""
     });
 
-    const {applicationSettings, userRole} = useContext(SettingsContext);
+    const {applicationSettings, userRole, themeMode} = useContext(SettingsContext);
     const {
         num_data_per_page
     } = applicationSettings;
+    const theme = useTheme();
+    const inputGroupTextStyle = createInputGroupTextStyle(theme);
+    const isDark = themeMode === "dark";
+    const inputStyle = {
+        backgroundColor: isDark ? "#1c1f24" : "#fff",
+        color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+        borderColor: isDark ? "#3a4048" : "#c5ccd6",
+        fontSize: "0.875rem",
+        minHeight: 36,
+    };
 
     const pageSize = num_data_per_page;
     const totalPages = Math.ceil(totalCount / pageSize);
 
-    const filteredBank = bankNames ? bankNames.filter(
-        (bank) => bank.bank_name.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-    ) : [];
+    const normalizedBanks = React.useMemo(() => {
+        return (bankNames || []).map((b) => ({
+            ...b,
+            created_on: b?.created_at ? new Date(b.created_at).toLocaleString() : '—',
+        }));
+    }, [bankNames]);
+
+    const filteredBank = React.useMemo(() => {
+        const q = (debouncedSearchTerm || "").trim().toLowerCase();
+        if (!q) return normalizedBanks;
+        return normalizedBanks.filter((b) => {
+            return (
+                String(b.bank_name || "").toLowerCase().includes(q) ||
+                String(b.user_name || "").toLowerCase().includes(q) ||
+                String(b.created_on || "").toLowerCase().includes(q) ||
+                String(b.id || "").toLowerCase().includes(q)
+            );
+        });
+    }, [normalizedBanks, debouncedSearchTerm]);
 
     const showCreateModal = () => {
         setBank({
@@ -80,18 +108,6 @@ export default function Banks() {
         setCurrentPage(page);
     };
 
-    const paginationItems = [];
-    for (let i = 1; i <= totalPages; i++) {
-        paginationItems.push(
-            <Pagination.Item
-                key={i}
-                active={i === currentPage}
-                onClick={() => handlePageChange(i)}>
-                {i}
-            </Pagination.Item>
-        );
-    }
-
     // Sidebar actions for viewing details and form
     const { showQuickDetails, showLargeContent } = useSidebarActions();
     const showBankDetails = (bank) => {
@@ -103,18 +119,52 @@ export default function Banks() {
 
     // Open create/edit in GlobalSidebar
     const openCreateSidebar = () => {
+        const createRef = React.createRef();
+        const formId = "bank-form-global";
         showLargeContent(
             "Add New Bank",
-            <BankFormSidebar onSuccess={() => getBankNames(currentPage, pageSize)} />,
-            { width: "xl" }
+            <BankFormSidebar
+                ref={createRef}
+                bankId={null}
+                formId={formId}
+                hideInternalFooter={true}
+                onSuccess={() => getBankNames(currentPage, pageSize)}
+            />,
+            {
+                width: "xl",
+                footerActions: (
+                    <SidebarFooterButtons
+                        actions={[
+                            { label: "Save", type: "submit", formId },
+                            { label: "Save and Exit", type: "button", onClick: () => createRef.current?.saveAndExit() },
+                        ]}
+                    />
+                )
+            }
         );
     };
 
     const openEditSidebar = (element) => {
+        const editRef = React.createRef();
+        const formId = "bank-form-global";
         showLargeContent(
             "Update Bank",
-            <BankFormSidebar bankId={element?.id} onSuccess={() => getBankNames(currentPage, pageSize)} />,
-            { width: "xl" }
+            <BankFormSidebar
+                ref={editRef}
+                bankId={element?.id}
+                formId={formId}
+                hideInternalFooter={true}
+                onSuccess={() => getBankNames(currentPage, pageSize)} />,
+            {
+                width: "xl",
+                footerActions: (
+                    <SidebarFooterButtons
+                        actions={[
+                            { label: "Update", type: "button", onClick: () => editRef.current?.saveAndExit() },
+                        ]}
+                    />
+                )
+            }
         );
     };
 
@@ -248,88 +298,49 @@ export default function Banks() {
                 </div>
             </div>
 
-            <WizCard className="animated fadeInDown wiz-card-mh">
-                <div className="mb-4">
-                    <input className="custom-form-control"
-                           type="text"
-                           placeholder="Search bank..."
-                           value={searchTerm}
-                           onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+            <div className="animated fadeInDown">
+                <div className="mb-3">
+                    <InputGroup className="mb-3" size="sm" style={{ maxWidth: "520px", flex: "1 1 320px" }}>
+                        <InputGroup.Text id="banks_search" style={inputGroupTextStyle}>Search</InputGroup.Text>
+                        <Form.Control
+                            aria-describedby="banks_search"
+                            type="text"
+                            size="sm"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            placeholder="Search Banks..."
+                            style={{ ...inputStyle, textTransform: "capitalize" }}
+                        />
+                    </InputGroup>
                 </div>
-                <div className="table-responsive-sm">
-                    <table className="table table-bordered custom-table">
-                        <thead>
-                        <tr>
-                            {
-                                userRole === 'admin'&&
-                                <th>id</th>
+                <CommonTable
+                    data={filteredBank}
+                    tableColumns={[
+                        ...(userRole === 'admin' ? [{ id: 'id', label: 'ID', align: 'left' }] : []),
+                        { id: 'bank_name', label: 'Bank Name', align: 'left' },
+                        { id: 'user_name', label: 'Added By', align: 'left' },
+                        { id: 'created_on', label: 'Added On', align: 'left' },
+                    ]}
+                    actionButtons={actionParams}
+                    pagination={{
+                        totalPages: totalPages || 0,
+                        totalCount: totalCount,
+                        total: totalCount,
+                        currentPage: currentPage,
+                        handlePageChange: (e, value) => setCurrentPage(value),
+                        pageSize: pageSize,
+                        onRowsPerPageChange: (event) => {
+                            const newSize = parseInt(event.target.value, 10);
+                            if (newSize > 0) {
+                                setCurrentPage(1);
                             }
-                            <th className="text-center">BANK NAME</th>
-                            <th className="text-center">ADDED BY</th>
-                            <th className="text-center">ADDED On</th>
-                            {userRole ==='admin' && <th className={'text-center'}>ACTIONS</th>}
-                            
-                        </tr>
-                        </thead>
-                        {loading && (
-                            <tbody>
-                            <tr>
-                                <td colSpan={3} className="text-center">
-                                    Loading...
-                                </td>
-                            </tr>
-                            </tbody>
-                        )}
-                        {!loading && (
-                            <tbody>
-                            {filteredBank.length === 0 ? (
-                                <tr>
-                                    <td colSpan={3} className="text-center">
-                                        No bank found
-                                    </td>
-                                </tr>
-                            ) : (
-                                filteredBank.map((bank) => (
-                                    <tr className={'text-center'} key={bank.id}>
-                                        {
-                                            userRole === 'admin'&&
-                                            <td>{bank.id}</td>
-                                        }
-                                        <td>{bank.bank_name}</td>
-                                        <td>{bank.user_name || '—'}</td>
-                                        <td>{bank.created_at ? new Date(bank.created_at).toLocaleString() : '—'}</td>
-                                        {userRole ==='admin' && 
-                                         <td>
-                                             <ActionButtonHelpers
-                                                 actionBtn={actionParams}
-                                                 element={bank}
-                                             />
-                                        </td>}
-                                       
-                                    </tr>
-                                ))
-                            )}
-                            </tbody>
-                        )}
-                    </table>
-                </div>
-
-                {totalPages > 1 && (
-                    <Pagination>
-                        <Pagination.Prev
-                            disabled={currentPage === 1}
-                            onClick={() => handlePageChange(currentPage - 1)}
-                        />
-                        {paginationItems}
-                        <Pagination.Next
-                            disabled={currentPage === totalPages}
-                            onClick={() => handlePageChange(currentPage + 1)}
-                        />
-                    </Pagination>
-                )}
-
-            </WizCard>
+                        },
+                    }}
+                    cardSubTitle={`Page-${currentPage} • ${filteredBank.length} of ${totalCount}`}
+                    isFetching={loading}
+                    hasError={false}
+                />
+            </div>
 
             <Modal show={showModal} centered onHide={handleCloseModal} className="custom-modal">
                 <Modal.Header closeButton>

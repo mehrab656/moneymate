@@ -1,18 +1,23 @@
-import React, { useEffect, useState } from "react";
-import { Form, Row, Col, Button } from "react-bootstrap";
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from "react";
+import { Form, Row, Col, Button, InputGroup } from "react-bootstrap";
 import axiosClient from "../../../axios-client";
 import { notification } from "../../../components/ToastNotification.jsx";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
+import { useTheme } from "@mui/material/styles";
+import { createInputGroupTextStyle } from "../../../styles/formThemeStyles.js";
 
 const _initialBank = {
   bank_name: "",
 };
 
-export default function BankFormSidebar({ bankId = null, onSuccess }) {
+export default forwardRef(function BankFormSidebar({ bankId = null, onSuccess, formId: formIdProp = null, hideInternalFooter = false }, ref) {
   const [formData, setFormData] = useState(_initialBank);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const { closeSidebar } = useSidebarActions();
+  const theme = useTheme();
+  const inputGroupTextStyle = createInputGroupTextStyle(theme);
+  const formId = formIdProp || "bank-form-sidebar-form";
 
   // Prefill on edit
   useEffect(() => {
@@ -78,6 +83,16 @@ export default function BankFormSidebar({ bankId = null, onSuccess }) {
     }
   };
 
+  // Expose imperative methods for sticky footer actions
+  useImperativeHandle(ref, () => ({
+    save: () => {
+      bankSubmit({ preventDefault: () => {} }, true);
+    },
+    saveAndExit: () => {
+      bankSubmit({ preventDefault: () => {} }, false);
+    },
+  }));
+
   if (loading && bankId && formData.bank_name === "") {
     return (
       <div className="d-flex justify-content-center align-items-center p-4">
@@ -90,57 +105,63 @@ export default function BankFormSidebar({ bankId = null, onSuccess }) {
 
   return (
     <div className="p-3">
-      <Form onSubmit={(e) => bankSubmit(e, false)}>
-        <div className="mb-4">
-          <h5 className="mb-3">{bankId ? "Update Bank" : "Create Bank"}</h5>
-          <Row className="g-3">
-            <Col xs={12} md={12}>
-              <Form.Group className="mb-3" controlId="bank_name">
-                <Form.Label>Bank Name *</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="bank_name"
-                  value={formData.bank_name}
-                  onChange={handleInputChange}
-                  required
-                />
-                {errors?.bank_name && (
-                  <p className="error-message mt-2">{errors.bank_name[0]}</p>
-                )}
-              </Form.Group>
-            </Col>
-          </Row>
-        </div>
+      <Form id={formId} onSubmit={(e) => bankSubmit(e, true)}>
+        <Row>
+          <Col xs={12} md={12}>
+            <InputGroup className={errors.bank_name ? "mb-1" : "mb-3"} size="sm">
+              <InputGroup.Text id="bank_name" style={inputGroupTextStyle}>Bank Name *</InputGroup.Text>
+              <Form.Control
+                aria-describedby="bank_name"
+                type="text"
+                name="bank_name"
+                placeholder="Enter bank name"
+                value={formData.bank_name}
+                onChange={handleInputChange}
+                required
+              />
+            </InputGroup>
+            {errors?.bank_name && (
+              <p className="error-message mt-2">{errors.bank_name[0]}</p>
+            )}
+          </Col>
+        </Row>
 
-        <Row className="g-2">
-          <Col xs={12}>
-            <div className="d-flex flex-column flex-sm-row gap-2 justify-content-end">
+        {!hideInternalFooter && (
+          <div className="form-actions">
+            <div className="d-flex gap-2">
               {bankId ? (
-                <Button variant="primary" type="submit" disabled={loading} className="flex-fill flex-sm-fill-0">
-                  {loading ? "Updating..." : "Update Bank"}
+                <Button
+                  variant="warning"
+                  onClick={(e) => bankSubmit(e, false)}
+                  disabled={loading}
+                  className="flex-fill"
+                >
+                  Update
                 </Button>
               ) : (
                 <>
                   <Button
-                    variant="outline-primary"
+                    variant="primary"
                     onClick={(e) => bankSubmit(e, true)}
                     disabled={loading}
-                    className="flex-fill flex-sm-fill-0"
+                    className="flex-fill"
                   >
-                    {loading ? "Creating..." : "Create & Add More"}
+                    Save
                   </Button>
-                  <Button variant="primary" type="submit" disabled={loading} className="flex-fill flex-sm-fill-0">
-                    {loading ? "Creating..." : "Create & Close"}
+                  <Button
+                    variant="secondary"
+                    onClick={(e) => bankSubmit(e, false)}
+                    disabled={loading}
+                    className="flex-fill"
+                  >
+                    Save and Exit
                   </Button>
                 </>
               )}
-              <Button type="button" variant="outline-secondary" onClick={closeSidebar}>
-                Cancel
-              </Button>
             </div>
-          </Col>
-        </Row>
+          </div>
+        )}
       </Form>
     </div>
   );
-}
+});
