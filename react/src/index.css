@@ -1738,6 +1738,14 @@ taskList {
     max-height: 60vh;
     overflow-y: auto;
 }
+.report-filter-list .input-group .input-group-text:has(input, .form-check-input){
+    width: auto !important;
+    padding: 0 4px !important;
+    border: 0 !important;
+}
+.report-filter-list .input-group .input-group-text:not(:has(input, .form-check-input)){
+    display: none !important;
+}
 .expense-filter-actionBtn{
     float: right;
 }
@@ -2972,25 +2980,61 @@ body[data-theme='dark'] .filter-modal-body .input-group .form-check-input {
 
 /* Remove bulky white background around checkbox in InputGroup */
 .filter-modal-body .input-group .input-group-text {
-  background-color: transparent;
-  border: none;
-  padding: 0 4px;
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 body[data-theme='dark'] .filter-modal-body .input-group .input-group-text {
-  background-color: transparent;
-  border: none;
-  color: rgba(255,255,255,0.87);
+  background-color: transparent !important;
+  border: none !important;
+  color: rgba(255,255,255,0.87) !important;
 }
 
 /* Light mode refinements for active tab state */
 body[data-theme='light'] .filter-modal-body .nav-pills .nav-link.active,
 body[data-theme='light'] .filter-modal-body .nav-pills .show > .nav-link {
-  background-color: #e9f2ff;
-  color: #0b3d91;
-  border: 1px solid #a7c4ff;
+  background-color: var(--fundamental-color);
+    color: rgba(255,255,255,0.87) !important;
+  border: 1px solid var(--fundamental-color);
 }
 
+body[data-theme='dark'] .filter-modal-body .nav-pills .nav-link.active,
+body[data-theme='dark'] .filter-modal-body .nav-pills .show > .nav-link {
+  background-color: #3794a7;
+  color: var(--cms-secondary-contrast);
+  border: 1px solid #3794a7;
+}
+
+.filter-modal-body .nav-pills .nav-link {
+  color: #6c757d;
+}
+body[data-theme='dark'] .filter-modal-body .nav-pills .nav-link {
+  color: #6c757d;
+}
+
+.filter-modal-body .form-check-input:checked,
+.filter-modal-body .input-group .form-check-input:checked {
+  background-color: var(--fundamental-color) !important;
+  border-color: var(--fundamental-color) !important;
+}
+
+body[data-theme='dark'] .filter-modal-body .form-check-input:checked,
+body[data-theme='dark'] .filter-modal-body .input-group .form-check-input:checked {
+  background-color: #3794a7 !important;
+  border-color: #3794a7 !important;
+}
+
+.filter-modal-body input[type="checkbox"],
+.filter-modal-body .input-group input[type="checkbox"] {
+  accent-color: var(--fundamental-color);
+}
+
+body[data-theme='dark'] .filter-modal-body input[type="checkbox"],
+body[data-theme='dark'] .filter-modal-body .input-group input[type="checkbox"] {
+  accent-color: #3794a7;
+}
 /* Modal header/footer theming for Filter modals */
 body[data-theme='dark'] .filter-modal-content {
   background-color: #0f1216;

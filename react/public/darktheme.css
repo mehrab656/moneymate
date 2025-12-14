@@ -288,13 +288,6 @@ body[data-theme='dark'] .actionDropDownMenu .dropdown-item:hover {
   box-shadow: none !important;
 }
 /* Enforce dark styles on input-group text hover/focus/active */
-.input-group .input-group-text:hover,
-.input-group .input-group-text:focus,
-.input-group .input-group-text:active {
-  background-color: #2b3035 !important;
-  color: #dee2e6 !important;
-  border-color: #2b3035 !important;
-}
 
 /* Darken the file input value area ("No file chosen") */
 input[type="file"],
