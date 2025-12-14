@@ -16,6 +16,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { isImageUrl } from "../../../../helper/media.js";
 import { useTheme, alpha } from "@mui/material/styles";
+import { createSelectStyles } from "../../../../styles/formThemeStyles.js";
 
 
 const _initialExpense = () => ({
@@ -381,69 +382,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
   // Enforce consistent font size for inputs and selects
   const inputFontSize = "0.875rem";
   const errorMarginTop = 2;
-  const isDark = themeMode === "dark";
-  const palette = theme.palette;
-  const bgPaper = palette.background.paper;
-  const textPrimary = palette.text.primary;
-  const textSecondary = palette.text.secondary;
-  const divider = palette.divider;
-  const primaryMain = palette.primary.main;
-  const selectStyles = {
-    container: (base) => ({
-      ...base,
-      width: "100%",
-      flex: 1,
-      minWidth: 0,
-    }),
-    control: (base, state) => ({
-      ...base,
-      fontSize: inputFontSize,
-      minHeight: 38,
-      backgroundColor: bgPaper,
-      borderColor: state.isFocused ? primaryMain : divider,
-      boxShadow: "none",
-      ":hover": {
-        borderColor: textSecondary,
-      },
-      color: textPrimary,
-    }),
-    singleValue: (base) => ({
-      ...base,
-      fontSize: inputFontSize,
-      color: textPrimary,
-    }),
-    input: (base) => ({
-      ...base,
-      fontSize: inputFontSize,
-      color: textPrimary,
-    }),
-    placeholder: (base) => ({
-      ...base,
-      fontSize: inputFontSize,
-      color: textSecondary,
-    }),
-    menu: (base) => ({
-      ...base,
-      fontSize: inputFontSize,
-      backgroundColor: bgPaper,
-    }),
-    menuList: (base) => ({
-      ...base,
-      backgroundColor: bgPaper,
-      paddingTop: 0,
-      paddingBottom: 0,
-    }),
-    option: (base, state) => ({
-      ...base,
-      fontSize: inputFontSize,
-      color: textPrimary,
-      backgroundColor: state.isSelected
-        ? alpha(primaryMain, isDark ? 0.24 : 0.12)
-        : state.isFocused
-          ? alpha(primaryMain, isDark ? 0.18 : 0.08)
-          : bgPaper,
-    }),
-  };
+  const selectStyles = createSelectStyles(theme, inputFontSize);
 
   // isImageUrl imported from helper/media.js
 

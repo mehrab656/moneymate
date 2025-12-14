@@ -240,6 +240,12 @@ h1, h2, h3, h4, h5, h6 {
     overflow-y: auto;
 }
 
+input[type="file"],
+.form-control[type="file"],
+.input-group .form-control[type="file"] {
+    background-color: #515967 !important;
+}
+
 
 .aside-content {
     padding: 1rem;
@@ -986,4 +992,19 @@ body[data-theme='light'] .top-menubar .dropdown-menu {
 @media (max-width: 991.98px) {
   body[data-theme='dark'] .top-menubar:not(:has(.navbar-collapse.show)) { background-color: transparent !important; border-bottom: none !important; }
   body[data-theme='light'] .top-menubar:not(:has(.navbar-collapse.show)) { background-color: transparent !important; border-bottom: none !important; }
+}
+
+/* Themed file input styling for Expense form */
+.file-input-secondary[type="file"]::file-selector-button {
+  background-color: var(--cms-secondary-bg);
+  color: var(--cms-secondary-contrast);
+  border-color: var(--cms-secondary-bg);
+}
+.file-input-secondary[type="file"]::-webkit-file-upload-button {
+  background-color: var(--cms-secondary-bg);
+  color: var(--cms-secondary-contrast);
+  border-color: var(--cms-secondary-bg);
+}
+.file-input-secondary[type="file"] {
+  border-color: var(--cms-secondary-bg);
 }

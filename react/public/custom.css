@@ -836,6 +836,10 @@ section .details span {
     border-color: var(--custom-btn-border-color);
     color: #FFFFFF;
 }
+
+.input-group-text{
+    border: none !important;
+}
 .input-group-text{
      width: 50%;
  }

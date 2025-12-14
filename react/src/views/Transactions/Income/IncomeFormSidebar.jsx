@@ -16,6 +16,7 @@ import { isImageUrl } from "../../../helper/media.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useTheme } from "@mui/material/styles";
+import { createSelectStyles } from "../../../styles/formThemeStyles.js";
 
 const defaultReference = [
   { value: "air-bnb", label: "Airbnb" },
@@ -92,76 +93,7 @@ const IncomeFormSidebar = forwardRef(function IncomeFormSidebar({
 
   // Enforce consistent font size for inputs and selects
   const inputFontSize = "0.875rem";
-  const isDark = themeMode === "dark";
-  const selectStyles = {
-    container: (base) => ({
-      ...base,
-      width: "100%",
-      flex: 1,
-      minWidth: 0,
-    }),
-    control: (base, state) => ({
-      ...base,
-      fontSize: inputFontSize,
-      minHeight: 38,
-      backgroundColor: isDark ? "#1c1f24" : "#fff",
-      borderColor: isDark
-        ? state.isFocused ? "#4a515b" : "#3a4048"
-        : state.isFocused ? "#7aa2d2" : "#c5ccd6",
-      boxShadow: "none",
-      ":hover": {
-        borderColor: isDark ? "#4a515b" : "#7aa2d2",
-      },
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-    }),
-    singleValue: (base) => ({
-      ...base,
-      fontSize: inputFontSize,
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-    }),
-    input: (base) => ({
-      ...base,
-      fontSize: inputFontSize,
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-    }),
-    placeholder: (base) => ({
-      ...base,
-      fontSize: inputFontSize,
-      color: isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)",
-    }),
-    menu: (base) => ({
-      ...base,
-      fontSize: inputFontSize,
-      backgroundColor: isDark ? "#23262b" : "#fff",
-    }),
-    menuList: (base) => ({
-      ...base,
-      backgroundColor: isDark ? "#23262b" : "#fff",
-      paddingTop: 0,
-      paddingBottom: 0,
-    }),
-    option: (base, state) => ({
-      ...base,
-      fontSize: inputFontSize,
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-      backgroundColor: isDark
-        ? state.isSelected
-          ? "#0C1A28"
-          : state.isFocused
-            ? "#2d3238"
-            : "#23262b"
-        : state.isSelected
-          ? "#e7f0fb"
-          : state.isFocused
-            ? "#f2f2f2"
-            : "#fff",
-    }),
-    // Ensure dropdown is above sticky footer
-    menuPortal: (base) => ({
-      ...base,
-      zIndex: 9999,
-    }),
-  };
+  const selectStyles = createSelectStyles(theme, inputFontSize);
 
   // Helpers to render/track errors per row like Expense form
   const errorMarginTop = 2;
@@ -466,7 +398,7 @@ const IncomeFormSidebar = forwardRef(function IncomeFormSidebar({
                 <Row>
                   <Col xs={colXS} md={colMD} sm={colSM}>
                     <InputGroup className="mb-3" size="sm">
-                      {showLabel && <InputGroup.Text>Description</InputGroup.Text>}
+                      {showLabel && <InputGroup.Text style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Description</InputGroup.Text>}
                       <Form.Control
                         as="textarea"
                         aria-label="Description"
@@ -481,7 +413,7 @@ const IncomeFormSidebar = forwardRef(function IncomeFormSidebar({
                   </Col>
                   <Col xs={colXS} md={colMD} sm={colSM}>
                     <InputGroup className="mb-3" size="sm">
-                      {showLabel && <InputGroup.Text>Note</InputGroup.Text>}
+                      {showLabel && <InputGroup.Text style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Note</InputGroup.Text>}
                       <Form.Control
                         as="textarea"
                         aria-label="Note"
@@ -498,7 +430,7 @@ const IncomeFormSidebar = forwardRef(function IncomeFormSidebar({
                 <Row>
                   <Col xs={12} md={6} sm={12}>
                     <InputGroup className={hasFieldError(index, "amount") ? "mb-1" : "mb-3"} size="sm">
-                      {showLabel && <InputGroup.Text id="amount">Amount</InputGroup.Text>}
+                      {showLabel && <InputGroup.Text id="amount" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Amount</InputGroup.Text>}
                       <Form.Control
                         placeholder="Income Amount"
                         aria-label="Income Amount"
@@ -513,7 +445,7 @@ const IncomeFormSidebar = forwardRef(function IncomeFormSidebar({
                   </Col>
                   <Col xs={12} md={6} sm={12}>
                     <InputGroup className={hasFieldError(index, "date") ? "mb-1" : "mb-3"} size="sm">
-                      {showLabel && <InputGroup.Text id="date">Date</InputGroup.Text>}
+                      {showLabel && <InputGroup.Text id="date" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Date</InputGroup.Text>}
                       <Form.Control
                         placeholder="Date"
                         aria-label="Date"
@@ -530,12 +462,12 @@ const IncomeFormSidebar = forwardRef(function IncomeFormSidebar({
                 <Row>
                   <Col xs={colXS} md={colMD} sm={colSM}>
                     <InputGroup className={hasFieldError(index, "account") ? "mb-1" : "mb-3"} size="sm">
-                      {showLabel && <InputGroup.Text id="account">Bank Account</InputGroup.Text>}
+                      {showLabel && <InputGroup.Text id="account" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Bank Account</InputGroup.Text>}
                       <div style={{ flex: 1 }}>
                         <Select
                           classNamePrefix="select"
                           value={income.account}
-                          isSearchable
+                          isSearchable={false}
                           name="account"
                           options={accounts}
                           styles={selectStyles}
@@ -550,12 +482,12 @@ const IncomeFormSidebar = forwardRef(function IncomeFormSidebar({
                   </Col>
                   <Col xs={colXS} md={colMD} sm={colSM}>
                     <InputGroup className={hasFieldError(index, "category") ? "mb-1" : "mb-3"} size="sm">
-                      {showLabel && <InputGroup.Text id="category_id">Category</InputGroup.Text>}
+                      {showLabel && <InputGroup.Text id="category_id" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Category</InputGroup.Text>}
                       <div style={{ flex: 1 }}>
                         <Select
                           classNamePrefix="select"
                           value={income.category}
-                          isSearchable
+                          isSearchable={false}
                           name="category"
                           isLoading={categoryIsFetching}
                           options={categories}
@@ -573,12 +505,12 @@ const IncomeFormSidebar = forwardRef(function IncomeFormSidebar({
                 <Row>
                   <Col xs={colXS} md={colMD} sm={colSM}>
                     <InputGroup className={hasFieldError(index, "reference") ? "mb-1" : "mb-3"} size="sm">
-                      {showLabel && <InputGroup.Text id="reference">Reference</InputGroup.Text>}
+                      {showLabel && <InputGroup.Text id="reference" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Reference</InputGroup.Text>}
                       <div style={{ flex: 1 }}>
                         <Select
                           classNamePrefix="select"
                           value={income.reference}
-                          isSearchable
+                          isSearchable={false}
                           name="reference"
                           options={defaultReference}
                           styles={selectStyles}
@@ -593,12 +525,12 @@ const IncomeFormSidebar = forwardRef(function IncomeFormSidebar({
                   </Col>
                   <Col xs={colXS} md={colMD} sm={colSM}>
                     <InputGroup className={hasFieldError(index, "income_type") ? "mb-1" : "mb-3"} size="sm">
-                      {showLabel && <InputGroup.Text id="income_type">Income Type</InputGroup.Text>}
+                      {showLabel && <InputGroup.Text id="income_type" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Income Type</InputGroup.Text>}
                       <div style={{ flex: 1 }}>
                         <Select
                           classNamePrefix="select"
                           value={income.income_type}
-                          isSearchable
+                          isSearchable={false}
                           name="income_type"
                           options={defaultIncomeType}
                           styles={selectStyles}
@@ -617,7 +549,7 @@ const IncomeFormSidebar = forwardRef(function IncomeFormSidebar({
                   <Row>
                     <Col xs={colXS} md={colMD} sm={colSM}>
                       <InputGroup className={hasFieldError(index, "checkin_date") ? "mb-1" : "mb-3"} size="sm">
-                        {showLabel && <InputGroup.Text id="checkin_date">Check-in Date</InputGroup.Text>}
+                        {showLabel && <InputGroup.Text id="checkin_date" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Check-in Date</InputGroup.Text>}
                         <Form.Control
                           placeholder="Check-in Date"
                           aria-label="Check-in Date"
@@ -632,7 +564,7 @@ const IncomeFormSidebar = forwardRef(function IncomeFormSidebar({
                     </Col>
                     <Col xs={colXS} md={colMD} sm={colSM}>
                       <InputGroup className={hasFieldError(index, "checkout_date") ? "mb-1" : "mb-3"} size="sm">
-                        {showLabel && <InputGroup.Text id="checkout_date">Check-out Date</InputGroup.Text>}
+                        {showLabel && <InputGroup.Text id="checkout_date" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Check-out Date</InputGroup.Text>}
                         <Form.Control
                           placeholder="Check-out Date"
                           aria-label="Check-out Date"
@@ -657,6 +589,7 @@ const IncomeFormSidebar = forwardRef(function IncomeFormSidebar({
                         aria-describedby="attachment"
                         name="attachment"
                         type="file"
+                        accept="image/*"
                         className="file-input-secondary"
                         style={{
                           backgroundColor: theme.palette.background.paper,
