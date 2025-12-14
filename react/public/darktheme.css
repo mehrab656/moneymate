@@ -132,7 +132,7 @@ body[data-theme='light'] .custom-form-control {
 }
 
 /* Themed buttons */
-body[data-theme='light'] .btn-primary { background-color: #022534; border-color: #022534; color: #fff; }
+body[data-theme='light'] .btn-primary { background-color: var(--fundamental-color); border-color: var(--fundamental-color); color: #fff; }
 body[data-theme='light'] .btn-primary:hover { filter: brightness(0.95); }
 body[data-theme='light'] .btn-success { background-color: var(--success); border-color: var(--success); color: #fff; }
 body[data-theme='light'] .btn-success:hover { filter: brightness(0.95); }

@@ -4,63 +4,20 @@ import React, { useEffect, useState, useContext } from "react";
 import useDebouncedValue from "../../../hooks/useDebouncedValue.js";
 import { SettingsContext } from "../../../contexts/SettingsContext.jsx";
 import Select from "react-select";
+import { useTheme } from "@mui/material/styles";
+import { createSelectStyles } from "../../../styles/formThemeStyles.js";
 
 export default function InvestmentPlanFilter(props) {
   const { query, setQuery, resetFilterParameter, placeHolderTxt } = props;
   const [localSearchTerm, setLocalSearchTerm] = useState(query?.searchTerm || "");
   const { themeMode } = useContext(SettingsContext);
-  const isDark = themeMode === "dark";
+  const theme = useTheme();
   const inputFontSize = "0.875rem";
   const inputStyle = {
-    backgroundColor: isDark ? "#1c1f24" : "#fff",
-    color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-    borderColor: isDark ? "#3a4048" : "#c5ccd6",
-    fontSize: inputFontSize,
     minHeight: 36,
   };
 
-  const selectStyles = {
-    container: (base) => ({ ...base, fontSize: 14 }),
-    control: (base, state) => ({
-      ...base,
-      minHeight: 36,
-      height: 36,
-      boxShadow: "none",
-      borderColor: state.isFocused ? (isDark ? "#3a4149" : "#86b7fe") : (isDark ? "#3a4048" : "#c5ccd6"),
-      backgroundColor: isDark ? "#1c1f24" : "#fff",
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-      '&:hover': { borderColor: state.isFocused ? (isDark ? "#3a4149" : "#86b7fe") : (isDark ? "#3a4048" : "#c5ccd6") },
-    }),
-    valueContainer: (base) => ({ ...base, padding: "0 8px" }),
-    indicatorsContainer: (base) => ({ ...base, height: 36 }),
-    singleValue: (base) => ({
-      ...base,
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-    }),
-    input: (base) => ({ ...base, color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)" }),
-    placeholder: (base) => ({ ...base, color: isDark ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.55)" }),
-    menu: (base) => ({
-      ...base,
-      backgroundColor: isDark ? "#23262b" : "#fff",
-      border: `1px solid ${isDark ? "#2c3238" : "#dee2e6"}`,
-      boxShadow: isDark ? "0 6px 12px rgba(0,0,0,0.35)" : "0 6px 12px rgba(0,0,0,0.15)",
-    }),
-    menuList: (base) => ({ ...base, backgroundColor: isDark ? "#23262b" : "#fff" }),
-    menuPortal: (base) => ({
-      ...base,
-      zIndex: 9999,
-    }),
-    option: (base, state) => ({
-      ...base,
-      backgroundColor: state.isSelected
-        ? isDark ? "#0C1A28" : "#e7f0fb"
-        : state.isFocused
-          ? isDark ? "#2d3238" : "#f2f2f2"
-          : isDark ? "#23262b" : "#fff",
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-      ':active': { backgroundColor: isDark ? "#0C1A28" : "#e7f0fb" },
-    }),
-  };
+  const selectStyles = createSelectStyles(theme, inputFontSize);
 
   useEffect(() => {
     setLocalSearchTerm(query?.searchTerm || "");

@@ -3,6 +3,8 @@ import { Card, Stack, Row, Col, Form, Button, InputGroup } from "react-bootstrap
 import {useGetInvestorDataQuery} from "../../../api/slices/userSlice.js";
 import { SettingsContext } from "../../../contexts/SettingsContext.jsx";
 import Select from "react-select";
+import { useTheme } from "@mui/material/styles";
+import { createSelectStyles } from "../../../styles/formThemeStyles.js";
 
 export default function InvestmentFilter(props) {
     const { search, query, setQuery, resetFilterParameter, handelFilter } = props;
@@ -15,6 +17,7 @@ export default function InvestmentFilter(props) {
 
     const { themeMode } = useContext(SettingsContext);
     const isDark = themeMode === "dark";
+    const theme = useTheme();
     const inputStyle = useMemo(() => ({
         backgroundColor: isDark ? "#1c1f24" : "#fff",
         color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
@@ -23,44 +26,7 @@ export default function InvestmentFilter(props) {
         minHeight: 36,
     }), [isDark]);
 
-    const selectStyles = useMemo(() => ({
-        container: (base) => ({ ...base, fontSize: 14 }),
-        control: (base, state) => ({
-            ...base,
-            minHeight: 36,
-            height: 36,
-            boxShadow: "none",
-            borderColor: state.isFocused ? (isDark ? "#3a4149" : "#86b7fe") : (isDark ? "#3a4048" : "#c5ccd6"),
-            backgroundColor: isDark ? "#1c1f24" : "#fff",
-            color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-            '&:hover': { borderColor: state.isFocused ? (isDark ? "#3a4149" : "#86b7fe") : (isDark ? "#3a4048" : "#c5ccd6") },
-        }),
-        valueContainer: (base) => ({ ...base, padding: "0 8px" }),
-        indicatorsContainer: (base) => ({ ...base, height: 36 }),
-        singleValue: (base) => ({
-            ...base,
-            color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-        }),
-        input: (base) => ({ ...base, color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)" }),
-        placeholder: (base) => ({ ...base, color: isDark ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.55)" }),
-        menu: (base) => ({
-            ...base,
-            backgroundColor: isDark ? "#23262b" : "#fff",
-            border: `1px solid ${isDark ? "#2c3238" : "#dee2e6"}`,
-            boxShadow: isDark ? "0 6px 12px rgba(0,0,0,0.35)" : "0 6px 12px rgba(0,0,0,0.15)",
-        }),
-        menuList: (base) => ({ ...base, backgroundColor: isDark ? "#23262b" : "#fff" }),
-        option: (base, state) => ({
-            ...base,
-            backgroundColor: state.isSelected
-                ? isDark ? "#0C1A28" : "#e7f0fb"
-                : state.isFocused
-                    ? isDark ? "#2d3238" : "#f2f2f2"
-                    : isDark ? "#23262b" : "#fff",
-            color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-            ':active': { backgroundColor: isDark ? "#0C1A28" : "#e7f0fb" },
-        }),
-    }), [isDark]);
+    const selectStyles = createSelectStyles(theme, "0.875rem");
 
     const investorsOptions = useMemo(() => {
         const list = getInvestorData?.data || [];
@@ -173,7 +139,7 @@ export default function InvestmentFilter(props) {
                                 </div>
                             </InputGroup>
                         </Col>
-                        <Col md={2}>
+                        {/* <Col md={2}>
                             <InputGroup className="mb-3" size="sm">
                                 <InputGroup.Text id="investment_limit">Limit</InputGroup.Text>
                                 <div className="flex-grow-1">
@@ -189,7 +155,7 @@ export default function InvestmentFilter(props) {
                                     />
                                 </div>
                             </InputGroup>
-                        </Col>
+                        </Col> */}
                     </Row>
 
                     <Row className="justify-content-end">
