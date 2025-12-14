@@ -15,6 +15,7 @@ import {
 import { isImageUrl } from "../../../helper/media.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { useTheme } from "@mui/material/styles";
 
 const defaultReference = [
   { value: "air-bnb", label: "Airbnb" },
@@ -71,6 +72,7 @@ const IncomeFormSidebar = forwardRef(function IncomeFormSidebar({
   const [errors, setErrors] = useState({});
   const { closeSidebar } = useSidebarActions();
   const { themeMode } = useContext(SettingsContext);
+  const theme = useTheme();
   const formRef = useRef(null);
   const formId = formIdProp || INCOME_FORM_ID;
 
@@ -453,7 +455,7 @@ const IncomeFormSidebar = forwardRef(function IncomeFormSidebar({
   }));
 
   return (
-    <div className="px-2" style={{ fontSize: "0.875rem", overflowX: "hidden" }}>
+    <div className="px-2 income-sidebar" style={{ fontSize: "0.875rem", overflowX: "hidden" }}>
       <MainLoader loaderVisible={loading} />
       {sidebarTitle && <h6>{sidebarTitle ? sidebarTitle : ""}</h6>}
       <WizCard className="animated fadeInDown">
@@ -652,10 +654,16 @@ const IncomeFormSidebar = forwardRef(function IncomeFormSidebar({
                       <Form.Control
                         placeholder="Add Attachment"
                         aria-label="Add Attachment"
+                        aria-describedby="attachment"
                         name="attachment"
                         type="file"
+                        className="file-input-secondary"
+                        style={{
+                          backgroundColor: theme.palette.background.paper,
+                          '--cms-secondary-bg': theme.palette.secondary.main,
+                          '--cms-secondary-contrast': theme.palette.getContrastText(theme.palette.secondary.main),
+                        }}
                         onChange={(e) => handleFileInputChange(e, index, "attachment")}
-                        style={{ fontSize: inputFontSize }}
                       />
                     </InputGroup>
                     {renderFieldErrors(index, "attachment")}

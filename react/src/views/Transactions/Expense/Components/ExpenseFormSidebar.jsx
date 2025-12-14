@@ -15,6 +15,7 @@ import { SettingsContext } from "../../../../contexts/SettingsContext.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { isImageUrl } from "../../../../helper/media.js";
+import { useTheme, alpha } from "@mui/material/styles";
 
 
 const _initialExpense = () => ({
@@ -85,6 +86,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
   };
   const { closeSidebar } = useSidebarActions();
   const { themeMode } = useContext(SettingsContext);
+  const theme = useTheme();
   const formRef = useRef(null);
   const loadedExpenseIdRef = useRef(null);
 
@@ -380,6 +382,12 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
   const inputFontSize = "0.875rem";
   const errorMarginTop = 2;
   const isDark = themeMode === "dark";
+  const palette = theme.palette;
+  const bgPaper = palette.background.paper;
+  const textPrimary = palette.text.primary;
+  const textSecondary = palette.text.secondary;
+  const divider = palette.divider;
+  const primaryMain = palette.primary.main;
   const selectStyles = {
     container: (base) => ({
       ...base,
@@ -391,57 +399,49 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
       ...base,
       fontSize: inputFontSize,
       minHeight: 38,
-      backgroundColor: isDark ? "#1c1f24" : "#fff",
-      borderColor: isDark
-        ? state.isFocused ? "#4a515b" : "#3a4048"
-        : state.isFocused ? "#7aa2d2" : "#c5ccd6",
+      backgroundColor: bgPaper,
+      borderColor: state.isFocused ? primaryMain : divider,
       boxShadow: "none",
       ":hover": {
-        borderColor: isDark ? "#4a515b" : "#7aa2d2",
+        borderColor: textSecondary,
       },
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+      color: textPrimary,
     }),
     singleValue: (base) => ({
       ...base,
       fontSize: inputFontSize,
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+      color: textPrimary,
     }),
     input: (base) => ({
       ...base,
       fontSize: inputFontSize,
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+      color: textPrimary,
     }),
     placeholder: (base) => ({
       ...base,
       fontSize: inputFontSize,
-      color: isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)",
+      color: textSecondary,
     }),
     menu: (base) => ({
       ...base,
       fontSize: inputFontSize,
-      backgroundColor: isDark ? "#23262b" : "#fff",
+      backgroundColor: bgPaper,
     }),
     menuList: (base) => ({
       ...base,
-      backgroundColor: isDark ? "#23262b" : "#fff",
+      backgroundColor: bgPaper,
       paddingTop: 0,
       paddingBottom: 0,
     }),
     option: (base, state) => ({
       ...base,
       fontSize: inputFontSize,
-      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
-      backgroundColor: isDark
-        ? state.isSelected
-          ? "#0C1A28"
-          : state.isFocused
-            ? "#2d3238"
-            : "#23262b"
-        : state.isSelected
-          ? "#e7f0fb"
-          : state.isFocused
-            ? "#f2f2f2"
-            : "#fff",
+      color: textPrimary,
+      backgroundColor: state.isSelected
+        ? alpha(primaryMain, isDark ? 0.24 : 0.12)
+        : state.isFocused
+          ? alpha(primaryMain, isDark ? 0.18 : 0.08)
+          : bgPaper,
     }),
   };
 
@@ -458,7 +458,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
             <Row>
               <Col xs={colXS} md={colMD} sm={colSM}>
                 <InputGroup className={hasFieldError(index, "description") ? "mb-1" : "mb-3"} size={"sm"}>
-                  {showLabel && <InputGroup.Text>Description</InputGroup.Text>}
+                  {showLabel && <InputGroup.Text style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Description</InputGroup.Text>}
                   <Form.Control
                     as="textarea"
                     aria-label="Description"
@@ -473,7 +473,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
               </Col>
               <Col xs={colXS} md={colMD} sm={colSM}>
                 <InputGroup className="mb-3" size={"sm"}>
-                  {showLabel && <InputGroup.Text>Note</InputGroup.Text>}
+                  {showLabel && <InputGroup.Text style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Note</InputGroup.Text>}
                   <Form.Control
                     as="textarea"
                     aria-label="Note"
@@ -490,7 +490,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
               <Col xs={12} md={6}>
                 <InputGroup className={hasFieldError(index, "amount") ? "mb-1" : "mb-3"} size={"sm"}>
                   {showLabel && (
-                    <InputGroup.Text id="amount">Amount</InputGroup.Text>
+                    <InputGroup.Text id="amount" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Amount</InputGroup.Text>
                   )}
                   <Form.Control
                     placeholder="Expense Amount"
@@ -509,7 +509,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
               <Col xs={12} md={6}>
                 <InputGroup className={hasFieldError(index, "refundable_amount") ? "mb-1" : "mb-3"} size={"sm"}>
                   {showLabel && (
-                    <InputGroup.Text id="refundable_amount">
+                    <InputGroup.Text id="refundable_amount" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>
                       Refundable Amount
                     </InputGroup.Text>
                   )}
@@ -531,12 +531,12 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
               <Col xs={colXS} md={colMD}>
                 <InputGroup className={hasFieldError(index, "account") ? "mb-1" : "mb-3"} size={"sm"}>
                   {showLabel && (
-                    <InputGroup.Text id="account">Bank Account</InputGroup.Text>
+                    <InputGroup.Text id="account" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Bank Account</InputGroup.Text>
                   )}
                   <Select
                     classNamePrefix="select"
                     value={expense.account}
-                    isSearchable
+                    isSearchable={false}
                     name="account"
                     options={accounts}
                     styles={selectStyles}
@@ -556,12 +556,12 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
               <Col xs={colXS} md={colMD}>
                 <InputGroup className={hasFieldError(index, "category") ? "mb-1" : "mb-3"} size={"sm"}>
                   {showLabel && (
-                    <InputGroup.Text id="category_id">Category</InputGroup.Text>
+                    <InputGroup.Text id="category_id" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Category</InputGroup.Text>
                   )}
                   <Select
                     classNamePrefix="select"
                     value={expense.category}
-                    isSearchable
+                    isSearchable={false}
                     name="category"
                     styles={selectStyles}
                     isLoading={categoryIsFetching}
@@ -584,7 +584,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
               <Col xs={12} md={6}>
                 <InputGroup className={hasFieldError(index, "date") ? "mb-1" : "mb-3"} size={"sm"}>
                   {showLabel && (
-                    <InputGroup.Text id="date">Date</InputGroup.Text>
+                    <InputGroup.Text id="date" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Date</InputGroup.Text>
                   )}
                   <Form.Control
                     placeholder="Date"
@@ -602,7 +602,7 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
               <Col xs={12} md={6}>
                 <InputGroup className={hasFieldError(index, "reference") ? "mb-1" : "mb-3"} size={"sm"}>
                   {showLabel && (
-                    <InputGroup.Text id="reference">Reference</InputGroup.Text>
+                    <InputGroup.Text id="reference" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Reference</InputGroup.Text>
                   )}
                   <Form.Control
                     placeholder="Reference"
@@ -621,11 +621,20 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
             <Row>
               <Col xs={colXS} md={colMD}>
                 <InputGroup className={hasFieldError(index, "attachment") ? "mb-1" : "mb-3"} size={"sm"}>
+                  
                   <Form.Control
                     placeholder="Add Attachment"
                     aria-label="Add Attachment"
+                    aria-describedby="attachment"
                     name="attachment"
                     type="file"
+                    accept="image/*"
+                    className="file-input-secondary"
+                    style={{
+                      backgroundColor: theme.palette.background.paper,
+                      '--cms-secondary-bg': theme.palette.secondary.main,
+                      '--cms-secondary-contrast': theme.palette.getContrastText(theme.palette.secondary.main),
+                    }}
                     onChange={(e) => {
                       handleFileInputChange(e, index, "attachment");
                     }}

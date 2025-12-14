@@ -218,6 +218,12 @@ body[data-theme='dark'] .aside-menu-item a.active {
     font-weight: 800;
     color: #0F172A;
 }
+
+input[type="file"],
+.form-control[type="file"],
+.input-group .form-control[type="file"] {
+    background-color: #515967 !important;
+}
 body[data-theme='dark'] .actionDropDownMenu {
     position: fixed !important;
     z-index: 9999 !important;
@@ -232,7 +238,7 @@ body[data-theme='dark'] .actionDropDownMenu .dropdown-item:hover {
 .input-group .input-group-text {
   background-color: #2b3035;
   color: #dee2e6;
-  border-color: #2b3035;
+  /* border-color: #2b3035; */
 }
 
 /* Dark mode overrides: File input "Choose file" button */
@@ -354,7 +360,8 @@ input[type="file"]::-webkit-file-upload-button:active,
 input[type="file"],
 .form-control[type="file"],
 .input-group .form-control[type="file"] {
-  background-color: #1c1f24 !important;
+  background-color: rgba(81, 89, 103, 0.589) !important;
+  border: none;
 }
 
 input[type="file"]:hover,

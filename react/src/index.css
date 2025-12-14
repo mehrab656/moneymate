@@ -591,6 +591,131 @@ body[data-theme='dark'] select option:checked {
     color: #FFFFFF;
 }
 
+/* Theme-aware background for file inputs (match other fields) */
+input[type="file"],
+.form-control[type="file"],
+.input-group .form-control[type="file"] {
+  background-color: #FFFFFF;
+  color: #0B1726;
+  border-color: rgba(15, 23, 36, 0.08);
+}
+
+body[data-theme='dark'] input[type="file"],
+body[data-theme='dark'] .form-control[type="file"],
+body[data-theme='dark'] .input-group .form-control[type="file"] {
+  background-color: #1c1f24;
+  color: rgba(255,255,255,0.87);
+  border-color: #3a4048;
+}
+
+input[type="file"]:focus,
+.form-control[type="file"]:focus,
+.input-group .form-control[type="file"]:focus {
+  outline: none;
+}
+
+body[data-theme='light'] input[type="file"]:focus,
+body[data-theme='light'] .form-control[type="file"]:focus,
+body[data-theme='light'] .input-group .form-control[type="file"]:focus {
+  border-color: rgba(15, 23, 36, 0.24);
+  box-shadow: 0 0 0 .2rem rgba(15, 23, 36, 0.08);
+}
+
+body[data-theme='dark'] input[type="file"]:focus,
+body[data-theme='dark'] .form-control[type="file"]:focus,
+body[data-theme='dark'] .input-group .form-control[type="file"]:focus {
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0 0 .2rem rgba(255, 255, 255, 0.08);
+}
+
+/* Theme-aware styling for file input button in Expense sidebar */
+.expense-sidebar input[type="file"].file-input-secondary::file-selector-button {
+  background-color: var(--cms-secondary-bg);
+  color: var(--cms-secondary-contrast);
+  border: none;
+  border-radius: 0;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.expense-sidebar input[type="file"].file-input-secondary::-webkit-file-upload-button {
+  background-color: var(--cms-secondary-bg);
+  color: var(--cms-secondary-contrast);
+  border: none;
+  border-radius: 0;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+/* Theme-aware styling for file input button in Income sidebar */
+.income-sidebar input[type="file"].file-input-secondary::file-selector-button {
+  background-color: var(--cms-secondary-bg);
+  color: var(--cms-secondary-contrast);
+  border: none;
+  border-radius: 0;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.income-sidebar input[type="file"].file-input-secondary::-webkit-file-upload-button {
+  background-color: var(--cms-secondary-bg);
+  color: var(--cms-secondary-contrast);
+  border: none;
+  border-radius: 0;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.file-input-secondary::file-selector-button {
+  background-color: var(--cms-secondary-bg) !important;
+  color: var(--cms-secondary-contrast) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 6px 12px !important;
+  cursor: pointer !important;
+}
+
+.file-input-secondary::-webkit-file-upload-button {
+  background-color: var(--cms-secondary-bg) !important;
+  color: var(--cms-secondary-contrast) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 6px 12px !important;
+  cursor: pointer !important;
+}
+
+.file-input-secondary::-moz-file-upload-button {
+  background-color: var(--cms-secondary-bg) !important;
+  color: var(--cms-secondary-contrast) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 6px 12px !important;
+  cursor: pointer !important;
+}
+
+/* Increased specificity to override Bootstrap and UA defaults */
+.expense-sidebar .input-group .form-control.file-input-secondary[type="file"]::file-selector-button,
+.expense-sidebar input.form-control.file-input-secondary[type="file"]::file-selector-button,
+.income-sidebar .input-group .form-control.file-input-secondary[type="file"]::file-selector-button,
+.income-sidebar input.form-control.file-input-secondary[type="file"]::file-selector-button {
+  background-color: var(--cms-secondary-bg) !important;
+  color: var(--cms-secondary-contrast) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 6px 12px !important;
+  cursor: pointer !important;
+}
+
+.expense-sidebar .input-group .form-control.file-input-secondary[type="file"]::-webkit-file-upload-button,
+.income-sidebar .input-group .form-control.file-input-secondary[type="file"]::-webkit-file-upload-button {
+  background-color: var(--cms-secondary-bg) !important;
+  color: var(--cms-secondary-contrast) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 6px 12px !important;
+  cursor: pointer !important;
+}
+
 
 .border-white {
     border: 1px solid #fff;

@@ -41,7 +41,7 @@ const designTokens = {
 const paletteTokens = {
   light: {
     primary: { main: '#022534', contrastText: '#FFFFFF' },
-    secondary: { main: '#6c757d' },
+    secondary: { main: '#6c757d' , contrastText: '#FFFFFF' },
     background: { default: '#F7F9FC', paper: '#FFFFFF' },
     text: { primary: '#0B1726', secondary: '#44566A' },
     divider: 'rgba(15,23,36,0.08)',
@@ -52,7 +52,7 @@ const paletteTokens = {
   },
   dark: {
     primary: { main: '#3794a7', contrastText: '#FFFFFF' },
-    secondary: { main: '#0F1724' },
+    secondary: { main: '#6c757d', contrastText: '#FFFFFF' },
     background: { default: '#0B1220', paper: '#0F1724' },
     text: { primary: '#E6EEF8', secondary: '#B9C6D8' },
     divider: 'rgba(255,255,255,0.06)',
