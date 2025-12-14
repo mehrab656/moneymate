@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Form, Row, Col, Button } from "react-bootstrap";
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from "react";
+import { Form, Row, Col, Button, InputGroup } from "react-bootstrap";
 import { notification } from "../../../components/ToastNotification.jsx";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
 import {
@@ -17,7 +17,7 @@ const _initialInvestment = {
   note: "",
 };
 
-export default function InvestmentFormSidebar({ investmentId = null, onSuccess }) {
+export default forwardRef(function InvestmentFormSidebar({ investmentId = null, onSuccess, formId: formIdProp = null, hideInternalFooter = false }, ref) {
   const [formData, setFormData] = useState(_initialInvestment);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -26,6 +26,7 @@ export default function InvestmentFormSidebar({ investmentId = null, onSuccess }
 
   const { closeSidebar } = useSidebarActions();
   const [createInvestment] = useCreateInvestmentMutation();
+  const formId = formIdProp || "investment-form-sidebar-form";
 
   // API calls
   const {
@@ -133,6 +134,15 @@ export default function InvestmentFormSidebar({ investmentId = null, onSuccess }
     }
   };
 
+  useImperativeHandle(ref, () => ({
+    save: () => {
+      investmentSubmit({ preventDefault: () => {} }, true);
+    },
+    saveAndExit: () => {
+      investmentSubmit({ preventDefault: () => {} }, false);
+    },
+  }));
+
   if (singleInvestmentFetching || investorIsFetching || bankIsFetching) {
     return (
       <div className="d-flex justify-content-center align-items-center p-4">
@@ -144,15 +154,15 @@ export default function InvestmentFormSidebar({ investmentId = null, onSuccess }
   }
 
   return (
-    <div className="p-3">
-      <Form onSubmit={(e) => investmentSubmit(e, false)}>
-        <div className="mb-4">
-          <h5 className="mb-3">Investment Information</h5>
+    <div className="company-form-sidebar">
+      <Form id={formId} onSubmit={(e) => investmentSubmit(e, true)}>
+        <div>
           <Row className="g-3">
             <Col xs={12} md={6}>
-              <Form.Group className="mb-3" controlId="investor_id">
-                <Form.Label>Investor *</Form.Label>
+              <InputGroup className={errors?.investor_id ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="investment_investor">Investor *</InputGroup.Text>
                 <Form.Select
+                  aria-describedby="investment_investor"
                   name="investor_id"
                   value={formData.investor_id}
                   onChange={handleInputChange}
@@ -169,16 +179,15 @@ export default function InvestmentFormSidebar({ investmentId = null, onSuccess }
                     <option disabled>No investor found</option>
                   )}
                 </Form.Select>
-                {errors?.investor_id && (
-                  <p className="error-message">{errors?.investor_id[0]}</p>
-                )}
-              </Form.Group>
+              </InputGroup>
+              {errors?.investor_id && (<p className="error-message">{errors?.investor_id[0]}</p>)}
             </Col>
 
             <Col xs={12} md={6}>
-              <Form.Group className="mb-3" controlId="account_id">
-                <Form.Label>Bank Account *</Form.Label>
+              <InputGroup className={errors?.account_id ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="investment_account">Bank Account *</InputGroup.Text>
                 <Form.Select
+                  aria-describedby="investment_account"
                   name="account_id"
                   value={formData.account_id}
                   onChange={handleInputChange}
@@ -195,91 +204,93 @@ export default function InvestmentFormSidebar({ investmentId = null, onSuccess }
                     <option disabled>No account found</option>
                   )}
                 </Form.Select>
-                {errors?.account_id && (
-                  <p className="error-message">{errors?.account_id[0]}</p>
-                )}
-              </Form.Group>
+              </InputGroup>
+              {errors?.account_id && (<p className="error-message">{errors?.account_id[0]}</p>)}
             </Col>
 
             <Col xs={12} md={6}>
-              <Form.Group className="mb-3" controlId="amount">
-                <Form.Label>Amount *</Form.Label>
+              <InputGroup className={errors?.amount ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="investment_amount">Amount *</InputGroup.Text>
                 <Form.Control
+                  aria-describedby="investment_amount"
                   type="number"
                   name="amount"
                   value={formData.amount}
                   onChange={handleInputChange}
                   required
                 />
-                {errors?.amount && (
-                  <p className="error-message">{errors?.amount[0]}</p>
-                )}
-              </Form.Group>
+              </InputGroup>
+              {errors?.amount && (<p className="error-message">{errors?.amount[0]}</p>)}
             </Col>
 
             <Col xs={12} md={6}>
-              <Form.Group className="mb-3" controlId="investment_date">
-                <Form.Label>Investment Date *</Form.Label>
+              <InputGroup className={errors?.investment_date ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="investment_date_lbl">Investment Date *</InputGroup.Text>
                 <Form.Control
+                  aria-describedby="investment_date_lbl"
                   type="date"
                   name="investment_date"
                   value={formData.investment_date}
                   onChange={handleInputChange}
                   required
                 />
-                {errors?.investment_date && (
-                  <p className="error-message">{errors?.investment_date[0]}</p>
-                )}
-              </Form.Group>
+              </InputGroup>
+              {errors?.investment_date && (<p className="error-message">{errors?.investment_date[0]}</p>)}
             </Col>
 
             <Col xs={12}>
-              <Form.Group className="mb-3" controlId="note">
-                <Form.Label>Note</Form.Label>
+              <InputGroup className={errors?.note ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="investment_note">Note</InputGroup.Text>
                 <Form.Control
                   as="textarea"
                   rows={3}
+                  aria-describedby="investment_note"
                   name="note"
                   value={formData.note}
                   onChange={handleInputChange}
                 />
-                {errors?.note && (
-                  <p className="error-message">{errors?.note[0]}</p>
-                )}
-              </Form.Group>
+              </InputGroup>
+              {errors?.note && (<p className="error-message">{errors?.note[0]}</p>)}
             </Col>
           </Row>
         </div>
 
-        <Row className="g-2">
-          <Col xs={12}>
-            <div className="d-flex flex-column flex-sm-row gap-2 justify-content-end">
+        {!hideInternalFooter && (
+          <div className="form-actions">
+            <div className="d-flex gap-2">
               {investmentId ? (
-                <Button type="submit" variant="primary" disabled={loading}>
-                  {loading ? "Updating..." : "Update Investment"}
+                <Button
+                  variant="warning"
+                  onClick={(e) => investmentSubmit(e, false)}
+                  disabled={loading}
+                  className="flex-fill"
+                >
+                  Update
                 </Button>
               ) : (
                 <>
-                  <Button type="submit" variant="primary" disabled={loading}>
-                    {loading ? "Saving..." : "Add Investment"}
+                  <Button
+                    variant="primary"
+                    onClick={(e) => investmentSubmit(e, true)}
+                    disabled={loading}
+                    className="flex-fill"
+                  >
+                    Save
                   </Button>
                   <Button
-                    type="button"
-                    variant="success"
+                    variant="secondary"
+                    onClick={(e) => investmentSubmit(e, false)}
                     disabled={loading}
-                    onClick={(e) => investmentSubmit(e, true)}
+                    className="flex-fill"
                   >
-                    {loading ? "Saving..." : "Save & Add Another"}
+                    Save and Exit
                   </Button>
                 </>
               )}
-              <Button type="button" variant="outline-secondary" onClick={closeSidebar}>
-                Cancel
-              </Button>
             </div>
-          </Col>
-        </Row>
+          </div>
+        )}
       </Form>
     </div>
   );
-}
+})

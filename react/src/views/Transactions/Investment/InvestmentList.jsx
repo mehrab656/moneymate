@@ -6,7 +6,7 @@ import { checkPermission } from "../../../helper/HelperFunctions.js";
 import { notification } from "../../../components/ToastNotification.jsx";
 
 import Iconify from "../../../components/Iconify.jsx";
-import CommonTable from "../../../helper/CommonTable.jsx";
+import CommonTable from "../../../components/table/CommonTable.jsx";
 import InvestmentFilter from "./InvestmentFilter.jsx";
 import {useGetInvestmentDataQuery,
     useCreateInvestmentMutation,
@@ -15,6 +15,10 @@ import {useGetInvestmentDataQuery,
 import InvestmentDetails from "./InvestmentDetails.jsx";
 import InvestmentFormSidebar from "./InvestmentFormSidebar.jsx";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
+import { Box, Card, Collapse, IconButton } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import SidebarFooterButtons from "../../../components/SidebarFooterButtons.jsx";
 
 const defaultQuery = {
     investor_id: "",
@@ -26,6 +30,7 @@ const defaultQuery = {
 };
 
 export default function InvestmentList() {
+    const theme = useTheme();
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [searchTerm, setSearchTerm] = useState("");
@@ -41,6 +46,7 @@ export default function InvestmentList() {
     const [isPaginate, setIsPaginate] = useState(false);
 
     const [hasFilter, setHasFilter] = useState(false);
+    const [showFilter, setShowFilter] = useState(false);
     const TABLE_HEAD = [
         { id: "investor_name", label: "Name", align: "left" },
         { id: "amount", label: "Amount", align: "right" },
@@ -93,26 +99,55 @@ export default function InvestmentList() {
     };
     
     const showCreateModalFunc = () => {
+        const createRef = React.createRef();
+        const formId = "investment-form-global";
         showLargeContent(
             "Add New Investment",
             <InvestmentFormSidebar
+                ref={createRef}
                 investmentId={null}
+                formId={formId}
+                hideInternalFooter={true}
                 onSuccess={() => {
                     setIsPaginate(true);
                 }}
-            />
+            />,
+            {
+                footerActions: (
+                    <SidebarFooterButtons
+                        actions={[
+                            { label: "Save", type: "submit", formId },
+                            { label: "Save and Exit", type: "button", onClick: () => createRef.current?.saveAndExit() },
+                        ]}
+                    />
+                ),
+            }
         );
     };
     const showEditModalFunc = (investment) => {
         setInvestment(investment);
+        const editRef = React.createRef();
+        const formId = "investment-form-global";
         showLargeContent(
             "Edit Investment",
             <InvestmentFormSidebar
+                ref={editRef}
                 investmentId={investment.id}
+                formId={formId}
+                hideInternalFooter={true}
                 onSuccess={() => {
                     setIsPaginate(true);
                 }}
-            />
+            />,
+            {
+                footerActions: (
+                    <SidebarFooterButtons
+                        actions={[
+                            { label: "Update", type: "button", onClick: () => editRef.current?.saveAndExit() },
+                        ]}
+                    />
+                ),
+            }
         );
     };
 
@@ -139,6 +174,9 @@ export default function InvestmentList() {
 
     useEffect(() => {
         document.title = "Manage Investments";
+        if (num_data_per_page && num_data_per_page > 0) {
+            setQuery((prev) => ({ ...prev, limit: num_data_per_page }));
+        }
         if (getInvestmentData?.data) {
             setInvestments(getInvestmentData.data);
             setTotalCount(getInvestmentData.total);
@@ -147,11 +185,18 @@ export default function InvestmentList() {
             setShowMainLoader(true);
         }
         setIsPaginate(false);
-    }, [getInvestmentData, currentPage]);
+    }, [getInvestmentData, currentPage, num_data_per_page]);
 
     const filteredInvestments = investments.filter(
         (investment) => investment.investor_name.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    const handleRowsPerPageChange = (event) => {
+        const newSize = parseInt(event.target.value, 10);
+        setQuery((prev) => ({ ...prev, limit: newSize }));
+        setCurrentPage(1);
+        setIsPaginate(true);
+    };
 
     const filters = () => {
         return (
@@ -201,38 +246,53 @@ export default function InvestmentList() {
     return (
         <div>
             <MainLoader loaderVisible={showMainLoader} />
-            <CommonTable
-                cardTitle={"List of Investments"}
-                addBTN={{
-                    permission: checkPermission("investment_create"),
-                    txt: "Add New Investment",
-                    icon: <Iconify icon={"eva:plus-fill"} />, //"faBuildingFlag",
-                    linkTo: "modal",
-                    link: showCreateModalFunc,
+            <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span className={"page-title-header"}>Investments</span>
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                    {checkPermission("investment_create") && (
+                        <button className={"btn primary-theme-btn btn-sm ml-2"} onClick={showCreateModalFunc}>
+                            <Iconify icon={"eva:plus-fill"} />
+                        </button>
+                    )}
+                    <IconButton size="small" aria-label="toggle filter" onClick={() => setShowFilter((s) => !s)}>
+                        <ArrowDropDownIcon />
+                    </IconButton>
+                </Box>
+            </Box>
+
+            <Collapse in={showFilter} timeout="auto" unmountOnExit>
+                <Box sx={{ px: 2, mb: 2 }}>{filters()}</Box>
+            </Collapse>
+
+            <Card
+                sx={{
+                    p: 5,
+                    backgroundColor: theme.palette.background.paper,
+                    color: theme.palette.text.primary,
+                    borderRadius: 2,
+                    border: `1px solid ${theme.palette.divider}`,
+                    '& .MuiTableContainer-root': { backgroundColor: theme.palette.background.paper },
+                    '& .MuiPaper-root': { backgroundColor: theme.palette.background.paper },
+                    '& .MuiTableCell-root': { color: theme.palette.text.primary },
                 }}
-                paginations={{
-                    totalPages: totalPages,
-                    totalCount: totalCount,
-                    currentPage: currentPage,
-                    handlePageChange: handlePageChange,
-                }}
-                table={{
-                    size: "small",
-                    ariaLabel: "investment table",
-                    showIdColumn: userRole === "admin" ?? false,
-                    tableColumns: TABLE_HEAD,
-                    tableBody: {
-                        loading: loading,
-                        loadingColSpan: 4,
-                        rows: filteredInvestments, //rendering data
-                    },
-                    actionButtons: actionParams,
-                }}
-                filter={filters}
-                loading={investmentDataFetching}
-                loaderRow={query?.limit}
-                loaderCol={4}
-            />
+                style={{ padding: "0px" }}
+            >
+                <CommonTable
+                    data={filteredInvestments}
+                    tableColumns={TABLE_HEAD}
+                    actionButtons={actionParams}
+                    pagination={{
+                        total: totalCount,
+                        currentPage: currentPage,
+                        handlePageChange: handlePageChange,
+                        pageSize: pageSize,
+                        onRowsPerPageChange: handleRowsPerPageChange,
+                    }}
+                    cardSubTitle={`Page-${currentPage} (showing ${Math.min(filteredInvestments.length, pageSize)} results from ${totalCount})`}
+                    isFetching={investmentDataFetching}
+                    hasError={!!investmentDataError}
+                />
+            </Card>
             {/* Details now handled by GlobalSidebar via showInvestmentDetails */}
         </div>
     );

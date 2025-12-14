@@ -263,64 +263,54 @@ export default forwardRef(function CompanyFormSidebar({ companyId = null, onSucc
   return (
     <div className="company-form-sidebar">
       <Form id={formId} onSubmit={(e) => companySubmit(e, true)}>
-        {/* Row: Name / Phone */}
         <Row>
           <Col xs={12} md={6}>
-            <InputGroup className={errors.name ? "mb-1" : "mb-3"} size="sm">
-              <InputGroup.Text id="company_name">Company Name *</InputGroup.Text>
+            <Form.Group className={errors.name ? "mb-1" : "mb-3"}>
+              <Form.Label>Company Name *</Form.Label>
               <Form.Control
-                placeholder="Enter company name"
-                aria-label="Company Name"
-                aria-describedby="company_name"
                 type="text"
+                placeholder="Enter company name"
                 value={companyData.name || ""}
                 onChange={(ev) => setCompanyData({ ...companyData, name: ev.target.value })}
                 required
               />
-            </InputGroup>
+            </Form.Group>
             {errors.name && (<p className="error-message">{errors.name[0]}</p>)}
           </Col>
           <Col xs={12} md={6}>
-            <InputGroup className={errors.phone ? "mb-1" : "mb-3"} size="sm">
-              <InputGroup.Text id="company_phone">Phone *</InputGroup.Text>
+            <Form.Group className={errors.phone ? "mb-1" : "mb-3"}>
+              <Form.Label>Phone *</Form.Label>
               <Form.Control
-                placeholder="Enter phone number"
-                aria-label="Company Phone"
-                aria-describedby="company_phone"
                 type="text"
+                placeholder="Enter phone number"
                 maxLength={16}
                 value={companyData.phone || ""}
                 onChange={(ev) => setCompanyData({ ...companyData, phone: ev.target.value })}
                 required
               />
-            </InputGroup>
+            </Form.Group>
             {errors.phone && (<p className="error-message">{errors.phone[0]}</p>)}
           </Col>
         </Row>
 
-        {/* Row: Email / Activity */}
         <Row>
           <Col xs={12} md={6}>
-            <InputGroup className={errors.email ? "mb-1" : "mb-3"} size="sm">
-              <InputGroup.Text id="company_email">Email *</InputGroup.Text>
+            <Form.Group className={errors.email ? "mb-1" : "mb-3"}>
+              <Form.Label>Email *</Form.Label>
               <Form.Control
-                placeholder="Enter email address"
-                aria-label="Company Email"
-                aria-describedby="company_email"
                 type="email"
+                placeholder="Enter email address"
                 value={companyData.email || ""}
                 onChange={(ev) => setCompanyData({ ...companyData, email: ev.target.value })}
                 required
               />
-            </InputGroup>
+            </Form.Group>
             {errors.email && (<p className="error-message">{errors.email[0]}</p>)}
           </Col>
           <Col xs={12} md={6}>
-            <InputGroup className={errors.activity ? "mb-1" : "mb-3"} size="sm">
-              <InputGroup.Text id="company_activity">Activity</InputGroup.Text>
+            <Form.Group className={errors.activity ? "mb-1" : "mb-3"}>
+              <Form.Label>Activity</Form.Label>
               <Form.Select
-                aria-label="Company Activity"
-                aria-describedby="company_activity"
                 value={companyData.activity || ""}
                 onChange={(ev) => setCompanyData({ ...companyData, activity: ev.target.value })}
               >
@@ -329,21 +319,18 @@ export default forwardRef(function CompanyFormSidebar({ companyId = null, onSucc
                   <option key={index} value={activity}>{activity}</option>
                 ))}
               </Form.Select>
-            </InputGroup>
+            </Form.Group>
             {errors.activity && (<p className="error-message">{errors.activity[0]}</p>)}
           </Col>
         </Row>
 
-        {/* Row: License / Registration */}
         <Row>
           <Col xs={12} md={6}>
-            <InputGroup className={errors.license_no ? "mb-1" : "mb-3"} size="sm">
-              <InputGroup.Text id="license_no">License No.</InputGroup.Text>
+            <Form.Group className={errors.license_no ? "mb-1" : "mb-3"}>
+              <Form.Label>License No.</Form.Label>
               <Form.Control
-                placeholder="Enter license number"
-                aria-label="License Number"
-                aria-describedby="license_no"
                 type="text"
+                placeholder="Enter license number"
                 value={
                   companyData.license_no === "null" || companyData.license_no === null
                     ? ""
@@ -351,17 +338,15 @@ export default forwardRef(function CompanyFormSidebar({ companyId = null, onSucc
                 }
                 onChange={(ev) => setCompanyData({ ...companyData, license_no: ev.target.value })}
               />
-            </InputGroup>
+            </Form.Group>
             {errors.license_no && (<p className="error-message">{errors.license_no[0]}</p>)}
           </Col>
           <Col xs={12} md={6}>
-            <InputGroup className={errors.registration_number ? "mb-1" : "mb-3"} size="sm">
-              <InputGroup.Text id="registration_number">Registration No.</InputGroup.Text>
+            <Form.Group className={errors.registration_number ? "mb-1" : "mb-3"}>
+              <Form.Label>Registration No.</Form.Label>
               <Form.Control
-                placeholder="Enter registration number"
-                aria-label="Registration Number"
-                aria-describedby="registration_number"
                 type="text"
+                placeholder="Enter registration number"
                 value={
                   companyData.registration_number === "null" || companyData.registration_number === null
                     ? ""
@@ -369,67 +354,58 @@ export default forwardRef(function CompanyFormSidebar({ companyId = null, onSucc
                 }
                 onChange={(ev) => setCompanyData({ ...companyData, registration_number: ev.target.value })}
               />
-            </InputGroup>
+            </Form.Group>
             {errors.registration_number && (<p className="error-message">{errors.registration_number[0]}</p>)}
           </Col>
         </Row>
 
-        {/* Row: Issue Date / Expiry Date */}
         <Row>
           <Col xs={12} md={6}>
-            <InputGroup className={errors.issue_date ? "mb-1" : "mb-3"} size="sm">
-              <InputGroup.Text id="issue_date">Issue Date *</InputGroup.Text>
+            <Form.Group className={errors.issue_date ? "mb-1" : "mb-3"}>
+              <Form.Label>Issue Date *</Form.Label>
               <Form.Control
                 type="date"
-                aria-label="Issue Date"
-                aria-describedby="issue_date"
                 value={companyData.issue_date || ""}
                 onChange={(ev) => setCompanyData({ ...companyData, issue_date: ev.target.value || null })}
               />
-            </InputGroup>
+            </Form.Group>
             {errors.issue_date && (<p className="error-message">{errors.issue_date[0]}</p>)}
           </Col>
           <Col xs={12} md={6}>
-            <InputGroup className={errors.expiry_date ? "mb-1" : "mb-3"} size="sm">
-              <InputGroup.Text id="expiry_date">Expiry Date *</InputGroup.Text>
+            <Form.Group className={errors.expiry_date ? "mb-1" : "mb-3"}>
+              <Form.Label>Expiry Date *</Form.Label>
               <Form.Control
                 type="date"
-                aria-label="Expiry Date"
-                aria-describedby="expiry_date"
                 value={companyData.expiry_date || ""}
                 onChange={(ev) => setCompanyData({ ...companyData, expiry_date: ev.target.value || null })}
               />
-            </InputGroup>
+            </Form.Group>
             {errors.expiry_date && (<p className="error-message">{errors.expiry_date[0]}</p>)}
           </Col>
         </Row>
 
-        {/* Address - full width */}
         <Row>
           <Col xs={12} md={12}>
-            <InputGroup className={errors.address ? "mb-1" : "mb-3"} size="sm">
-              <InputGroup.Text id="company_address">Address</InputGroup.Text>
+            <Form.Group className={errors.address ? "mb-1" : "mb-3"}>
+              <Form.Label>Address</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
                 placeholder="Enter company address"
-                aria-label="Company Address"
-                aria-describedby="company_address"
                 value={companyData.address || ""}
                 onChange={(ev) => setCompanyData({ ...companyData, address: ev.target.value })}
               />
-            </InputGroup>
+            </Form.Group>
             {errors.address && (<p className="error-message">{errors.address[0]}</p>)}
           </Col>
         </Row>
 
-        {/* Logo Upload - full width */}
         <Row>
           <Col xs={12} md={6}>
-            <InputGroup className={errors.logo ? "mb-1" : "mb-3"} size="sm">
-              {/* <InputGroup.Text id="company_logo">Company Logo</InputGroup.Text> */}
-              <Form.Control type="file" aria-describedby="company_logo" onChange={handleFileInputChange} accept="image/*" />
-            </InputGroup>
+            <Form.Group className={errors.logo ? "mb-1" : "mb-3"}>
+              <Form.Label>Company Logo</Form.Label>
+              <Form.Control type="file" onChange={handleFileInputChange} accept="image/*" />
+            </Form.Group>
             {logoPreviewUrl && (
               <div className="mt-2">
                 <img
