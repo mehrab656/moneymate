@@ -666,6 +666,24 @@ body[data-theme='dark'] .input-group .form-control[type="file"]:focus {
   cursor: pointer;
 }
 
+.employee-sidebar input[type="file"].file-input-secondary::file-selector-button {
+  background-color: var(--cms-secondary-bg);
+  color: var(--cms-secondary-contrast);
+  border: none;
+  border-radius: 0;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.employee-sidebar input[type="file"].file-input-secondary::-webkit-file-upload-button {
+  background-color: var(--cms-secondary-bg);
+  color: var(--cms-secondary-contrast);
+  border: none;
+  border-radius: 0;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
 .company-form-sidebar input[type="file"].file-input-secondary::file-selector-button {
   background-color: var(--cms-secondary-bg);
   color: var(--cms-secondary-contrast);
@@ -715,7 +733,9 @@ body[data-theme='dark'] .input-group .form-control[type="file"]:focus {
 .expense-sidebar .input-group .form-control.file-input-secondary[type="file"]::file-selector-button,
 .expense-sidebar input.form-control.file-input-secondary[type="file"]::file-selector-button,
 .income-sidebar .input-group .form-control.file-input-secondary[type="file"]::file-selector-button,
-.income-sidebar input.form-control.file-input-secondary[type="file"]::file-selector-button {
+.income-sidebar input.form-control.file-input-secondary[type="file"]::file-selector-button,
+.employee-sidebar .input-group .form-control.file-input-secondary[type="file"]::file-selector-button,
+.employee-sidebar input.form-control.file-input-secondary[type="file"]::file-selector-button {
   background-color: var(--cms-secondary-bg) !important;
   color: var(--cms-secondary-contrast) !important;
   border: none !important;
@@ -725,7 +745,8 @@ body[data-theme='dark'] .input-group .form-control[type="file"]:focus {
 }
 
 .expense-sidebar .input-group .form-control.file-input-secondary[type="file"]::-webkit-file-upload-button,
-.income-sidebar .input-group .form-control.file-input-secondary[type="file"]::-webkit-file-upload-button {
+.income-sidebar .input-group .form-control.file-input-secondary[type="file"]::-webkit-file-upload-button,
+.employee-sidebar .input-group .form-control.file-input-secondary[type="file"]::-webkit-file-upload-button {
   background-color: var(--cms-secondary-bg) !important;
   color: var(--cms-secondary-contrast) !important;
   border: none !important;

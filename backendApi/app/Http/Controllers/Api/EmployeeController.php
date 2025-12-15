@@ -141,7 +141,6 @@ class EmployeeController extends Controller
             $newEmployee = (new Employee())->addEmployee([
                 'slug'=>$uuid,
                 'company_id' => Auth::user()->primary_company,
-                'user_id' => $user['user']->id,
                 'phone' => $employee['phone'],
                 'basic_salary' => $employee['basic_salary'],
                 'accommodation_cost' => $employee['accommodation_cost'],
@@ -279,7 +278,7 @@ class EmployeeController extends Controller
 
             // Update pivot role if exists
             DB::table('company_user')
-                ->where('user_id', $employee->user_id)
+                ->where('user_id', optional($employee->user)->id)
                 ->where('company_id', Auth::user()->primary_company)
                 ->update(['role_id' => $validated['role_id']]);
 

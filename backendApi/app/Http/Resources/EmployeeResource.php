@@ -16,12 +16,23 @@ class EmployeeResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = $this->user;
+        $extrasArr = [];
+        if ($this->extras) {
+            $decoded = json_decode($this->extras, true);
+            $extrasArr = is_array($decoded) ? $decoded : [];
+        }
+        $id = $user ? $user->slug : ($this->slug ?? $this->id);
+        $avatarFile = $user && $user->profile_picture ? $user->profile_picture : 'default_employee.png';
+        $firstName = $user ? $user->first_name : ($extrasArr['first_name'] ?? '');
+        $lastName = $user ? $user->last_name : ($extrasArr['last_name'] ?? '');
+        $username = $user ? $user->username : ($extrasArr['username'] ?? '');
+        $displayName = trim(sprintf("%s %s(%s)", $firstName, $lastName, $username), " ()");
         return [
-            'id' => $user->slug,
+            'id' => $id,
             'company_id' => $this->company_id,
-            'avatar' => asset('avatars/'.$this->user->profile_picture),
+            'avatar' => asset('avatars/' . $avatarFile),
             'user_id' => $this->user_id,
-            'name' => sprintf("%s %s(%s)",$user->first_name,$user->last_name,$user->username),
+            'name' => $displayName ?: ($username ?: 'Unknown'),
             'basic_salary' => $this->basic_salary,
             'accommodation_cost' => $this->accommodation_cost,
             'joining_date' => $this->joining_date,

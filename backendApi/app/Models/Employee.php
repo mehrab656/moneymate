@@ -36,7 +36,6 @@ class Employee extends Model
             $employee = $this->create([
                 'slug' => $data['slug'],
                 'company_id' => $data['company_id'],
-                'user_id' => $data['user_id'],
                 'phone' => $data['phone'],
                 'basic_salary' => $data['basic_salary'],
                 'accommodation_cost' => $data['accommodation_cost'],
