@@ -3,7 +3,7 @@ import React, {useContext, useEffect, useState} from "react";
 import axiosClient from "../../../axios-client.js";
 import WizCard from "../../../components/WizCard.jsx";
 import {useStateContext} from "../../../contexts/ContextProvider.jsx";
-import {Button, Modal} from "react-bootstrap";
+import {Button, Modal, Form, InputGroup} from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import Pagination from "react-bootstrap/Pagination";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -14,6 +14,10 @@ import { useSidebarActions } from "../../../components/GlobalSidebar";
 import BalanceTransferFormSidebar from "./BalanceTransferFormSidebar.jsx";
 import BalanceTransferDetails from "./BalanceTransferDetails.jsx";
 import useDebouncedValue from "../../../hooks/useDebouncedValue.js";
+import CommonTable from "../../../components/table/CommonTable.jsx";
+import SidebarFooterButtons from "../../../components/SidebarFooterButtons.jsx";
+import { useTheme } from "@mui/material/styles";
+import { createInputGroupTextStyle } from "../../../styles/formThemeStyles.js";
 
 export default function BalanceTransfers() {
 
@@ -25,11 +29,21 @@ export default function BalanceTransfers() {
         note: '',
     });
 
-    const {applicationSettings,userRole} = useContext(SettingsContext);
+    const {applicationSettings,userRole, themeMode} = useContext(SettingsContext);
     const {
         num_data_per_page,
         default_currency
     } = applicationSettings;
+    const theme = useTheme();
+    const inputGroupTextStyle = createInputGroupTextStyle(theme);
+    const isDark = themeMode === "dark";
+    const inputStyle = {
+        backgroundColor: isDark ? "#1c1f24" : "#fff",
+        color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+        borderColor: isDark ? "#3a4048" : "#c5ccd6",
+        fontSize: "0.875rem",
+        minHeight: 36,
+    };
 
 
     const [errors, setErrors] = useState({});
@@ -94,11 +108,27 @@ export default function BalanceTransfers() {
     const pageSize = num_data_per_page;
     const totalPages = Math.ceil(totalCount / pageSize);
 
-    const filteredTransferHistories = transferHistories.filter((transfer) => {
-        return transfer.amount.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-            || transfer.from_account.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-            || transfer.to_account.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-    });
+    const normalizedTransfers = React.useMemo(() => {
+        return (transferHistories || []).map((t) => ({
+            ...t,
+            amount_display: `${default_currency}${t.amount}`,
+        }));
+    }, [transferHistories, default_currency]);
+
+    const filteredTransferHistories = React.useMemo(() => {
+        const q = (debouncedSearchTerm || "").trim().toLowerCase();
+        if (!q) return normalizedTransfers;
+        return normalizedTransfers.filter((t) => {
+            return (
+                String(t.amount_display || "").toLowerCase().includes(q) ||
+                String(t.from_account || "").toLowerCase().includes(q) ||
+                String(t.to_account || "").toLowerCase().includes(q) ||
+                String(t.transfer_date || "").toLowerCase().includes(q) ||
+                String(t.note || "").toLowerCase().includes(q) ||
+                String(t.id || "").toLowerCase().includes(q)
+            );
+        });
+    }, [normalizedTransfers, debouncedSearchTerm]);
 
     const getTransferHistories = (page, pageSize) => {
         setLoading(true)
@@ -134,18 +164,39 @@ export default function BalanceTransfers() {
     };
 
     const openCreateSidebar = () => {
+        const formId = "balance-transfer-form-global";
         showLargeContent(
             "Make a Transfer",
-            <BalanceTransferFormSidebar mode="create" onSuccess={refreshList} />,
-            { width: "xl" }
+            <BalanceTransferFormSidebar mode="create" formId={formId} hideInternalFooter={true} onSuccess={refreshList} />,
+            {
+                width: "xl",
+                footerActions: (
+                    <SidebarFooterButtons
+                        actions={[
+                            { label: "Transfer", type: "submit", formId, 'data-action': 'save' },
+                            { label: "Transfer and Exit", type: "submit", formId, 'data-action': 'save_exit' },
+                        ]}
+                    />
+                )
+            }
         );
     };
 
     const openEditSidebar = (id) => {
+        const formId = "balance-transfer-form-global";
         showLargeContent(
             "Update Transfer",
-            <BalanceTransferFormSidebar mode="edit" transferId={id} onSuccess={refreshList} />,
-            { width: "xl" }
+            <BalanceTransferFormSidebar mode="edit" transferId={id} formId={formId} hideInternalFooter={true} onSuccess={refreshList} />,
+            {
+                width: "xl",
+                footerActions: (
+                    <SidebarFooterButtons
+                        actions={[
+                            { label: "Update", type: "submit", formId, 'data-action': 'save_exit' },
+                        ]}
+                    />
+                )
+            }
         );
     };
 
@@ -220,83 +271,66 @@ export default function BalanceTransfers() {
                 </div>
 
             <WizCard className="animated fadeInDown">
-                <div className="mb-4">
-                    <input
-                        className="custom-form-control"
-                        type="text"
-                        placeholder="Search Transfer..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+                <div className="mb-3">
+                    <InputGroup className="mb-3" size="sm" style={{ maxWidth: "520px", flex: "1 1 320px" }}>
+                        <InputGroup.Text id="bt_search" style={inputGroupTextStyle}>Search</InputGroup.Text>
+                        <Form.Control
+                            aria-describedby="bt_search"
+                            type="text"
+                            size="sm"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            placeholder="Search Transfers..."
+                            style={{ ...inputStyle, textTransform: "capitalize" }}
+                        />
+                    </InputGroup>
                 </div>
-                <div className="table-responsive-sm">
-                    <table className="table table-bordered custom-table">
-                        <thead>
-                        <tr className={"text-center"}>
-                            {
-                                userRole === 'admin'&&
-                                <th>id</th>
+                <CommonTable
+                    data={filteredTransferHistories}
+                    tableColumns={[
+                        ...(userRole === 'admin' ? [{ id: 'id', label: 'ID', align: 'left' }] : []),
+                        { id: 'from_account', label: 'From Account', align: 'left' },
+                        { id: 'to_account', label: 'To Account', align: 'left' },
+                        { id: 'amount_display', label: 'Amount', align: 'left' },
+                        { id: 'transfer_date', label: 'Transfer Date', align: 'left' },
+                        { id: 'note', label: 'Note', align: 'left' },
+                    ]}
+                    actionButtons={[
+                        {
+                            actionName: 'View',
+                            type: "modal",
+                            route: "",
+                            actionFunction: (element) => showTransferDetails(element?.id),
+                            permission: 'transfer_view',
+                            textClass:'text-warning'
+                        },
+                        // {
+                        //     actionName: 'Edit',
+                        //     type: "modal",
+                        //     route: "",
+                        //     actionFunction: (element) => openEditSidebar(element?.id),
+                        //     permission: 'transfer_edit',
+                        //     textClass:'text-info',
+                        // },
+                    ]}
+                    pagination={{
+                        totalPages: totalPages || 0,
+                        totalCount: totalCount,
+                        total: totalCount,
+                        currentPage: currentPage,
+                        handlePageChange: (e, value) => setCurrentPage(value),
+                        pageSize: pageSize,
+                        onRowsPerPageChange: (event) => {
+                            const newSize = parseInt(event.target.value, 10);
+                            if (newSize > 0) {
+                                setCurrentPage(1);
                             }
-                            <th>From Account</th>
-                            <th>To Account</th>
-                            <th>Transferred Amount</th>
-                            <th>Transfer Date</th>
-                            <th>Note</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-                        {loading && (
-                            <tbody>
-                            <tr>
-                                <td colSpan={5}
-                                    className="text-center"> {/* Increase the colspan to match the number of columns */}
-                                    Loading...
-                                </td>
-                            </tr>
-                            </tbody>
-                        )}
-                        {!loading && (
-                            <tbody>
-                            {filteredTransferHistories.map((t) => (
-                                <tr key={t.id} className={"text-center"}>
-                                    {
-                                        userRole === 'admin'&&
-                                        <td>{t.id}</td>
-                                    }
-                                    <td>{t.from_account}</td>
-                                    <td>{t.to_account}</td>
-                                    <td>{default_currency}{t.amount}</td>
-                                    <td>{t.transfer_date}</td>
-                                    <td>{t.note}</td>
-                                    <td>
-                                        <div className="d-flex justify-content-center gap-2">
-                                            <Link className="btn btn-sm btn-outline-primary" onClick={() => showTransferDetails(t.id)}>
-                                                <FontAwesomeIcon icon={faEye} /> View
-                                            </Link>
-                                            {/* <Link className="btn btn-sm btn-outline-success" onClick={() => openEditSidebar(t.id)}>
-                                                <FontAwesomeIcon icon={faPenToSquare} /> Edit
-                                            </Link> */}
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        )}
-                    </table>
-                </div>
-                {totalPages > 1 && (
-                    <Pagination>
-                        <Pagination.Prev
-                            disabled={currentPage === 1}
-                            onClick={() => handlePageChange(currentPage - 1)}
-                        />
-                        {paginationItems}
-                        <Pagination.Next
-                            disabled={currentPage === totalPages}
-                            onClick={() => handlePageChange(currentPage + 1)}
-                        />
-                    </Pagination>
-                )}
+                        },
+                    }}
+                    cardSubTitle={`Page-${currentPage} • ${filteredTransferHistories.length} of ${totalCount}`}
+                    isFetching={loading}
+                    hasError={false}
+                />
 
                 <Modal show={showModal} centered onHide={handleCloseModal} className="custom-modal">
                     <Modal.Header closeButton>
