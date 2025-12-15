@@ -1135,6 +1135,11 @@ body[data-theme='dark'] .input-group .form-control[type="file"]:focus {
     /*width: 100%;*/
     /*resize: none;*/
 }
+.custom-form-control:focus {
+    border-color: #ccc;
+    box-shadow: none;
+    outline: 0;
+}
 
 .btn-primary {
     background-color: #2f4f4f;

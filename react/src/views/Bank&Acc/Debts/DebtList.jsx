@@ -6,8 +6,12 @@ import { notification } from "../../../components/ToastNotification.jsx";
 import {useGetDebtDataQuery,useDeleteDebtMutation} from "../../../api/slices/debtSlice.js";
 import {checkPermission} from "../../../helper/HelperFunctions.js";
 import Iconify from "../../../components/Iconify.jsx";
-import CommonTable from "../../../helper/CommonTable.jsx";
+import CommonTable from "../../../components/table/CommonTable.jsx";
 import Filter from "./Filter.jsx";
+import { Form, InputGroup } from "react-bootstrap";
+import { useTheme } from "@mui/material/styles";
+import { createInputGroupTextStyle } from "../../../styles/formThemeStyles.js";
+import SidebarFooterButtons from "../../../components/SidebarFooterButtons.jsx";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
 import DebtFormSidebar from "./DebtFormSidebar.jsx";
 import DebtDetails from "./DebtDetails.jsx";
@@ -42,7 +46,17 @@ export default function Debts() {
     const [showMainLoader, setShowMainLoader] = useState(false);
     const [subTitle,setSubTitle] = useState('');
 
-    const {applicationSettings, userRole} = useContext(SettingsContext);
+    const {applicationSettings, userRole, themeMode} = useContext(SettingsContext);
+    const theme = useTheme();
+    const inputGroupTextStyle = createInputGroupTextStyle(theme);
+    const isDark = themeMode === "dark";
+    const inputStyle = {
+        backgroundColor: isDark ? "#1c1f24" : "#fff",
+        color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+        borderColor: isDark ? "#3a4048" : "#c5ccd6",
+        fontSize: "0.875rem",
+        minHeight: 36,
+    };
     const {
         num_data_per_page,
     } = applicationSettings;
@@ -69,7 +83,7 @@ export default function Debts() {
         data: getDebtData,
         isFetching: isDebtDataFetching,
     } = useGetDebtDataQuery(
-        { currentPage, pageSize, query: query },
+        { currentPage, pageSize },
     );
 
     const [deleteDebt] = useDeleteDebtMutation();
@@ -95,10 +109,39 @@ export default function Debts() {
     };
 
     const openCreateSidebar = () => {
-        sidebar.showQuickForm(<DebtFormSidebar />, "Add New Debt", { width: 'lg' });
+        const formId = "debt-form-global";
+        sidebar.showLargeContent(
+            "Add New Debt",
+            <DebtFormSidebar debtId={null} formId={formId} hideInternalFooter={true} />,
+            {
+                width: "xl",
+                footerActions: (
+                    <SidebarFooterButtons
+                        actions={[
+                            { label: "Save", type: "submit", formId, 'data-action': 'save' },
+                            { label: "Save and Exit", type: "submit", formId, 'data-action': 'save_exit' },
+                        ]}
+                    />
+                )
+            }
+        );
     };
     const openEditSidebar = (row) => {
-        sidebar.showQuickForm(<DebtFormSidebar debtId={row.id} />, `Edit ${row.type} (ID: ${row.id})`, { width: 'lg' });
+        const formId = "debt-form-global";
+        sidebar.showLargeContent(
+            `Edit ${row.type} (ID: ${row.id})`,
+            <DebtFormSidebar debtId={row.id} formId={formId} hideInternalFooter={true} />,
+            {
+                width: "xl",
+                footerActions: (
+                    <SidebarFooterButtons
+                        actions={[
+                            { label: "Update", type: "submit", formId, 'data-action': 'save_exit' },
+                        ]}
+                    />
+                )
+            }
+        );
     };
     const openDetailsSidebar = (row) => {
         sidebar.showQuickDetails(`Debt Details (ID: ${row.id})`, <DebtDetails debtId={row.id} />, { width: 'lg' });
@@ -115,15 +158,23 @@ export default function Debts() {
         }
 
     }, [currentPage, getDebtData]);
-    const filterDebts = debts.filter(
-        (debt) =>
-            debt.amount.includes(searchTerm) ||
-            debt.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            debt.person.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    const modifiedDebtData = filterDebts.map(debt=>{
-        return debt;
-    });
+    const normalizedDebts = React.useMemo(() => {
+        return (debts || []).map((d) => ({ ...d }));
+    }, [debts]);
+    const filteredDebts = React.useMemo(() => {
+        const q = (searchTerm || "").trim().toLowerCase();
+        if (!q) return normalizedDebts;
+        return normalizedDebts.filter((d) => {
+            return (
+                String(d.amount || "").toLowerCase().includes(q) ||
+                String(d.type || "").toLowerCase().includes(q) ||
+                String(d.person || "").toLowerCase().includes(q) ||
+                String(d.account || "").toLowerCase().includes(q) ||
+                String(d.account_number || "").toLowerCase().includes(q) ||
+                String(d.date || "").toLowerCase().includes(q)
+            );
+        });
+    }, [normalizedDebts, searchTerm]);
     const resetFilterParameter = () => {
         setQuery(defaultQuery);
         setHasFilter(!hasFilter);
@@ -134,18 +185,20 @@ export default function Debts() {
     };
     const filters = () => {
         return (
-            <Filter
-                search={{
-                    filterByText: true,
-                    placeHolderTxt: "Search Task...",
-                    searchBoxValue: searchTerm,
-                    handelSearch: setSearchTerm,
-                }}
-                query={query}
-                setQuery={setQuery}
-                resetFilterParameter={resetFilterParameter}
-                handelFilter={handelFilter}
-            />
+            <div className="mb-3">
+                <InputGroup className="mb-3" size="sm" style={{ maxWidth: "520px", flex: "1 1 320px" }}>
+                    <InputGroup.Text id="debts_search" style={inputGroupTextStyle}>Search</InputGroup.Text>
+                    <Form.Control
+                        aria-describedby="debts_search"
+                        type="text"
+                        size="sm"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="Search Debts..."
+                        style={{ ...inputStyle, textTransform: "capitalize" }}
+                    />
+                </InputGroup>
+            </div>
         );
     };
 
@@ -182,39 +235,47 @@ export default function Debts() {
     return (
         <div>
             <MainLoader loaderVisible={loading} />
+            <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
+                <h1 className="title-text mb-0">Debts</h1>
+                <div>
+                    {checkPermission('debt_create') && (
+                        <a className="custom-btn btn-add" onClick={openCreateSidebar} role="button">
+                            Add New
+                        </a>
+                    )}
+                </div>
+            </div>
 
+            {filters()}
             <CommonTable
-                cardTitle={`Debt Lists`}
-                cardSubTitle={subTitle}
-                addBTN={{
-                    permission: checkPermission("debt_create"),
-                    txt: "Add Debt",
-                    icon: <Iconify icon={"eva:plus-fill"} />, //"faBuildingFlag",
-                    linkTo: "modal",
-                    link: openCreateSidebar,
-                }}
-                paginations={{
-                    totalPages: totalPages,
+                data={filteredDebts}
+                tableColumns={[
+                    ...(userRole === 'admin' ? [{ id: 'id', label: 'ID', align: 'left' }] : []),
+                    { id: 'person', label: 'Person', align: 'left' },
+                    { id: 'account', label: 'Account', align: 'left' },
+                    { id: 'account_number', label: 'Account Number', align: 'left' },
+                    { id: 'type', label: 'Type', align: 'left' },
+                    { id: 'date', label: 'Date', align: 'left' },
+                    { id: 'amount', label: 'Amount', align: 'right' },
+                ]}
+                actionButtons={actionParams}
+                pagination={{
+                    totalPages: totalPages || 0,
                     totalCount: totalCount,
+                    total: totalCount,
                     currentPage: currentPage,
-                    handlePageChange: handlePageChange,
-                }}
-                table={{
-                    size: "small",
-                    ariaLabel: "debt table",
-                    showIdColumn: userRole === "admin" ?? false,
-                    tableColumns: TABLE_HEAD,
-                    tableBody: {
-                        loading: loading,
-                        loadingColSpan: 9,
-                        rows: modifiedDebtData, //rendering data
+                    handlePageChange: (e, value) => setCurrentPage(value),
+                    pageSize: pageSize,
+                    onRowsPerPageChange: (event) => {
+                        const newSize = parseInt(event.target.value, 10);
+                        if (newSize > 0) {
+                            setCurrentPage(1);
+                        }
                     },
-                    actionButtons: actionParams,
                 }}
-                filter={filters}
-                loading={isDebtDataFetching}
-                loaderRow={query?.limit}
-                loaderCol={3}
+                cardSubTitle={`Page-${currentPage} • ${filteredDebts.length} of ${totalCount}`}
+                isFetching={isDebtDataFetching}
+                hasError={false}
             />
 
             {/* Sidebar-based forms and details are handled globally; no local modals needed */}

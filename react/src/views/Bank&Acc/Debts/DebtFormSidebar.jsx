@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Form, Row, Col, Button } from "react-bootstrap";
+import { Form, Row, Col, Button, InputGroup } from "react-bootstrap";
 import Select from "react-select";
-import { TextField } from "@mui/material";
-import DatePicker from "react-datepicker";
 import axiosClient from "../../../axios-client.js";
 import { useDispatch } from "react-redux";
 import { debtSlice } from "../../../api/slices/debtSlice.js";
@@ -10,18 +8,20 @@ import { notification } from "../../../components/ToastNotification.jsx";
 import MainLoader from "../../../components/loader/MainLoader.jsx";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
 import { useGetBankDataQuery } from "../../../api/slices/bankSlice.js";
+import { useTheme } from "@mui/material/styles";
+import { createSelectStyles, createInputGroupTextStyle } from "../../../styles/formThemeStyles.js";
 
 const initialDebt = {
   id: null,
   amount: "",
   person: "",
-  date: null,
+  date: "",
   note: "",
   account_id: null,
   type: null,
 };
 
-export default function DebtFormSidebar({ debtId = null }) {
+export default function DebtFormSidebar({ debtId = null, formId: formIdProp = null, hideInternalFooter = false }) {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(null);
@@ -32,6 +32,21 @@ export default function DebtFormSidebar({ debtId = null }) {
     { value: "borrow", label: "Borrow (Taken Loan From Others)" },
   ]);
   const { closeSidebar, updateSidebar } = useSidebarActions();
+  const theme = useTheme();
+  const selectStyles = createSelectStyles(theme);
+  const inputGroupTextStyle = createInputGroupTextStyle(theme);
+  const companySelectStyles = {
+    ...selectStyles,
+    control: (base, state) => {
+      const baseStyles = selectStyles.control(base, state);
+      return {
+        ...baseStyles,
+        borderColor: theme.palette.divider,
+        boxShadow: "none",
+      };
+    },
+  };
+  const formId = formIdProp || "debt-form-sidebar-form";
 
   const { data: getBankData } = useGetBankDataQuery({ currentPage: "", pageSize: 100 });
 
@@ -55,7 +70,7 @@ export default function DebtFormSidebar({ debtId = null }) {
         id: data.id,
         amount: data.amount,
         person: data.person || "",
-        date: data.date ? new Date(data.date) : null,
+        date: data.date || "",
         note: data.note || "",
         account_id: data.account_id,
         type: data.type,
@@ -79,15 +94,18 @@ export default function DebtFormSidebar({ debtId = null }) {
   const renderError = (field) => (errors?.[field] ? <p className="error-message">{errors[field][0]}</p> : null);
 
   const onSubmit = async (e) => {
-    e.preventDefault();
+    e?.preventDefault?.();
     setErrors(null);
     setLoading(true);
+    const submitter = e?.nativeEvent?.submitter;
+    const action = submitter?.getAttribute?.('data-action') || submitter?.value || '';
+    const addMore = action === 'save';
     try {
       if (!debtId) {
         // Create
         const formData = new FormData();
         formData.append("amount", debt.amount);
-        formData.append("date", debt.date ? new Date(debt.date.getTime() - debt.date.getTimezoneOffset() * 60000).toISOString().split("T")[0] : "");
+        formData.append("date", debt.date || "");
         formData.append("person", debt.person);
         formData.append("account_id", debt.account_id);
         formData.append("note", debt.note);
@@ -97,11 +115,15 @@ export default function DebtFormSidebar({ debtId = null }) {
         notification(data.status || "success", data.message || "Debt created", data.description || "");
         // Ensure the debts list refreshes immediately
         dispatch(debtSlice.util.invalidateTags(["debt"]));
+        if (addMore) {
+          setDebt(initialDebt);
+          setErrors(null);
+        }
       } else {
         // Update: only person, date, note
         const payload = {
           person: debt.person,
-          date: debt.date ? new Date(debt.date.getTime() - debt.date.getTimezoneOffset() * 60000).toISOString().split("T")[0] : null,
+          date: debt.date || null,
           note: debt.note,
         };
         const { data } = await axiosClient.post(`/debts/${debtId}`, payload);
@@ -109,7 +131,9 @@ export default function DebtFormSidebar({ debtId = null }) {
         // Ensure the debts list refreshes immediately
         dispatch(debtSlice.util.invalidateTags(["debt"]));
       }
-      closeSidebar();
+      if (debtId || !addMore) {
+        closeSidebar();
+      }
     } catch (error) {
       const response = error?.response;
       if (response?.data?.errors) {
@@ -124,104 +148,160 @@ export default function DebtFormSidebar({ debtId = null }) {
   return (
     <div className="p-3">
       <MainLoader loaderVisible={loading} />
-      <Form onSubmit={onSubmit}>
-        <div className="mb-3">
-          <Row className="g-2">
-            <Col xs={12} md={6}>
-              <TextField
-                label="Amount"
+      <Form id={formId} onSubmit={onSubmit}>
+        <Row className="g-2">
+          <Col xs={12} md={6}>
+            <InputGroup className="mb-3" size="sm">
+              <InputGroup.Text id="debt_amount" style={inputGroupTextStyle}>Amount</InputGroup.Text>
+              <Form.Control
+                aria-describedby="debt_amount"
                 type="number"
-                size="small"
-                fullWidth
+                size="sm"
+                className="custom-form-control"
+                placeholder="Amount"
                 value={debt.amount}
                 disabled={!!debtId}
                 onChange={(e) => setDebt((d) => ({ ...d, amount: e.target.value }))}
               />
-              {renderError("amount")}
-            </Col>
-            <Col xs={12} md={6}>
-              <TextField
-                label="Person"
+            </InputGroup>
+            {renderError("amount")}
+          </Col>
+          <Col xs={12} md={6}>
+            <InputGroup className="mb-3" size="sm">
+              <InputGroup.Text id="debt_person" style={inputGroupTextStyle}>Person</InputGroup.Text>
+              <Form.Control
+                aria-describedby="debt_person"
                 type="text"
-                size="small"
-                fullWidth
+                size="sm"
+                className="custom-form-control"
+                placeholder="Person"
                 value={debt.person}
                 onChange={(e) => setDebt((d) => ({ ...d, person: e.target.value }))}
               />
-              {renderError("person")}
-            </Col>
-          </Row>
-        </div>
+            </InputGroup>
+            {renderError("person")}
+          </Col>
+        </Row>
 
-        <div className="mb-3">
-          <Row className="g-2">
-            <Col xs={12} md={6}>
-              <DatePicker
-                selected={debt.date}
-                onChange={(date) => setDebt((d) => ({ ...d, date }))}
-                className="form-control"
-                placeholderText="Select date"
-                dateFormat="yyyy-MM-dd"
-                isClearable
+        <Row className="g-2">
+          <Col xs={12} md={12}>
+            <InputGroup className="mb-3" size="sm">
+              <InputGroup.Text id="debt_date" style={inputGroupTextStyle}>Date</InputGroup.Text>
+              <Form.Control
+                aria-describedby="debt_date"
+                type="date"
+                size="sm"
+                className="custom-form-control"
+                value={debt.date || ""}
+                onChange={(e) => setDebt((d) => ({ ...d, date: e.target.value }))}
               />
-              {renderError("date")}
-            </Col>
-            <Col xs={12} md={6}>
-              <TextField
-                label="Note"
-                type="text"
-                size="small"
-                fullWidth
+            </InputGroup>
+            {renderError("date")}
+          </Col>
+          <Col xs={12} md={12}>
+            <InputGroup className="mb-3" size="sm">
+              <InputGroup.Text id="debt_note" style={inputGroupTextStyle}>Note</InputGroup.Text>
+              <Form.Control
+                aria-describedby="debt_note"
+                as="textarea"
+                rows={3}
+                size="sm"
+                className="custom-form-control"
+                placeholder="Note"
                 value={debt.note}
                 onChange={(e) => setDebt((d) => ({ ...d, note: e.target.value }))}
               />
-              {renderError("note")}
-            </Col>
-          </Row>
-        </div>
-
-        <div className="mb-3">
-          <Row className="g-2">
-            <Col xs={12} md={6}>
-              <Select
-                className="basic-single"
-                classNamePrefix="select"
-                value={accounts.find((a) => a.value === debt.account_id) || null}
-                isSearchable
-                isDisabled={!!debtId}
-                options={accounts}
-                onChange={(opt) => setDebt((d) => ({ ...d, account_id: opt?.value }))}
-                placeholder="Select Bank Account"
-              />
-              {renderError("account_id")}
-            </Col>
-            <Col xs={12} md={6}>
-              <Select
-                classNamePrefix="select"
-                value={types.find((t) => t.value === debt.type) || null}
-                isSearchable
-                isDisabled={!!debtId}
-                options={types}
-                onChange={(opt) => setDebt((d) => ({ ...d, type: opt?.value }))}
-                placeholder="Select Debt Type"
-              />
-              {renderError("type")}
-            </Col>
-          </Row>
-        </div>
-
-        <Row className="g-2">
-          <Col xs={12}>
-            <div className="d-flex flex-column flex-sm-row gap-2 justify-content-end">
-              <Button variant="primary" type="submit" disabled={loading} className="flex-fill flex-sm-fill-0">
-                {debtId ? (loading ? "Updating..." : "Update Debt") : (loading ? "Saving..." : "Save")}
-              </Button>
-              <Button type="button" variant="outline-secondary" onClick={closeSidebar}>
-                Cancel
-              </Button>
-            </div>
+            </InputGroup>
+            {renderError("note")}
           </Col>
         </Row>
+
+        <Row className="g-2">
+          <Col xs={12} md={12}>
+            <InputGroup className="mb-3" size="sm">
+              <InputGroup.Text id="debt_account_id" style={inputGroupTextStyle}>Bank Account</InputGroup.Text>
+              <div className="flex-grow-1">
+                <Select
+                  className="basic-single"
+                  classNamePrefix="select"
+                  styles={companySelectStyles}
+                  value={accounts.find((a) => a.value === debt.account_id) || null}
+                  isSearchable
+                  isDisabled={!!debtId}
+                  options={accounts}
+                  onChange={(opt) => setDebt((d) => ({ ...d, account_id: opt?.value }))}
+                  placeholder="Select Bank Account"
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
+                />
+              </div>
+            </InputGroup>
+            {renderError("account_id")}
+          </Col>
+          <Col xs={12} md={12}>
+            <InputGroup className="mb-3" size="sm">
+              <InputGroup.Text id="debt_type" style={inputGroupTextStyle}>Debt Type</InputGroup.Text>
+              <div className="flex-grow-1">
+                <Select
+                  classNamePrefix="select"
+                  styles={companySelectStyles}
+                  value={types.find((t) => t.value === debt.type) || null}
+                  isSearchable
+                  isDisabled={!!debtId}
+                  options={types}
+                  onChange={(opt) => setDebt((d) => ({ ...d, type: opt?.value }))}
+                  placeholder="Select Debt Type"
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
+                />
+              </div>
+            </InputGroup>
+            {renderError("type")}
+          </Col>
+        </Row>
+
+        {!hideInternalFooter && (
+          <Row className="g-2">
+            <Col xs={12}>
+              <div className="d-flex flex-column flex-sm-row gap-2 justify-content-end">
+                {debtId ? (
+                  <Button
+                    variant="warning"
+                    type="submit"
+                    data-action="save_exit"
+                    disabled={loading}
+                    className="flex-fill flex-sm-fill-0"
+                  >
+                    Update
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      data-action="save"
+                      disabled={loading}
+                      className="flex-fill flex-sm-fill-0"
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      type="submit"
+                      data-action="save_exit"
+                      disabled={loading}
+                    >
+                      Save and Exit
+                    </Button>
+                  </>
+                )}
+                <Button type="button" variant="outline-secondary" onClick={closeSidebar}>
+                  Cancel
+                </Button>
+              </div>
+            </Col>
+          </Row>
+        )}
       </Form>
     </div>
   );
