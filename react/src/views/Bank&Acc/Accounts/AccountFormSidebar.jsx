@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Form, Row, Col, Button } from "react-bootstrap";
+import { Form, Row, Col, Button, InputGroup } from "react-bootstrap";
 import axiosClient from "../../../axios-client";
 import { notification } from "../../../components/ToastNotification.jsx";
+import MainLoader from "../../../components/loader/MainLoader.jsx";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
+import { useTheme } from "@mui/material/styles";
+import { createInputGroupTextStyle, createSelectStyles } from "../../../styles/formThemeStyles.js";
+import Select from "react-select";
+import SidebarFooterButtons from "../../../components/SidebarFooterButtons.jsx";
+import BankFormSidebar from "../Banks/BankFormSidebar.jsx";
 
 const _initialAccount = {
   id: null,
@@ -12,12 +18,22 @@ const _initialAccount = {
   balance: "",
 };
 
-export default function AccountFormSidebar({ accountId = null, onSuccess }) {
+export default function AccountFormSidebar({ accountId = null, onSuccess, formId: formIdProp = null, hideInternalFooter = false, initialData = null }) {
   const [formData, setFormData] = useState(_initialAccount);
   const [banks, setBanks] = useState([]);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const { closeSidebar } = useSidebarActions();
+  const { closeSidebar, showLargeContent } = useSidebarActions();
+  const theme = useTheme();
+  const inputGroupTextStyle = createInputGroupTextStyle(theme);
+  const selectStyles = createSelectStyles(theme);
+  const formId = formIdProp || "account-form-sidebar-form";
+
+  useEffect(() => {
+    if (initialData && !accountId) {
+      setFormData({ ..._initialAccount, ...initialData });
+    }
+  }, [initialData, accountId]);
 
   // Load banks for select
   useEffect(() => {
@@ -73,8 +89,11 @@ export default function AccountFormSidebar({ accountId = null, onSuccess }) {
     setFormData({ ...formData, [name]: value });
   };
 
-  const submit = async (event) => {
-    event.preventDefault();
+  const accountSubmit = async (event) => {
+    event?.preventDefault?.();
+    const submitter = event?.nativeEvent?.submitter;
+    const action = submitter?.getAttribute?.('data-action') || submitter?.value || '';
+    const addMore = action === 'save';
     setLoading(true);
     setErrors({});
     try {
@@ -99,8 +118,12 @@ export default function AccountFormSidebar({ accountId = null, onSuccess }) {
           balance: formData.balance,
         });
         notification("success", data?.message || "Success", data?.description || "Account created.");
-        onSuccess?.();
-        closeSidebar();
+        if (addMore) {
+          setFormData(_initialAccount);
+        } else {
+          onSuccess?.();
+          closeSidebar();
+        }
       }
     } catch (err) {
       const resp = err?.response?.data;
@@ -118,6 +141,7 @@ export default function AccountFormSidebar({ accountId = null, onSuccess }) {
       <p className="error-message mt-2">{Array.isArray(errors[field]) ? errors[field][0] : errors[field]}</p>
     ) : null;
 
+
   if (loading && (accountId || formData.id) && formData.account_name === "") {
     return (
       <div className="d-flex justify-content-center align-items-center p-4">
@@ -130,89 +154,192 @@ export default function AccountFormSidebar({ accountId = null, onSuccess }) {
 
   return (
     <div className="p-3">
-      <Form onSubmit={submit}>
+      <MainLoader loaderVisible={loading} />
+      <Form id={formId} onSubmit={accountSubmit}>
         <div className="mb-4">
           <h5 className="mb-3">{accountId ? "Update Bank Account" : "Add New Bank Account / Wallet"}</h5>
           <Row className="g-3">
-            <Col xs={12} md={6}>
-              <Form.Group className="mb-3" controlId="account_name">
-                <Form.Label>Account Holder Name *</Form.Label>
+            <Col xs={12} md={12}>
+              <InputGroup className={errors.account_name ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="account_name" style={inputGroupTextStyle}>Account Holder *</InputGroup.Text>
                 <Form.Control
+                  aria-describedby="account_name"
                   type="text"
                   name="account_name"
                   value={formData.account_name}
                   onChange={handleInputChange}
                   required
                 />
-                {renderError("account_name")}
-              </Form.Group>
+              </InputGroup>
+              {renderError("account_name")}
             </Col>
-            <Col xs={12} md={6}>
-              <Form.Group className="mb-3" controlId="bank_name_id">
-                <Form.Label>Bank Name *</Form.Label>
-                <Form.Select
-                  name="bank_name_id"
-                  value={formData.bank_name_id}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Select a bank</option>
-                  {banks.length > 0 ? (
-                    banks.map((bank) => (
-                      <option key={bank.id} value={bank.id}>
-                        {bank.bank_name}
-                      </option>
-                    ))
-                  ) : (
-                    <option disabled>No bank found</option>
-                  )}
-                </Form.Select>
-                {renderError("bank_name_id")}
-              </Form.Group>
+            <Col xs={12} md={12}>
+              <InputGroup className={errors.bank_name_id ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="bank_name_id" style={inputGroupTextStyle}>Bank *</InputGroup.Text>
+                <div className="flex-grow-1" aria-describedby="bank_name_id">
+                  <Select
+                    classNamePrefix="select"
+                    styles={selectStyles}
+                    isSearchable={false}
+                    value={
+                      [{ value: "", label: "Select a bank" }]
+                        .concat([{ value: "__ADD__", label: "Add New Bank" }])
+                        .concat((banks || []).map((b) => ({ value: String(b.id), label: b.bank_name })))
+                        .find((opt) => String(opt.value) === String(formData.bank_name_id || ""))
+                        || null
+                    }
+                    options={
+                      [{ value: "__ADD__", label: "Add New Bank" }]
+                        .concat((banks || []).map((b) => ({ value: String(b.id), label: b.bank_name })))
+                    }
+                    placeholder={"Select a bank"}
+                    onChange={(opt) => {
+                      if (!opt) return;
+                      if (opt.value === "__ADD__") {
+                        const reopenAccountForm = () => {
+                          const accFormId = "account-form-global-return";
+                          showLargeContent(
+                            accountId ? "Update Bank Account" : "Add New Bank Account",
+                            <AccountFormSidebar
+                              accountId={accountId ?? null}
+                              formId={accFormId}
+                              hideInternalFooter={true}
+                              initialData={formData}
+                              onSuccess={onSuccess}
+                            />,
+                            {
+                              width: "xl",
+                              footerActions: (
+                                <SidebarFooterButtons
+                                  actions={[
+                                    { label: accountId ? "Update" : "Save", type: "submit", formId: accFormId, 'data-action': accountId ? 'save_exit' : 'save' },
+                                    { label: "Save and Exit", type: "submit", formId: accFormId, 'data-action': 'save_exit' },
+                                  ]}
+                                />
+                              )
+                            }
+                          );
+                        };
+                        const bankFormId = "bank-form-global-from-account";
+                        showLargeContent(
+                          "Add New Bank",
+                          <BankFormSidebar
+                            bankId={null}
+                            formId={bankFormId}
+                            hideInternalFooter={true}
+                            onSuccess={() => {
+                              axiosClient
+                                .get("/all-bank")
+                                .then(({ data }) => {
+                                  const nextBanks = data?.data || [];
+                                  setBanks(nextBanks);
+                                })
+                                .catch(() => {});
+                              reopenAccountForm();
+                            }}
+                          />,
+                          {
+                            width: "xl",
+                            footerActions: (
+                              <SidebarFooterButtons
+                                actions={[
+                                  { label: "Save", type: "submit", formId: bankFormId, 'data-action': 'save' },
+                                  { label: "Save and Exit", type: "submit", formId: bankFormId, 'data-action': 'save_exit' },
+                                  { label: "Back to Account", type: "button", onClick: () => reopenAccountForm() },
+                                ]}
+                              />
+                            )
+                          }
+                        );
+                      } else {
+                        setFormData({ ...formData, bank_name_id: opt.value });
+                        if (errors.bank_name_id) {
+                          const next = { ...errors };
+                          delete next.bank_name_id;
+                          setErrors(next);
+                        }
+                      }
+                    }}
+                  />
+                </div>
+              </InputGroup>
+              {renderError("bank_name_id")}
             </Col>
 
             <Col xs={12} md={6}>
-              <Form.Group className="mb-3" controlId="account_number">
-                <Form.Label>Account Number *</Form.Label>
+              <InputGroup className={errors.account_number ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="account_number" style={inputGroupTextStyle}>Account No. *</InputGroup.Text>
                 <Form.Control
+                  aria-describedby="account_number"
                   type="text"
                   name="account_number"
                   value={formData.account_number}
                   onChange={handleInputChange}
                   required
                 />
-                {renderError("account_number")}
-              </Form.Group>
+              </InputGroup>
+              {renderError("account_number")}
             </Col>
 
             <Col xs={12} md={6}>
-              <Form.Group className="mb-3" controlId="balance">
-                <Form.Label>Initial Balance *</Form.Label>
+              <InputGroup className={errors.balance ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="balance" style={inputGroupTextStyle}>Initial Balance *</InputGroup.Text>
                 <Form.Control
+                  aria-describedby="balance"
                   type="number"
                   name="balance"
                   value={formData.balance}
                   onChange={handleInputChange}
                   required
                 />
-                {renderError("balance")}
-              </Form.Group>
+              </InputGroup>
+              {renderError("balance")}
             </Col>
           </Row>
         </div>
 
-        <Row className="g-2">
-          <Col xs={12}>
-            <div className="d-flex flex-column flex-sm-row gap-2 justify-content-end">
-              <Button variant="primary" type="submit" disabled={loading} className="flex-fill flex-sm-fill-0">
-                {loading ? (accountId ? "Updating..." : "Saving...") : (accountId ? "Update Account" : "Save")}
-              </Button>
-              <Button type="button" variant="outline-secondary" onClick={closeSidebar}>
-                Cancel
-              </Button>
-            </div>
-          </Col>
-        </Row>
+        {!hideInternalFooter && (
+          <Row className="g-2">
+            <Col xs={12}>
+              <div className="d-flex flex-column flex-sm-row gap-2 justify-content-end">
+                {accountId ? (
+                  <Button
+                    variant="warning"
+                    type="submit"
+                    data-action="save_exit"
+                    disabled={loading}
+                    className="flex-fill flex-sm-fill-0"
+                  >
+                    Update
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      data-action="save"
+                      disabled={loading}
+                      className="flex-fill flex-sm-fill-0"
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      type="submit"
+                      data-action="save_exit"
+                      disabled={loading}
+                    >
+                      Save and Exit
+                    </Button>
+                  </>
+                )}
+                <Button type="button" variant="outline-secondary" onClick={closeSidebar}>
+                  Cancel
+                </Button>
+              </div>
+            </Col>
+          </Row>
+        )}
       </Form>
     </div>
   );

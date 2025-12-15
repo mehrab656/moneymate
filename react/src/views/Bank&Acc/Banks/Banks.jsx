@@ -119,12 +119,10 @@ export default function Banks() {
 
     // Open create/edit in GlobalSidebar
     const openCreateSidebar = () => {
-        const createRef = React.createRef();
         const formId = "bank-form-global";
         showLargeContent(
             "Add New Bank",
             <BankFormSidebar
-                ref={createRef}
                 bankId={null}
                 formId={formId}
                 hideInternalFooter={true}
@@ -135,8 +133,8 @@ export default function Banks() {
                 footerActions: (
                     <SidebarFooterButtons
                         actions={[
-                            { label: "Save", type: "submit", formId },
-                            { label: "Save and Exit", type: "button", onClick: () => createRef.current?.saveAndExit() },
+                            { label: "Save", type: "submit", formId, 'data-action': 'save' },
+                            { label: "Save and Exit", type: "submit", formId, 'data-action': 'save_exit' },
                         ]}
                     />
                 )
@@ -145,12 +143,10 @@ export default function Banks() {
     };
 
     const openEditSidebar = (element) => {
-        const editRef = React.createRef();
         const formId = "bank-form-global";
         showLargeContent(
             "Update Bank",
             <BankFormSidebar
-                ref={editRef}
                 bankId={element?.id}
                 formId={formId}
                 hideInternalFooter={true}
@@ -160,7 +156,7 @@ export default function Banks() {
                 footerActions: (
                     <SidebarFooterButtons
                         actions={[
-                            { label: "Update", type: "button", onClick: () => editRef.current?.saveAndExit() },
+                            { label: "Update", type: "submit", formId, 'data-action': 'save_exit' },
                         ]}
                     />
                 )

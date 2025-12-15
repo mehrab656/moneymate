@@ -1,19 +1,25 @@
 import React, { useState } from "react";
-import { Form, Row, Col, Button } from "react-bootstrap";
+import { Form, Row, Col, Button, InputGroup } from "react-bootstrap";
 import axiosClient from "../../axios-client";
 import { notification } from "../../components/ToastNotification.jsx";
 import { useSidebarActions } from "../../components/GlobalSidebar";
+import MainLoader from "../../components/loader/MainLoader.jsx";
+import { useTheme } from "@mui/material/styles";
+import { createInputGroupTextStyle } from "../../styles/formThemeStyles.js";
 
 const _initialWallet = {
   name: "",
   balance: "",
 };
 
-export default function WalletFormSidebar({ onSuccess }) {
+export default function WalletFormSidebar({ onSuccess, formId: formIdProp = null, hideInternalFooter = false }) {
   const [formData, setFormData] = useState(_initialWallet);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const { closeSidebar } = useSidebarActions();
+  const theme = useTheme();
+  const inputGroupTextStyle = createInputGroupTextStyle(theme);
+  const formId = formIdProp || "wallet-form-sidebar-form";
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -21,7 +27,10 @@ export default function WalletFormSidebar({ onSuccess }) {
   };
 
   const submit = async (event) => {
-    event.preventDefault();
+    event?.preventDefault?.();
+    const submitter = event?.nativeEvent?.submitter;
+    const action = submitter?.getAttribute?.("data-action") || submitter?.value || "";
+    const addMore = action === "save";
     setLoading(true);
     setErrors({});
     try {
@@ -30,8 +39,12 @@ export default function WalletFormSidebar({ onSuccess }) {
         balance: formData.balance,
       });
       notification("success", data?.message || "Success", data?.description || "Wallet created.");
-      onSuccess?.();
-      closeSidebar();
+      if (addMore) {
+        setFormData(_initialWallet);
+      } else {
+        onSuccess?.();
+        closeSidebar();
+      }
     } catch (err) {
       const resp = err?.response?.data;
       if (resp?.errors) {
@@ -50,54 +63,72 @@ export default function WalletFormSidebar({ onSuccess }) {
 
   return (
     <div className="p-3">
-      <Form onSubmit={submit}>
+      <MainLoader loaderVisible={loading} />
+      <Form id={formId} onSubmit={submit}>
         <div className="mb-4">
           <h5 className="mb-3">Add New Wallet</h5>
           <Row className="g-3">
-            <Col xs={12} md={6}>
-              <Form.Group className="mb-3" controlId="name">
-                <Form.Label>Wallet Name *</Form.Label>
+            <Col xs={12} md={12}>
+              <InputGroup className={errors.name ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="name" style={inputGroupTextStyle}>Wallet Name *</InputGroup.Text>
                 <Form.Control
+                  aria-describedby="name"
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
                   required
                 />
-                {renderError("name")}
-              </Form.Group>
+              </InputGroup>
+              {renderError("name")}
             </Col>
 
-            <Col xs={12} md={6}>
-              <Form.Group className="mb-3" controlId="balance">
-                <Form.Label>Initial Balance *</Form.Label>
+            <Col xs={12} md={12}>
+              <InputGroup className={errors.balance ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="balance" style={inputGroupTextStyle}>Initial Balance *</InputGroup.Text>
                 <Form.Control
+                  aria-describedby="balance"
                   type="number"
                   name="balance"
                   value={formData.balance}
                   onChange={handleInputChange}
                   required
                 />
-                {renderError("balance")}
-              </Form.Group>
+              </InputGroup>
+              {renderError("balance")}
             </Col>
           </Row>
         </div>
 
-        <Row className="g-2">
-          <Col xs={12}>
-            <div className="d-flex flex-column flex-sm-row gap-2 justify-content-end">
-              <Button variant="primary" type="submit" disabled={loading} className="flex-fill flex-sm-fill-0">
-                {loading ? "Saving..." : "Save"}
-              </Button>
-              <Button type="button" variant="outline-secondary" onClick={closeSidebar}>
-                Cancel
-              </Button>
-            </div>
-          </Col>
-        </Row>
+        {!hideInternalFooter && (
+          <Row className="g-2">
+            <Col xs={12}>
+              <div className="d-flex flex-column flex-sm-row gap-2 justify-content-end">
+                <Button
+                  variant="primary"
+                  type="submit"
+                  data-action="save"
+                  disabled={loading}
+                  className="flex-fill flex-sm-fill-0"
+                >
+                  Save
+                </Button>
+                <Button
+                  variant="secondary"
+                  type="submit"
+                  data-action="save_exit"
+                  disabled={loading}
+                >
+                  Save and Exit
+                </Button>
+                <Button type="button" variant="outline-secondary" onClick={closeSidebar}>
+                  Cancel
+                </Button>
+              </div>
+            </Col>
+          </Row>
+        )}
       </Form>
     </div>
   );
 }
-

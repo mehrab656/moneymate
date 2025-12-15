@@ -1,7 +1,8 @@
-import React, { useEffect, useState, forwardRef, useImperativeHandle } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Row, Col, Button, InputGroup } from "react-bootstrap";
 import axiosClient from "../../../axios-client";
 import { notification } from "../../../components/ToastNotification.jsx";
+import MainLoader from "../../../components/loader/MainLoader.jsx";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
 import { useTheme } from "@mui/material/styles";
 import { createInputGroupTextStyle } from "../../../styles/formThemeStyles.js";
@@ -10,7 +11,7 @@ const _initialBank = {
   bank_name: "",
 };
 
-export default forwardRef(function BankFormSidebar({ bankId = null, onSuccess, formId: formIdProp = null, hideInternalFooter = false }, ref) {
+export default function BankFormSidebar({ bankId = null, onSuccess, formId: formIdProp = null, hideInternalFooter = false }) {
   const [formData, setFormData] = useState(_initialBank);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -51,8 +52,11 @@ export default forwardRef(function BankFormSidebar({ bankId = null, onSuccess, f
     setFormData({ ...formData, [name]: value });
   };
 
-  const bankSubmit = async (event, addMore) => {
-    event.preventDefault();
+  const bankSubmit = async (event, addMoreParam) => {
+    event?.preventDefault?.();
+    const submitter = event?.nativeEvent?.submitter;
+    const action = submitter?.getAttribute?.('data-action') || submitter?.value || '';
+    const addMore = typeof addMoreParam === "boolean" ? addMoreParam : action === 'save';
     setLoading(true);
     setErrors({});
 
@@ -83,15 +87,6 @@ export default forwardRef(function BankFormSidebar({ bankId = null, onSuccess, f
     }
   };
 
-  // Expose imperative methods for sticky footer actions
-  useImperativeHandle(ref, () => ({
-    save: () => {
-      bankSubmit({ preventDefault: () => {} }, true);
-    },
-    saveAndExit: () => {
-      bankSubmit({ preventDefault: () => {} }, false);
-    },
-  }));
 
   if (loading && bankId && formData.bank_name === "") {
     return (
@@ -105,7 +100,8 @@ export default forwardRef(function BankFormSidebar({ bankId = null, onSuccess, f
 
   return (
     <div className="p-3">
-      <Form id={formId} onSubmit={(e) => bankSubmit(e, true)}>
+      <MainLoader loaderVisible={loading} />
+      <Form id={formId} onSubmit={(e) => bankSubmit(e)}>
         <Row>
           <Col xs={12} md={12}>
             <InputGroup className={errors.bank_name ? "mb-1" : "mb-3"} size="sm">
@@ -132,7 +128,8 @@ export default forwardRef(function BankFormSidebar({ bankId = null, onSuccess, f
               {bankId ? (
                 <Button
                   variant="warning"
-                  onClick={(e) => bankSubmit(e, false)}
+                  type="submit"
+                  data-action="save_exit"
                   disabled={loading}
                   className="flex-fill"
                 >
@@ -142,7 +139,8 @@ export default forwardRef(function BankFormSidebar({ bankId = null, onSuccess, f
                 <>
                   <Button
                     variant="primary"
-                    onClick={(e) => bankSubmit(e, true)}
+                    type="submit"
+                    data-action="save"
                     disabled={loading}
                     className="flex-fill"
                   >
@@ -150,7 +148,8 @@ export default forwardRef(function BankFormSidebar({ bankId = null, onSuccess, f
                   </Button>
                   <Button
                     variant="secondary"
-                    onClick={(e) => bankSubmit(e, false)}
+                    type="submit"
+                    data-action="save_exit"
                     disabled={loading}
                     className="flex-fill"
                   >
@@ -164,4 +163,4 @@ export default forwardRef(function BankFormSidebar({ bankId = null, onSuccess, f
       </Form>
     </div>
   );
-});
+}

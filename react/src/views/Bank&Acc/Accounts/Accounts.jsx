@@ -1,18 +1,17 @@
-import {Link} from "react-router-dom";
-import React, {useContext, useEffect, useState} from "react";
+import { Link } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
 import axiosClient from "../../../axios-client.js";
 import WizCard from "../../../components/WizCard.jsx";
-import {Button, Modal} from "react-bootstrap";
+import { Button, Modal, Form, InputGroup } from "react-bootstrap";
 import Swal from "sweetalert2";
-import Pagination from "react-bootstrap/Pagination";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faBank} from "@fortawesome/free-solid-svg-icons";
-import {SettingsContext} from "../../../contexts/SettingsContext.jsx";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBank } from "@fortawesome/free-solid-svg-icons";
+import { SettingsContext } from "../../../contexts/SettingsContext.jsx";
 import ActionButtonHelpers from "../../../helper/ActionButtonHelpers.jsx";
 import SummeryCard from "../../../components/SummeryCard.jsx";
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward';
-import AddCardTwoToneIcon from '@mui/icons-material/AddCardTwoTone';
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
+import AddCardTwoToneIcon from "@mui/icons-material/AddCardTwoTone";
 import MainLoader from "../../../components/loader/MainLoader.jsx";
 import { notification } from "../../../components/ToastNotification.jsx";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
@@ -20,672 +19,685 @@ import AccountFormSidebar from "./AccountFormSidebar.jsx";
 import AccountDetails from "./AccountDetails.jsx";
 import WalletFormSidebar from "../../Wallets/WalletFormSidebar.jsx";
 import useDebouncedValue from "../../../hooks/useDebouncedValue.js";
+import CommonTable from "../../../components/table/CommonTable.jsx";
+import { useTheme } from "@mui/material/styles";
+import { createInputGroupTextStyle } from "../../../styles/formThemeStyles.js";
+import SidebarFooterButtons from "../../../components/SidebarFooterButtons.jsx";
 
 export default function Accounts() {
+  const [loading, setLoading] = useState(false);
+  const [accounts, setAccounts] = useState([]);
+  const [wallets, setWallets] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [searchText, setSearchText] = useState("");
+  const debouncedSearchText = useDebouncedValue(searchText, 300);
+  const [showModal, setShowModal] = useState(false);
+  const [bankAccountBalance, setBankAccountBalance] = useState(0);
+  const [handCashBalance, setHandCashBalance] = useState(0);
+  const [totalBalance, setTotalBalance] = useState(0);
 
-    const [loading, setLoading] = useState(false);
-    const [accounts, setAccounts] = useState([]);
-    const [wallets, setWallets] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalCount, setTotalCount] = useState(0);
-    const [searchText, setSearchText] = useState("");
-    const debouncedSearchText = useDebouncedValue(searchText, 300);
-    const [showModal, setShowModal] = useState(false);
-    const [bankAccountBalance,setBankAccountBalance]=useState(0);
-    const [handCashBalance,setHandCashBalance]=useState(0);
-    const [totalBalance,setTotalBalance]=useState(0);
+  const [banks, setBanks] = useState([]);
 
-    const [banks, setBanks] = useState([]);
+  const { applicationSettings, userRole, themeMode } =
+    useContext(SettingsContext);
+  const { num_data_per_page, default_currency } = applicationSettings;
+  const theme = useTheme();
+  const inputGroupTextStyle = createInputGroupTextStyle(theme);
+  const isDark = themeMode === "dark";
+  const inputStyle = {
+    backgroundColor: isDark ? "#1c1f24" : "#fff",
+    color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+    borderColor: isDark ? "#3a4048" : "#c5ccd6",
+    fontSize: "0.875rem",
+    minHeight: 36,
+  };
 
+  const pageSize = num_data_per_page;
+  const totalPages = Math.ceil(totalCount / pageSize);
 
-    const {applicationSettings, userRole} = useContext(SettingsContext);
-    const {
-        num_data_per_page,
-        default_currency
-    } = applicationSettings;
+  const [bankAccount, setBankAccount] = useState({
+    id: null,
+    bank_name_id: null,
+    account_name: "",
+    account_number: "",
+    balance: null,
+  });
 
-    const pageSize = num_data_per_page;
-    const totalPages = Math.ceil(totalCount / pageSize);
+  const [errors, setErrors] = useState({
+    account_name: "",
+    bank_name_id: "",
+    account_number: "",
+    balance: "",
+  });
 
-    const [bankAccount, setBankAccount] = useState({
-        id: null,
-        bank_name_id: null,
-        account_name: '',
-        account_number: '',
-        balance: null
+  const [selectedBankNameId, setSelectedBankNameId] = useState(null);
+
+  const showCreateModal = () => {
+    setBankAccount({
+      id: null,
+      bank_name_id: null,
+      account_name: "",
+      account_number: "",
+      balance: null,
+    });
+    setErrors({
+      account_name: "",
+      bank_name_id: "",
+      account_number: "",
+      balance: "",
+    });
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+  const getAccountBalances = () => {
+    //get total account  balance
+    axiosClient.get("/total-bankAccount-balance").then(({ data }) => {
+      setBankAccountBalance(data.balance);
     });
 
-    const [errors, setErrors] = useState({
-        account_name: '',
-        bank_name_id: '',
-        account_number: '',
-        balance: ''
+    //get total wallet balance balance
+    axiosClient.get("/total-wallet-balance").then(({ data }) => {
+      setHandCashBalance(data.balance);
     });
+    //get total account balance
+    axiosClient.get("/total-balance").then(({ data }) => {
+      setTotalBalance(data.balance);
+    });
+  };
 
-    const [selectedBankNameId, setSelectedBankNameId] = useState(null);
+  const getWallets = () => {
+    axiosClient
+      .get("/wallets")
+      .then(({ data }) => {
+        setWallets(Array.isArray(data) ? data : data?.data || []);
+      })
+      .catch(() => {});
+  };
 
-    const showCreateModal = () => {
-        setBankAccount({
+  useEffect(() => {
+    document.title = "Manage Bank Account";
+    axiosClient
+      .get("/all-bank")
+      .then(({ data }) => {
+        setBanks(data.data);
+      })
+      .catch((error) => {
+        const response = error.response;
+        if (response && response.status === 422) {
+          setErrors(response.data.errors);
+        }
+      });
+
+    getAccounts(currentPage, pageSize);
+    getWallets();
+    getAccountBalances();
+  }, [currentPage, pageSize]);
+
+  const getAccounts = (page, pageSize) => {
+    setLoading(true);
+    axiosClient
+      .get("/bank-accounts", { params: { page, pageSize } })
+      .then(({ data }) => {
+        setLoading(false);
+        setAccounts(data.data);
+        setTotalCount(data.total);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const edit = (bankAccount) => {
+    setBankAccount(bankAccount);
+    setSelectedBankNameId(bankAccount.bank_name_id);
+    setErrors({
+      account_name: "",
+      bank_name_id: "",
+      account_number: "",
+      balance: "",
+    });
+    setShowModal(true);
+  };
+
+  const bankAccountSubmit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    if (bankAccount.id) {
+      axiosClient
+        .put(`/bank-account/${bankAccount.id}`, bankAccount)
+        .then((data) => {
+          // setNotification("Bank account information has been updated");
+          setShowModal(false);
+          setSearchText("");
+          setCurrentPage(1);
+          getAccounts(1, pageSize);
+          getAccountBalances();
+          setBankAccount({
             id: null,
             bank_name_id: null,
-            account_name: '',
-            account_number: '',
-            balance: null
-        });
-        setErrors({
-            account_name: '',
-            bank_name_id: '',
-            account_number: '',
-            balance: ''
-        });
-        setShowModal(true);
-    };
+            account_name: "",
+            account_number: "",
+            balance: null,
+          });
+          setErrors({
+            account_name: "",
+            bank_name_id: "",
+            account_number: "",
+            balance: "",
+          });
 
-    const handleCloseModal = () => {
-        setShowModal(false);
-    };
-    const getAccountBalances=()=>{
-        //get total account  balance
-        axiosClient.get('/total-bankAccount-balance').then(({data}) => {
-            setBankAccountBalance(data.balance)
+          notification("success", data.message, data.description);
+          setLoading(false);
+        })
+        .catch((err) => {
+          const error = err.response.data;
+          notification("error", error?.message, error.description);
+          setLoading(false);
         });
+    } else {
+      axiosClient
+        .post("/bank-account/add", bankAccount)
+        .then((data) => {
+          // setNotification('Bank account has been added');
+          setShowModal(false);
+          setSearchText("");
+          setCurrentPage(1);
+          getAccounts(1, pageSize);
+          getAccountBalances();
+          setBankAccount({
+            id: null,
+            bank_name_id: null,
+            account_name: "",
+            account_number: "",
+            balance: null,
+          });
+          setErrors({
+            account_name: "",
+            bank_name_id: "",
+            account_number: "",
+            balance: "",
+          });
+          notification("success", data.message, data.description);
 
-        //get total wallet balance balance
-        axiosClient.get('/total-wallet-balance').then(({data}) => {
-            setHandCashBalance(data.balance)
-        });
-        //get total account balance
-        axiosClient.get('/total-balance').then(({data}) => {
-            setTotalBalance(data.balance)
+          setLoading(false);
+        })
+        .catch((err) => {
+          const error = err.response.data;
+          notification("error", error?.message, error.description);
+          setLoading(false);
         });
     }
+  };
 
-    const getWallets = () => {
+  const onDelete = (account) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: `Removing bank account number ${account.account_number} will also erase all the associated data from the system`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
         axiosClient
-            .get('/wallets')
-            .then(({ data }) => {
-                setWallets(Array.isArray(data) ? data : (data?.data || []));
-            })
-            .catch(() => {});
-    }
+          .delete(`/bank-account/${account.id}`)
+          .then(({ data }) => {
+            getAccounts(currentPage, pageSize);
+            notification("success", data?.message, data?.description);
+          })
+          .catch((err) => {
+            const error = err.response.data;
+            notification("error", error?.message, error.description);
+            setLoading(false);
+          });
+      }
+    });
+  };
 
-    useEffect(() => {
-        document.title = "Manage Bank Account";
-        axiosClient.get('/all-bank')
-            .then(({data}) => {
-                setBanks(data.data);
-            }).catch((error) => {
-            const response = error.response;
-            if (response && response.status === 422) {
-                setErrors(response.data.errors);
-            }
-        });
+  const handleSearch = (e) => {
+    setSearchText(e.target.value);
+  };
 
-        getAccounts(currentPage, pageSize);
-        getWallets();
-        getAccountBalances();
-    }, [currentPage, pageSize]);
+  const filteredAccounts = accounts.filter(
+    (account) =>
+      account.customer_name
+        .toLowerCase()
+        .includes(debouncedSearchText.toLowerCase()) ||
+      account.account_name
+        .toLowerCase()
+        .includes(debouncedSearchText.toLowerCase()) ||
+      account.bank_name
+        .toLowerCase()
+        .includes(debouncedSearchText.toLowerCase()) ||
+      account.account_number.includes(debouncedSearchText) ||
+      account.balance.toString().includes(debouncedSearchText)
+  );
 
-    const getAccounts = (page, pageSize) => {
-        setLoading(true);
-        axiosClient
-            .get("/bank-accounts", {params: {page, pageSize}})
-            .then(({data}) => {
-                setLoading(false);
-                setAccounts(data.data);
-                setTotalCount(data.total);
-            })
-            .catch(() => {
-                setLoading(false);
-            });
-    };
+  const filteredWallets = wallets.filter(
+    (wallet) =>
+      (wallet?.name || "")
+        .toLowerCase()
+        .includes(debouncedSearchText.toLowerCase()) ||
+      (wallet?.balance ?? "").toString().includes(debouncedSearchText)
+  );
 
+  // Sidebar actions for Accounts
+  const { showQuickDetails, showLargeContent } = useSidebarActions();
 
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
-    };
-
-    const paginationItems = [];
-    for (let i = 1; i <= totalPages; i++) {
-        paginationItems.push(
-            <Pagination.Item
-                key={i}
-                active={i === currentPage}
-                onClick={() => handlePageChange(i)}>
-                {i}
-            </Pagination.Item>
-        );
-    }
-
-    const edit = (bankAccount) => {
-        setBankAccount(bankAccount);
-        setSelectedBankNameId(bankAccount.bank_name_id);
-        setErrors({
-            account_name: '',
-            bank_name_id: '',
-            account_number: '',
-            balance: ''
-        });
-        setShowModal(true);
-    }
-
-    const bankAccountSubmit = (e) => {
-        e.preventDefault();
-        setLoading(true)
-        if (bankAccount.id) {
-            axiosClient.put(`/bank-account/${bankAccount.id}`, bankAccount)
-                .then((data) => {
-                    // setNotification("Bank account information has been updated");
-                    setShowModal(false);
-                    setSearchText("");
-                    setCurrentPage(1);
-                    getAccounts(1, pageSize);
-                    getAccountBalances();
-                    setBankAccount({
-                        id: null,
-                        bank_name_id: null,
-                        account_name: '',
-                        account_number: '',
-                        balance: null
-                    });
-                    setErrors({
-                        account_name: '',
-                        bank_name_id: '',
-                        account_number: '',
-                        balance: ''
-                    });
-
-                    notification("success",data.message,data.description)
-                    setLoading(false)
-                }).catch(err => {
-                    const error = err.response.data
-                    notification('error',error?.message,error.description)
-                    setLoading(false)
-            });
-        } else {
-            axiosClient.post('/bank-account/add', bankAccount)
-                .then((data) => {
-                    // setNotification('Bank account has been added');
-                    setShowModal(false);
-                    setSearchText("");
-                    setCurrentPage(1);
-                    getAccounts(1, pageSize);
-                    getAccountBalances();
-                    setBankAccount({
-                        id: null,
-                        bank_name_id: null,
-                        account_name: '',
-                        account_number: '',
-                        balance: null
-                    });
-                    setErrors({
-                        account_name: '',
-                        bank_name_id: '',
-                        account_number: '',
-                        balance: ''
-                    });
-                    notification("success",data.message,data.description)
-
-                    setLoading(false)
-                }).catch(err => {
-                    const error = err.response.data
-                    notification('error',error?.message,error.description)
-                    setLoading(false)
-                });
-
-        }
-    }
-
-    const onDelete = (account) => {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: `Removing bank account number ${account.account_number} will also erase all the associated data from the system`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'Cancel',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                axiosClient.delete(`/bank-account/${account.id}`).then(({data}) => {
-                    getAccounts(currentPage, pageSize);
-                    notification('success',data?.message,data?.description)
-                }).catch(err => {
-                    const error = err.response.data
-                    notification('error',error?.message,error.description)
-                    setLoading(false)
-            });
-            }
-        });
-    };
-
-    const handleSearch = (e) => {
-        setSearchText(e.target.value);
-    };
-
-    const filteredAccounts = accounts.filter(
-        (account) =>
-            account.customer_name.toLowerCase().includes(debouncedSearchText.toLowerCase()) ||
-            account.account_name.toLowerCase().includes(debouncedSearchText.toLowerCase()) ||
-            account.bank_name.toLowerCase().includes(debouncedSearchText.toLowerCase()) ||
-            account.account_number.includes(debouncedSearchText) ||
-            account.balance.toString().includes(debouncedSearchText)
+  const showAccountDetails = (acc) => {
+    showQuickDetails(
+      "Account Details",
+      <AccountDetails accountId={acc?.id} data={acc} />
     );
-
-    const filteredWallets = wallets.filter(
-        (wallet) =>
-            (wallet?.name || '').toLowerCase().includes(debouncedSearchText.toLowerCase()) ||
-            (wallet?.balance ?? '').toString().includes(debouncedSearchText)
-    );
-
-
-    // Sidebar actions for Accounts
-    const { showQuickDetails, showLargeContent } = useSidebarActions();
-
-    const showAccountDetails = (acc) => {
-        showQuickDetails(
-            "Account Details",
-            <AccountDetails accountId={acc?.id} data={acc} />
-        );
-    };
+  };
 
     const openCreateSidebar = () => {
+        const formId = "account-form-global";
         showLargeContent(
             "Add New Bank Account",
-            <AccountFormSidebar onSuccess={() => { getAccounts(currentPage, pageSize); getAccountBalances(); }} />,
-            { width: "xl" }
+            <AccountFormSidebar
+                accountId={null}
+                formId={formId}
+                hideInternalFooter={true}
+                onSuccess={() => { getAccounts(currentPage, pageSize); getAccountBalances(); }} />,
+            {
+                width: "xl",
+                footerActions: (
+                    <SidebarFooterButtons
+                        actions={[
+                            { label: "Save", type: "submit", formId, 'data-action': 'save' },
+                            { label: "Save and Exit", type: "submit", formId, 'data-action': 'save_exit' },
+                        ]}
+                    />
+                )
+            }
         );
     };
 
-    const openCreateWalletSidebar = () => {
-        showLargeContent(
-            "Add New Wallet",
-            <WalletFormSidebar onSuccess={() => { getWallets(); getAccountBalances(); }} />,
-            { width: "md" }
-        );
-    };
+  const openCreateWalletSidebar = () => {
+    const formId = "wallet-form-global";
+    showLargeContent(
+      "Add New Wallet",
+      <WalletFormSidebar
+        formId={formId}
+        hideInternalFooter={true}
+        onSuccess={() => {
+          getWallets();
+          getAccountBalances();
+        }}
+      />,
+      {
+        width: "md",
+        footerActions: (
+          <SidebarFooterButtons
+            actions={[
+              { label: "Save", type: "submit", formId, 'data-action': 'save' },
+              { label: "Save and Exit", type: "submit", formId, 'data-action': 'save_exit' },
+            ]}
+          />
+        )
+      }
+    );
+  };
 
     const openEditSidebar = (element) => {
+        const formId = "account-form-global";
         showLargeContent(
             "Update Bank Account",
-            <AccountFormSidebar accountId={element?.id} onSuccess={() => { getAccounts(currentPage, pageSize); getAccountBalances(); }} />,
-            { width: "xl" }
+            <AccountFormSidebar
+                accountId={element?.id}
+                formId={formId}
+                hideInternalFooter={true}
+                onSuccess={() => { getAccounts(currentPage, pageSize); getAccountBalances(); }} />,
+            {
+                width: "xl",
+                footerActions: (
+                    <SidebarFooterButtons
+                        actions={[
+                            { label: "Update", type: "submit", formId, 'data-action': 'save_exit' },
+                        ]}
+                    />
+                )
+            }
         );
     };
 
-    const actionParams = [
-        {
-            actionName: 'Edit',
-            type: "modal",
-            route: "",
-            actionFunction: openEditSidebar,
-            permission: 'account_edit',
-            textClass:'text-info',
-        },
-        {
-            actionName: 'View',
-            type: "modal",
-            route: "",
-            actionFunction: showAccountDetails,
-            permission: 'account_view',
-            textClass:'text-warning'
-        },
-        {
-            actionName: 'Delete',
-            type: "modal",
-            route: "",
-            actionFunction: onDelete,
-            permission: 'account_delete',
-            textClass:'text-danger'
-        },
-    ];
+  const actionParams = [
+    {
+      actionName: "Edit",
+      type: "modal",
+      route: "",
+      actionFunction: openEditSidebar,
+      permission: "account_edit",
+      textClass: "text-info",
+    },
+    {
+      actionName: "View",
+      type: "modal",
+      route: "",
+      actionFunction: showAccountDetails,
+      permission: "account_view",
+      textClass: "text-warning",
+    },
+    {
+      actionName: "Delete",
+      type: "modal",
+      route: "",
+      actionFunction: onDelete,
+      permission: "account_delete",
+      textClass: "text-danger",
+    },
+  ];
 
-    const filter = () =>{
-        return '';
-    }
+  const filter = () => {
+    return "";
+  };
 
-
-    return (
-        <div>
-            <MainLoader loaderVisible={loading} />
-            <div className="mb-4">
-                <div className="row g-4">
-                    <div className="col-md-6 col-lg-4">
-
-                        <SummeryCard value={bankAccountBalance} summary="Account Balance" icon={<AttachMoneyIcon/>}
-                                     iconClassName="icon-success" currency={default_currency}/>
-                    </div>
-                    <div className="col-md-6 col-lg-4">
-
-                        <SummeryCard value={handCashBalance} summary="Wallet Balance" icon={<ArrowOutwardIcon/>}
-                                     iconClassName="icon-danger" currency={default_currency}/>
-                    </div>
-                    <div className="col-md-6 col-lg-4">
-
-                        <SummeryCard value={totalBalance} summary="Total Balance"
-                                     icon={<AddCardTwoToneIcon/>} iconClassName="icon-success" currency={default_currency}/>
-                    </div>
-                </div>
-            </div>
-
-            <WizCard className="animated fadeInDown">
-
-                <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
-                    <h1 className="title-text mb-0">Bank Account</h1>
-                    <div>
-                        <Link className="custom-btn btn-add" onClick={openCreateSidebar}><FontAwesomeIcon icon={faBank}/> Add
-                            New Bank Account</Link>
-                    </div>
-                </div>
-
-                <div className="alert alert-warning" role="alert">
-                    You need to create a bank before add a bank account, if you haven't added a bank yet, <Link
-                    to="/banks">Click
-                    Here</Link> to create a bank first.
-                </div>
-
-                <div className="mb-4">
-                    <input className="custom-form-control"
-                           type="text"
-                           placeholder="Search Account..."
-                           value={searchText}
-                           onChange={handleSearch}
-                    />
-
-                </div>
-                <div className="table-responsive-sm">
-                    <table className="table table-bordered custom-table">
-                        <thead>
-                        <tr>
-                            {
-                                userRole === 'admin'&&
-                                <th>id</th>
-                            }
-                            <th>USER NAME</th>
-                            <th className="text-center">ACCOUNT HOLDER NAME</th>
-                            <th className="text-center">BANK NAME</th>
-                            <th className="text-center">ACCOUNT NUMBER</th>
-                            <th className="text-center">AVAILABLE BALANCE</th>
-                            {userRole ==='admin' && <th className="text-center" width="20%">ACTIONS</th>}
-                            
-                        </tr>
-                        </thead>
-
-                        {loading && (
-                            <tbody>
-                            <tr>
-                                <td colSpan={6} className="text-center">
-                                    Loading....
-                                </td>
-                            </tr>
-                            </tbody>
-                        )}
-                        {!loading && (
-                            <tbody>
-                            {filteredAccounts.length === 0 ? (
-                                <tr>
-                                    <td colSpan={6} className="text-center">
-                                        No bank account found
-                                    </td>
-                                </tr>
-                            ) : (
-                                filteredAccounts.map((account) => (
-                                    <tr key={account.id}>
-                                        {
-                                            userRole === 'admin'&&
-                                            <td>{account.id}</td>
-                                        }
-                                        <td>{account.customer_name}</td>
-                                        <td className="text-center">{account.account_name}</td>
-                                        <td className="text-center">{account.bank_name}</td>
-                                        <td className="text-center">{account.account_number}</td>
-                                        <td className="text-center">{default_currency+' '}{account.balance}</td>
-                                        {/* {userRole ==='admin' && 
-                                        <td className="text-center">
-                                            <div className="d-flex flex-wrap justify-content-center gap-2">
-                                            <span>
-                                            <Link className="btn-edit" to={`#`} onClick={() => edit(account)}>
-                                            <FontAwesomeIcon icon={faEdit}/> Edit
-                                            </Link>
-                                                </span>
-                                                    <span>
-                                                    <a className="btn-delete"
-                                                    onClick={(e) => onDelete(account)}><FontAwesomeIcon icon={faTrash}/> Delete</a>
-                                                </span>
-                                                </div>
-                                            </td>
-                                        } */}
-                                        {userRole ==='admin' && 
-                                         <td>
-                                            <ActionButtonHelpers
-                                                actionBtn={actionParams}
-                                                element={account}
-                                            />
-                                        </td>}
-                                       
-                                    </tr>
-                                ))
-                            )}
-                            </tbody>
-                        )}
-                    </table>
-                </div>
-                {totalPages > 1 && (
-                    <Pagination>
-                        <Pagination.Prev
-                            disabled={currentPage === 1}
-                            onClick={() => handlePageChange(currentPage - 1)}
-                        />
-                        {paginationItems}
-                        <Pagination.Next
-                            disabled={currentPage === totalPages}
-                            onClick={() => handlePageChange(currentPage + 1)}
-                        />
-                    </Pagination>
-                )}
-            </WizCard>
-
-
-            <WizCard className="animated fadeInDown mt-4">
-
-                <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
-                    <h1 className="title-text mb-0">Wallet/Handcash</h1>
-                    <div>
-                        <Link className="custom-btn btn-add" onClick={openCreateWalletSidebar}><FontAwesomeIcon icon={faBank}/> Add
-                            New Wallet</Link>
-                    </div>
-                </div>
-               
-                <div className="mb-4">
-                    <input className="custom-form-control"
-                           type="text"
-                           placeholder="Search Account..."
-                           value={searchText}
-                           onChange={handleSearch}
-                    />
-
-                </div>
-                <div className="table-responsive-sm">
-                    <table className="table table-bordered custom-table">
-                        <thead>
-                        <tr>
-                            <th>WALLET NAME</th>
-                            <th className="text-center">AVAILABLE BALANCE</th>
-                            {userRole ==='admin' && <th className="text-center" width="20%">ACTIONS</th>}
-                            
-                        </tr>
-                        </thead>
-
-                        {loading && (
-                            <tbody>
-                            <tr>
-                                <td colSpan={6} className="text-center">
-                                    Loading....
-                                </td>
-                            </tr>
-                            </tbody>
-                        )}
-                        {!loading && (
-                            <tbody>
-                            {filteredWallets.length === 0 ? (
-                                <tr>
-                                    <td colSpan={6} className="text-center">
-                                        No wallet found
-                                    </td>
-                                </tr>
-                            ) : (
-                                filteredWallets.map((wallet) => (
-                                    <tr key={wallet.id}>
-                                        <td>{wallet.name}</td>
-                                        <td className="text-center">{default_currency}{wallet.balance}</td>
-                                        {/* {userRole ==='admin' && 
-                                        <td className="text-center">
-                                            <div className="d-flex flex-wrap justify-content-center gap-2">
-                                            <span>
-                                            <Link className="btn-edit" to={`#`}>
-                                            <FontAwesomeIcon icon={faEdit}/> Edit
-                                            </Link>
-                                                </span>
-                                                    <span>
-                                                    <a className="btn-delete"
-                                                    onClick={(e) => {}}><FontAwesomeIcon icon={faTrash}/> Delete</a>
-                                                </span>
-                                                </div>
-                                            </td>
-                                        } */}
-                                        {userRole ==='admin' && 
-                                         <td>
-                                            <ActionButtonHelpers
-                                                actionBtn={actionParams}
-                                                element={wallet}
-                                            />
-                                        </td>}
-                                        
-                                    </tr>
-                                ))
-                            )}
-                            </tbody>
-                        )}
-                    </table>
-                </div>
-                {totalPages > 1 && (
-                    <Pagination>
-                        <Pagination.Prev
-                            disabled={currentPage === 1}
-                            onClick={() => handlePageChange(currentPage - 1)}
-                        />
-                        {paginationItems}
-                        <Pagination.Next
-                            disabled={currentPage === totalPages}
-                            onClick={() => handlePageChange(currentPage + 1)}
-                        />
-                    </Pagination>
-                )}
-            </WizCard>
-
-            <Modal show={showModal} centered onHide={handleCloseModal} className="custom-modal">
-                <Modal.Header closeButton>
-                    <Modal.Title>
-                        {bankAccount.id && <span className="title-text">Update bank account information</span>}
-                        {!bankAccount.id && <span className="title-text">Add new bank account</span>}
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-
-                    <div className="form-group">
-                        <label htmlFor="account_name" className="custom-form-label">
-                            Account holders Name
-                        </label>
-                        <input
-                            className="custom-form-control"
-                            value={bankAccount.account_name || ''}
-                            type="text"
-                            onChange={(e) =>
-                                setBankAccount({...bankAccount, account_name: e.target.value})
-                            }
-                            placeholder="Account holders Name"
-                        />
-                        {errors.account_name && (
-                            <div className="error-message mt-2">{errors.account_name}</div>
-                        )}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="bank_name" className="custom-form-label">
-                            Bank Name
-                        </label>
-                        <select
-                            className="custom-form-control"
-                            id="bank-name"
-                            name="bank-name"
-                            value={selectedBankNameId || ''}
-                            onChange={(event) => {
-                                const value = event.target.value || '';
-                                setSelectedBankNameId(value);
-                                setBankAccount({
-                                    ...bankAccount,
-                                    bank_name_id: parseInt(value),
-                                });
-                            }}
-                        >
-                            <option defaultValue>Select a bank account</option>
-                            {banks.map((bank) => (
-                                <option key={bank.id} value={bank.id}>
-                                    {bank.bank_name}
-                                </option>
-                            ))}
-                        </select>
-                        {errors.bank_name_id && (
-                            <div className="error-message mt-2">{errors.bank_name_id}</div>
-                        )}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="account_number" className="custom-form-label">
-                            Account Number
-                        </label>
-                        <input
-                            className="custom-form-control"
-                            value={bankAccount.account_number || ''}
-                            type="text"
-                            onChange={(e) =>
-                                setBankAccount({...bankAccount, account_number: e.target.value})
-                            }
-                            placeholder="Account Number"
-                        />
-                        {errors.account_number && (
-                            <div className="error-message mt-2">{errors.account_number}</div>
-                        )}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="initial_balance" className="custom-form-label">
-                            Initial Balance
-                        </label>
-                        <input
-                            className="custom-form-control"
-                            value={bankAccount.balance || ''}
-                            type="text"
-                            onChange={(e) =>
-                                setBankAccount({...bankAccount, balance: e.target.value})
-                            }
-                            placeholder="Balance"
-                        />
-                        {errors.balance && <div className="error-message mt-2">{errors.balance}</div>}
-                    </div>
-
-
-                </Modal.Body>
-                <Modal.Footer>
-
-                    <Button className="btn-sm" variant="primary" onClick={bankAccountSubmit}>
-                        Save
-                    </Button>
-                    <Button className="btn-sm" variant="secondary" onClick={handleCloseModal}>
-                        Close
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-
+  return (
+    <div>
+      <MainLoader loaderVisible={loading} />
+      <div className="mb-4">
+        <div className="row g-4">
+          <div className="col-md-6 col-lg-4">
+            <SummeryCard
+              value={bankAccountBalance}
+              summary="Account Balance"
+              icon={<AttachMoneyIcon />}
+              iconClassName="icon-success"
+              currency={default_currency}
+            />
+          </div>
+          <div className="col-md-6 col-lg-4">
+            <SummeryCard
+              value={handCashBalance}
+              summary="Wallet Balance"
+              icon={<ArrowOutwardIcon />}
+              iconClassName="icon-danger"
+              currency={default_currency}
+            />
+          </div>
+          <div className="col-md-6 col-lg-4">
+            <SummeryCard
+              value={totalBalance}
+              summary="Total Balance"
+              icon={<AddCardTwoToneIcon />}
+              iconClassName="icon-success"
+              currency={default_currency}
+            />
+          </div>
         </div>
-    );
+      </div>
+
+      <div className="animated fadeInDown">
+        <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
+          <h1 className="title-text mb-0">Bank Account</h1>
+          <div>
+            <Link className="custom-btn btn-add" onClick={openCreateSidebar}>
+              <FontAwesomeIcon icon={faBank} /> Add New Bank Account
+            </Link>
+          </div>
+        </div>
+
+        <div className="alert alert-warning" role="alert">
+          You need to create a bank before add a bank account, if you haven't
+          added a bank yet, <Link to="/banks">Click Here</Link> to create a bank
+          first.
+        </div>
+
+        <div className="mb-3">
+          <InputGroup
+            className="mb-3"
+            size="sm"
+            style={{ maxWidth: "520px", flex: "1 1 320px" }}
+          >
+            <InputGroup.Text id="accounts_search" style={inputGroupTextStyle}>
+              Search
+            </InputGroup.Text>
+            <Form.Control
+              aria-describedby="accounts_search"
+              type="text"
+              size="sm"
+              value={searchText}
+              onChange={handleSearch}
+              placeholder="Search Accounts..."
+              style={{ ...inputStyle, textTransform: "capitalize" }}
+            />
+          </InputGroup>
+        </div>
+        <CommonTable
+          data={filteredAccounts}
+          tableColumns={[
+            ...(userRole === "admin"
+              ? [{ id: "id", label: "ID", align: "left" }]
+              : []),
+            { id: "customer_name", label: "User Name", align: "left" },
+            { id: "account_name", label: "Account Holder Name", align: "left" },
+            { id: "bank_name", label: "Bank Name", align: "left" },
+            { id: "account_number", label: "Account Number", align: "left" },
+            {
+              id: "balance",
+              label: "Available Balance",
+              align: "left",
+              format: (v) => `${default_currency} ${v}`,
+            },
+          ]}
+          actionButtons={actionParams}
+          pagination={{
+            totalPages: totalPages || 0,
+            totalCount: totalCount,
+            total: totalCount,
+            currentPage: currentPage,
+            handlePageChange: (e, value) => setCurrentPage(value),
+            pageSize: pageSize,
+            onRowsPerPageChange: (event) => {
+              const newSize = parseInt(event.target.value, 10);
+              if (newSize > 0) {
+                setCurrentPage(1);
+              }
+            },
+          }}
+          cardSubTitle={`Page-${currentPage} • ${filteredAccounts.length} of ${totalCount}`}
+          isFetching={loading}
+          hasError={false}
+        />
+      </div>
+
+      <div className="animated fadeInDown mt-4">
+        <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
+          <h1 className="title-text mb-0">Wallet/Handcash</h1>
+          <div>
+            <Link
+              className="custom-btn btn-add"
+              onClick={openCreateWalletSidebar}
+            >
+              <FontAwesomeIcon icon={faBank} /> Add New Wallet
+            </Link>
+          </div>
+        </div>
+
+        <div className="mb-3">
+          <InputGroup
+            className="mb-3"
+            size="sm"
+            style={{ maxWidth: "520px", flex: "1 1 320px" }}
+          >
+            <InputGroup.Text id="wallets_search" style={inputGroupTextStyle}>
+              Search
+            </InputGroup.Text>
+            <Form.Control
+              aria-describedby="wallets_search"
+              type="text"
+              size="sm"
+              value={searchText}
+              onChange={handleSearch}
+              placeholder="Search Wallet..."
+              style={{ ...inputStyle, textTransform: "capitalize" }}
+            />
+          </InputGroup>
+        </div>
+        <CommonTable
+          data={filteredWallets}
+          tableColumns={[
+            { id: "name", label: "Wallet Name", align: "left" },
+            {
+              id: "balance",
+              label: "Available Balance",
+              align: "left",
+              format: (v) => `${default_currency} ${v}`,
+            },
+          ]}
+          actionButtons={actionParams}
+          pagination={{
+            totalPages: Math.ceil((filteredWallets?.length || 0) / pageSize),
+            totalCount: filteredWallets?.length || 0,
+            total: filteredWallets?.length || 0,
+            currentPage: currentPage,
+            handlePageChange: (e, value) => setCurrentPage(value),
+            pageSize: pageSize,
+            onRowsPerPageChange: (event) => {
+              const newSize = parseInt(event.target.value, 10);
+              if (newSize > 0) {
+                setCurrentPage(1);
+              }
+            },
+          }}
+          cardSubTitle={`Page-${currentPage} • ${filteredWallets.length} wallets`}
+          isFetching={loading}
+          hasError={false}
+        />
+      </div>
+
+      <Modal
+        show={showModal}
+        centered
+        onHide={handleCloseModal}
+        className="custom-modal"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {bankAccount.id && (
+              <span className="title-text">
+                Update bank account information
+              </span>
+            )}
+            {!bankAccount.id && (
+              <span className="title-text">Add new bank account</span>
+            )}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="form-group">
+            <label htmlFor="account_name" className="custom-form-label">
+              Account holders Name
+            </label>
+            <input
+              className="custom-form-control"
+              value={bankAccount.account_name || ""}
+              type="text"
+              onChange={(e) =>
+                setBankAccount({ ...bankAccount, account_name: e.target.value })
+              }
+              placeholder="Account holders Name"
+            />
+            {errors.account_name && (
+              <div className="error-message mt-2">{errors.account_name}</div>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="bank_name" className="custom-form-label">
+              Bank Name
+            </label>
+            <select
+              className="custom-form-control"
+              id="bank-name"
+              name="bank-name"
+              value={selectedBankNameId || ""}
+              onChange={(event) => {
+                const value = event.target.value || "";
+                setSelectedBankNameId(value);
+                setBankAccount({
+                  ...bankAccount,
+                  bank_name_id: parseInt(value),
+                });
+              }}
+            >
+              <option defaultValue>Select a bank account</option>
+              {banks.map((bank) => (
+                <option key={bank.id} value={bank.id}>
+                  {bank.bank_name}
+                </option>
+              ))}
+            </select>
+            {errors.bank_name_id && (
+              <div className="error-message mt-2">{errors.bank_name_id}</div>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="account_number" className="custom-form-label">
+              Account Number
+            </label>
+            <input
+              className="custom-form-control"
+              value={bankAccount.account_number || ""}
+              type="text"
+              onChange={(e) =>
+                setBankAccount({
+                  ...bankAccount,
+                  account_number: e.target.value,
+                })
+              }
+              placeholder="Account Number"
+            />
+            {errors.account_number && (
+              <div className="error-message mt-2">{errors.account_number}</div>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="initial_balance" className="custom-form-label">
+              Initial Balance
+            </label>
+            <input
+              className="custom-form-control"
+              value={bankAccount.balance || ""}
+              type="text"
+              onChange={(e) =>
+                setBankAccount({ ...bankAccount, balance: e.target.value })
+              }
+              placeholder="Balance"
+            />
+            {errors.balance && (
+              <div className="error-message mt-2">{errors.balance}</div>
+            )}
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            className="btn-sm"
+            variant="primary"
+            onClick={bankAccountSubmit}
+          >
+            Save
+          </Button>
+          <Button
+            className="btn-sm"
+            variant="secondary"
+            onClick={handleCloseModal}
+          >
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </div>
+  );
 }
