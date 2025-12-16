@@ -30,6 +30,13 @@ export default function ActivityLogs() {
         setPage(0);
     };
 
+    const rowsPerPageOptions = React.useMemo(() => {
+        const base = [10, 25, 100, 500, 1000];
+        const current = Number(rowsPerPage) || 10;
+        const set = new Set([...base, current]);
+        return Array.from(set).sort((a, b) => a - b);
+    }, [rowsPerPage]);
+
     const getActivityData = (page, rowsPerPage) => {
         setLoading(true);
         axiosClient.get('/activity-logs', {params: {page, rowsPerPage}})
@@ -86,13 +93,32 @@ export default function ActivityLogs() {
                 </Table>
             </TableContainer>
             <TablePagination
-                rowsPerPageOptions={[20, 50, 500]}
+                rowsPerPageOptions={rowsPerPageOptions}
                 component="div"
                 count={logs.length}
-                rowsPerPage={rowsPerPage}
+                rowsPerPage={Number(rowsPerPage) || 10}
                 page={page}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
+                // showFirstButton
+                // showLastButton
+                sx={{
+                    mt: 1,
+                    px: 2,
+                    py: 1,
+                    '.MuiTablePagination-toolbar': {
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        gap: 2,
+                        flexWrap: 'nowrap',
+                    },
+                    '.MuiTablePagination-selectLabel': { mt: '15px' },
+                    '.MuiTablePagination-displayedRows': { mx: 1, mt: '15px' },
+                    '.MuiTablePagination-actions': { ml: 1 },
+                    '.MuiSelect-select': { color: 'text.primary' },
+                }}
             />
         </Paper>
 
