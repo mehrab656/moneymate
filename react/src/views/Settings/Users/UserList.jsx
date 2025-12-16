@@ -11,7 +11,7 @@ import {notification} from "../../../components/ToastNotification.jsx";
 
 
 import Iconify from "../../../components/Iconify.jsx";
-import CommonTable from "../../../helper/CommonTable.jsx";
+import CommonTable from "../../../components/table/CommonTable.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
 import Image from "react-bootstrap/Image";
@@ -21,6 +21,9 @@ import UpdateStatus from "../../HRMS/Task/UpdateStatus.jsx";
 import { useSidebarActions } from "../../../hooks/useSidebarActions.js";
 import UserFormSidebar from "./UserFormSidebar.jsx";
 import UserDetails from "./UserDetails.jsx";
+import { Box, Card, Collapse, IconButton } from "@mui/material";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { useTheme } from "@mui/material/styles";
 
 
 const defaultUserData = {
@@ -57,6 +60,8 @@ export default function UserList() {
     const [loading, setLoading] = useState(true);
     // Sidebar replaces local modals
     const [query, setQuery] = useState(defaultQuery)
+    const theme = useTheme();
+    const [showFilter, setShowFilter] = useState(false);
     const {
         num_data_per_page,
     } = applicationSettings;
@@ -70,8 +75,8 @@ export default function UserList() {
         {id: "active", label: "Active", align: "center"},
     ];
 
-    const pageSize = Number(query.limit) > 0 ? Number(query.limit) : num_data_per_page;
-    const totalPages = Math.ceil(totalCount / pageSize);
+    const pageSize = Number(query.limit) > 0 ? Number(query.limit) : (num_data_per_page || 10);
+    const totalPages = Math.ceil((totalCount || 0) / (pageSize || 10));
 
     const filteredUsers = users.filter(
         (user) =>
@@ -163,6 +168,11 @@ export default function UserList() {
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
     };
+    const handleRowsPerPageChange = (event) => {
+        const newSize = parseInt(event.target.value, 10);
+        setQuery((prev) => ({ ...prev, limit: newSize }));
+        setCurrentPage(1);
+    };
     const resetFilterParameter = () => {
         setQuery(defaultQuery);
         setHasFilter(!hasFilter);
@@ -171,18 +181,16 @@ export default function UserList() {
         setHasFilter(!hasFilter);
     }
     const filters = () => {
-        return <UserFilters search={{
-            filterByText: true,
-            placeHolderTxt: 'Search Task...',
-            searchBoxValue: searchTerm,
-            handelSearch: setSearchTerm
-        }}
-                            query={query}
-                            setQuery={setQuery}
-                            resetFilterParameter={resetFilterParameter}
-                            getUser={getUsers}
-                            handelFilter={handelFilter}
-
+        return <UserFilters
+            search={{
+                filterByText: true,
+                placeHolderTxt: 'Search by name...',
+                searchBoxValue: searchTerm,
+                handelSearch: setSearchTerm
+            }}
+            query={query}
+            setQuery={setQuery}
+            resetFilterParameter={resetFilterParameter}
         />
     }
 
@@ -215,39 +223,52 @@ export default function UserList() {
     return (
         <div>
             <MainLoader loaderVisible={loading}/>
-            <CommonTable
-                cardTitle={"List of Users"}
-                addBTN={{
-                    permission: checkPermission('user_create'),
-                    txt: "Add New User",
-                    icon: (<Iconify icon={"eva:plus-fill"}/>),
-                    linkTo: 'modal',
-                    link: openCreateForm,
+            <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span className={"page-title-header"}>Users</span>
+                {checkPermission("user_create") && (
+                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                        <button className={"btn primary-theme-btn btn-sm ml-2"} onClick={openCreateForm}>
+                            <Iconify icon={"eva:plus-fill"} />
+                        </button>
+                        <IconButton size="small" aria-label="toggle filter" onClick={() => setShowFilter((s) => !s)}>
+                            <ArrowDropDownIcon />
+                        </IconButton>
+                    </Box>
+                )}
+            </Box>
+            <Collapse in={showFilter} timeout="auto" unmountOnExit>
+                <Box sx={{ px: 2, mb: 2 }}>{filters()}</Box>
+            </Collapse>
+            <Card
+                sx={{
+                    p: 5,
+                    backgroundColor: theme.palette.background.paper,
+                    color: theme.palette.text.primary,
+                    borderRadius: 2,
+                    border: `1px solid ${theme.palette.divider}`,
+                    '& .MuiTableContainer-root': { backgroundColor: theme.palette.background.paper },
+                    '& .MuiPaper-root': { backgroundColor: theme.palette.background.paper },
+                    '& .MuiTableCell-root': { color: theme.palette.text.primary },
                 }}
-                paginations={{
-                    totalPages: totalPages,
-                    totalCount: totalCount,
-                    currentPage: currentPage,
-                    handlePageChange: handlePageChange
-                }}
-                table={{
-                    size: "small",
-                    ariaLabel: 'user table',
-                    showIdColumn: userRole === 'admin' ?? false,
-                    tableColumns: TABLE_HEAD,
-                    tableBody: {
-                        loading: loading,
-                        loadingColSpan: 6,
-                        rows: modifiedTaskData,//rendering data
-                    },
-                    actionButtons: actionParams
-                }}
-                filter={filters}
-            />
-            {/* Sidebar-powered UI replaces local modals */}
-
-
-
+                style={{ padding: "0px" }}
+            >
+                <CommonTable
+                    data={modifiedTaskData}
+                    tableColumns={TABLE_HEAD}
+                    actionButtons={actionParams}
+                    pagination={{
+                        totalPages: totalPages ?? 0,
+                        totalCount: totalCount,
+                        currentPage: currentPage,
+                        handlePageChange: handlePageChange,
+                        pageSize: pageSize,
+                        onRowsPerPageChange: handleRowsPerPageChange,
+                    }}
+                    cardSubTitle={`Page-${currentPage} (showing ${modifiedTaskData.length} results from ${totalCount})`}
+                    isFetching={loading}
+                    hasError={false}
+                />
+            </Card>
         </div>
     );
 }
