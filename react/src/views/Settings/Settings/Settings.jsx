@@ -7,6 +7,7 @@ import MainLoader from "../../../components/loader/MainLoader.jsx";
 import { notification } from "../../../components/ToastNotification.jsx";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
+import { useTheme } from "@mui/material/styles";
 
 import ProfileTab from "./Components/ProfileTab.jsx";
 import CompanyTab from "./Components/CompanyTab.jsx";
@@ -48,6 +49,8 @@ export default function Settings() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
+  const [activeKey, setActiveKey] = useState("profile");
+  const theme = useTheme();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -194,9 +197,30 @@ export default function Settings() {
   return (
     <>
       <MainLoader loaderVisible={loading} />
-      <Tabs defaultActiveKey="profile" id="settings-tab" className="mb-3" fill>
+      <Tabs
+        id="settings-tab"
+        className="mb-3"
+        fill
+        activeKey={activeKey}
+        onSelect={(k) => setActiveKey(k || "profile")}
+      >
         {tabSections.map((section, key) => (
-          <Tab eventKey={section.eventKey} title={section.title} key={`${key}`}>
+          <Tab
+            eventKey={section.eventKey}
+            title={
+              <span
+                style={{
+                  color:
+                    activeKey === section.eventKey
+                      ? theme.palette.primary.main
+                      : theme.palette.text.secondary,
+                }}
+              >
+                {section.title}
+              </span>
+            }
+            key={`${key}`}
+          >
             {sectionBody(section.eventKey)}
           </Tab>
         ))}

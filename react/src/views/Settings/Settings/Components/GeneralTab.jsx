@@ -2,36 +2,46 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import InputGroup from "react-bootstrap/InputGroup";
 import React from "react";
 import { Autocomplete, Box, Chip, TextField } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import { createInputGroupTextStyle } from "../../../../styles/formThemeStyles.js";
 
 export default function GeneralTab({ settings, handleFunc, submit }) {
+  const theme = useTheme();
+  const inputGroupTextStyle = createInputGroupTextStyle(theme);
+  const labelStyle = { ...inputGroupTextStyle, minWidth: 200 };
   return (
     <>
       <Container>
         <Form>
           <Row>
             <Col>
-              <Form.Group className="mb-3" controlId="company.currentcy">
-                <Form.Label>{"Default Currency"}</Form.Label>
+              <InputGroup className="mb-3 w-100" size="sm">
+                <InputGroup.Text id="settings_default_currency" style={labelStyle}>Default Currency</InputGroup.Text>
                 <Form.Control
+                  aria-describedby="settings_default_currency"
+                  name="default_currency"
                   type="text"
-                  placeholder="AED,EUR,USD..."
-                  value={settings.default_currency}
+                  placeholder="AED, EUR, USD..."
+                  value={settings.default_currency || ""}
                   onChange={handleFunc}
                 />
-              </Form.Group>
+              </InputGroup>
             </Col>
             <Col>
-              <Form.Group className="mb-3" controlId="company.limit">
-                <Form.Label>{"Number of Data Per Page"}</Form.Label>
+              <InputGroup className="mb-3 w-100" size="sm">
+                <InputGroup.Text id="settings_num_data_per_page" style={labelStyle}>Data Per Page</InputGroup.Text>
                 <Form.Control
-                  type="text"
-                  placeholder="10,20,100..."
-                  value={settings.num_data_per_page}
+                  aria-describedby="settings_num_data_per_page"
+                  name="num_data_per_page"
+                  type="number"
+                  placeholder="10, 20, 100..."
+                  value={settings.num_data_per_page || ""}
                   onChange={handleFunc}
                 />
-              </Form.Group>
+              </InputGroup>
             </Col>
           </Row>
           <Row>
