@@ -38,10 +38,13 @@ class UserController extends Controller
         $orderBy = $request->query('orderBy', 'id');
         $limit = $request->query('limit');
 
-        $query = DB::table('users')->select(['users.*', 'roles.role'])
+        // Use Eloquent so resources can access relations like `employee`
+        $query = User::query()
+            ->select(['users.*', 'roles.role'])
             ->join('company_user', 'users.id', '=', 'company_user.user_id')
             ->join('roles', 'company_user.role_id', '=', 'roles.id')
-            ->where('company_user.company_id', '=', Auth::user()->primary_company);
+            ->where('company_user.company_id', '=', Auth::user()->primary_company)
+            ->with('employee');
 
         if ($email) {
             $query = $query->where('users.email', $email);
@@ -55,7 +58,9 @@ class UserController extends Controller
         if ($limit) {
             $query = $query->limit($limit);
         }
-        $query = $query->skip(($page - 1) * $pageSize)->take($pageSize)
+        $query = $query
+            ->skip(($page - 1) * $pageSize)
+            ->take($pageSize)
             ->get();
 
         $totalCount = Company::with(['users'])->find(Auth::user()->primary_company)->users()->count();

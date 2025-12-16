@@ -24,6 +24,7 @@ import UserDetails from "./UserDetails.jsx";
 import { Box, Card, Collapse, IconButton } from "@mui/material";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useTheme } from "@mui/material/styles";
+import SidebarFooterButtons from "../../../components/SidebarFooterButtons.jsx";
 
 
 const defaultUserData = {
@@ -125,18 +126,42 @@ export default function UserList() {
     const { showLargeContent, showQuickDetails } = useSidebarActions();
 
     const openCreateForm = () => {
+        const createRef = React.createRef();
+        const formId = "user-form-sidebar-form";
         showLargeContent(
             "Add New User",
-            <UserFormSidebar onSuccess={getUsers} />,
-            { width: "xl" }
+            <UserFormSidebar ref={createRef} formId={formId} hideInternalFooter={true} onSuccess={getUsers} />,
+            {
+                width: "xl",
+                footerActions: (
+                    <SidebarFooterButtons
+                        actions={[
+                            { label: "Save", type: "button", onClick: () => createRef.current?.save() },
+                            { label: "Save and Exit", type: "button", onClick: () => createRef.current?.saveAndExit() }
+                        ]}
+                    />
+                )
+            }
         );
     };
 
     const openEditForm = (element) => {
+        const editRef = React.createRef();
+        const formId = "user-form-sidebar-form";
         showLargeContent(
             "Edit User",
-            <UserFormSidebar data={element} onSuccess={getUsers} />,
-            { width: "xl" }
+            <UserFormSidebar ref={editRef} formId={formId} hideInternalFooter={true} data={element} onSuccess={getUsers} />,
+            {
+                width: "xl",
+                footerActions: (
+                    <SidebarFooterButtons
+                        actions={[
+                            { label: "Save", type: "button", onClick: () => editRef.current?.save() },
+                            { label: "Save and Exit", type: "button", onClick: () => editRef.current?.saveAndExit() }
+                        ]}
+                    />
+                )
+            }
         );
     };
 

@@ -4,9 +4,10 @@ body[data-theme='dark'] .header-item strong {
 
 /* Dark mode adjustments for custom elements that don't automatically use MUI theme */
 body[data-theme='dark'] {
-    /*background-color: #121212;*/
-    /*background-color: #1E293B; !*second choice*!*/
-    background-color: #0B1220; /*3rd choice*/
+  /*background-color: #121212;*/
+  /*background-color: #1E293B; !*second choice*!*/
+  background-color: #0B1220; /*3rd choice*/
+  color-scheme: dark;
 
 }
 
@@ -118,6 +119,66 @@ body[data-theme='dark'] .custom-form-control {
     color: rgba(255, 255, 255, 0.87);
     border-color: #3a4048;
 }
+body[data-theme='dark'] .form-control[type="date"],
+body[data-theme='dark'] .input-group .form-control[type="date"] {
+    background-color: #1c1f24 !important;
+    color: rgba(255,255,255,0.87) !important;
+    border-color: #3a4048 !important;
+    color-scheme: dark;
+    appearance: auto;
+}
+body[data-theme='dark'] .form-control[type="date"]::-webkit-calendar-picker-indicator,
+body[data-theme='dark'] .input-group .form-control[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) grayscale(1) brightness(2.4) contrast(2) !important;
+  opacity: 1 !important;
+  cursor: pointer;
+}
+/* Chromium standardized pseudo (fallback) */
+body[data-theme='dark'] .form-control[type="date"]::calendar-picker-indicator,
+body[data-theme='dark'] .input-group .form-control[type="date"]::calendar-picker-indicator {
+  filter: invert(1) grayscale(1) brightness(2.4) contrast(2) !important;
+  opacity: 1 !important;
+  cursor: pointer;
+}
+body[data-theme='dark'] .form-control[type="date"]::-webkit-datetime-edit,
+body[data-theme='dark'] .form-control[type="date"]::-webkit-datetime-edit-fields-wrapper,
+body[data-theme='dark'] .form-control[type="date"]::-webkit-datetime-edit-text,
+body[data-theme='dark'] .form-control[type="date"]::-webkit-datetime-edit-month-field,
+body[data-theme='dark'] .form-control[type="date"]::-webkit-datetime-edit-day-field,
+body[data-theme='dark'] .form-control[type="date"]::-webkit-datetime-edit-year-field {
+    color: rgba(255,255,255,0.87);
+}
+/* React DatePicker popup global dark theme */
+body[data-theme='dark'] .react-datepicker {
+  background-color: #0F1724;
+  color: rgba(255, 255, 255, 0.87);
+  border: 1px solid #384049;
+  box-shadow: 0 8px 16px rgba(2, 21, 34, 0.6);
+}
+body[data-theme='dark'] .react-datepicker__header {
+  background-color: #0C1A28;
+  border-bottom-color: #384049;
+}
+body[data-theme='dark'] .react-datepicker__current-month,
+body[data-theme='dark'] .react-datepicker__day-name {
+  color: rgba(255, 255, 255, 0.87);
+}
+body[data-theme='dark'] .react-datepicker__day,
+body[data-theme='dark'] .react-datepicker__time-name {
+  color: rgba(255, 255, 255, 0.87);
+}
+body[data-theme='dark'] .react-datepicker__day:hover {
+  background-color: rgba(55, 148, 167, 0.18);
+}
+body[data-theme='dark'] .react-datepicker__day--selected,
+body[data-theme='dark'] .react-datepicker__day--keyboard-selected {
+  background-color: #3794a7;
+  color: #0F172A;
+}
+body[data-theme='dark'] .react-datepicker__navigation--previous,
+body[data-theme='dark'] .react-datepicker__navigation--next {
+  filter: invert(0.9);
+}
 body[data-theme='dark'] .form-control::placeholder,
 body[data-theme='dark'] .custom-form-control::placeholder {
     color: rgba(255, 255, 255, 0.6);
@@ -129,6 +190,7 @@ body[data-theme='light'] .custom-form-control {
     background-color: #ffffff;
     color: rgba(0,0,0,0.87);
     border-color: #c5ccd6;
+    color-scheme: light;
 }
 
 /* Themed buttons */

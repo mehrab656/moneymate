@@ -1,19 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { Form } from 'react-bootstrap';
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
+import { Form, Row, Col, InputGroup } from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
-import Button from 'react-bootstrap/Button';
 import axiosClient from '../../../axios-client.js';
 import MainLoader from '../../../components/loader/MainLoader.jsx';
 import { notification } from '../../../components/ToastNotification.jsx';
-import { useSidebarActions } from '../../../hooks/useSidebarActions.js';
+import { useSidebarActions } from '../../../components/GlobalSidebar';
 import {
   useCreateUserMutation,
   useUpdateUserMutation,
   useGetSingleUserDataQuery,
 } from '../../../api/slices/userSlice.js';
+import { useTheme } from "@mui/material/styles";
+import { createInputGroupTextStyle, createSelectStyles, createDateInputStyle } from "../../../styles/formThemeStyles.js";
+import Select from 'react-select';
+// removed react-datepicker; using native date input with themed styles
 
 const defaultUserData = {
   id: '',
@@ -34,12 +35,18 @@ const defaultUserData = {
   attachment: '',
 };
 
-export default function UserFormSidebar({ userId = null, data = null, onSuccess }) {
+export default forwardRef(function UserFormSidebar({ userId = null, data = null, onSuccess, formId: formIdProp = null, hideInternalFooter = false }, ref) {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [roleLists, setRoleLists] = useState([]);
   const [element, setElement] = useState(defaultUserData);
   const { closeSidebar } = useSidebarActions();
+  const formId = formIdProp || "user-form-sidebar-form";
+  const theme = useTheme();
+  const inputGroupTextStyle = createInputGroupTextStyle(theme);
+  const inputFontSize = "0.875rem";
+  const selectStyles = createSelectStyles(theme, inputFontSize);
+  const dateInputStyle = createDateInputStyle(theme, inputFontSize);
 
   // Fetch single user when editing by id (if no data passed)
   const shouldFetch = Boolean(userId) && !data;
@@ -79,7 +86,7 @@ export default function UserFormSidebar({ userId = null, data = null, onSuccess 
   const [createUser] = useCreateUserMutation();
   const [updateUser] = useUpdateUserMutation();
 
-  const submit = async (e) => {
+  const submit = async (e, stay = false) => {
     e.preventDefault();
     setLoading(true);
     setErrors({});
@@ -109,7 +116,11 @@ export default function UserFormSidebar({ userId = null, data = null, onSuccess 
       }
       notification('success', resp?.message, resp?.description);
       if (typeof onSuccess === 'function') onSuccess();
-      closeSidebar();
+      if (stay && !element.slug) {
+        setElement(defaultUserData);
+      } else {
+        closeSidebar();
+      }
     } catch (err) {
       const status = err?.status;
       if (status === 406) {
@@ -132,160 +143,215 @@ export default function UserFormSidebar({ userId = null, data = null, onSuccess 
     setElement({ ...element, avatar: URL.createObjectURL(file), attachment: file });
   };
 
+  // Expose imperative methods for sticky footer actions
+  useImperativeHandle(ref, () => ({
+    save: () => {
+      submit({ preventDefault: () => {} }, true);
+    },
+    saveAndExit: () => {
+      submit({ preventDefault: () => {} }, false);
+    },
+  }));
+
   return (
     <div>
       <MainLoader loaderVisible={loading || isFetching} />
       <Container>
-        <Form onSubmit={submit}>
+        <Form id={formId} onSubmit={(e) => submit(e, true)}>
           <Row>
             <Col xs={12} md={6}>
-              <Form.Group className="mb-3" controlId="first_name">
-                <Form.Label><b>First Name</b></Form.Label>
+              <InputGroup className={errors.first_name ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="user_first_name" style={inputGroupTextStyle}>First Name</InputGroup.Text>
                 <Form.Control
+                  aria-describedby="user_first_name"
+                  name="first_name"
                   type="text"
                   value={element.first_name || ''}
-                  className={'border-primary'}
                   onChange={(e) => setElement({ ...element, first_name: e.target.value })}
                 />
-              </Form.Group>
+              </InputGroup>
+              {errors.first_name && (<p className="error-message">{errors.first_name[0]}</p>)}
             </Col>
             <Col xs={12} md={6}>
-              <Form.Group className="mb-3" controlId="last_name">
-                <Form.Label><b>Last Name</b></Form.Label>
+              <InputGroup className={errors.last_name ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="user_last_name" style={inputGroupTextStyle}>Last Name</InputGroup.Text>
                 <Form.Control
+                  aria-describedby="user_last_name"
+                  name="last_name"
                   type="text"
                   value={element.last_name || ''}
-                  className={'border-primary'}
                   onChange={(e) => setElement({ ...element, last_name: e.target.value })}
                 />
-              </Form.Group>
+              </InputGroup>
+              {errors.last_name && (<p className="error-message">{errors.last_name[0]}</p>)}
             </Col>
           </Row>
 
           <Row>
             <Col xs={12} md={6}>
-              <Form.Group className="mb-3" controlId="user_name">
-                <Form.Label><b>User Name</b></Form.Label>
+              <InputGroup className={errors.user_name ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="user_username" style={inputGroupTextStyle}>User Name</InputGroup.Text>
                 <Form.Control
+                  aria-describedby="user_username"
+                  name="user_name"
                   type="text"
                   value={element.user_name || ''}
-                  className={'border-primary'}
                   onChange={(e) => setElement({ ...element, user_name: e.target.value })}
                 />
-              </Form.Group>
+              </InputGroup>
+              {errors.user_name && (<p className="error-message">{errors.user_name[0]}</p>)}
             </Col>
             <Col xs={12} md={6}>
-              <Form.Group className="mb-3" controlId="email">
-                <Form.Label><b>Email</b></Form.Label>
+              <InputGroup className={errors.email ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="user_email" style={inputGroupTextStyle}>Email</InputGroup.Text>
                 <Form.Control
+                  aria-describedby="user_email"
+                  name="email"
                   type="email"
                   value={element.email || ''}
-                  className={'border-primary'}
                   onChange={(e) => setElement({ ...element, email: e.target.value })}
                 />
-              </Form.Group>
+              </InputGroup>
+              {errors.email && (<p className="error-message">{errors.email[0]}</p>)}
             </Col>
           </Row>
 
-          <hr />
-
           <Row>
             <Col xs={12} md={6}>
-              <Form.Group className="mb-3" controlId="phone">
-                <Form.Label><b>Phone</b></Form.Label>
+              <InputGroup className={errors.phone ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="user_phone" style={inputGroupTextStyle}>Phone</InputGroup.Text>
                 <Form.Control
+                  aria-describedby="user_phone"
+                  name="phone"
                   type="text"
                   value={element.phone || ''}
-                  className={'border-primary'}
                   onChange={(e) => setElement({ ...element, phone: e.target.value })}
                 />
-              </Form.Group>
+              </InputGroup>
+              {errors.phone && (<p className="error-message">{errors.phone[0]}</p>)}
             </Col>
             <Col xs={12} md={6}>
-              <Form.Group className="mb-3" controlId="emergency_contact">
-                <Form.Label><b>Emergency Contact</b></Form.Label>
+              <InputGroup className={errors.emergency_contact ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="user_emergency_contact" style={inputGroupTextStyle}>Emergency Contact</InputGroup.Text>
                 <Form.Control
+                  aria-describedby="user_emergency_contact"
+                  name="emergency_contact"
                   type="text"
                   value={element.emergency_contact || ''}
-                  className={'border-primary'}
                   onChange={(e) => setElement({ ...element, emergency_contact: e.target.value })}
                 />
-              </Form.Group>
+              </InputGroup>
+              {errors.emergency_contact && (<p className="error-message">{errors.emergency_contact[0]}</p>)}
             </Col>
           </Row>
-
-          <hr />
-
-          <Row>
-            <Col xs={12} md={4}>
-              <Form.Group className="mb-3" controlId="dob">
-                <Form.Label><b>Date of Birth</b></Form.Label>
-                <Form.Control
-                  type="date"
-                  value={element.dob || ''}
-                  className={'border-primary'}
-                  onChange={(e) => setElement({ ...element, dob: e.target.value })}
-                />
-              </Form.Group>
-            </Col>
-            <Col xs={12} md={4}>
-              <Form.Group controlId="gender">
-                <Form.Label><b>Gender</b></Form.Label>
-                <Form.Select
-                  value={element.gender || ''}
-                  aria-label="Gender"
-                  className={'border-primary'}
-                  onChange={(e) => setElement({ ...element, gender: e.target.value })}
-                >
-                  <option value="">Select Gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                </Form.Select>
-              </Form.Group>
-            </Col>
-            <Col xs={12} md={4}>
-              <Form.Group controlId="role">
-                <Form.Label><b>Roles</b></Form.Label>
-                <Form.Select
-                  value={element.role || ''}
-                  aria-label="Roles"
-                  className={'border-primary'}
-                  onChange={(e) => setElement({ ...element, role: e.target.value })}
-                >
-                  <option value="">Set user role</option>
-                  {roleLists.length > 0 ? (
-                    roleLists.map((role) => (
-                      <option key={role.id} value={role.id}>
-                        {role.role?.toUpperCase?.() || role.role}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="">User Role</option>
-                  )}
-                </Form.Select>
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <hr />
 
           <Row>
             <Col xs={12} md={12}>
-              <Form.Group controlId="avatar" style={{ textAlign: 'center' }}>
-                {element.avatar && (
-                  <Image src={element.avatar} style={{ height: '150px', width: '150px' }} roundedCircle />
-                )}
-                <Form.Control type="file" className={'border-primary'} onChange={handleImageChange} />
-              </Form.Group>
+              <InputGroup className={errors.gender ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="user_gender" style={inputGroupTextStyle}>Gender</InputGroup.Text>
+                <div className="flex-grow-1">
+                  <Select
+                    classNamePrefix="select"
+                    styles={selectStyles}
+                    isSearchable={false}
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    aria-describedby="user_gender"
+                    name="gender"
+                    placeholder="Select Gender"
+                    value={
+                      [{ value: "male", label: "Male" }, { value: "female", label: "Female" }]
+                        .find(opt => opt.value === (element.gender || "")) || null
+                    }
+                    onChange={(opt) => setElement({ ...element, gender: opt?.value || "" })}
+                    options={[
+                      { value: "male", label: "Male" },
+                      { value: "female", label: "Female" },
+                    ]}
+                  />
+                </div>
+              </InputGroup>
+              {errors.gender && (<p className="error-message">{errors.gender[0]}</p>)}
+            </Col>
+            <Col xs={12} md={12}>
+              <InputGroup className={errors.role ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="user_role" style={inputGroupTextStyle}>Role</InputGroup.Text>
+                <div className="flex-grow-1">
+                  <Select
+                    classNamePrefix="select"
+                    styles={selectStyles}
+                    isSearchable={false}
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    aria-describedby="user_role"
+                    name="role"
+                    placeholder="Set user role"
+                    value={
+                      roleLists?.length
+                        ? roleLists
+                            .map((r) => ({ value: r.id, label: r.role?.toUpperCase?.() || r.role }))
+                            .find((opt) => opt.value === (element.role || "")) || null
+                        : null
+                    }
+                    onChange={(opt) => setElement({ ...element, role: opt?.value || "" })}
+                    options={
+                      roleLists.map((r) => ({ value: r.id, label: r.role?.toUpperCase?.() || r.role }))
+                    }
+                  />
+                </div>
+              </InputGroup>
+              {errors.role && (<p className="error-message">{errors.role[0]}</p>)}
             </Col>
           </Row>
 
-          <div className="d-flex gap-2 mt-3">
-            <Button variant="secondary" onClick={() => closeSidebar()}>Close</Button>
-            <Button variant="primary" type="submit">{element.slug ? 'Update' : 'Create'}</Button>
-          </div>
+          <Row>
+            <Col xs={12} md={6}>
+              <InputGroup className={errors.dob ? "mb-1" : "mb-3"} size="sm">
+                <InputGroup.Text id="user_dob" style={inputGroupTextStyle}>Date of Birth</InputGroup.Text>
+                <Form.Control
+                  aria-describedby="user_dob"
+                  name="dob"
+                  type="date"
+                  value={element.dob || ''}
+                  onChange={(e) => setElement({ ...element, dob: e.target.value })}
+                  style={dateInputStyle}
+                />
+              </InputGroup>
+              {errors.dob && (<p className="error-message">{errors.dob[0]}</p>)}
+            </Col>
+            <Col xs={12} md={6}>
+              <InputGroup className="mb-3" size="sm">
+                <Form.Control
+                  aria-label="Add Attachment"
+                  type="file"
+                  onChange={handleImageChange}
+                  accept="image/*"
+                  placeholder="Add Attachment"
+                  name="avatar"
+                  className="file-input-secondary"
+                  style={{
+                    backgroundColor: theme.palette.background.paper,
+                    '--cms-secondary-bg': theme.palette.secondary.main,
+                    '--cms-secondary-contrast': theme.palette.getContrastText(theme.palette.secondary.main),
+                  }}
+                />
+              </InputGroup>
+              {element.avatar && (
+                <div style={{ textAlign: 'center' }}>
+                  <Image src={element.avatar} style={{ height: '150px', width: '150px' }} roundedCircle />
+                </div>
+              )}
+            </Col>
+          </Row>
+
+          {!hideInternalFooter && (
+            <div className="d-flex gap-2 mt-3">
+              <button className="btn btn-secondary" type="button" onClick={() => closeSidebar()}>Close</button>
+              <button className="btn btn-primary" type="submit">{element.slug ? 'Update' : 'Create'}</button>
+            </div>
+          )}
         </Form>
       </Container>
     </div>
   );
-}
+});
