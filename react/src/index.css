@@ -3228,3 +3228,36 @@ body[data-theme='light'] .custom-table tbody tr:nth-child(even) {
 .custom-table tr.text-center td:nth-child(3) {
   text-align: right;
 }
+
+/* Utility: keep InputGroup label and control on one line */
+.input-group-nowrap {
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+}
+/* Themed footer row for report totals */
+.custom-table tfoot td,
+.custom-table tfoot th {
+  font-weight: 600;
+}
+body[data-theme='light'] .custom-table tfoot tr {
+  background-color: #F1F6FE;
+}
+body[data-theme='dark'] .custom-table tfoot tr {
+  background-color: #162034;
+}
+body[data-theme='light'] .custom-table tfoot td,
+body[data-theme='light'] .custom-table tfoot th {
+  background-color: #F1F6FE;
+}
+body[data-theme='dark'] .custom-table tfoot td,
+body[data-theme='dark'] .custom-table tfoot th {
+  background-color: #162034;
+}
+body[data-theme='light'] .custom-table tfoot td,
+body[data-theme='light'] .custom-table tfoot th {
+  border-top: 2px solid rgba(15, 23, 36, 0.12);
+}
+body[data-theme='dark'] .custom-table tfoot td,
+body[data-theme='dark'] .custom-table tfoot th {
+  border-top: 2px solid rgba(255, 255, 255, 0.12);
+}

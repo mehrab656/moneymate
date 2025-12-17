@@ -61,6 +61,7 @@ export default function SectorFilter(props) {
                   classNamePrefix="select"
                   styles={selectStyles}
                   isClearable
+                  isSearchable={false}
                   menuPortalTarget={document.body}
                   menuPosition="fixed"
                   value={

@@ -243,7 +243,35 @@ h1, h2, h3, h4, h5, h6 {
 input[type="file"],
 .form-control[type="file"],
 .input-group .form-control[type="file"] {
-    background-color: #515967 !important;
+    background-color: var(--cms-secondary-bg) !important;
+    color: var(--cms-secondary-contrast) !important;
+}
+
+/* Ensure the native file selector button matches themed background */
+.input-group .form-control[type="file"]::file-selector-button,
+.form-control[type="file"]::file-selector-button {
+    background-color: var(--cms-secondary-bg) !important;
+    color: var(--cms-secondary-contrast) !important;
+    border-color: var(--cms-secondary-bg) !important;
+}
+/* WebKit fallback */
+.input-group .form-control[type="file"]::-webkit-file-upload-button,
+.form-control[type="file"]::-webkit-file-upload-button {
+    background-color: var(--cms-secondary-bg) !important;
+    color: var(--cms-secondary-contrast) !important;
+    border-color: var(--cms-secondary-bg) !important;
+}
+
+/* Force themed button on specifically-marked inputs */
+.file-input-secondary::file-selector-button {
+    background-color: var(--cms-secondary-bg) !important;
+    color: var(--cms-secondary-contrast) !important;
+    border-color: var(--cms-secondary-bg) !important;
+}
+.file-input-secondary::-webkit-file-upload-button {
+    background-color: var(--cms-secondary-bg) !important;
+    color: var(--cms-secondary-contrast) !important;
+    border-color: var(--cms-secondary-bg) !important;
 }
 
 

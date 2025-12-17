@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import {Box, capitalize} from "@mui/material";
+import {Box, capitalize, Card} from "@mui/material";
 import TableContainer from "@mui/material/TableContainer";
 import Table from "@mui/material/Table";
 import TableHead from "@mui/material/TableHead";
@@ -10,6 +10,7 @@ import TableCell from "@mui/material/TableCell";
 import TableBody from "@mui/material/TableBody";
 import Paper from "@mui/material/Paper";
 import {makeStyles} from "@mui/styles";
+import { useTheme } from "@mui/material/styles";
 const useStyle = makeStyles(style => ({
     fontSize: {
         "& span:last-child": {
@@ -24,6 +25,7 @@ const useStyle = makeStyles(style => ({
 function RoleLists({permissions, setPermissions}) {
 
     const classes = useStyle();
+    const theme = useTheme();
 
     const moduleArray = Object.entries(permissions);
 
@@ -71,8 +73,21 @@ function RoleLists({permissions, setPermissions}) {
 
 
     return (
+        <Card
+          sx={{
+            p: 5,
+            backgroundColor: theme.palette.background.paper,
+            color: theme.palette.text.primary,
+            borderRadius: 2,
+            border: `1px solid ${theme.palette.divider}`,
+            '& .MuiTableContainer-root': { backgroundColor: theme.palette.background.paper },
+            '& .MuiPaper-root': { backgroundColor: theme.palette.background.paper },
+            '& .MuiTableCell-root': { color: theme.palette.text.primary },
+          }}
+          style={{ padding: "0px" }}
+        >
         <TableContainer component={Paper}>
-            <Table sx={{minWidth: 650}} size="small" aria-label="a dense table">
+            <Table stickyHeader sx={{minWidth: 650}} size="small" aria-label="permissions table">
                 <TableHead>
                     <TableRow>
                         <TableCell colSpan={11}>Permissions</TableCell>
@@ -165,6 +180,7 @@ function RoleLists({permissions, setPermissions}) {
                     })}
             </Table>
         </TableContainer>
+        </Card>
     );
 }
 
