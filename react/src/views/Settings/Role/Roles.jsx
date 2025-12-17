@@ -1,26 +1,24 @@
-import * as React from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell, {tableCellClasses} from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import {makeStyles} from "@mui/styles";
-import {TablePagination} from "@mui/material";
+import * as React from "react";
 import axiosClient from "../../../axios-client.js";
-import {useContext, useEffect, useState} from "react";
-
-import {styled} from '@mui/material/styles';
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPlus} from "@fortawesome/free-solid-svg-icons";
-import {Link} from "react-router-dom";
+import { useContext, useEffect, useMemo, useState } from "react";
+import { makeStyles } from "@mui/styles";
+import { styled, useTheme } from "@mui/material/styles";
+import Paper from "@mui/material/Paper";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 import ActionButtonHelpers from "../../../helper/ActionButtonHelpers.jsx";
 import Swal from "sweetalert2";
-import {notification} from "../../../components/ToastNotification.jsx";
-import {Tooltip} from "react-tooltip";
-import {SettingsContext} from "../../../contexts/SettingsContext.jsx";
-import {checkPermission} from "../../../helper/HelperFunctions.js";
+import { notification } from "../../../components/ToastNotification.jsx";
+import { Tooltip } from "react-tooltip";
+import { SettingsContext } from "../../../contexts/SettingsContext.jsx";
+import { checkPermission } from "../../../helper/HelperFunctions.js";
+import CommonTable from "../../../components/table/CommonTable.jsx";
+import { Box, Card, Collapse, IconButton, CardContent } from "@mui/material";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { Row, Col, Form, InputGroup } from "react-bootstrap";
+import Select from "react-select";
+import { createSelectStyles, createInputGroupTextStyle } from "../../../styles/formThemeStyles.js";
 const useStyles = makeStyles({
     root: {
         width: '100%',
@@ -30,194 +28,290 @@ const useStyles = makeStyles({
     },
 });
 export default function Roles() {
-    const [loading, setLoading] = useState(false);
-    const [roles, setRoles] = useState([]);
-    const [searchTerm, setSearchTerm] = useState("");
+  const theme = useTheme();
+  const [loading, setLoading] = useState(false);
+  const [roles, setRoles] = useState([]);
+  const [showFilter, setShowFilter] = useState(false);
+  const { applicationSettings } = useContext(SettingsContext);
+  const [currentPage, setCurrentPage] = useState(1);
+  const defaultQuery = { searchTerm: "", orderBy: "DESC", limit: 10 };
+  const [query, setQuery] = useState(defaultQuery);
+  const [isPaginate, setIsPaginate] = useState(false);
+  const classes = useStyles();
 
-    const classes = useStyles();
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(20);
-    const {userPermission} = useContext(SettingsContext);
+  const pageSize =
+    Number(query.limit) > 0
+      ? Number(query.limit)
+      : applicationSettings?.num_data_per_page
+      ? applicationSettings.num_data_per_page
+      : 10;
 
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
+  const getRoles = () => {
+    setLoading(true);
+    axiosClient
+      .get("/roles", { params: { page: currentPage, rowsPerPage: pageSize } })
+      .then(({ data }) => {
+        setRoles(data.data || []);
+      })
+      .finally(() => setLoading(false));
+  };
 
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(+event.target.value);
-        setPage(0);
-    };
+  useEffect(() => {
+    document.title = "Role list";
+  }, []);
 
-    const getRoles = (page, rowsPerPage) => {
-        setLoading(true);
-        axiosClient.get('/roles', {params: {page, rowsPerPage}})
-            .then(({data}) => {
-                setLoading(false);
-                setRoles(data.data);
-            })
-            .catch(() => {
-                setLoading(false);
-            })
-    }
+  useEffect(() => {
+    getRoles();
+    setIsPaginate(false);
+  }, [currentPage, pageSize]);
 
-    useEffect(() => {
-        document.title = "Role list";
-        getRoles(page, rowsPerPage);
-    }, [page, rowsPerPage]);
-    const StyledTableCell = styled(TableCell)(({theme}) => ({
-        [`&.${tableCellClasses.head}`]: {
-            backgroundColor: "#1E1E2D",
-            color: theme.palette.common.white,
-        },
-        [`&.${tableCellClasses.body}`]: {
-            fontSize: 14,
-        },
-    }));
-    let dateOptions = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
-    const showRole = (sector) => {
-        axiosClient(`/sectorsIncomeExpense/${sector.id}`).then(({data}) => {
-            // setIncomeExpense(data);
-        }).catch(e => {
-            console.warn(e)
-        })
-        // setModalSector(sector);
-        // setShowModal(true);
-    };
+  const dateOptions = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
 
-    const onDelete = (role) => {
-        Swal.fire({
-            title: "Are you sure?",
-            text: `You will not be able to recover the role !`,
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Yes, delete it!",
-            cancelButtonText: "Cancel",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                axiosClient
-                    .delete(`role/${role.id}`)
-                    .then((data) => {
-                        getRoles(page, rowsPerPage);
-                        notification('success', data?.message, data?.description)
-                    })
-                    .catch(err => {
-                        if (err.response) {
-                            const error = err.response.data
-                            notification('error', error?.message, error.description)
-                        }
-                    })
+  const showRole = (role) => {
+    // placeholder for role quick view when implemented
+  };
+
+  const onDelete = (role) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: `You will not be able to recover the role !`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axiosClient
+          .delete(`role/${role.id}`)
+          .then((data) => {
+            getRoles();
+            notification("success", data?.message, data?.description);
+          })
+          .catch((err) => {
+            if (err.response) {
+              const error = err.response.data;
+              notification("error", error?.message, error.description);
             }
-        });
-    };
-    const filters=()=>{
-        return '';
-        // filterByText:true,
-        //     placeHolderTxt:'Search by Company Name,Activity etc...',
-        //     searchBoxValue:searchTerm,
-        //     handelSearch: setSearchTerm
+          });
+      }
+    });
+  };
 
-    }
-    const actionParams = [
-        {
-            actionName: 'Edit',
-            type: "route",
-            route: "/role/",
-            actionFunction: "editModal",
-            permission: 'role_edit',
-            textClass:'text-info',
-        },
-        {
-            actionName: 'View',
-            type: "modal",
-            route: "",
-            actionFunction: showRole,
-            permission: 'role_view',
-            textClass:'text-warning'
-        },
-        {
-            actionName: 'Delete',
-            type: "modal",
-            route: "",
-            actionFunction: onDelete,
-            permission: 'role_delete',
-            textClass:'text-danger'
-        },
-    ];
-    return (
-        <Paper sx={{width: '100%', overflow: 'hidden'}} classes={"root"}>
-            <div className="row p-3">
-                <div className="col-3">
-                    <h3>Role List</h3>
-                </div>
-                <div className="col-7">
-                    <div className="mb-4">
-                        <input className="custom-form-control"
-                               type="text"
-                               placeholder="Search Roles"
-                               value={searchTerm}
-                               data-tooltip-id='search-role'
-                               data-tooltip-content={"Search Role by role name or added by user name"}
-                               onChange={(e) => setSearchTerm(e.target.value)}/>
-                        <Tooltip id='search-role'/>
+  const actionParams = [
+    {
+      actionName: "Edit",
+      type: "route",
+      route: "/role/",
+      actionFunction: "editModal",
+      permission: "role_edit",
+      textClass: "text-info",
+    },
+    {
+      actionName: "View",
+      type: "modal",
+      route: "",
+      actionFunction: showRole,
+      permission: "role_view",
+      textClass: "text-warning",
+    },
+    {
+      actionName: "Delete",
+      type: "modal",
+      route: "",
+      actionFunction: onDelete,
+      permission: "role_delete",
+      textClass: "text-danger",
+    },
+  ];
 
-                    </div>
-                </div>
-                <div className="col-2">
-                    { checkPermission('role_create') &&
-                        <div className="d-flex justify-content-between align-content-center gap-2 mb-3">
-                            <Link className="btn-add align-right mr-3"
-                                  to="/roles/new"
-                                  data-tooltip-id='add-role'
-                                  data-tooltip-content={"Add New Role"}><FontAwesomeIcon
-                                icon={faPlus}/></Link>
-                            <Tooltip id='add-role'/>
-                        </div>
-                    }
-                </div>
-            </div>
+  const TABLE_HEAD = [
+    { id: "role", label: "Role", align: "left" },
+    { id: "status_text", label: "Status", align: "left" },
+    { id: "added_by", label: "Added By", align: "left" },
+    { id: "date_text", label: "Date", align: "left" },
+  ];
 
-            <TableContainer component={Paper}>
-                <Table aria-label="Roles Table">
-                    <TableHead>
-                        <TableRow>
-                            <StyledTableCell><b>Role</b></StyledTableCell>
-                            <StyledTableCell><b>Status</b></StyledTableCell>
-                            <StyledTableCell><b>Added By</b></StyledTableCell>
-                            <StyledTableCell><b>Date</b></StyledTableCell>
-                            <StyledTableCell><b>Actions</b></StyledTableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {roles.map((role) => (
-                            <TableRow
-                                key={role.id}
-                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                <TableCell>{role.role}</TableCell>
-                                <TableCell >{role.status===1?'Active':'Inactive'}</TableCell>
-                                <TableCell >{role.added_by}</TableCell>
-                                <TableCell >{(new Date(role.date)).toLocaleDateString("en-US", dateOptions)}</TableCell>
-                                <TableCell >
-                                    <ActionButtonHelpers
-                                    actionBtn={actionParams}
-                                    element={role}
-                                />
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <TablePagination
-                rowsPerPageOptions={[20, 50, 500]}
-                component="div"
-                count={roles.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-
-        </Paper>
-
+  const filteredRoles = useMemo(() => {
+    const base = roles.map((r) => ({
+      ...r,
+      status_text: r.status === 1 ? "Active" : "Inactive",
+      date_text: r.date ? new Date(r.date).toLocaleDateString("en-US", dateOptions) : "",
+    }));
+    const byText = base.filter(
+      (r) =>
+        (r.role || "").toLowerCase().includes((query.searchTerm || "").toLowerCase()) ||
+        (r.added_by || "").toLowerCase().includes((query.searchTerm || "").toLowerCase())
     );
+    const sorted = byText.sort((a, b) => {
+      const x = (a.role || "").toLowerCase();
+      const y = (b.role || "").toLowerCase();
+      if (x < y) return query.orderBy === "ASC" ? -1 : 1;
+      if (x > y) return query.orderBy === "ASC" ? 1 : -1;
+      return 0;
+    });
+    return sorted;
+  }, [roles, query.searchTerm, query.orderBy]);
+
+  const totalCount = filteredRoles.length;
+  const totalPages = Math.ceil((totalCount || 0) / (pageSize || 10));
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+    setIsPaginate(true);
+  };
+
+  const handleRowsPerPageChange = (event) => {
+    const newSize = parseInt(event.target.value, 10);
+    setQuery((prev) => ({ ...prev, limit: newSize }));
+    setCurrentPage(1);
+    setIsPaginate(true);
+  };
+
+  const FilterSection = () => {
+    const inputFontSize = "0.875rem";
+    const themeMode = useContext(SettingsContext)?.themeMode;
+    const isDark = themeMode === "dark";
+    const inputStyle = {
+      backgroundColor: isDark ? "#1c1f24" : "#fff",
+      color: isDark ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+      borderColor: isDark ? "#3a4048" : "#c5ccd6",
+      fontSize: inputFontSize,
+      minHeight: 36,
+    };
+    const selectStyles = createSelectStyles(theme, inputFontSize);
+    const inputGroupTextStyle = createInputGroupTextStyle(theme);
+    return (
+      <CardContent style={{ borderBottom: "1px solid" }}>
+        <Row className="mb-3">
+          <Col md={4}>
+            <InputGroup className="mb-3" size="sm">
+              <InputGroup.Text id="role_search" style={inputGroupTextStyle}>
+                Search
+              </InputGroup.Text>
+              <Form.Control
+                aria-describedby="role_search"
+                type="text"
+                size="sm"
+                value={query.searchTerm}
+                onChange={(e) => setQuery((prev) => ({ ...prev, searchTerm: e.target.value }))}
+                placeholder="Search Roles..."
+                style={{ ...inputStyle, textTransform: "capitalize" }}
+              />
+            </InputGroup>
+          </Col>
+          <Col md={3}>
+            <InputGroup className="mb-3" size="sm">
+              <InputGroup.Text id="role_order" style={inputGroupTextStyle}>
+                Order
+              </InputGroup.Text>
+              <div className="flex-grow-1">
+                <Select
+                  classNamePrefix="select"
+                  styles={selectStyles}
+                  isSearchable={false}
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
+                  value={
+                    [
+                      { value: "ASC", label: "Ascending" },
+                      { value: "DESC", label: "Descending" },
+                    ].find((opt) => opt.value === (query?.orderBy || "DESC")) || null
+                  }
+                  onChange={(opt) => setQuery({ ...query, orderBy: opt?.value })}
+                  options={[
+                    { value: "ASC", label: "Ascending" },
+                    { value: "DESC", label: "Descending" },
+                  ]}
+                />
+              </div>
+            </InputGroup>
+          </Col>
+          <Col md={3}>
+            <InputGroup className="mb-3" size="sm">
+              <InputGroup.Text id="role_limit" style={inputGroupTextStyle}>
+                Limit
+              </InputGroup.Text>
+              <Form.Select
+                size="sm"
+                aria-describedby="role_limit"
+                value={pageSize}
+                onChange={(e) => handleRowsPerPageChange(e)}
+              >
+                {[10, 20, 50, 100, 500, 1000].map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </Form.Select>
+            </InputGroup>
+          </Col>
+          <Col md={2} className="text-end">
+            <button
+              className="btn btn-warning btn-sm"
+              onClick={() => {
+                setQuery(defaultQuery);
+              }}
+            >
+              Reset
+            </button>
+          </Col>
+        </Row>
+      </CardContent>
+    );
+  };
+
+  return (
+    <div>
+      <Box sx={{ p: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <span className={"page-title-header"}>Roles</span>
+        <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+          {checkPermission("role_create") && (
+            <Link className="btn-add align-right mr-3" to="/roles/new" data-tooltip-id="add-role">
+              <FontAwesomeIcon icon={faPlus} />
+            </Link>
+          )}
+          <IconButton size="small" aria-label="toggle filter" onClick={() => setShowFilter((s) => !s)}>
+            <ArrowDropDownIcon />
+          </IconButton>
+        </Box>
+      </Box>
+
+      <Collapse in={showFilter} timeout="auto" unmountOnExit>
+        <Box sx={{ px: 2, mb: 2 }}>
+          <FilterSection />
+        </Box>
+      </Collapse>
+
+      <Card
+        sx={{
+          p: 5,
+          backgroundColor: theme.palette.background.paper,
+          color: theme.palette.text.primary,
+          borderRadius: 2,
+          border: `1px solid ${theme.palette.divider}`,
+          "& .MuiTableContainer-root": { backgroundColor: theme.palette.background.paper },
+          "& .MuiPaper-root": { backgroundColor: theme.palette.background.paper },
+          "& .MuiTableCell-root": { color: theme.palette.text.primary },
+        }}
+        style={{ padding: "0px" }}
+      >
+        <CommonTable
+          data={filteredRoles}
+          tableColumns={TABLE_HEAD}
+          actionButtons={actionParams}
+          pagination={{
+            totalPages: totalPages ?? 0,
+            totalCount: totalCount,
+            currentPage: currentPage,
+            handlePageChange: handlePageChange,
+            pageSize: pageSize,
+            onRowsPerPageChange: handleRowsPerPageChange,
+          }}
+          cardSubTitle={`Page-${currentPage} (showing ${filteredRoles.length} results from ${totalCount})`}
+          isFetching={loading}
+          hasError={false}
+        />
+      </Card>
+    </div>
+  );
 }
