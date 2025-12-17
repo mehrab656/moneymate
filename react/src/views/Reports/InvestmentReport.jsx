@@ -4,13 +4,15 @@ import SummeryCard from "../../components/SummeryCard";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import WizCard from "../../components/WizCard";
 import { SettingsContext } from "../../contexts/SettingsContext";
-import DatePicker from "react-datepicker";
 import InvestmentReportChart from "../../components/chart/InvestmentReportChart.jsx";
 import MainLoader from "../../components/loader/MainLoader.jsx";
 import ReactToPrint from "react-to-print";
 import { Box, Button } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload, faFilter } from "@fortawesome/free-solid-svg-icons";
+import { Form, InputGroup } from "react-bootstrap";
+import { useTheme } from "@mui/material/styles";
+import { createDateInputStyle, createInputGroupTextStyle } from "../../styles/formThemeStyles.js";
 
 export default function InvestmentReport() {
   const componentRef = useRef();
@@ -18,10 +20,13 @@ export default function InvestmentReport() {
   const [getTotalInvestments, setTotalInvestments] = useState(0);
   const [investments, setInvestments] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { applicationSettings, userRole } = useContext(SettingsContext);
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const { applicationSettings, userRole, themeMode } = useContext(SettingsContext);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const { default_currency } = applicationSettings;
+  const theme = useTheme();
+  const dateInputStyle = createDateInputStyle(theme);
+  const inputGroupTextStyle = createInputGroupTextStyle(theme);
 
   const getInvestmentReports = () => {
     setLoading(true);
@@ -85,30 +90,34 @@ export default function InvestmentReport() {
             <form onSubmit={handleSubmit}>
               <div className="col-12 col-md-6">
                 <div className="form-group">
-                  <label className="custom-form-label" htmlFor="start_date">
-                    Start Date
-                  </label>
-                  <DatePicker
-                    className="custom-form-control"
-                    id="start_date"
-                    selected={startDate}
-                    onChange={(date) => setStartDate(date)}
-                    dateFormat="yyyy-MM-dd"
-                  />
+                  <InputGroup className="mb-3" size="sm">
+                    <InputGroup.Text id="start_date_label" style={inputGroupTextStyle}>
+                      Start Date
+                    </InputGroup.Text>
+                    <Form.Control
+                      aria-describedby="start_date_label"
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      style={dateInputStyle}
+                    />
+                  </InputGroup>
                 </div>
               </div>
               <div className="col-12 col-md-6">
                 <div className="form-group">
-                  <label className="custom-form-label" htmlFor="end_date">
-                    End Date:
-                  </label>
-                  <DatePicker
-                    className="custom-form-control"
-                    id="end_date"
-                    selected={endDate}
-                    onChange={(date) => setEndDate(date)}
-                    dateFormat="yyyy-MM-dd"
-                  />
+                  <InputGroup className="mb-3" size="sm">
+                    <InputGroup.Text id="end_date_label" style={inputGroupTextStyle}>
+                      End Date
+                    </InputGroup.Text>
+                    <Form.Control
+                      aria-describedby="end_date_label"
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      style={dateInputStyle}
+                    />
+                  </InputGroup>
                 </div>
               </div>
               <div className="col-12">

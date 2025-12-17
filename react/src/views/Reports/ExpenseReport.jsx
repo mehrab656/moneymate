@@ -6,6 +6,8 @@ import {faFilter, faPrint} from "@fortawesome/free-solid-svg-icons";
 import { Tooltip } from "react-tooltip";
 import {Col, Container, Form, InputGroup, Row} from "react-bootstrap";
 import ExpenseFilter from "../transactions/expense/ExpenseFilter.jsx";
+import { useTheme } from "@mui/material/styles";
+import { createInputGroupTextStyle } from "../../styles/formThemeStyles.js";
 
 import ReactToPrint from "react-to-print";
 import {genRand} from "../../helper/HelperFunctions.js";
@@ -30,7 +32,7 @@ export default function ExpenseReport() {
   const [expenseReport, setExpenseReport] = useState([]);
   const [sectors, setSectors] = useState([]);
   const [totalExpense, setTotalExpense] = useState(parseFloat(0).toFixed(2));
-  const [searchTerms, setSearchTerms]=useState("");
+  const [localSearchTerm, setLocalSearchTerm]=useState("");
   const [modalData, setModalData] = useState({
     id: null,
     user_id: null,
@@ -48,9 +50,20 @@ export default function ExpenseReport() {
   const [filterQuery, setFilterQuery] = useState(defaultQuery);
   const [hasFilter, setHasFilter] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const { applicationSettings } = useContext(SettingsContext);
+  const { applicationSettings, themeMode } = useContext(SettingsContext);
   let { default_currency } = applicationSettings;
   const [showFilterModal, setShowFilterModal] = useState(false);//important
+  const theme = useTheme();
+  const inputFontSize = "0.875rem";
+  const inputStyle = {
+    backgroundColor: themeMode === "dark" ? "#1c1f24" : "#fff",
+    color: themeMode === "dark" ? "rgba(255,255,255,0.87)" : "rgba(0,0,0,0.87)",
+    borderColor: themeMode === "dark" ? "#3a4048" : "#c5ccd6",
+    fontSize: inputFontSize,
+    minHeight: 36,
+  };
+  const inputGroupTextStyle = createInputGroupTextStyle(theme);
+  const placeHolderTxt = "Search by keywords";
 
   if (default_currency === undefined) {
     default_currency = "$ ";
@@ -76,12 +89,12 @@ export default function ExpenseReport() {
 
   const filteredExpenseData = expenseReport.filter((expense)=>{
     return (
-        expense.category_name.toLowerCase().includes(searchTerms?.toLowerCase()) ||
-        expense.bank_name.toLowerCase().includes(searchTerms?.toLowerCase()) ||
-        expense.amount.toLowerCase().includes(searchTerms?.toLowerCase()) ||
-        expense.refundable_amount.toLowerCase().includes(searchTerms?.toLowerCase()) ||
-        expense.refunded_amount.toLowerCase().includes(searchTerms?.toLowerCase()) ||
-        expense.description.toLowerCase().includes(searchTerms?.toLowerCase())
+        expense.category_name.toLowerCase().includes(localSearchTerm?.toLowerCase()) ||
+        expense.bank_name.toLowerCase().includes(localSearchTerm?.toLowerCase()) ||
+        expense.amount.toLowerCase().includes(localSearchTerm?.toLowerCase()) ||
+        expense.refundable_amount.toLowerCase().includes(localSearchTerm?.toLowerCase()) ||
+        expense.refunded_amount.toLowerCase().includes(localSearchTerm?.toLowerCase()) ||
+        expense.description.toLowerCase().includes(localSearchTerm?.toLowerCase())
     );
   })
   const handleCloseModal = () => {
@@ -129,16 +142,18 @@ export default function ExpenseReport() {
         <Container fluid>
             <Row>
               <Col xs={6} md={4}>
-                <div className='form-group'>
-                  <input
-                      className='custom-form-control'
-                      placeholder='search by keywards'
-                      value={filterQuery.search_terms}
-                      onChange={(ev) =>
-                          setSearchTerms(ev.target.value)
-                      }
+                <InputGroup className="mb-3" size="sm">
+                  <InputGroup.Text id="expense_search" style={inputGroupTextStyle}>Search</InputGroup.Text>
+                  <Form.Control
+                    aria-describedby="expense_search"
+                    type="text"
+                    size="sm"
+                    value={localSearchTerm}
+                    onChange={(e) => setLocalSearchTerm(e.target.value)}
+                    placeholder={placeHolderTxt}
+                    style={{ ...inputStyle, textTransform: "capitalize" }}
                   />
-                </div>
+                </InputGroup>
               </Col>
 
               <Col xs={6} md={4}>
