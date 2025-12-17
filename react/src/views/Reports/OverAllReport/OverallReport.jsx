@@ -4,9 +4,12 @@ import WizCard from "../../../components/WizCard.jsx";
 import {SettingsContext} from "../../../contexts/SettingsContext.jsx";
 import MainLoader from "../../../components/loader/MainLoader.jsx";
 import OverallReportTable from "./OverallReportTable.jsx";
-import DatePicker from "react-datepicker";
 import ReactToPrint from 'react-to-print'
 import { Button } from "@mui/material";
+import { Row, Col, InputGroup, Form } from "react-bootstrap";
+import { useTheme } from "@mui/material/styles";
+import { createInputGroupTextStyle, createSelectStyles, createDateInputStyle } from "../../../styles/formThemeStyles.js";
+import Select from "react-select";
 
 
 const initialState = {
@@ -33,12 +36,36 @@ export default function OverallReport() {
     const [overAllReport, setOverAllReport] = useState(initialState);
     const [loading, setLoading] = useState(false);
     const {applicationSettings, userRole} = useContext(SettingsContext);
-    const [startDate, setStartDate] = useState(null);
-    const [endDate, setEndDate] = useState(null);
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
     const [selectedFilterValue, setFilterValue] = useState('');
     const {
         default_currency,
     } = applicationSettings;
+    const theme = useTheme();
+    const inputGroupTextStyle = createInputGroupTextStyle(theme);
+    const inputFontSize = "0.875rem";
+    const selectStyles = createSelectStyles(theme, inputFontSize);
+    const inputStyle = createDateInputStyle(theme, inputFontSize);
+    const isDark = theme.palette.mode === "dark";
+    const headerDarkStyle = { backgroundColor: theme.palette.primary.main, color: theme.palette.common.white };
+    const headerInvestIncomeStyle = isDark ? headerDarkStyle : { background: "#d8f1f3" };
+    const headerExpenseStyle = isDark ? headerDarkStyle : { background: "#ffdd78" };
+    const filterOptions = [
+        { value: '', label: 'Filter by Dates and Months' },
+        { value: '7', label: 'Last 7 Days' },
+        { value: '15', label: 'Last 15 Days' },
+        { value: '30', label: 'Last 1 Month' },
+        { value: '90', label: 'Last 3 Month' },
+        { value: '180', label: 'Last 6 Month' },
+        { value: '360', label: 'Last 1 Year' },
+    ];
+    const formatDate = (d) => {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+    };
 
     const [tableRow, setTableRow] = useState([]);
     var rows = [];
@@ -85,8 +112,8 @@ export default function OverallReport() {
         getOverallReports();
     };
     const resetFilterParameter = () => {
-        setStartDate(null);
-        setEndDate(null);
+        setStartDate("");
+        setEndDate("");
         setFilterValue('');
         getOverallReports();
     };
@@ -101,12 +128,12 @@ export default function OverallReport() {
             if (filterValue>=30){
                 startDate.setMonth(startDate.getMonth()-(filterValue/30));
             }
-            setStartDate(startDate);
-            setEndDate(new Date());
+            setStartDate(formatDate(startDate));
+            setEndDate(formatDate(new Date()));
         }
         else {
-            setStartDate(null);
-            setEndDate(null);
+            setStartDate("");
+            setEndDate("");
         }
     }
     return (
@@ -124,62 +151,64 @@ export default function OverallReport() {
                 </div>
             </div>
             <WizCard className="animated fadeInDown">
-                <div className="row">
-                    <form onSubmit={handleSubmit}>
-                        <div className="col-12 col-md-3">
-                            <div className="form-group">
-                                <label className="custom-form-label" htmlFor="income_category">Filter</label>
-                                <select
-                                    className="custom-form-control"
-                                    value={selectedFilterValue}
-                                    id="income-category"
-                                    name="income-category"
-                                    onChange={(event) => {
-                                        const value = event.target.value || '';
-                                        setFilterValue(value);
-                                        setFilterDates(value);
-                                    }}>
-                                    <option value={''}>Filter by Dates and Months</option>
-                                    <option key={'filter_value_7'} value={'7'}>{'Last 7 Days'}</option>
-                                    <option key={'filter_value_15'} value={'15'}>{'Last 15 Days'}</option>
-                                    <option key={'filter_value_1'} value={'30'}>{'Last 1 Month'}</option>
-                                    <option key={'filter_value_3'} value={'90'}>{'Last 3 Month'}</option>
-                                    <option key={'filter_value_6'} value={'180'}>{'Last 6 Month'}</option>
-                                    <option key={'filter_value_1_year'} value={'360'}>{'Last 1 Year'}</option>
-
-                                </select>
-                            </div>
-                        </div>
-                        <div className="col-12 col-md-3">
-                            <div className="form-group">
-                                <label className="custom-form-label" htmlFor="start_date">Start Date:</label>
-                                <DatePicker
-                                    className="custom-form-control"
-                                    id="start_date"
-                                    selected={startDate}
-                                    onChange={(date) => setStartDate(date)}
-                                    dateFormat="yyyy-MM-dd"
-                                />
-                            </div>
-                        </div>
-                        <div className="col-12 col-md-3">
-                            <div className="form-group">
-                                <label className="custom-form-label" htmlFor="end_date">End Date:</label>
-                                <DatePicker
-                                    className="custom-form-control"
-                                    id="end_date"
-                                    selected={endDate}
-                                    onChange={(date) => setEndDate(date)}
-                                    dateFormat="yyyy-MM-dd"
-                                />
-                            </div>
-                        </div>
-                        <div className="col-12 col-md-3 mt-4 d-flex flex-wrap align-items-center gap-2">
-                            <button className={'btn-add mt-2'} type="submit">Filter</button>
-                            <button className="btn btn-warning mt-2" onClick={resetFilterParameter}>Reset</button>
-                        </div>
+                <Row className={"mb-3"}>
+                    <form onSubmit={handleSubmit} className="w-100">
+                        <Row className="g-2">
+                            <Col xs={12} md={4}>
+                                <InputGroup className="mb-3" size="sm">
+                                    <InputGroup.Text id="overall_filter_label" style={inputGroupTextStyle}>
+                                        Filter
+                                    </InputGroup.Text>
+                                    <div className="flex-grow-1" aria-describedby="overall_filter_label">
+                                        <Select
+                                            classNamePrefix="select"
+                                            styles={selectStyles}
+                                            isSearchable={false}
+                                            value={filterOptions.find(opt => opt.value === (selectedFilterValue ?? ''))}
+                                            onChange={(opt) => {
+                                                const value = opt?.value || '';
+                                                setFilterValue(value);
+                                                setFilterDates(value);
+                                            }}
+                                            options={filterOptions}
+                                        />
+                                    </div>
+                                </InputGroup>
+                            </Col>
+                            <Col xs={12} md={3}>
+                                <InputGroup className="mb-3" size="sm">
+                                    <InputGroup.Text id="start_date_label" style={inputGroupTextStyle}>
+                                        Start Date
+                                    </InputGroup.Text>
+                                    <Form.Control
+                                        aria-describedby="start_date_label"
+                                        type="date"
+                                        value={startDate}
+                                        onChange={(e) => setStartDate(e.target.value)}
+                                        style={inputStyle}
+                                    />
+                                </InputGroup>
+                            </Col>
+                            <Col xs={12} md={3}>
+                                <InputGroup className="mb-3" size="sm">
+                                    <InputGroup.Text id="end_date_label" style={inputGroupTextStyle}>
+                                        End Date
+                                    </InputGroup.Text>
+                                    <Form.Control
+                                        aria-describedby="end_date_label"
+                                        type="date"
+                                        value={endDate}
+                                        onChange={(e) => setEndDate(e.target.value)}
+                                        style={inputStyle}
+                                    />
+                                </InputGroup>
+                            </Col>
+                            <Col xs={12} md={2}>
+                                <button className="btn btn-warning" type="button" onClick={resetFilterParameter}>Reset</button>
+                            </Col>
+                        </Row>
                     </form>
-                </div>
+                </Row>
                 <div className="row"  ref={componentRef}>
                     <div className="col-12">
                         <div className="table-scroll">
@@ -191,15 +220,15 @@ export default function OverallReport() {
                                         <th colSpan={3} className={'bg-info'}><b>Income</b></th>
                                     </tr>
                                     <tr>
-                                        <th style={{background: '#d8f1f3'}}>S/L</th>
-                                        <th style={{background: '#d8f1f3'}}>Investor</th>
-                                        <th style={{background: '#d8f1f3'}}>Amount</th>
-                                        <th style={{background: '#ffdd78'}}>S/L</th>
-                                        <th style={{background: '#ffdd78'}}>Sector</th>
-                                        <th style={{background: '#ffdd78'}}>Amount</th>
-                                        <th style={{background: '#d8f1f3'}}>S/L</th>
-                                        <th style={{background: '#d8f1f3'}}>Sector</th>
-                                        <th style={{background: '#d8f1f3'}}>Amount</th>
+                                        <th style={headerInvestIncomeStyle}>S/L</th>
+                                        <th style={headerInvestIncomeStyle}>Investor</th>
+                                        <th style={headerInvestIncomeStyle}>Amount</th>
+                                        <th style={headerExpenseStyle}>S/L</th>
+                                        <th style={headerExpenseStyle}>Sector</th>
+                                        <th style={headerExpenseStyle}>Amount</th>
+                                        <th style={headerInvestIncomeStyle}>S/L</th>
+                                        <th style={headerInvestIncomeStyle}>Sector</th>
+                                        <th style={headerInvestIncomeStyle}>Amount</th>
                                     </tr>
                                     </thead>
                                     {loading && (
