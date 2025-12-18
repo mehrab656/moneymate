@@ -106,9 +106,9 @@ export default function SectorFilter(props) {
         </Row>
         <Row>
           {/* Search */}
-          <Col xs={12} md={4}>
-            <InputGroup className="mb-3" size="sm">
-              <InputGroup.Text id="sector_search" style={inputGroupTextStyle}>Search</InputGroup.Text>
+          <Col xs={12} md={6} lg={4}>
+            <InputGroup className="mb-3 w-100" size="sm" style={{ maxWidth: "100%", flex: "1 1 320px" }}>
+              <InputGroup.Text id="sector_search" style={{ ...inputGroupTextStyle, flexShrink: 0, whiteSpace: "nowrap" }}>Search</InputGroup.Text>
               <Form.Control
                 aria-describedby="sector_search"
                 type="text"
@@ -122,10 +122,10 @@ export default function SectorFilter(props) {
           </Col>
 
           {/* Order By */}
-          <Col xs={12} md={2}>
-            <InputGroup className="mb-3" size="sm">
-              <InputGroup.Text id="sector_order_by" style={inputGroupTextStyle}>Order By</InputGroup.Text>
-              <div className="flex-grow-1">
+          <Col xs={12} md={6} lg={3}>
+            <InputGroup className="mb-3 w-100" size="sm" style={{ maxWidth: "100%", flex: "1 1 320px", flexWrap: "nowrap" }}>
+              <InputGroup.Text id="sector_order_by" style={{ ...inputGroupTextStyle, flexShrink: 0, whiteSpace: "nowrap", minWidth: 100 }}>Order By</InputGroup.Text>
+              <div className="flex-grow-1" aria-describedby="sector_order_by" style={{ minWidth: 0 }}>
                 <Select
                   classNamePrefix="select"
                   styles={selectStyles}
@@ -149,10 +149,10 @@ export default function SectorFilter(props) {
           </Col>
 
           {/* Order Direction */}
-          <Col xs={12} md={2}>
-            <InputGroup className="mb-3" size="sm">
-              <InputGroup.Text id="sector_order" style={inputGroupTextStyle}>Order</InputGroup.Text>
-              <div className="flex-grow-1">
+          <Col xs={12} md={6} lg={3}>
+            <InputGroup className="mb-3 w-100" size="sm" style={{ maxWidth: "100%", flex: "1 1 320px", flexWrap: "nowrap" }}>
+              <InputGroup.Text id="sector_order" style={{ ...inputGroupTextStyle, flexShrink: 0, whiteSpace: "nowrap", minWidth: 90 }}>Order</InputGroup.Text>
+              <div className="flex-grow-1" aria-describedby="sector_order" style={{ minWidth: 0 }}>
                 <Select
                   classNamePrefix="select"
                   styles={selectStyles}
@@ -174,10 +174,10 @@ export default function SectorFilter(props) {
           </Col>
 
           {/* Limit */}
-          <Col xs={12} md={2}>
-            <InputGroup className="mb-3" size="sm">
-              <InputGroup.Text id="sector_limit" style={inputGroupTextStyle}>Limit</InputGroup.Text>
-              <div className="flex-grow-1">
+          <Col xs={12} md={6} lg={2}>
+            <InputGroup className="mb-3 w-100" size="sm" style={{ maxWidth: "100%", flex: "1 1 220px", flexWrap: "nowrap" }}>
+              <InputGroup.Text id="sector_limit" style={{ ...inputGroupTextStyle, flexShrink: 0, whiteSpace: "nowrap", minWidth: 80 }}>Limit</InputGroup.Text>
+              <div className="flex-grow-1" aria-describedby="sector_limit" style={{ minWidth: 0 }}>
                 <Select
                   classNamePrefix="select"
                   styles={selectStyles}

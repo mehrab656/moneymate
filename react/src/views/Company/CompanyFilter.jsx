@@ -44,9 +44,9 @@ export default function CompanyFilter(props) {
       <Stack gap={3}>
         {/* Form Inputs */}
         <Row className="g-3">
-          <Col md={4}>
-            <InputGroup className="mb-3" size="sm">
-              <InputGroup.Text id="company_search" style={inputGroupTextStyle}>Search</InputGroup.Text>
+          <Col xs={12} md={6} lg={4}>
+            <InputGroup className="mb-3 w-100" size="sm" style={{ maxWidth: "100%", flex: "1 1 320px" }}>
+              <InputGroup.Text id="company_search" style={{ ...inputGroupTextStyle, flexShrink: 0, whiteSpace: "nowrap" }}>Search</InputGroup.Text>
               <Form.Control
                 aria-describedby="company_search"
                 type="text"
@@ -58,10 +58,10 @@ export default function CompanyFilter(props) {
               />
             </InputGroup>
           </Col>
-          <Col md={2}>
-            <InputGroup className="mb-3" size="sm">
-              <InputGroup.Text id="company_order" style={inputGroupTextStyle}>Order</InputGroup.Text>
-              <div className="flex-grow-1">
+          <Col xs={12} md={6} lg={3}>
+            <InputGroup className="mb-3 w-100" size="sm" style={{ maxWidth: "100%", flex: "1 1 320px", flexWrap: "nowrap" }}>
+              <InputGroup.Text id="company_order" style={{ ...inputGroupTextStyle, flexShrink: 0, whiteSpace: "nowrap", minWidth: 90 }}>Order</InputGroup.Text>
+              <div className="flex-grow-1" aria-describedby="company_order" style={{ minWidth: 0 }}>
                 <Select
                   classNamePrefix="select"
                   styles={selectStyles}
