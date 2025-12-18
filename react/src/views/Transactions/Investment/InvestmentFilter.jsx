@@ -44,14 +44,16 @@ export default function InvestmentFilter(props) {
             <Card className="p-3" style={{ borderBottom: '1px solid' }}>
                 <Stack gap={3}>
                     <Row className="g-3">
-                        <Col md={4}>
-                            <InputGroup className="mb-3" size="sm">
-                                <InputGroup.Text id="investment_investor" style={inputGroupTextStyle}>Investor</InputGroup.Text>
-                                <div className="flex-grow-1">
+                        <Col xs={12} md={6} lg={4}>
+                            <InputGroup className="mb-3 w-100" size="sm" style={{ maxWidth: "100%", flex: "1 1 320px", flexWrap: "nowrap" }}>
+                                <InputGroup.Text id="investment_investor" style={{ ...inputGroupTextStyle, flexShrink: 0, whiteSpace: "nowrap", minWidth: 100 }}>Investor</InputGroup.Text>
+                                <div className="flex-grow-1" aria-describedby="investment_investor" style={{ minWidth: 0 }}>
                                     <Select
                                         classNamePrefix="select"
                                         styles={selectStyles}
                                         isSearchable={false}
+                                        menuPortalTarget={document.body}
+                                        menuPosition="fixed"
                                         value={
                                             investorsOptions.find((opt) => opt.value === (query?.investor_id || "")) || null
                                         }
@@ -61,9 +63,9 @@ export default function InvestmentFilter(props) {
                                 </div>
                             </InputGroup>
                         </Col>
-                        <Col md={4}>
-                            <InputGroup className="mb-3" size="sm">
-                                <InputGroup.Text id="investment_from" style={inputGroupTextStyle}>From</InputGroup.Text>
+                        <Col xs={12} md={6} lg={4}>
+                            <InputGroup className="mb-3 w-100" size="sm" style={{ maxWidth: "100%", flex: "1 1 320px", flexWrap: "nowrap" }}>
+                                <InputGroup.Text id="investment_from" style={{ ...inputGroupTextStyle, flexShrink: 0, whiteSpace: "nowrap", minWidth: 80 }}>From</InputGroup.Text>
                                 <Form.Control
                                     aria-describedby="investment_from"
                                     type="date"
@@ -73,9 +75,9 @@ export default function InvestmentFilter(props) {
                                 />
                             </InputGroup>
                         </Col>
-                        <Col md={4}>
-                            <InputGroup className="mb-3" size="sm">
-                                <InputGroup.Text id="investment_to" style={inputGroupTextStyle}>To</InputGroup.Text>
+                        <Col xs={12} md={6} lg={4}>
+                            <InputGroup className="mb-3 w-100" size="sm" style={{ maxWidth: "100%", flex: "1 1 320px", flexWrap: "nowrap" }}>
+                                <InputGroup.Text id="investment_to" style={{ ...inputGroupTextStyle, flexShrink: 0, whiteSpace: "nowrap", minWidth: 60 }}>To</InputGroup.Text>
                                 <Form.Control
                                     aria-describedby="investment_to"
                                     type="date"
@@ -88,9 +90,9 @@ export default function InvestmentFilter(props) {
                     </Row>
 
                     <Row className="g-3">
-                        <Col md={6}>
-                            <InputGroup className="mb-3" size="sm">
-                                <InputGroup.Text id="investment_search" style={inputGroupTextStyle}>Search</InputGroup.Text>
+                        <Col xs={12} md={6} lg={4}>
+                            <InputGroup className="mb-3 w-100" size="sm" style={{ maxWidth: "100%", flex: "1 1 320px" }}>
+                                <InputGroup.Text id="investment_search" style={{ ...inputGroupTextStyle, flexShrink: 0, whiteSpace: "nowrap" }}>Search</InputGroup.Text>
                                 <Form.Control
                                     aria-describedby="investment_search"
                                     type="text"
@@ -102,14 +104,16 @@ export default function InvestmentFilter(props) {
                                 />
                             </InputGroup>
                         </Col>
-                        <Col md={2}>
-                            <InputGroup className="mb-3" size="sm">
-                                <InputGroup.Text id="investment_order_by" style={inputGroupTextStyle}>Order By</InputGroup.Text>
-                                <div className="flex-grow-1">
+                        <Col xs={12} md={6} lg={3}>
+                            <InputGroup className="mb-3 w-100" size="sm" style={{ maxWidth: "100%", flex: "1 1 320px", flexWrap: "nowrap" }}>
+                                <InputGroup.Text id="investment_order_by" style={{ ...inputGroupTextStyle, flexShrink: 0, whiteSpace: "nowrap", minWidth: 100 }}>Order By</InputGroup.Text>
+                                <div className="flex-grow-1" aria-describedby="investment_order_by" style={{ minWidth: 0 }}>
                                     <Select
                                         classNamePrefix="select"
                                         styles={selectStyles}
                                         isSearchable={false}
+                                        menuPortalTarget={document.body}
+                                        menuPosition="fixed"
                                         value={
                                             orderByOptions.find((opt) => opt.value === (query?.orderBy || "")) || null
                                         }
@@ -119,14 +123,16 @@ export default function InvestmentFilter(props) {
                                 </div>
                             </InputGroup>
                         </Col>
-                        <Col md={2}>
-                            <InputGroup className="mb-3" size="sm">
-                                <InputGroup.Text id="investment_order" style={inputGroupTextStyle}>Order</InputGroup.Text>
-                                <div className="flex-grow-1">
+                        <Col xs={12} md={6} lg={3}>
+                            <InputGroup className="mb-3 w-100" size="sm" style={{ maxWidth: "100%", flex: "1 1 320px", flexWrap: "nowrap" }}>
+                                <InputGroup.Text id="investment_order" style={{ ...inputGroupTextStyle, flexShrink: 0, whiteSpace: "nowrap", minWidth: 90 }}>Order</InputGroup.Text>
+                                <div className="flex-grow-1" aria-describedby="investment_order" style={{ minWidth: 0 }}>
                                     <Select
                                         classNamePrefix="select"
                                         styles={selectStyles}
                                         isSearchable={false}
+                                        menuPortalTarget={document.body}
+                                        menuPosition="fixed"
                                         value={
                                             [{ value: "ASC", label: "Ascending" }, { value: "DESC", label: "Descending" }]
                                                 .find((opt) => opt.value === (query?.order || "")) || null
@@ -160,7 +166,7 @@ export default function InvestmentFilter(props) {
                     </Row>
 
                     <Row className="justify-content-end">
-                        <Col md={4} className="text-end">
+                        <Col xs={12} md={6} lg={3} className="text-end">
                             <Button
                                 variant="warning"
                                 size="sm"
