@@ -1,0 +1,528 @@
+Index: react/src/views/Reports/InvestmentReport.jsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import React, { useContext, useEffect, useRef, useState } from \"react\";\nimport axiosClient from \"../../axios-client.js\";\nimport SummeryCard from \"../../components/SummeryCard\";\nimport AttachMoneyIcon from \"@mui/icons-material/AttachMoney\";\nimport WizCard from \"../../components/WizCard\";\nimport { SettingsContext } from \"../../contexts/SettingsContext\";\nimport InvestmentReportChart from \"../../components/chart/InvestmentReportChart.jsx\";\nimport MainLoader from \"../../components/loader/MainLoader.jsx\";\nimport ReactToPrint from \"react-to-print\";\nimport { Box, Button } from \"@mui/material\";\nimport { FontAwesomeIcon } from \"@fortawesome/react-fontawesome\";\nimport { faDownload, faFilter } from \"@fortawesome/free-solid-svg-icons\";\nimport { Form, InputGroup } from \"react-bootstrap\";\nimport { useTheme } from \"@mui/material/styles\";\nimport { createDateInputStyle, createInputGroupTextStyle } from \"../../styles/formThemeStyles.js\";\n\nexport default function InvestmentReport() {\n  const componentRef = useRef();\n\n  const [getTotalInvestments, setTotalInvestments] = useState(0);\n  const [investments, setInvestments] = useState([]);\n  const [loading, setLoading] = useState(false);\n  const { applicationSettings, userRole, themeMode } = useContext(SettingsContext);\n  const [startDate, setStartDate] = useState(\"\");\n  const [endDate, setEndDate] = useState(\"\");\n  const { default_currency } = applicationSettings;\n  const theme = useTheme();\n  const dateInputStyle = createDateInputStyle(theme);\n  const inputGroupTextStyle = createInputGroupTextStyle(theme);\n\n  const getInvestmentReports = () => {\n    setLoading(true);\n    try {\n      axiosClient\n        .get(\"/report/investment\", {\n          params: { start_date: startDate, end_date: endDate },\n        })\n        .then(({ data }) => {\n          setTotalInvestments(data.totalInvestment);\n          setInvestments(data.investments);\n          setLoading(false);\n        });\n    } catch (error) {\n      console.warn(error);\n    }\n  };\n\n  useEffect(() => {\n    document.title = \"Investment Reports\";\n    getInvestmentReports();\n  }, []);\n\n  const handleSubmit = (e) => {\n    e.preventDefault();\n    getInvestmentReports();\n  };\n\n  return (\n    <>\n      <MainLoader loaderVisible={loading} />\n      <div className={'report-page'}>\n        <div className={'report-header'}>\n          <span className={'page-title-header'}>Investments</span>\n          <div className={'d-flex align-items-center gap-2'}>\n            <button className={\"btn btn-secondary btn-sm\"}>\n              <FontAwesomeIcon icon={faDownload} />\n              {\" Download CSV\"}\n            </button>\n            <Box\n              display={\"flex\"}\n              justifyContent={\"center\"}\n              alignItems={\"center\"}\n            >\n              <ReactToPrint\n                trigger={() => (\n                  <Button sx={{ ml: 1 }} variant=\"outlined\">\n                    Print\n                  </Button>\n                )}\n                content={() => componentRef.current}\n              />\n            </Box>\n          </div>\n        </div>\n      </div>\n\n      <div className=\"col-md-8\">\n        <WizCard className=\"animated fadeInDown\">\n          <div className=\"row\">\n            <form onSubmit={handleSubmit}>\n              <div className=\"col-12 col-md-6\">\n                <div className=\"form-group\">\n                  <InputGroup className=\"mb-3\" size=\"sm\">\n                    <InputGroup.Text id=\"start_date_label\" style={inputGroupTextStyle}>\n                      Start Date\n                    </InputGroup.Text>\n                    <Form.Control\n                      aria-describedby=\"start_date_label\"\n                      type=\"date\"\n                      value={startDate}\n                      onChange={(e) => setStartDate(e.target.value)}\n                      style={dateInputStyle}\n                    />\n                  </InputGroup>\n                </div>\n              </div>\n              <div className=\"col-12 col-md-6\">\n                <div className=\"form-group\">\n                  <InputGroup className=\"mb-3\" size=\"sm\">\n                    <InputGroup.Text id=\"end_date_label\" style={inputGroupTextStyle}>\n                      End Date\n                    </InputGroup.Text>\n                    <Form.Control\n                      aria-describedby=\"end_date_label\"\n                      type=\"date\"\n                      value={endDate}\n                      onChange={(e) => setEndDate(e.target.value)}\n                      style={dateInputStyle}\n                    />\n                  </InputGroup>\n                </div>\n              </div>\n              <div className=\"col-12\">\n                <button className={\"btn-add right\"} type=\"submit\">\n                  Filter\n                </button>\n              </div>\n            </form>\n          </div>\n          <div className=\"row\" ref={componentRef}>\n            <div className=\"col-12\">\n              <h1 className=\"title-text text-center\">\n                Total Investment Reports\n              </h1>\n              <div className=\"table-scroll\">\n                <table className=\"table table-bordered custom-table\">\n                <thead>\n                  <tr className={\"text-center\"}>\n                    <th>Investor Name</th>\n                    <th>Invested Amount</th>\n                  </tr>\n                </thead>\n                {loading && (\n                  <tbody>\n                    <tr className={\"text-center\"}>\n                      <td colSpan={6} className=\"text-center\">\n                        Loading...\n                      </td>\n                    </tr>\n                  </tbody>\n                )}\n                {!loading && (\n                  <tbody>\n                    {investments.map((investment) => (\n                      <tr\n                        key={investment.investor_id}\n                        className={\"text-center\"}\n                      >\n                        <td>{investment.username}</td>\n                        <td>{default_currency + \" \" + investment.amount}</td>\n                      </tr>\n                    ))}\n                  </tbody>\n                )}\n                </table>\n              </div>\n            </div>\n          </div>\n        </WizCard>\n      </div>\n      <div className=\"col-md-4\">\n        <div className=\"row\">\n          <div className=\"mb-4\">\n            <SummeryCard\n              value={getTotalInvestments}\n              summary=\"Total Investments\"\n              icon={<AttachMoneyIcon />}\n              iconClassName=\"icon-success\"\n              currency={default_currency}\n            />\n          </div>\n\n          <div>\n            <WizCard className=\"animated fadeInDown\">\n              <InvestmentReportChart\n                totalInvestment={getTotalInvestments}\n                investors={investments}\n                checkLoading={loading}\n                title=\"Investment chart\"\n              />\n            </WizCard>\n\n            \n          </div>\n        </div>\n      </div>\n    </>\n  );\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/react/src/views/Reports/InvestmentReport.jsx b/react/src/views/Reports/InvestmentReport.jsx
+--- a/react/src/views/Reports/InvestmentReport.jsx	(revision 91393a2efd335d80555c9bbe3b642cc25bc85cbe)
++++ b/react/src/views/Reports/InvestmentReport.jsx	(date 1766086122353)
+@@ -189,8 +189,6 @@
+                 title="Investment chart"
+               />
+             </WizCard>
+-
+-            
+           </div>
+         </div>
+       </div>
+Index: react/src/views/Transactions/Income/IncomeList.jsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import React, { useEffect, useState, useContext, useRef } from \"react\";\nimport { useThemedSwal } from \"../../../components/SwalConfirm.js\";\nimport { SettingsContext } from \"../../../contexts/SettingsContext.jsx\";\nimport MainLoader from \"../../../components/loader/MainLoader.jsx\";\nimport { notification } from \"../../../components/ToastNotification.jsx\";\nimport IncomeFilter from \"./Components/IncomeFilter.jsx\";\nimport {\n  useGetIncomeDataQuery,\n  useDeleteIncomeMutation,\n} from \"../../../api/slices/incomeSlice.js\";\nimport IncomeFormSidebar from \"./IncomeFormSidebar.jsx\";\nimport IncomeDetails from \"./IncomeDetails.jsx\";\nimport { FontAwesomeIcon } from \"@fortawesome/react-fontawesome\";\nimport {\n  faDownload,\n  faFilter,\n  faPlus,\n  faEdit,\n  faThList,\n  faTrash,\n  faEye,\n} from \"@fortawesome/free-solid-svg-icons\";\nimport { Form, Row, Col, Modal } from \"react-bootstrap\";\nimport { Box, Card, Button, useTheme } from \"@mui/material\";\nimport SidebarFooterButtons from \"../../../components/SidebarFooterButtons.jsx\";\nimport CommonTable from \"../../../components/table/CommonTable.jsx\";\nimport { useSidebarActions } from \"../../../components/GlobalSidebar\";\nimport FilteredParameters from \"../Expense/Components/FilteredParameters.jsx\";\nimport CsvFileUpload from \"./Components/CsvFileUpload.jsx\";\nimport Iconify from \"../../../components/Iconify.jsx\";\nimport IncomeExportButton from \"./Components/IncomeExportButton.jsx\";\nimport GlobalInvoice from \"../../../components/GlobalInvoice.jsx\";\nimport { useReactToPrint } from \"react-to-print\";\n\nconst defaultQuery = {\n  type: \"\",\n  income_type: [],\n  orderBy: \"\",\n  order: \"\",\n  limit: \"\",\n  to_date: \"\",\n  from_date: \"\",\n  account_id: \"\",\n  start_date: \"\",\n  end_date: \"\",\n  sectorIDS: [],\n  sectorNames: [],\n  check_for: \"checkinout\",\n  check_from: \"\",\n  check_to: \"\",\n  reference: [],\n};\nconst TABLE_HEAD = [\n  { id: \"date\", label: \"Date\", align: \"left\" },\n  { id: \"description\", label: \"Description\", align: \"left\" },\n  { id: \"sector\", label: \"Sector\", align: \"left\" },\n  { id: \"category_name\", label: \"Source\", align: \"left\" },\n  { id: \"amount\", label: \"Amount\", align: \"right\" },\n];\nexport default function IncomeList() {\n  const theme = useTheme();\n  const { fire, confirmDelete } = useThemedSwal();\n  const [loading, setLoading] = useState(false);\n  const [currentPage, setCurrentPage] = useState(1);\n  const [totalCount, setTotalCount] = useState(0);\n  const [searchTerm, setSearchTerm] = useState(\"\");\n  const { applicationSettings, userRole, userPermission } =\n    useContext(SettingsContext);\n  const [incomes, setIncomes] = useState([]);\n  const [income, setIncome] = useState({});\n  const [showIncomeForm, setShowIncomeForm] = useState(false);\n  const [showCsvForm, setShowCsvForm] = useState(false);\n  const [showMainLoader, setShowMainLoader] = useState(false);\n  const [query, setQuery] = useState(defaultQuery);\n  const { num_data_per_page, default_currency } = applicationSettings;\n  const [isPaginate, setIsPaginate] = useState(false);\n  const [showFilterModal, setShowFilterModal] = useState(false); //important\n  const [hasFilter, setHasFilter] = useState(true);\n  const [searchTerms, setSearchTerms] = useState(\"\");\n  const { showLargeContent, showQuickDetails } = useSidebarActions();\n  const [showInvoiceModal, setShowInvoiceModal] = useState(false);\n  const [invoiceIncome, setInvoiceIncome] = useState(null);\n  const printRef = useRef(null);\n  const [printData, setPrintData] = useState(null);\n  const printInvoice = useReactToPrint({\n    content: () => printRef.current,\n    documentTitle: \"income-invoice\",\n    pageStyle: `\n      @page { size: A4; margin: 12mm; }\n      body { -webkit-print-color-adjust: exact; color-adjust: exact; }\n    `,\n  });\n\n  useEffect(() => {\n    if (num_data_per_page > 0) {\n      setQuery({ ...query, limit: num_data_per_page });\n    }\n  }, []);\n  const toggleFilterModal = () => {\n    setShowFilterModal(!showFilterModal);\n    setHasFilter(true);\n  };\n  const pageSize =\n    Number(query.limit) > 0\n      ? Number(query.limit)\n      : num_data_per_page\n      ? num_data_per_page\n      : 10;\n  const totalPages = Math.ceil(totalCount / pageSize);\n\n  const handleRowsPerPageChange = (event) => {\n    const newSize = parseInt(event.target.value, 10);\n    setQuery((prev) => ({ ...prev, limit: newSize }));\n    setCurrentPage(1);\n    setIsPaginate(true);\n  };\n\n  // api call\n  const {\n    data: getIncomeData,\n    isFetching: incomeDataFetching,\n    isError: incomeDataError,\n    refetch,\n  } = useGetIncomeDataQuery(\n    { currentPage, pageSize, query: query },\n    { skip: !hasFilter, refetchOnMountOrArgChange: isPaginate }\n  );\n  const [deleteIncome] = useDeleteIncomeMutation();\n\n  const onDelete = (income) => {\n    confirmDelete('income', { confirmButtonText: 'Yes, delete it!' }).then(async (result) => {\n      if (result.isConfirmed) {\n        try {\n          const response = await deleteIncome({ id: income.id }).unwrap(); // Using unwrap for error handling\n          notification(\"success\", response.message, response.description); // Display success message\n        } catch (error) {\n          notification(\n            \"error\",\n            error.data.message,\n            error.data.description || \"An error occurred.\"\n          ); // Display error message\n        }\n      }\n    });\n  };\n  const showIncomeFormFunc = () => {\n    // Open Income form in GlobalSidebar large content\n    const createRef = React.createRef();\n    const formId = \"income-form-global\";\n    showLargeContent(\n      \"Add New Income\",\n      <IncomeFormSidebar\n        ref={createRef}\n        incomeId={null}\n        formId={formId}\n        onSuccess={() => {\n          setIsPaginate(true);\n          refetch();\n        }}\n      />, {\n        footerActions: (\n          <SidebarFooterButtons\n            actions={[\n              { label: \"Add More\", type: \"button\", onClick: () => createRef.current?.addIncomes() },\n              { label: \"Submit\", type: \"submit\", formId },\n            ]}\n          />\n        )\n      }\n    );\n  };\n  const showCsvIncomeFormFunc = () => {\n    setShowCsvForm(true);\n  };\n  const closeCreateModalFunc = () => {\n    setShowIncomeForm(false);\n    setIncome({});\n  };\n  const closeCsvFileUploadModalFunc = () => {\n    setShowCsvForm(false);\n    setIncome({});\n  };\n  const showEditModalFunc = (income) => {\n    setIncome(income);\n    const formId = \"income-form-global\";\n    showLargeContent(\n      \"Edit Income\",\n      <IncomeFormSidebar\n        incomeId={income.id}\n        formId={formId}\n        onSuccess={() => {\n          setIsPaginate(true);\n          refetch();\n        }}\n      />, {\n        footerActions: (\n          <SidebarFooterButtons\n            actions={[{ label: \"Update Income\", type: \"submit\", formId }]}\n          />\n        )\n      }\n    );\n  };\n\n  const showViewModalFunc = (income) => {\n    setIncome(income);\n    // Open details in GlobalSidebar quick details (consistent with Expense)\n    showQuickDetails(\"Income Details\", <IncomeDetails data={income} />);\n  };\n\n  const openInvoiceModal = (income) => {\n    setInvoiceIncome(income);\n    setShowInvoiceModal(true);\n  };\n  const closeInvoiceModal = () => {\n    setShowInvoiceModal(false);\n    setInvoiceIncome(null);\n  };\n  const openInvoiceModalFromHeader = () => {\n    const candidate = (incomes && incomes.length > 0) ? incomes[0] : {};\n    setInvoiceIncome(makeInvoiceData(candidate));\n    setShowInvoiceModal(true);\n  };\n\n  const handlePageChange = (event, value) => {\n    setCurrentPage(value);\n    setIsPaginate(true);\n  };\n\n  const handelFilter = () => {\n    setHasFilter(!hasFilter);\n  };\n\n  useEffect(() => {\n    document.title = \"Manage Incomes\";\n    const normalizedList = Array.isArray(getIncomeData?.data)\n      ? getIncomeData.data\n      : Array.isArray(getIncomeData?.incomes?.data)\n      ? getIncomeData.incomes.data\n      : Array.isArray(getIncomeData?.items)\n      ? getIncomeData.items\n      : Array.isArray(getIncomeData?.results)\n      ? getIncomeData.results\n      : [];\n\n    const normalizedTotal =\n      typeof getIncomeData?.total === \"number\"\n        ? getIncomeData.total\n        : typeof getIncomeData?.incomes?.total === \"number\"\n        ? getIncomeData.incomes.total\n        : typeof getIncomeData?.count === \"number\"\n        ? getIncomeData.count\n        : normalizedList.length;\n\n    // compute readable income type for the Sector column\n    const withSectorType = normalizedList.map((income) => {\n      const incomeTypeText =\n        income?.income_type?.label ??\n        income?.income_type?.value ??\n        income?.income_type ??\n        income?.type ??\n        \"\";\n      return { ...income, sector: incomeTypeText };\n    });\n\n    if (withSectorType.length > 0 || incomeDataFetching) {\n      setIncomes(withSectorType);\n      setTotalCount(normalizedTotal);\n      setShowMainLoader(false);\n    } else if (incomeDataError) {\n      setShowMainLoader(false);\n      setIncomes([]);\n    } else {\n      setShowMainLoader(incomeDataFetching);\n    }\n    setIsPaginate(false);\n  }, [getIncomeData, incomeDataFetching, incomeDataError, currentPage]);\n\n  const filteredIncomes = incomes.filter((income) => {\n    return income.description.toLowerCase().includes(searchTerms.toLowerCase());\n  });\n\n  const makeInvoiceData = (income) => {\n    if (!income) return {};\n    const amountNum = Number(income?.amount || 0);\n    const periodStart =\n      income?.checkin_date || query?.start_date || income?.date || \"\";\n    const periodEnd =\n      income?.checkout_date || query?.end_date || income?.date || \"\";\n    return {\n      invoice: {\n        date: income?.date || \"\",\n        number: String(income?.id || \"\"),\n      },\n      billTo: {\n        contact: \"sdfsdasds\",\n        company: income?.income_type.label || income?.category_name || \"\",\n        address1: \"df fsfsfdsdf\",\n        address2: \"dfsfsfsd\",\n        phone: \"434224232\",\n      },\n      items: [\n        {\n          qty: 1,\n          description: `${amountNum.toFixed(2)}(${periodStart} - ${periodEnd}) /month`,\n          amount: amountNum || 0,\n        },\n      ],\n      credit: 0,\n      taxPercent: 0,\n    };\n  };\n\n  const actionParams = [\n    {\n      actionName: \"Edit\",\n      type: \"modal\",\n      route: \"\",\n      actionFunction: showEditModalFunc,\n      permission: \"edit_income\",\n      textClass: \"text-info\",\n      icon: faEdit,\n    },\n    {\n      actionName: \"View\",\n      type: \"modal\",\n      route: \"\",\n      actionFunction: showViewModalFunc,\n      permission: \"income_view\",\n      textClass: \"text-warning\",\n      icon: faThList,\n    },\n    {\n      actionName: \"Preview Invoice\",\n      type: \"modal\",\n      route: \"\",\n      actionFunction: (income) => openInvoiceModal(makeInvoiceData(income)),\n      permission: \"income_view\",\n      textClass: \"text-primary\",\n      icon: faEye,\n    },\n    {\n      actionName: \"Delete\",\n      type: \"modal\",\n      route: \"\",\n      actionFunction: onDelete,\n      permission: \"income_delete\",\n      textClass: \"text-danger\",\n      icon: faTrash,\n    },\n  ];\n\n  // Pagination props aligned with Expense page usage\n  const paginations = {\n    totalPages: totalPages ?? 0,\n    totalCount: totalCount,\n    currentPage: currentPage,\n    handlePageChange: handlePageChange,\n    pageSize: pageSize,\n    onRowsPerPageChange: handleRowsPerPageChange,\n  };\n\n  const submitFilter = () => {\n    setHasFilter(true);\n    setShowFilterModal(false);\n  };\n  const resetFilterParameter = () => {\n    setQuery(defaultQuery);\n    setHasFilter(!hasFilter);\n  };\n  const closeFilterModal = () => {\n    setHasFilter(!hasFilter);\n    setShowFilterModal(false);\n  };\n  return (\n    <div>\n      <MainLoader loaderVisible={showMainLoader} />\n      <Box\n        display=\"flex\"\n        justifyContent=\"space-between\"\n        alignItems=\"center\"\n        mb={3}\n      >\n        <Box>\n          <span className={\"page-title-header\"}>Income Histories</span>\n         \n        </Box>\n        <Box>\n          <button className={\"btn primary-theme-btn btn-sm ml-2\"}>\n            <FontAwesomeIcon icon={faDownload} />\n          </button>\n          <IncomeExportButton />\n          <button\n            className={\"btn primary-theme-btn btn-sm ml-2\"}\n            onClick={showIncomeFormFunc}\n          >\n            <Iconify icon={\"eva:plus-fill\"} />\n          </button>\n        </Box>\n      </Box>\n\n      <Row>\n        <Col xs={12} sm={12} md={9}>\n          <div\n            style={{\n              padding: \"10px\",\n              display: \"flex\",\n              justifyContent: \"space-between\",\n            }}\n          >\n            <Box display=\"flex\">\n              <button\n                className={\"btn primary-theme-btn btn-sm mr-2\"}\n                onClick={toggleFilterModal}\n              >\n                <FontAwesomeIcon icon={faFilter} />\n                {\" Filter\"}\n              </button>\n              <FilteredParameters queries={query} setQuery={setQuery} />\n            </Box>\n            <Form>\n              <Form.Control\n                type=\"text\"\n                size=\"sm\"\n                value={searchTerms}\n                onChange={(e) => setSearchTerms(e.target.value)}\n                placeholder={\"search by key wards...\"}\n                style={{ textTransform: \"capitalize\" }}\n              />\n            </Form>\n          </div>\n          <Card\n            sx={{\n              p: 5,\n              backgroundColor: theme.palette.background.paper,\n              color: theme.palette.text.primary,\n              borderRadius: 2,\n              border: `1px solid ${theme.palette.divider}`,\n              \"& .MuiTableContainer-root\": {\n                backgroundColor: theme.palette.background.paper,\n              },\n              \"& .MuiPaper-root\": {\n                backgroundColor: theme.palette.background.paper,\n              },\n              \"& .MuiTableCell-root\": { color: theme.palette.text.primary },\n            }}\n            style={{ padding: \"0px\" }}\n          >\n            <CommonTable\n              data={filteredIncomes}\n              tableColumns={TABLE_HEAD}\n              actionButtons={actionParams}\n              loading={incomeDataFetching}\n              pagination={paginations}\n              cardSubTitle={`Page-${currentPage} (showing ${filteredIncomes.length} results from ${totalCount})`}\n              isFetching={incomeDataFetching}\n              hasError={incomeDataError}\n            />\n          </Card>\n        </Col>\n        <Col xs={12} sm={12} md={3} >\n          <Row>\n            <div\n              className={\"sidebar-form quick-income-card\"} style={{ padding: \"8px\" }}\n            >\n              <div className={\"sidebar-form-content\"}>\n                <IncomeFormSidebar\n                  incomeId={null}\n                  onSuccess={() => {\n                    setIsPaginate(true);\n                    refetch();\n                  }}\n                  sidebarTitle=\"Quick Income\"\n                  showLabel={false}\n                  colXS={12}\n                  colMD={12}\n                  formId=\"quick-income-form\"\n                  footerActions={(\n                    <SidebarFooterButtons\n                      actions={[{ label: \"Submit\", type: \"submit\", formId: \"quick-income-form\" }]}\n                    />\n                  )}\n                />\n              </div>\n            </div>\n          </Row>\n        </Col>\n      </Row>\n\n      {/* Income create/edit handled via GlobalSidebar */}\n      {showCsvForm && (\n        <CsvFileUpload\n          handelCloseModal={closeCsvFileUploadModalFunc}\n          title={\"Upload Csv Income File\"}\n        />\n      )}\n      {/* Income details now handled via GlobalSidebar quick details */}\n\n      {showFilterModal && (\n        <IncomeFilter\n          showModal={showFilterModal}\n          closeModal={closeFilterModal}\n          resetFilter={resetFilterParameter}\n          submitFilter={submitFilter}\n          queryParams={query}\n          setQueryParams={setQuery}\n          setHasFilter={setHasFilter}\n        />\n      )}\n      {showInvoiceModal && (\n        <Modal centered show={showInvoiceModal} onHide={closeInvoiceModal} size=\"lg\" dialogClassName=\"invoice-modal\">\n          <Modal.Body>\n            <div ref={printRef}>\n              <GlobalInvoice data={invoiceIncome || {}} />\n            </div>\n          </Modal.Body>\n          <Modal.Footer>\n            <button className={\"btn primary-theme-btn btn-sm\"} onClick={printInvoice}>\n              <FontAwesomeIcon icon={faDownload} /> Download PDF\n            </button>\n            <button className={\"btn primary-theme-btn btn-sm\"} onClick={closeInvoiceModal}>\n              Close\n            </button>\n          </Modal.Footer>\n        </Modal>\n      )}\n    </div>\n  );\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/react/src/views/Transactions/Income/IncomeList.jsx b/react/src/views/Transactions/Income/IncomeList.jsx
+--- a/react/src/views/Transactions/Income/IncomeList.jsx	(revision 91393a2efd335d80555c9bbe3b642cc25bc85cbe)
++++ b/react/src/views/Transactions/Income/IncomeList.jsx	(date 1766086122354)
+@@ -29,7 +29,7 @@
+ import CsvFileUpload from "./Components/CsvFileUpload.jsx";
+ import Iconify from "../../../components/Iconify.jsx";
+ import IncomeExportButton from "./Components/IncomeExportButton.jsx";
+-import GlobalInvoice from "../../../components/GlobalInvoice.jsx";
++import InvoiceCreate from "../../../components/InvoiceCreate.jsx";
+ import { useReactToPrint } from "react-to-print";
+ 
+ const defaultQuery = {
+@@ -169,13 +169,7 @@
+       }
+     );
+   };
+-  const showCsvIncomeFormFunc = () => {
+-    setShowCsvForm(true);
+-  };
+-  const closeCreateModalFunc = () => {
+-    setShowIncomeForm(false);
+-    setIncome({});
+-  };
++
+   const closeCsvFileUploadModalFunc = () => {
+     setShowCsvForm(false);
+     setIncome({});
+@@ -218,8 +212,23 @@
+   };
+   const openInvoiceModalFromHeader = () => {
+     const candidate = (incomes && incomes.length > 0) ? incomes[0] : {};
+-    setInvoiceIncome(makeInvoiceData(candidate));
+-    setShowInvoiceModal(true);
++    const data = makeInvoiceData(candidate);
++    setInvoiceIncome(data);
++    showLargeContent(
++      "Invoice Preview",
++      <div ref={printRef}>
++        <InvoiceCreate data={data || {}} />
++      </div>,
++      {
++        footerActions: (
++          <SidebarFooterButtons
++            actions={[
++              { label: "Download PDF", type: "button", onClick: () => printInvoice() },
++            ]}
++          />
++        ),
++      }
++    );
+   };
+ 
+   const handlePageChange = (event, value) => {
+@@ -227,10 +236,6 @@
+     setIsPaginate(true);
+   };
+ 
+-  const handelFilter = () => {
+-    setHasFilter(!hasFilter);
+-  };
+-
+   useEffect(() => {
+     document.title = "Manage Incomes";
+     const normalizedList = Array.isArray(getIncomeData?.data)
+@@ -386,7 +391,13 @@
+          
+         </Box>
+         <Box>
+-          <button className={"btn primary-theme-btn btn-sm ml-2"}>
++        <button
++            className={"btn primary-theme-btn btn-sm ml-2"}
++            onClick={openInvoiceModalFromHeader}
++          >
++            Create Invoice
++          </button>
++          <button className={"btn primary-theme-btn btn.sm ml-2"}>
+             <FontAwesomeIcon icon={faDownload} />
+           </button>
+           <IncomeExportButton />
+Index: react/src/components/InvoiceCreate.jsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/react/src/components/InvoiceCreate.jsx b/react/src/components/InvoiceCreate.jsx
+new file mode 100644
+--- /dev/null	(date 1766086122353)
++++ b/react/src/components/InvoiceCreate.jsx	(date 1766086122353)
+@@ -0,0 +1,413 @@
++import React, { useMemo, useContext, useState } from "react";
++import {
++  Box,
++  Typography,
++  Grid,
++  Table,
++  TableBody,
++  TableCell,
++  TableContainer,
++  TableHead,
++  TableRow,
++  Paper,
++  Divider,
++  Button,
++} from "@mui/material";
++import { Form, InputGroup } from "react-bootstrap";
++import { useTheme, alpha } from "@mui/material/styles";
++import { SettingsContext } from "../contexts/SettingsContext.jsx";
++import { useGetCurrentCompanyDataQuery } from "../api/slices/dashBoardSlice.js";
++
++export default function InvoiceCreate({ data = {} }) {
++  const theme = useTheme();
++  const { applicationSettings } = useContext(SettingsContext);
++  const currency = applicationSettings?.default_currency || "$";
++
++  const invoice = data?.invoice || {};
++  const billTo = data?.billTo || {};
++  const items = Array.isArray(data?.items) ? data.items : [];
++  const credit = Number(data?.credit || 0);
++  const taxPercent = Number(data?.taxPercent || 0);
++  const [isEdit, setIsEdit] = useState(false);
++  const [editableDate, setEditableDate] = useState(invoice.date || "");
++  const [editableNumber, setEditableNumber] = useState(invoice.number || "");
++  const [billToState, setBillToState] = useState({
++    contact: billTo.contact || "",
++    company: billTo.company || "",
++    address1: billTo.address1 || "",
++    address2: billTo.address2 || "",
++    phone: billTo.phone || "",
++  });
++  const [itemsState, setItemsState] = useState(
++    items.map((it) => ({
++      description: it?.description || "",
++      amount: Number(it?.amount ?? it?.unitPrice ?? 0),
++    }))
++  );
++
++  const currentCompanyID =
++    typeof window !== "undefined" ? localStorage.getItem("CURRENT_COMPANY") : null;
++  const { data: currentCompanyResp } = useGetCurrentCompanyDataQuery(
++    { id: currentCompanyID },
++    { skip: !currentCompanyID }
++  );
++  const activeCompany = currentCompanyResp?.data || null;
++  const companyName =
++    activeCompany?.name || company?.name || "Company Name";
++  let logoUrl = null;
++  const logoVal = activeCompany?.logo || company?.logo || null;
++
++
++  if (typeof logoVal === "string" && logoVal && logoVal !== "null") {
++    const trimmed = logoVal.trim();
++    if (
++      trimmed.startsWith("http://") ||
++      trimmed.startsWith("https://") ||
++      trimmed.startsWith("/")
++    ) {
++      logoUrl = trimmed;
++    } else {
++      const base = window.__APP_CONFIG__?.VITE_APP_BASE_URL || "";
++      logoUrl = `${base}/storage/files/company/${trimmed}`;
++    }
++  }
++
++  const subtotal = useMemo(
++    () => itemsState.reduce((sum, it) => sum + Number(it?.amount ?? 0), 0),
++    [itemsState]
++  );
++  const taxAmount = useMemo(
++    () => (subtotal * taxPercent) / 100,
++    [subtotal, taxPercent]
++  );
++  const balanceDue = useMemo(
++    () => subtotal - credit + taxAmount,
++    [subtotal, credit, taxAmount]
++  );
++
++  const fmt = (v) => `${currency} ${Number(v || 0).toFixed(2)}`;
++  const compact = (s) => {
++    const v = String(s || "");
++    if (v.length <= 12) return v;
++    return `${v.slice(0, 8)}…${v.slice(-4)}`;
++  };
++
++  const isDark = theme.palette.mode === "dark";
++  const headerBg = isDark ? theme.palette.primary.dark : theme.palette.primary.main;
++  const headerText = theme.palette.primary.contrastText;
++  const tableHeaderBg = isDark ? theme.palette.primary.dark : theme.palette.primary.main;
++  const tableHeaderText = theme.palette.primary.contrastText;
++  const rowAlt = alpha(theme.palette.primary.main, isDark ? 0.18 : 0.08);
++  const fieldSx = {};
++
++  return (
++    <Box>
++      <Box
++        sx={{
++          backgroundColor: headerBg,
++          color: headerText,
++          p: 3,
++          textAlign: "center",
++          borderRadius: 1,
++        }}
++      >
++        {logoUrl ? (
++          <img
++            src={logoUrl}
++            alt="Company Logo"
++            style={{ width: 72, height: 72, borderRadius: 8, objectFit: "cover", display: "inline-block" }}
++            onError={(e) => {
++              e.currentTarget.style.display = "none";
++            }}
++          />
++        ) : (
++          <Typography
++            variant="caption"
++            sx={{ letterSpacing: 2, opacity: 0.9, mb: 0.5, display: "block" }}
++          >
++            {company.logoText || "logo"}
++          </Typography>
++        )}
++        <Typography variant="h5" sx={{ mt: 1 }}>{companyName}</Typography>
++      </Box>
++
++      <Grid container spacing={2} sx={{ mt: 3 }}>
++        <Grid item xs={12} md={8}>
++          <Box>
++            <Typography variant="body2">{activeCompany.address1}</Typography>
++            <Typography variant="body2">{activeCompany.address2}</Typography>
++            <Typography variant="body2" sx={{ fontWeight: 600 }}>
++              Phone: {activeCompany.phone || ""}
++            </Typography>
++            <Typography variant="body2">{activeCompany.email || ""}</Typography>
++          </Box>
++        </Grid>
++        <Grid item xs={12} md={4}>
++          <Box textAlign="right">
++            <Typography variant="h6" sx={{ fontWeight: 700 }}>
++              INVOICE
++            </Typography>
++            <Box sx={{ mt: 1, display: "flex", justifyContent: "flex-end" }}>
++              <Button
++                size="small"
++                variant="outlined"
++                onClick={() => setIsEdit((v) => !v)}
++              >
++                {isEdit ? "View" : "Edit"}
++              </Button>
++            </Box>
++            <Grid container sx={{ mt: 1, alignItems: "center" }} columnSpacing={1}>
++              {isEdit ? (
++                <>
++                  <Grid item xs={12}>
++                    <InputGroup size="sm" className="mb-2 w-100" style={{ flexWrap: "nowrap" }}>
++                      <InputGroup.Text style={{ whiteSpace: "nowrap", flexShrink: 0 }}>
++                        Date
++                      </InputGroup.Text>
++                      <Form.Control
++                        type="date"
++                        size="sm"
++                        value={editableDate}
++                        onChange={(e) => setEditableDate(e.target.value)}
++                      />
++                    </InputGroup>
++                  </Grid>
++                  <Grid item xs={12}>
++                    <InputGroup size="sm" className="mb-2 w-100" style={{ flexWrap: "nowrap" }}>
++                      <InputGroup.Text style={{ whiteSpace: "nowrap", flexShrink: 0 }}>
++                        Invoice #
++                      </InputGroup.Text>
++                      <Form.Control
++                        type="text"
++                        size="sm"
++                        value={editableNumber}
++                        onChange={(e) => setEditableNumber(e.target.value)}
++                      />
++                    </InputGroup>
++                  </Grid>
++                </>
++              ) : (
++                <>
++                  <Grid item xs={6} sx={{ display: "flex", alignItems: "center" }}>
++                    <Typography variant="body2" sx={{ width: "100%" }}>Date:</Typography>
++                  </Grid>
++                  <Grid item xs={6}>
++                    <Typography variant="body2" sx={{ textAlign: "left" }}>{editableDate || ""}</Typography>
++                  </Grid>
++                  <Grid item xs={6} sx={{ display: "flex", alignItems: "center" }}>
++                    <Typography variant="body2" sx={{ width: "100%" }}>Invoice #</Typography>
++                  </Grid>
++                  <Grid item xs={6}>
++                    <Typography
++                      variant="body2"
++                      sx={{
++                        textAlign: "left",
++                        maxWidth: 180,
++                        overflow: "hidden",
++                        textOverflow: "ellipsis",
++                        whiteSpace: "nowrap",
++                      }}
++                      title={editableNumber || ""}
++                    >
++                      {compact(editableNumber || "")}
++                    </Typography>
++                  </Grid>
++                </>
++              )}
++            </Grid>
++          </Box>
++        </Grid>
++      </Grid>
++
++      <Box sx={{ mt: 3 }}>
++        <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
++          Bill To:
++        </Typography>
++        {isEdit ? (
++          <Box sx={{ mt: 1, maxWidth: 420 }}>
++            <InputGroup size="sm" className="mb-2 w-100" style={{ flexWrap: "nowrap" }}>
++              <InputGroup.Text style={{ whiteSpace: "nowrap", flexShrink: 0 }}>Contact</InputGroup.Text>
++              <Form.Control
++                size="sm"
++                value={billToState.contact}
++                onChange={(e) => setBillToState((s) => ({ ...s, contact: e.target.value }))}
++              />
++            </InputGroup>
++            <InputGroup size="sm" className="mb-2 w-100" style={{ flexWrap: "nowrap" }}>
++              <InputGroup.Text style={{ whiteSpace: "nowrap", flexShrink: 0 }}>Company</InputGroup.Text>
++              <Form.Control
++                size="sm"
++                value={billToState.company}
++                onChange={(e) => setBillToState((s) => ({ ...s, company: e.target.value }))}
++              />
++            </InputGroup>
++            <InputGroup size="sm" className="mb-2 w-100" style={{ flexWrap: "nowrap" }}>
++              <InputGroup.Text style={{ whiteSpace: "nowrap", flexShrink: 0 }}>Address 1</InputGroup.Text>
++              <Form.Control
++                size="sm"
++                value={billToState.address1}
++                onChange={(e) => setBillToState((s) => ({ ...s, address1: e.target.value }))}
++              />
++            </InputGroup>
++            <InputGroup size="sm" className="mb-2 w-100" style={{ flexWrap: "nowrap" }}>
++              <InputGroup.Text style={{ whiteSpace: "nowrap", flexShrink: 0 }}>Address 2</InputGroup.Text>
++              <Form.Control
++                size="sm"
++                value={billToState.address2}
++                onChange={(e) => setBillToState((s) => ({ ...s, address2: e.target.value }))}
++              />
++            </InputGroup>
++            <InputGroup size="sm" className="w-100" style={{ flexWrap: "nowrap" }}>
++              <InputGroup.Text style={{ whiteSpace: "nowrap", flexShrink: 0 }}>Phone</InputGroup.Text>
++              <Form.Control
++                size="sm"
++                value={billToState.phone}
++                onChange={(e) => setBillToState((s) => ({ ...s, phone: e.target.value }))}
++              />
++            </InputGroup>
++          </Box>
++        ) : (
++          <>
++            <Typography variant="body2">{billToState.contact || ""}</Typography>
++            <Typography variant="body2">{billToState.company || ""}</Typography>
++            <Typography variant="body2">{billToState.address1 || ""}</Typography>
++            <Typography variant="body2">{billToState.address2 || ""}</Typography>
++            <Typography variant="body2">{billToState.phone || ""}</Typography>
++          </>
++        )}
++      </Box>
++
++      <TableContainer component={Paper} sx={{ mt: 3 }} elevation={0}>
++        <Table size="small">
++          <TableHead>
++            <TableRow
++              sx={{
++                backgroundColor: tableHeaderBg,
++                "& .MuiTableCell-root": {
++                  backgroundColor: tableHeaderBg,
++                  color: tableHeaderText,
++                  fontWeight: 600,
++                },
++              }}
++            >
++              <TableCell>Sl.</TableCell>
++              <TableCell>Description</TableCell>
++              <TableCell align="right">Amount</TableCell>
++            </TableRow>
++          </TableHead>
++          <TableBody>
++            {itemsState.map((it, idx) => {
++              const amount = Number(it?.amount ?? 0);
++              return (
++                <TableRow
++                  key={idx}
++                  sx={{
++                    backgroundColor: idx % 2 === 1 ? rowAlt : "transparent",
++                  }}
++                >
++                  <TableCell>{idx + 1}</TableCell>
++                  <TableCell>
++                    {isEdit ? (
++                      <Form.Control
++                        size="sm"
++                        value={it.description}
++                        onChange={(e) =>
++                          setItemsState((arr) =>
++                            arr.map((row, i) =>
++                              i === idx ? { ...row, description: e.target.value } : row
++                            )
++                          )
++                        }
++                      />
++                    ) : (
++                      it?.description || ""
++                    )}
++                  </TableCell>
++                  <TableCell align="right">
++                    {isEdit ? (
++                      <Box display="flex" alignItems="center" justifyContent="flex-end" gap={1}>
++                        <Form.Control
++                          size="sm"
++                          type="number"
++                          value={amount}
++                          onChange={(e) =>
++                            setItemsState((arr) =>
++                              arr.map((row, i) =>
++                                i === idx
++                                  ? { ...row, amount: Number(e.target.value || 0) }
++                                  : row
++                              )
++                            )
++                          }
++                          style={{ width: 100 }}
++                        />
++                        <Button
++                          size="small"
++                          variant="outlined"
++                          color="error"
++                          onClick={() =>
++                            setItemsState((arr) => arr.filter((_, i) => i !== idx))
++                          }
++                        >
++                          Remove
++                        </Button>
++                      </Box>
++                    ) : (
++                      fmt(amount)
++                    )}
++                  </TableCell>
++                </TableRow>
++              );
++            })}
++          
++          </TableBody>
++        </Table>
++      </TableContainer>
++      {isEdit && (
++        <Box sx={{ mt: 1, display: "flex", justifyContent: "flex-end" }}>
++          <Button
++            size="small"
++            variant="outlined"
++            onClick={() =>
++              setItemsState((arr) => [...arr, { description: "", amount: 0 }])
++            }
++          >
++            Add Row
++          </Button>
++        </Box>
++      )}
++
++      <Box sx={{ mt: 2, width: "100%" }}>
++        <Box sx={{ ml: "auto", width: 250, maxWidth: "100%" }}>
++          <Box
++            sx={{
++              backgroundColor: theme.palette.primary.main,
++              color: theme.palette.primary.contrastText,
++              borderRadius: 1,
++              p: 1.5,
++              display: "flex",
++              alignItems: "center",
++              justifyContent: "space-between",
++            }}
++          >
++            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
++              Total
++            </Typography>
++            <Box display="flex" alignItems="center" gap={1}>
++              <Typography variant="subtitle1">{currency}</Typography>
++              <Typography variant="h6" sx={{ fontWeight: 700 }}>
++                {Number(balanceDue).toFixed(2)}
++              </Typography>
++            </Box>
++          </Box>
++        </Box>
++      </Box>
++
++      <Divider sx={{ my: 3 }} />
++
++      <Typography variant="subtitle2" sx={{ fontStyle: "italic" }}>
++        Thank you to stay with us!
++      </Typography>
++    </Box>
++  );
++}
