@@ -29,8 +29,7 @@ import FilteredParameters from "../Expense/Components/FilteredParameters.jsx";
 import CsvFileUpload from "./Components/CsvFileUpload.jsx";
 import Iconify from "../../../components/Iconify.jsx";
 import IncomeExportButton from "./Components/IncomeExportButton.jsx";
-import GlobalInvoice from "../../../components/GlobalInvoice.jsx";
-import { useReactToPrint } from "react-to-print";
+import Invoice from "./Components/Invoice.jsx"
 
 const defaultQuery = {
   type: "",
@@ -80,16 +79,8 @@ export default function IncomeList() {
   const { showLargeContent, showQuickDetails } = useSidebarActions();
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [invoiceIncome, setInvoiceIncome] = useState(null);
-  const printRef = useRef(null);
   const [printData, setPrintData] = useState(null);
-  const printInvoice = useReactToPrint({
-    content: () => printRef.current,
-    documentTitle: "income-invoice",
-    pageStyle: `
-      @page { size: A4; margin: 12mm; }
-      body { -webkit-print-color-adjust: exact; color-adjust: exact; }
-    `,
-  });
+
 
   useEffect(() => {
     if (num_data_per_page > 0) {
@@ -508,21 +499,27 @@ export default function IncomeList() {
         />
       )}
       {showInvoiceModal && (
-        <Modal centered show={showInvoiceModal} onHide={closeInvoiceModal} size="lg" dialogClassName="invoice-modal">
-          <Modal.Body>
-            <div ref={printRef}>
-              <GlobalInvoice data={invoiceIncome || {}} />
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <button className={"btn primary-theme-btn btn-sm"} onClick={printInvoice}>
-              <FontAwesomeIcon icon={faDownload} /> Download PDF
-            </button>
-            <button className={"btn primary-theme-btn btn-sm"} onClick={closeInvoiceModal}>
-              Close
-            </button>
-          </Modal.Footer>
-        </Modal>
+          // <Invoice
+          //     income={invoiceIncome}
+          //     showModal={showInvoiceModal}
+          //     closeModal={closeInvoiceModal}
+          // />
+          <Invoice
+              showModal={showInvoiceModal}
+              closeModal={closeInvoiceModal}
+              invoice={{
+                number: "INV-1001",
+                date: "2025-01-10",
+                client: {
+                  name: "John Doe",
+                  email: "john@example.com",
+                },
+                items: [
+                  { description: "Web Development", qty: 1, price: 800 },
+                  { description: "Maintenance", qty: 2, price: 150 },
+                ],
+              }}
+          />
       )}
     </div>
   );

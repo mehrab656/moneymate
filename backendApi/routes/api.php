@@ -119,6 +119,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/income/upload-attachment', [IncomeController::class, 'uploadAttachment']);
     Route::get('/total-income', [IncomeController::class, 'totalIncome']);
     Route::get('/income-types', [IncomeController::class, 'incomeTypes']);
+    Route::post('/invoice/print', [IncomeController::class, 'printInvoice']);
 
     // File download API
 

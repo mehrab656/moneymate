@@ -1040,3 +1040,50 @@ body[data-theme='light'] .top-menubar .dropdown-menu {
 .file-input-secondary[type="file"] {
   border-color: var(--cms-secondary-bg);
 }
+.invoice-layout2-header{
+    display: flex;
+    justify-content: space-between;
+    /*border-bottom: 2px solid #000;*/
+    /*padding-bottom: 10px;*/
+    padding: 10px;
+    margin: 0;
+    background: var( --fundamental-color);
+    color: #FFFFFF;
+}
+.invoice-layout2-invoice{
+    max-width: 800px;
+    /*margin: auto;*/
+    padding: 30px;
+    font-family: Arial, sans-serif;
+    color: #000;
+    background: #fff;
+}
+.invoice-layout2-client{
+    margin: 20px 0;
+}
+.invoice-layout2-totals {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.invoice-layout2-actions {
+    text-align: center;
+    /*margin-top: 20px;*/
+    background: var( --fundamental-color);
+display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+/* PRINT STYLES */
+@media print {
+    .invoice-layout2-actions {
+        display: none;
+    }
+    body {
+        margin: 0;
+    }
+}
+
+.invoice-footer{
+    background: var( --fundamental-color);
+}

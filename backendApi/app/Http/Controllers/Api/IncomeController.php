@@ -709,4 +709,13 @@ class IncomeController extends Controller
         $progress = Session::get('progress');
         return response()->json(['progress' =>$request->cookie('test') ]);
     }
+
+    public function printInvoice(Request $request): JsonResponse
+    {
+        $html = $request->html; // HTML from React
+        $pdf = Pdf::loadHTML($html)
+            ->setPaper('A4', 'portrait');
+
+        return $pdf->stream('invoice.pdf');
+    }
 }

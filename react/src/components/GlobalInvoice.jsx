@@ -118,7 +118,6 @@ export default function GlobalInvoice({ data = {} }) {
         )}
         <Typography variant="h5" sx={{ mt: 1 }}>{companyName}</Typography>
       </Box>
-
       <Grid container spacing={2} sx={{ mt: 3 }}>
         <Grid item xs={12} md={8}>
           <Box>
@@ -158,7 +157,6 @@ export default function GlobalInvoice({ data = {} }) {
           </Box>
         </Grid>
       </Grid>
-
       <Box sx={{ mt: 3 }}>
         <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
           Bill To:
@@ -169,7 +167,6 @@ export default function GlobalInvoice({ data = {} }) {
         <Typography variant="body2">{billTo.address2 || ""}</Typography>
         <Typography variant="body2">{billTo.phone || ""}</Typography>
       </Box>
-
       <TableContainer component={Paper} sx={{ mt: 3 }} elevation={0}>
         <Table size="small">
           <TableHead>
@@ -208,7 +205,6 @@ export default function GlobalInvoice({ data = {} }) {
           </TableBody>
         </Table>
       </TableContainer>
-
       <Box sx={{ mt: 2, width: "100%" }}>
         <Box sx={{ ml: "auto", width: 250, maxWidth: "100%" }}>
           <Box
@@ -234,9 +230,7 @@ export default function GlobalInvoice({ data = {} }) {
           </Box>
         </Box>
       </Box>
-
       <Divider sx={{ my: 3 }} />
-
       <Typography variant="subtitle2" sx={{ fontStyle: "italic" }}>
         Thank you to stay with us!
       </Typography>

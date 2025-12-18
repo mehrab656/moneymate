@@ -135,6 +135,12 @@
       <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/webmozart/assert" />
       <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/berkayk/onesignal-laravel" />
       <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/symfony/psr-http-message-bridge" />
+      <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/barryvdh/laravel-dompdf" />
+      <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/dompdf/dompdf" />
+      <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/dompdf/php-font-lib" />
+      <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/dompdf/php-svg-lib" />
+      <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/masterminds/html5" />
+      <excludeFolder url="file://$MODULE_DIR$/backendApi/vendor/sabberworm/php-css-parser" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

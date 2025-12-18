@@ -46,17 +46,17 @@ class ExpenseController extends Controller
         $page = $request->query('page', 1);
         // Prefer pageSize, fallback to limit, default 10
         $perPage = (int) ($request->query('pageSize', $request->query('limit', 10)));
-        $order = $request->query('order');
+        $order = $request->query('order','DESC');
         $sectorSlugs = $request->query('sectors');
         $categorySlugs = $request->query('categories');
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
-        $orderBy = $request->query('orderBy');
+        $orderBy = $request->query('orderBy','id');
         // `limit` is accepted but normalized via $perPage above
 
         $query = Expense::select( 'expenses.*' )
-            ->where( 'company_id', Auth::user()->primary_company )
             ->join( 'categories', 'categories.id', '=', 'expenses.category_id' )
+            ->where( 'company_id', Auth::user()->primary_company )
             ->where( 'type', 'expense' )
             ->whereNull( 'expenses.deleted_at' );
 
@@ -113,7 +113,7 @@ class ExpenseController extends Controller
 
         // Fetch the current page
         $expenses = $query
-            ->orderBy($orderBy ?? 'date', $order ?? 'DESC')
+            ->orderBy($orderBy ?? 'id', $order ?? 'DESC')
             ->skip(($page - 1) * $perPage)
             ->take($perPage)
             ->get();
