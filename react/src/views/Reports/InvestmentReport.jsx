@@ -189,8 +189,6 @@ export default function InvestmentReport() {
                 title="Investment chart"
               />
             </WizCard>
-
-            
           </div>
         </div>
       </div>

@@ -29,7 +29,7 @@ import FilteredParameters from "../Expense/Components/FilteredParameters.jsx";
 import CsvFileUpload from "./Components/CsvFileUpload.jsx";
 import Iconify from "../../../components/Iconify.jsx";
 import IncomeExportButton from "./Components/IncomeExportButton.jsx";
-import GlobalInvoice from "../../../components/GlobalInvoice.jsx";
+import InvoiceCreate from "../../../components/InvoiceCreate.jsx";
 import { useReactToPrint } from "react-to-print";
 
 const defaultQuery = {
@@ -169,13 +169,7 @@ export default function IncomeList() {
       }
     );
   };
-  const showCsvIncomeFormFunc = () => {
-    setShowCsvForm(true);
-  };
-  const closeCreateModalFunc = () => {
-    setShowIncomeForm(false);
-    setIncome({});
-  };
+
   const closeCsvFileUploadModalFunc = () => {
     setShowCsvForm(false);
     setIncome({});
@@ -218,17 +212,28 @@ export default function IncomeList() {
   };
   const openInvoiceModalFromHeader = () => {
     const candidate = (incomes && incomes.length > 0) ? incomes[0] : {};
-    setInvoiceIncome(makeInvoiceData(candidate));
-    setShowInvoiceModal(true);
+    const data = makeInvoiceData(candidate);
+    setInvoiceIncome(data);
+    showLargeContent(
+      "Invoice Preview",
+      <div ref={printRef}>
+        <InvoiceCreate data={data || {}} />
+      </div>,
+      {
+        footerActions: (
+          <SidebarFooterButtons
+            actions={[
+              { label: "Download PDF", type: "button", onClick: () => printInvoice() },
+            ]}
+          />
+        ),
+      }
+    );
   };
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
     setIsPaginate(true);
-  };
-
-  const handelFilter = () => {
-    setHasFilter(!hasFilter);
   };
 
   useEffect(() => {
@@ -386,7 +391,13 @@ export default function IncomeList() {
          
         </Box>
         <Box>
-          <button className={"btn primary-theme-btn btn-sm ml-2"}>
+        <button
+            className={"btn primary-theme-btn btn-sm ml-2"}
+            onClick={openInvoiceModalFromHeader}
+          >
+            Create Invoice
+          </button>
+          <button className={"btn primary-theme-btn btn.sm ml-2"}>
             <FontAwesomeIcon icon={faDownload} />
           </button>
           <IncomeExportButton />
