@@ -399,9 +399,9 @@ export default function IncomeList() {
               justifyContent: "space-between",
             }}
           >
-            <Box display="flex">
+            <Box display="flex" alignItems="center">
               <button
-                className={"btn primary-theme-btn btn-sm mr-2"}
+                className={"btn primary-theme-btn btn-xs mr-2"}
                 onClick={toggleFilterModal}
               >
                 <FontAwesomeIcon icon={faFilter} />
