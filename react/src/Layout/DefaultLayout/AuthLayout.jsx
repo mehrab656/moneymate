@@ -439,6 +439,65 @@ export default function AuthLayout() {
             <div className={`wrapper`} id="wrappingContent">
               <aside className="wrapping-aside overflow-auto h-100">
                 <div className="aside-content">
+                  {checkPermission("company_view") && getCurrentCompanyData?.data?.name && (
+                    <Dropdown>
+                      <Dropdown.Toggle
+                        variant="dark"
+                        id="dropdown-basic-mobile"
+                        className={"current-company-name"}
+                      >
+                        {(() => {
+                          const logo = getCurrentCompanyData?.data?.logo;
+                          let logoUrl = null;
+                          if (typeof logo === "string" && logo && logo !== "null") {
+                            const trimmed = logo.trim();
+                            if (
+                              trimmed.startsWith("http://") ||
+                              trimmed.startsWith("https://") ||
+                              trimmed.startsWith("/")
+                            ) {
+                              logoUrl = trimmed;
+                            } else {
+                              const base = window.__APP_CONFIG__?.VITE_APP_BASE_URL || "";
+                              logoUrl = `${base}/storage/files/company/${trimmed}`;
+                            }
+                          }
+                          return (
+                            <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                              {logoUrl && (
+                                <img
+                                  src={logoUrl}
+                                  alt="Company Logo"
+                                  style={{ width: 22, height: 22, borderRadius: 4, objectFit: "cover" }}
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = "none";
+                                  }}
+                                />
+                              )}
+                              <span>
+                                {getCurrentCompanyData?.data ? getCurrentCompanyData?.data.name : "company"}
+                              </span>
+                            </span>
+                          );
+                        })()}
+                      </Dropdown.Toggle>
+                      <Dropdown.Menu className="scrollable-dropdown">
+                        {getCompanyData &&
+                          getCompanyData?.data.length > 0 &&
+                          getCompanyData?.data.map((company) => (
+                            <Dropdown.Item
+                              key={company.uid}
+                              active={getCurrentCompanyData?.data?.name === company.name}
+                              onClick={() => switchCompany(company.id)}
+                              className={"company-list-dropdown"}
+                            >
+                              {company.name}
+                            </Dropdown.Item>
+                          ))}
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  )}
+                  <hr />
                   <ul className="aside-menu">
                     <SideMenus
                       isActive={isActive}
@@ -446,7 +505,7 @@ export default function AuthLayout() {
                       handleCloseSidebar={handleCloseSidebar}
                       user={user}
                       checkPermission={checkPermission}
-                      currentMenu={(new URLSearchParams(location.search)).get('menu')}
+                      currentMenu={(new URLSearchParams(location.search)).get("menu")}
                     />
                   </ul>
                 </div>

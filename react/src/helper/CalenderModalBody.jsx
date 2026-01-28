@@ -1,107 +1,110 @@
-import React, {memo} from "react";
+import React, { memo } from "react";
+import { TableRow, TableCell } from "@mui/material";
 
+const CalenderModalBody = ({ additionalData, eventType }) => {
+  const isIncomeOrExpense = eventType === "expense-event" || eventType === "income-event";
+  const isPayment = eventType === "payment-event";
 
-const CalenderModalBody = ({additionalData, eventType}) => {
-    return (
+  return (
+    <>
+      {isIncomeOrExpense && (
         <>
-            { (eventType === 'expense-event' || eventType === 'income-event') &&
-                <>
-                    <tr>
-                        <td width="30%">
-                            <strong>User Name :</strong>
-                        </td>
-                        <td>{additionalData.user_name}</td>
-                    </tr>
-                    <tr>
-                        <td width="15%">
-                            <strong>Account Number :</strong>
-                        </td>
-                        <td> {additionalData.account_number}</td>
-                    </tr>
-                    <tr>
-                        <td width="15%">
-                            <strong>Bank Name :</strong>
-                        </td>
-                        <td> {additionalData.bank_name}  </td>
-                    </tr>
-                    <tr>
-                        <td width="15%">
-                            <strong>Amount :</strong>
-                        </td>
-                        <td> {additionalData.amount}</td>
-                    </tr>
-                    <tr>
-                        <td width="15%">
-                            <strong>Description :</strong>
-                        </td>
-                        <td> {additionalData.description}</td>
-                    </tr>
-                    <tr>
-                        <td width="15%">
-                            <strong>Note :</strong>
-                        </td>
-                        <td> {additionalData.note}</td>
-                    </tr>
-                    <tr>
-                        <td width="15%">
-                            <strong>Reference :</strong>
-                        </td>
-                        <td> {additionalData.reference}</td>
-                    </tr>
-                    <tr>
-                        <td width="15%">
-                            <strong>Date :</strong>
-                        </td>
-                        <td>
-                            {additionalData?.date ||
-                                additionalData?.date}
-                        </td>
-                    </tr>
-                </>
-
-            }
-            {
-                (eventType === 'payment-event') &&
-                <>
-                    <tr>
-                        <td width="15%">
-                            <strong>Details :</strong>
-                        </td>
-                        <td> {additionalData.payment_number}</td>
-                    </tr>
-                    <tr>
-                        <td width="15%">
-                            <strong>Amount :</strong>
-                        </td>
-                        <td> {additionalData.amount}</td>
-                    </tr>
-                    <tr>
-                        <td width="15%">
-                            <strong>Bill Type :</strong>
-                        </td>
-                        <td> {additionalData.type}</td>
-                    </tr>
-                    <tr>
-                        <td width="15%">
-                            <strong>Additional Notes :</strong>
-                        </td>
-                        <td> {additionalData.note}</td>
-                    </tr>
-                    <tr>
-                        <td width="15%">
-                            <strong>Payment Date :</strong>
-                        </td>
-                        <td>
-                            {additionalData?.date ||
-                                additionalData?.date}
-                        </td>
-                    </tr>
-                </>
-            }
-
-
+          <TableRow>
+            <TableCell width="30%">
+              <strong>User Name :</strong>
+            </TableCell>
+            <TableCell>{additionalData.user_name}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell width="15%">
+              <strong>Account :</strong>
+            </TableCell>
+            <TableCell>
+              {additionalData.account?.label ||
+                `${additionalData.bank_name || ""} ${
+                  additionalData.account_number
+                    ? `(${additionalData.account_number})`
+                    : ""
+                }`}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell width="15%">
+              <strong>Amount :</strong>
+            </TableCell>
+            <TableCell> {additionalData.amount}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell width="15%">
+              <strong>Description :</strong>
+            </TableCell>
+            <TableCell> {additionalData.description}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell width="15%">
+              <strong>Note :</strong>
+            </TableCell>
+            <TableCell> {additionalData.note}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell width="15%">
+              <strong>Reference :</strong>
+            </TableCell>
+            <TableCell>
+              {typeof additionalData.reference === "object" &&
+              additionalData.reference !== null
+                ? additionalData.reference.label
+                : additionalData.reference}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell width="15%">
+              <strong>Date :</strong>
+            </TableCell>
+            <TableCell>
+              {additionalData?.date || additionalData?.date}
+            </TableCell>
+          </TableRow>
         </>
-    )
-}
+      )}
+      {isPayment && (
+        <>
+          <TableRow>
+            <TableCell width="15%">
+              <strong>Details :</strong>
+            </TableCell>
+            <TableCell> {additionalData.payment_number}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell width="15%">
+              <strong>Amount :</strong>
+            </TableCell>
+            <TableCell> {additionalData.amount}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell width="15%">
+              <strong>Bill Type :</strong>
+            </TableCell>
+            <TableCell> {additionalData.type}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell width="15%">
+              <strong>Additional Notes :</strong>
+            </TableCell>
+            <TableCell> {additionalData.note}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell width="15%">
+              <strong>Payment Date :</strong>
+            </TableCell>
+            <TableCell>
+              {additionalData?.date || additionalData?.date}
+            </TableCell>
+          </TableRow>
+        </>
+      )}
+    </>
+  );
+};
 
-export default memo(CalenderModalBody)
+export default memo(CalenderModalBody);
