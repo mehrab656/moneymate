@@ -79,9 +79,9 @@ export default function StickyHeadTable( {data,isFetching,hasError,tableColumns,
                 <Table stickyHeader aria-label="sticky table" size="small">
                     <TableHead>
                         <TableRow>
-                            {tableColumns.map((column) => (
+                            {tableColumns.map((column,index) => (
                                 <TableCell
-                                    key={column.id}
+                                    key={`sticky-header-table${index}`}
                                     align={column.align}
                                     style={{ minWidth: column.minWidth }}
                                 >

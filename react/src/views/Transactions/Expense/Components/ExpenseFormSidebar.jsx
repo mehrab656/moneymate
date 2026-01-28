@@ -18,7 +18,6 @@ import { isImageUrl } from "../../../../helper/media.js";
 import { useTheme, alpha } from "@mui/material/styles";
 import { createSelectStyles, createInputGroupTextStyle } from "../../../../styles/formThemeStyles.js";
 
-
 const _initialExpense = () => ({
   description: "",
   note: "",
@@ -51,6 +50,10 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
   const [categories, setCategories] = useState([]);
   const [saveBtnTxt, setSaveBtnTxt] = useState("Save");
   const [errors, setErrors] = useState({});
+  const newRowRef = useRef(null);
+  useEffect(() => {
+    newRowRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [expenses]);
 
   const renderFieldErrors = (idx, field) => {
     try {
@@ -107,6 +110,13 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
     updatedExpenses.splice(index, 1);
     setExpenses(updatedExpenses);
   };
+
+  const confirmRemoveRow = index =>{
+    removeExpenses(index)
+  }
+  const keepRow= index =>{
+
+  }
   const handleExpenseInputChange = (e, index, fieldName) => {
     // Clone row objects to avoid mutating frozen/cache-backed objects
     const updatedExpenses = expenses.map((row) => ({ ...row }));
@@ -393,254 +403,277 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
       {sidebarTitle && <h6>{sidebarTitle ? sidebarTitle : ""}</h6>}
       <Form ref={formRef} id={formId} onSubmit={(e) => expenseSubmit(e, Boolean(footerActions))}>
         <div className="sidebar-scroll-content">
-        {expenses.map((expense, index) => (
-          <div>
-            <Row>
-              <Col xs={colXS} md={colMD} sm={colSM}>
-                <InputGroup className={hasFieldError(index, "description") ? "mb-1" : "mb-3"} size={"sm"}>
-                  {showLabel && <InputGroup.Text style={inputGroupTextStyle}>Description</InputGroup.Text>}
-                  <Form.Control
-                    as="textarea"
-                    aria-label="Description"
-                    placeholder={"Description"}
-                    value={expense.description ?? ""}
-                    name="description"
-                    style={{ fontSize: inputFontSize }}
-                    onChange={(e) => handleExpenseInputChange(e, index)}
-                  />
-                </InputGroup>
-                {renderFieldErrors(index, "description")}
-              </Col>
-              <Col xs={colXS} md={colMD} sm={colSM}>
-                <InputGroup className="mb-3" size={"sm"}>
-                  {showLabel && <InputGroup.Text style={inputGroupTextStyle}>Note</InputGroup.Text>}
-                  <Form.Control
-                    as="textarea"
-                    aria-label="Note"
-                    placeholder={"Note"}
-                    value={expense.note ?? ""}
-                    name="note"
-                    style={{ fontSize: inputFontSize }}
-                    onChange={(e) => handleExpenseInputChange(e, index)}
-                  />
-                </InputGroup>
-              </Col>
-            </Row>
-            <Row>
-              <Col xs={12} md={6}>
-                <InputGroup className={hasFieldError(index, "amount") ? "mb-1" : "mb-3"} size={"sm"}>
-                  {showLabel && (
-                    <InputGroup.Text id="amount" style={inputGroupTextStyle}>Amount</InputGroup.Text>
-                  )}
-                  <Form.Control
-                    placeholder="Expense Amount"
-                    aria-label="Expense Amount"
-                    aria-describedby="amount"
-                    name={"amount"}
-                    type="number"
-                    value={expense.amount}
-                    // style={{ fontSize: inputFontSize }}
-                    onChange={(e) => handleExpenseInputChange(e, index)}
-                  />
-                </InputGroup>
-                {renderFieldErrors(index, "amount")}
-              </Col>
+          {expenses.map((expense, index) => (
+              <div key={`expense-row-${index}`}>
+                <Row>
+                  <Col xs={colXS} md={colMD} sm={colSM}>
+                    <InputGroup className={hasFieldError(index, "description") ? "mb-1" : "mb-3"} size={"sm"}>
+                      {showLabel && <InputGroup.Text style={inputGroupTextStyle}>Description</InputGroup.Text>}
+                      <Form.Control
+                          as="textarea"
+                          aria-label="Description"
+                          placeholder={"Description"}
+                          value={expense.description ?? ""}
+                          name="description"
+                          style={{fontSize: inputFontSize}}
+                          onChange={(e) => handleExpenseInputChange(e, index)}
+                      />
+                    </InputGroup>
+                    {renderFieldErrors(index, "description")}
+                  </Col>
+                  <Col xs={colXS} md={colMD} sm={colSM}>
+                    <InputGroup className="mb-3" size={"sm"}>
+                      {showLabel && <InputGroup.Text style={inputGroupTextStyle}>Note</InputGroup.Text>}
+                      <Form.Control
+                          as="textarea"
+                          aria-label="Note"
+                          placeholder={"Note"}
+                          value={expense.note ?? ""}
+                          name="note"
+                          style={{fontSize: inputFontSize}}
+                          onChange={(e) => handleExpenseInputChange(e, index)}
+                      />
+                    </InputGroup>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs={12} md={6}>
+                    <InputGroup className={hasFieldError(index, "amount") ? "mb-1" : "mb-3"} size={"sm"}>
+                      {showLabel && (
+                          <InputGroup.Text id="amount" style={inputGroupTextStyle}>Amount</InputGroup.Text>
+                      )}
+                      <Form.Control
+                          placeholder="Expense Amount"
+                          aria-label="Expense Amount"
+                          aria-describedby="amount"
+                          name={"amount"}
+                          type="number"
+                          value={expense.amount}
+                          // style={{ fontSize: inputFontSize }}
+                          onChange={(e) => handleExpenseInputChange(e, index)}
+                      />
+                    </InputGroup>
+                    {renderFieldErrors(index, "amount")}
+                  </Col>
 
-              <Col xs={12} md={6}>
-                <InputGroup className={hasFieldError(index, "refundable_amount") ? "mb-1" : "mb-3"} size={"sm"}>
-                  {showLabel && (
-                    <InputGroup.Text id="refundable_amount" style={inputGroupTextStyle}>
-                      Refundable Amount
-                    </InputGroup.Text>
-                  )}
-                  <Form.Control
-                    placeholder="Refundable Amount"
-                    aria-label="Refundable Amount"
-                    aria-describedby="refundable_amount"
-                    name="refundable_amount"
-                    type="number"
-                    value={expense.refundable_amount}
-                    // style={{ fontSize: inputFontSize }}
-                    onChange={(e) => handleExpenseInputChange(e, index)}
-                  />
-                </InputGroup>
-                {renderFieldErrors(index, "refundable_amount")}
-              </Col>
-            </Row>
-            <Row>
-              <Col xs={colXS} md={colMD}>
-                <InputGroup className={hasFieldError(index, "account") ? "mb-1" : "mb-3"} size={"sm"}>
-                  {showLabel && (
-                    <InputGroup.Text id="account" style={inputGroupTextStyle}>Bank Account</InputGroup.Text>
-                  )}
-                  <Select
-                    classNamePrefix="select"
-                    value={expense.account}
-                    isSearchable={false}
-                    name="account"
-                    options={accounts}
-                    styles={selectStyles}
-                    placeholder={"Select account"}
-                    onChange={(option) => {
-                      handleExpenseInputChange(option, index, 'account');
-                      if (errors.account && option?.value) {
-                        const next = { ...errors };
-                        delete next.account;
-                        setErrors(next);
-                      }
-                    }}
-                  />
-                </InputGroup>
-                {renderFieldErrors(index, "account")}
-              </Col>
-              <Col xs={colXS} md={colMD}>
-                <InputGroup className={hasFieldError(index, "category") ? "mb-1" : "mb-3"} size={"sm"}>
-                  {showLabel && (
-                    <InputGroup.Text id="category_id" style={inputGroupTextStyle}>Category</InputGroup.Text>
-                  )}
-                  <Select
-                    classNamePrefix="select"
-                    value={expense.category}
-                    isSearchable={false}
-                    name="category"
-                    styles={selectStyles}
-                    isLoading={categoryIsFetching}
-                    options={categories}
-                    placeholder={"Select Category"}
-                    onChange={(option) => {
-                      handleExpenseInputChange(option, index, 'category');
-                      if (errors.category && option?.value) {
-                        const next = { ...errors };
-                        delete next.category;
-                        setErrors(next);
-                      }
-                    }}
-                  />
-                </InputGroup>
-                {renderFieldErrors(index, "category")}
-              </Col>
-            </Row>
-            <Row>
-              <Col xs={12} md={6}>
-                <InputGroup className={hasFieldError(index, "date") ? "mb-1" : "mb-3"} size={"sm"}>
-                  {showLabel && (
-                    <InputGroup.Text id="date" style={inputGroupTextStyle}>Date</InputGroup.Text>
-                  )}
-                  <Form.Control
-                    placeholder="Date"
-                    aria-label="Date"
-                    aria-describedby="date"
-                    name="date"
-                    type="date"
-                    value={expense.date}
-                    // style={{ fontSize: inputFontSize }}
-                    onChange={(e) => handleExpenseInputChange(e, index)}
-                  />
-                </InputGroup>
-                {renderFieldErrors(index, "date")}
-              </Col>
-              <Col xs={12} md={6}>
-                <InputGroup className={hasFieldError(index, "reference") ? "mb-1" : "mb-3"} size={"sm"}>
-                  {showLabel && (
-                    <InputGroup.Text id="reference" style={inputGroupTextStyle}>Reference</InputGroup.Text>
-                  )}
-                  <Form.Control
-                    placeholder="Reference"
-                    aria-label="Reference"
-                    aria-describedby="reference"
-                    name="reference"
-                    type="text"
-                    value={expense.reference}
-                    // style={{ fontSize: inputFontSize }}
-                    onChange={(e) => handleExpenseInputChange(e, index)}
-                  />
-                </InputGroup>
-                {renderFieldErrors(index, "reference")}
-              </Col>
-            </Row>
-            <Row>
-              <Col xs={colXS} md={colMD}>
-                <InputGroup className={hasFieldError(index, "attachment") ? "mb-1" : "mb-3"} size={"sm"}>
-                  
-                  <Form.Control
-                    placeholder="Add Attachment"
-                    aria-label="Add Attachment"
-                    aria-describedby="attachment"
-                    name="attachment"
-                    type="file"
-                    accept="image/*"
-                    className="file-input-secondary"
-                    style={{
-                      backgroundColor: theme.palette.background.paper,
-                      '--cms-secondary-bg': theme.palette.secondary.main,
-                      '--cms-secondary-contrast': theme.palette.getContrastText(theme.palette.secondary.main),
-                    }}
-                    onChange={(e) => {
-                      handleFileInputChange(e, index, "attachment");
-                    }}
-                  />
-                </InputGroup>
-                {/* Attachment preview for edit and selection */}
-                {(expense.attachment || expense.attachment_preview_url) && (
-                  <div style={{ marginTop: 4 }}>
-                    {expense.attachment instanceof File ? (
-                      expense.attachment_preview_url ? (
-                        <img
-                          src={expense.attachment_preview_url}
-                          alt="Uploaded"
-                          style={{
-                            width: "200px",
-                            height: "200px",
-                            borderRadius: "10px",
-                            objectFit: "cover",
+                  <Col xs={12} md={6}>
+                    <InputGroup className={hasFieldError(index, "refundable_amount") ? "mb-1" : "mb-3"} size={"sm"}>
+                      {showLabel && (
+                          <InputGroup.Text id="refundable_amount" style={inputGroupTextStyle}>
+                            Refundable Amount
+                          </InputGroup.Text>
+                      )}
+                      <Form.Control
+                          placeholder="Refundable Amount"
+                          aria-label="Refundable Amount"
+                          aria-describedby="refundable_amount"
+                          name="refundable_amount"
+                          type="number"
+                          value={expense.refundable_amount}
+                          // style={{ fontSize: inputFontSize }}
+                          onChange={(e) => handleExpenseInputChange(e, index)}
+                      />
+                    </InputGroup>
+                    {renderFieldErrors(index, "refundable_amount")}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs={colXS} md={colMD}>
+                    <InputGroup className={hasFieldError(index, "account") ? "mb-1" : "mb-3"} size={"sm"}>
+                      {showLabel && (
+                          <InputGroup.Text id="account" style={inputGroupTextStyle}>Bank Account</InputGroup.Text>
+                      )}
+                      <Select
+                          classNamePrefix="select"
+                          value={expense.account}
+                          isSearchable={false}
+                          name="account"
+                          options={accounts}
+                          styles={selectStyles}
+                          placeholder={"Select account"}
+                          onChange={(option) => {
+                            handleExpenseInputChange(option, index, 'account');
+                            if (errors.account && option?.value) {
+                              const next = {...errors};
+                              delete next.account;
+                              setErrors(next);
+                            }
                           }}
-                        />
-                      ) : (
-                        <small>Selected file: {expense.attachment.name}</small>
-                      )
-                    ) : (
-                      typeof expense.attachment === "string" && expense.attachment.trim() ? (
-                        isImageUrl(expense.attachment) ? (
-                          <img
-                            src={expense.attachment}
-                            alt="Uploaded"
-                            style={{
-                              width: "200px",
-                              height: "200px",
-                              borderRadius: "10px",
-                              objectFit: "cover",
-                            }}
-                          />
-                        ) : (
-                          <small>
-                            Current attachment: {" "}
-                            <a href={expense.attachment} target="_blank" rel="noopener noreferrer">View</a>
-                          </small>
-                        )
-                      ) : null
+                      />
+                    </InputGroup>
+                    {renderFieldErrors(index, "account")}
+                  </Col>
+                  <Col xs={colXS} md={colMD}>
+                    <InputGroup className={hasFieldError(index, "category") ? "mb-1" : "mb-3"} size={"sm"}>
+                      {showLabel && (
+                          <InputGroup.Text id="category_id" style={inputGroupTextStyle}>Category</InputGroup.Text>
+                      )}
+                      <Select
+                          classNamePrefix="select"
+                          value={expense.category}
+                          isSearchable={false}
+                          name="category"
+                          styles={selectStyles}
+                          isLoading={categoryIsFetching}
+                          options={categories}
+                          placeholder={"Select Category"}
+                          onChange={(option) => {
+                            handleExpenseInputChange(option, index, 'category');
+                            if (errors.category && option?.value) {
+                              const next = {...errors};
+                              delete next.category;
+                              setErrors(next);
+                            }
+                          }}
+                      />
+                    </InputGroup>
+                    {renderFieldErrors(index, "category")}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs={12} md={6}>
+                    <InputGroup className={hasFieldError(index, "date") ? "mb-1" : "mb-3"} size={"sm"}>
+                      {showLabel && (
+                          <InputGroup.Text id="date" style={inputGroupTextStyle}>Date</InputGroup.Text>
+                      )}
+                      <Form.Control
+                          placeholder="Date"
+                          aria-label="Date"
+                          aria-describedby="date"
+                          name="date"
+                          type="date"
+                          value={expense.date}
+                          // style={{ fontSize: inputFontSize }}
+                          onChange={(e) => handleExpenseInputChange(e, index)}
+                      />
+                    </InputGroup>
+                    {renderFieldErrors(index, "date")}
+                  </Col>
+                  <Col xs={12} md={6}>
+                    <InputGroup className={hasFieldError(index, "reference") ? "mb-1" : "mb-3"} size={"sm"}>
+                      {showLabel && (
+                          <InputGroup.Text id="reference" style={inputGroupTextStyle}>Reference</InputGroup.Text>
+                      )}
+                      <Form.Control
+                          placeholder="Reference"
+                          aria-label="Reference"
+                          aria-describedby="reference"
+                          name="reference"
+                          type="text"
+                          value={expense.reference}
+                          // style={{ fontSize: inputFontSize }}
+                          onChange={(e) => handleExpenseInputChange(e, index)}
+                      />
+                    </InputGroup>
+                    {renderFieldErrors(index, "reference")}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs={colXS} md={colMD}>
+                    <InputGroup className={hasFieldError(index, "attachment") ? "mb-1" : "mb-3"} size={"sm"}>
+
+                      <Form.Control
+                          placeholder="Add Attachment"
+                          aria-label="Add Attachment"
+                          aria-describedby="attachment"
+                          name="attachment"
+                          type="file"
+                          accept="image/*"
+                          className="file-input-secondary"
+                          style={{
+                            backgroundColor: theme.palette.background.paper,
+                            '--cms-secondary-bg': theme.palette.secondary.main,
+                            '--cms-secondary-contrast': theme.palette.getContrastText(theme.palette.secondary.main),
+                          }}
+                          onChange={(e) => {
+                            handleFileInputChange(e, index, "attachment");
+                          }}
+                      />
+                    </InputGroup>
+                    {/* Attachment preview for edit and selection */}
+                    {(expense.attachment || expense.attachment_preview_url) && (
+                        <div style={{marginTop: 4}}>
+                          {expense.attachment instanceof File ? (
+                              expense.attachment_preview_url ? (
+                                  <img
+                                      src={expense.attachment_preview_url}
+                                      alt="Uploaded"
+                                      style={{
+                                        width: "200px",
+                                        height: "200px",
+                                        borderRadius: "10px",
+                                        objectFit: "cover",
+                                      }}
+                                  />
+                              ) : (
+                                  <small>Selected file: {expense.attachment.name}</small>
+                              )
+                          ) : (
+                              typeof expense.attachment === "string" && expense.attachment.trim() ? (
+                                  isImageUrl(expense.attachment) ? (
+                                      <img
+                                          src={expense.attachment}
+                                          alt="Uploaded"
+                                          style={{
+                                            width: "200px",
+                                            height: "200px",
+                                            borderRadius: "10px",
+                                            objectFit: "cover",
+                                          }}
+                                      />
+                                  ) : (
+                                      <small>
+                                        Current attachment: {" "}
+                                        <a href={expense.attachment} target="_blank" rel="noopener noreferrer">View</a>
+                                      </small>
+                                  )
+                              ) : null
+                          )}
+                        </div>
                     )}
-                  </div>
+                    {renderFieldErrors(index, "attachment")}
+                  </Col>
+                  {index > 0 && (
+                      <Col xs={colXS} md={colMD}>
+                        <Button
+                            variant="danger"
+                            size="sm"
+                            onClick={() => removeExpenses(index)}
+                            className="flex-shrink-0 float-end"
+                        >
+                          <FontAwesomeIcon icon={faTrash}/>
+                        </Button>
+
+                        <div className={`confirm-row-delete-section${index}`}>
+                          <Button
+                              variant="info"
+                              size="sm"
+                              onClick={() => removeExpenses(index)}
+                              className="flex-shrink-0 float-end"
+                          >
+                            No, Keep it
+                          </Button>
+
+                          <Button
+                              variant="danger"
+                              size="sm"
+                              onClick={() => confirmRemoveRow(index)}
+                              className="flex-shrink-0 float-end"
+                          >Yes, remove it
+                          </Button>
+
+
+                        </div>
+                      </Col>
+                  )}
+                </Row>
+                {index < expenses.length - 1 && (
+                    <hr/>
                 )}
-                {renderFieldErrors(index, "attachment")}
-              </Col>
-              {index > 0 && (
-                <Col xs={colXS} md={colMD}>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => removeExpenses(index)}
-                    className="flex-shrink-0 float-end"
-                  >
-                    <FontAwesomeIcon icon={faTrash} />
-                  </Button>
-                </Col>
-              )}
-            </Row>
-            {index < expenses.length - 1 && (
-              <hr />
-            )}
-          </div>
-        ))}
+              </div>
+          ))}
+          <div ref={newRowRef}/>
+
         </div>
         {/* Local footer actions (e.g., Quick Expense) via prop */}
         {footerActions && (

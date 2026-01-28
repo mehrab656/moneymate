@@ -143,9 +143,9 @@ function CommonTable(props) {
             <Table size={table.size} aria-label={table.ariaLabel}>
               <TableHead>
                 <TableRow>
-                  {table.tableColumns.map((column) => {
+                  {table.tableColumns.map((column,index) => {
                     return (
-                      <TableCell align={column.align} key={column.id}>
+                      <TableCell align={column.align} key={`cell-${index}`}>
                         <b>{column.label}</b>
                       </TableCell>
                     );
@@ -170,11 +170,11 @@ function CommonTable(props) {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  table.tableBody.rows?.map((row) => (
-                    <TableRow key={genRand(12)}>
-                      {table.tableColumns.map((column) =>
+                  table.tableBody.rows?.map((row,index) => (
+                    <TableRow key={`table-index-key-${index}`}>
+                      {table.tableColumns.map((column,index) =>
                         isValidElement(row?.[column.id]) ? (
-                          <TableCell align={column.align} key={genRand(8)}>
+                          <TableCell align={column.align} key={`index-${index}`}>
                             {createElement(
                               row?.[column.id].type,
                               row?.[column.id].props,

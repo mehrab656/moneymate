@@ -71,13 +71,16 @@ const IncomeFormSidebar = forwardRef(function IncomeFormSidebar({
   const [accounts, setAccounts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [errors, setErrors] = useState({});
+  const newRowRef = useRef(null);
   const { closeSidebar } = useSidebarActions();
   const { themeMode } = useContext(SettingsContext);
   const theme = useTheme();
   const formRef = useRef(null);
   const formId = formIdProp || INCOME_FORM_ID;
 
-  console.log('incomes', incomes);
+  useEffect(() => {
+    newRowRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [incomes]);
 
   const { data: getBankData } = useGetBankDataQuery({
     currentPage: "",
@@ -394,288 +397,321 @@ const IncomeFormSidebar = forwardRef(function IncomeFormSidebar({
         <Form ref={formRef} id={formId} onSubmit={(e) => submitIncome(e, Boolean(footerActions))}>
           <div>
             {incomes.map((income, index) => (
-              <div key={`income-row-${index}`}>
-                <Row>
-                  <Col xs={colXS} md={colMD} sm={colSM}>
-                    <InputGroup className="mb-3" size="sm">
-                      {showLabel && <InputGroup.Text style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Description</InputGroup.Text>}
-                      <Form.Control
-                        as="textarea"
-                        aria-label="Description"
-                        placeholder={"Description"}
-                        value={income.description ?? ""}
-                        name="description"
-                        style={{ fontSize: inputFontSize }}
-                        onChange={(e) => handleIncomeInputChange(e, index)}
-                      />
-                    </InputGroup>
-                    {renderFieldErrors(index, "description")}
-                  </Col>
-                  <Col xs={colXS} md={colMD} sm={colSM}>
-                    <InputGroup className="mb-3" size="sm">
-                      {showLabel && <InputGroup.Text style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Note</InputGroup.Text>}
-                      <Form.Control
-                        as="textarea"
-                        aria-label="Note"
-                        placeholder={"Note"}
-                        value={income.note ?? ""}
-                        name="note"
-                        style={{ fontSize: inputFontSize }}
-                        onChange={(e) => handleIncomeInputChange(e, index)}
-                      />
-                    </InputGroup>
-                    {renderFieldErrors(index, "note")}
-                  </Col>
-                </Row>
-                <Row>
-                  <Col xs={12} md={6} sm={12}>
-                    <InputGroup className={hasFieldError(index, "amount") ? "mb-1" : "mb-3"} size="sm">
-                      {showLabel && <InputGroup.Text id="amount" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Amount</InputGroup.Text>}
-                      <Form.Control
-                        placeholder="Income Amount"
-                        aria-label="Income Amount"
-                        aria-describedby="amount"
-                        name={"amount"}
-                        type="number"
-                        value={income.amount}
-                        onChange={(e) => handleIncomeInputChange(e, index)}
-                      />
-                    </InputGroup>
-                    {renderFieldErrors(index, "amount")}
-                  </Col>
-                  <Col xs={12} md={6} sm={12}>
-                    <InputGroup className={hasFieldError(index, "date") ? "mb-1" : "mb-3"} size="sm">
-                      {showLabel && <InputGroup.Text id="date" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Date</InputGroup.Text>}
-                      <Form.Control
-                        placeholder="Date"
-                        aria-label="Date"
-                        aria-describedby="date"
-                        name="date"
-                        type="date"
-                        value={income.date}
-                        onChange={(e) => handleIncomeInputChange(e, index)}
-                      />
-                    </InputGroup>
-                    {renderFieldErrors(index, "date")}
-                  </Col>
-                </Row>
-                <Row>
-                  <Col xs={colXS} md={colMD} sm={colSM}>
-                    <InputGroup className={hasFieldError(index, "account") ? "mb-1" : "mb-3"} size="sm">
-                      {showLabel && <InputGroup.Text id="account" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Bank Account</InputGroup.Text>}
-                      <div style={{ flex: 1 }}>
-                        <Select
-                          classNamePrefix="select"
-                          value={income.account}
-                          isSearchable={false}
-                          name="account"
-                          options={accounts}
-                          styles={selectStyles}
-                          menuPortalTarget={document.body}
-                          menuPosition="fixed"
-                          placeholder={"Select account"}
-                          onChange={(e) => handleIncomeInputChange(e, index, "account")}
-                        />
-                      </div>
-                    </InputGroup>
-                    {renderFieldErrors(index, "account")}
-                  </Col>
-                  <Col xs={colXS} md={colMD} sm={colSM}>
-                    <InputGroup className={hasFieldError(index, "category") ? "mb-1" : "mb-3"} size="sm">
-                      {showLabel && <InputGroup.Text id="category_id" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Category</InputGroup.Text>}
-                      <div style={{ flex: 1 }}>
-                        <Select
-                          classNamePrefix="select"
-                          value={income.category}
-                          isSearchable={false}
-                          name="category"
-                          isLoading={categoryIsFetching}
-                          options={categories}
-                          styles={selectStyles}
-                          menuPortalTarget={document.body}
-                          menuPosition="fixed"
-                          placeholder={"Select Category"}
-                          onChange={(e) => handleIncomeInputChange(e, index, "category")}
-                        />
-                      </div>
-                    </InputGroup>
-                    {renderFieldErrors(index, "category")}
-                  </Col>
-                </Row>
-                <Row>
-                  <Col xs={colXS} md={colMD} sm={colSM}>
-                    <InputGroup className={hasFieldError(index, "reference") ? "mb-1" : "mb-3"} size="sm">
-                      {showLabel && <InputGroup.Text id="reference" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Reference</InputGroup.Text>}
-                      <div style={{ flex: 1 }}>
-                        <Select
-                          classNamePrefix="select"
-                          value={income.reference}
-                          isSearchable={false}
-                          name="reference"
-                          options={defaultReference}
-                          styles={selectStyles}
-                          menuPortalTarget={document.body}
-                          menuPosition="fixed"
-                          placeholder={"Select Reference"}
-                          onChange={(e) => handleIncomeInputChange(e, index, "reference")}
-                        />
-                      </div>
-                    </InputGroup>
-                    {renderFieldErrors(index, "reference")}
-                  </Col>
-                  <Col xs={colXS} md={colMD} sm={colSM}>
-                    <InputGroup className={hasFieldError(index, "income_type") ? "mb-1" : "mb-3"} size="sm">
-                      {showLabel && <InputGroup.Text id="income_type" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Income Type</InputGroup.Text>}
-                      <div style={{ flex: 1 }}>
-                        <Select
-                          classNamePrefix="select"
-                          value={income.income_type}
-                          isSearchable={false}
-                          name="income_type"
-                          options={defaultIncomeType}
-                          styles={selectStyles}
-                          menuPortalTarget={document.body}
-                          menuPosition="fixed"
-                          placeholder={"Select Income Type"}
-                          onChange={(e) => handleIncomeInputChange(e, index, "income_type")}
-                        />
-                      </div>
-                    </InputGroup>
-                    {renderFieldErrors(index, "income_type")}
-                  </Col>
-                </Row>
-
-                {(income?.income_type?.value ?? "") === "reservation" && (
+                <div key={`income-row-${index}`}>
                   <Row>
                     <Col xs={colXS} md={colMD} sm={colSM}>
-                      <InputGroup className={hasFieldError(index, "checkin_date") ? "mb-1" : "mb-3"} size="sm">
-                        {showLabel && <InputGroup.Text id="checkin_date" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Check-in Date</InputGroup.Text>}
+                      <InputGroup className="mb-3" size="sm">
+                        {showLabel && <InputGroup.Text style={{
+                          backgroundColor: theme.palette.secondary.main,
+                          color: theme.palette.getContrastText(theme.palette.secondary.main)
+                        }}>Description</InputGroup.Text>}
                         <Form.Control
-                          placeholder="Check-in Date"
-                          aria-label="Check-in Date"
-                          aria-describedby="checkin_date"
-                          name="checkin_date"
-                          type="date"
-                          value={income.checkin_date}
-                          onChange={(e) => handleIncomeInputChange(e, index)}
+                            as="textarea"
+                            aria-label="Description"
+                            placeholder={"Description"}
+                            value={income.description ?? ""}
+                            name="description"
+                            style={{fontSize: inputFontSize}}
+                            onChange={(e) => handleIncomeInputChange(e, index)}
                         />
                       </InputGroup>
-                      {renderFieldErrors(index, "checkin_date")}
+                      {renderFieldErrors(index, "description")}
                     </Col>
                     <Col xs={colXS} md={colMD} sm={colSM}>
-                      <InputGroup className={hasFieldError(index, "checkout_date") ? "mb-1" : "mb-3"} size="sm">
-                        {showLabel && <InputGroup.Text id="checkout_date" style={{ backgroundColor: theme.palette.secondary.main, color: theme.palette.getContrastText(theme.palette.secondary.main) }}>Check-out Date</InputGroup.Text>}
+                      <InputGroup className="mb-3" size="sm">
+                        {showLabel && <InputGroup.Text style={{
+                          backgroundColor: theme.palette.secondary.main,
+                          color: theme.palette.getContrastText(theme.palette.secondary.main)
+                        }}>Note</InputGroup.Text>}
                         <Form.Control
-                          placeholder="Check-out Date"
-                          aria-label="Check-out Date"
-                          aria-describedby="checkout_date"
-                          name="checkout_date"
-                          type="date"
-                          value={income.checkout_date}
-                          onChange={(e) => handleIncomeInputChange(e, index)}
+                            as="textarea"
+                            aria-label="Note"
+                            placeholder={"Note"}
+                            value={income.note ?? ""}
+                            name="note"
+                            style={{fontSize: inputFontSize}}
+                            onChange={(e) => handleIncomeInputChange(e, index)}
                         />
                       </InputGroup>
-                      {renderFieldErrors(index, "checkout_date")}
+                      {renderFieldErrors(index, "note")}
                     </Col>
                   </Row>
-                )}
-
-                <Row>
-                  <Col xs={colXS} md={colMD} sm={colSM}>
-                    <InputGroup className={hasFieldError(index, "attachment") ? "mb-1" : "mb-3"} size="sm">
-                      <Form.Control
-                        placeholder="Add Attachment"
-                        aria-label="Add Attachment"
-                        aria-describedby="attachment"
-                        name="attachment"
-                        type="file"
-                        accept="image/*"
-                        className="file-input-secondary"
-                        style={{
-                          backgroundColor: theme.palette.background.paper,
-                          '--cms-secondary-bg': theme.palette.secondary.main,
-                          '--cms-secondary-contrast': theme.palette.getContrastText(theme.palette.secondary.main),
-                        }}
-                        onChange={(e) => handleFileInputChange(e, index, "attachment")}
-                      />
-                    </InputGroup>
-                    {renderFieldErrors(index, "attachment")}
-                    {(income.attachment || income.attachment_preview_url) && (
-                      <div style={{ marginTop: 4 }}>
-                        {income.attachment instanceof File ? (
-                          income.attachment_preview_url ? (
-                            <img
-                              src={income.attachment_preview_url}
-                              alt="Uploaded"
-                              style={{
-                                width: "200px",
-                                height: "200px",
-                                borderRadius: "10px",
-                                objectFit: "cover",
-                              }}
-                            />
-                          ) : (
-                            <small>Selected file: {income.attachment.name}</small>
-                          )
-                        ) : (
-                          typeof income.attachment === "string" && income.attachment.trim() ? (
-                            isImageUrl(income.attachment) ? (
-                              <img
-                                src={income.attachment}
-                                alt="Uploaded"
-                                style={{
-                                  width: "200px",
-                                  height: "200px",
-                                  borderRadius: "10px",
-                                  objectFit: "cover",
-                                }}
-                              />
-                            ) : (
-                              <small>
-                                Current attachment: {" "}
-                                <a href={income.attachment} target="_blank" rel="noopener noreferrer">View</a>
-                              </small>
-                            )
-                          ) : null
-                        )}
-                      </div>
-                    )}
-                  </Col>
-                  {index > 0 && (
-                    <Col xs={colXS} md={colMD}>
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => removeIncomes(index)}
-                        className="flex-shrink-0 float-end"
-                      >
-                        <FontAwesomeIcon icon={faTrash} />
-                      </Button>
+                  <Row>
+                    <Col xs={12} md={6} sm={12}>
+                      <InputGroup className={hasFieldError(index, "amount") ? "mb-1" : "mb-3"} size="sm">
+                        {showLabel && <InputGroup.Text id="amount" style={{
+                          backgroundColor: theme.palette.secondary.main,
+                          color: theme.palette.getContrastText(theme.palette.secondary.main)
+                        }}>Amount</InputGroup.Text>}
+                        <Form.Control
+                            placeholder="Income Amount"
+                            aria-label="Income Amount"
+                            aria-describedby="amount"
+                            name={"amount"}
+                            type="number"
+                            value={income.amount}
+                            onChange={(e) => handleIncomeInputChange(e, index)}
+                        />
+                      </InputGroup>
+                      {renderFieldErrors(index, "amount")}
                     </Col>
+                    <Col xs={12} md={6} sm={12}>
+                      <InputGroup className={hasFieldError(index, "date") ? "mb-1" : "mb-3"} size="sm">
+                        {showLabel && <InputGroup.Text id="date" style={{
+                          backgroundColor: theme.palette.secondary.main,
+                          color: theme.palette.getContrastText(theme.palette.secondary.main)
+                        }}>Date</InputGroup.Text>}
+                        <Form.Control
+                            placeholder="Date"
+                            aria-label="Date"
+                            aria-describedby="date"
+                            name="date"
+                            type="date"
+                            value={income.date}
+                            onChange={(e) => handleIncomeInputChange(e, index)}
+                        />
+                      </InputGroup>
+                      {renderFieldErrors(index, "date")}
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col xs={colXS} md={colMD} sm={colSM}>
+                      <InputGroup className={hasFieldError(index, "account") ? "mb-1" : "mb-3"} size="sm">
+                        {showLabel && <InputGroup.Text id="account" style={{
+                          backgroundColor: theme.palette.secondary.main,
+                          color: theme.palette.getContrastText(theme.palette.secondary.main)
+                        }}>Bank Account</InputGroup.Text>}
+                        <div style={{flex: 1}}>
+                          <Select
+                              classNamePrefix="select"
+                              value={income.account}
+                              isSearchable={false}
+                              name="account"
+                              options={accounts}
+                              styles={selectStyles}
+                              menuPortalTarget={document.body}
+                              menuPosition="fixed"
+                              placeholder={"Select account"}
+                              onChange={(e) => handleIncomeInputChange(e, index, "account")}
+                          />
+                        </div>
+                      </InputGroup>
+                      {renderFieldErrors(index, "account")}
+                    </Col>
+                    <Col xs={colXS} md={colMD} sm={colSM}>
+                      <InputGroup className={hasFieldError(index, "category") ? "mb-1" : "mb-3"} size="sm">
+                        {showLabel && <InputGroup.Text id="category_id" style={{
+                          backgroundColor: theme.palette.secondary.main,
+                          color: theme.palette.getContrastText(theme.palette.secondary.main)
+                        }}>Category</InputGroup.Text>}
+                        <div style={{flex: 1}}>
+                          <Select
+                              classNamePrefix="select"
+                              value={income.category}
+                              isSearchable={false}
+                              name="category"
+                              isLoading={categoryIsFetching}
+                              options={categories}
+                              styles={selectStyles}
+                              menuPortalTarget={document.body}
+                              menuPosition="fixed"
+                              placeholder={"Select Category"}
+                              onChange={(e) => handleIncomeInputChange(e, index, "category")}
+                          />
+                        </div>
+                      </InputGroup>
+                      {renderFieldErrors(index, "category")}
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col xs={colXS} md={colMD} sm={colSM}>
+                      <InputGroup className={hasFieldError(index, "reference") ? "mb-1" : "mb-3"} size="sm">
+                        {showLabel && <InputGroup.Text id="reference" style={{
+                          backgroundColor: theme.palette.secondary.main,
+                          color: theme.palette.getContrastText(theme.palette.secondary.main)
+                        }}>Reference</InputGroup.Text>}
+                        <div style={{flex: 1}}>
+                          <Select
+                              classNamePrefix="select"
+                              value={income.reference}
+                              isSearchable={false}
+                              name="reference"
+                              options={defaultReference}
+                              styles={selectStyles}
+                              menuPortalTarget={document.body}
+                              menuPosition="fixed"
+                              placeholder={"Select Reference"}
+                              onChange={(e) => handleIncomeInputChange(e, index, "reference")}
+                          />
+                        </div>
+                      </InputGroup>
+                      {renderFieldErrors(index, "reference")}
+                    </Col>
+                    <Col xs={colXS} md={colMD} sm={colSM}>
+                      <InputGroup className={hasFieldError(index, "income_type") ? "mb-1" : "mb-3"} size="sm">
+                        {showLabel && <InputGroup.Text id="income_type" style={{
+                          backgroundColor: theme.palette.secondary.main,
+                          color: theme.palette.getContrastText(theme.palette.secondary.main)
+                        }}>Income Type</InputGroup.Text>}
+                        <div style={{flex: 1}}>
+                          <Select
+                              classNamePrefix="select"
+                              value={income.income_type}
+                              isSearchable={false}
+                              name="income_type"
+                              options={defaultIncomeType}
+                              styles={selectStyles}
+                              menuPortalTarget={document.body}
+                              menuPosition="fixed"
+                              placeholder={"Select Income Type"}
+                              onChange={(e) => handleIncomeInputChange(e, index, "income_type")}
+                          />
+                        </div>
+                      </InputGroup>
+                      {renderFieldErrors(index, "income_type")}
+                    </Col>
+                  </Row>
+
+                  {(income?.income_type?.value ?? "") === "reservation" && (
+                      <Row>
+                        <Col xs={colXS} md={colMD} sm={colSM}>
+                          <InputGroup className={hasFieldError(index, "checkin_date") ? "mb-1" : "mb-3"} size="sm">
+                            {showLabel && <InputGroup.Text id="checkin_date" style={{
+                              backgroundColor: theme.palette.secondary.main,
+                              color: theme.palette.getContrastText(theme.palette.secondary.main)
+                            }}>Check-in Date</InputGroup.Text>}
+                            <Form.Control
+                                placeholder="Check-in Date"
+                                aria-label="Check-in Date"
+                                aria-describedby="checkin_date"
+                                name="checkin_date"
+                                type="date"
+                                value={income.checkin_date}
+                                onChange={(e) => handleIncomeInputChange(e, index)}
+                            />
+                          </InputGroup>
+                          {renderFieldErrors(index, "checkin_date")}
+                        </Col>
+                        <Col xs={colXS} md={colMD} sm={colSM}>
+                          <InputGroup className={hasFieldError(index, "checkout_date") ? "mb-1" : "mb-3"} size="sm">
+                            {showLabel && <InputGroup.Text id="checkout_date" style={{
+                              backgroundColor: theme.palette.secondary.main,
+                              color: theme.palette.getContrastText(theme.palette.secondary.main)
+                            }}>Check-out Date</InputGroup.Text>}
+                            <Form.Control
+                                placeholder="Check-out Date"
+                                aria-label="Check-out Date"
+                                aria-describedby="checkout_date"
+                                name="checkout_date"
+                                type="date"
+                                value={income.checkout_date}
+                                onChange={(e) => handleIncomeInputChange(e, index)}
+                            />
+                          </InputGroup>
+                          {renderFieldErrors(index, "checkout_date")}
+                        </Col>
+                      </Row>
                   )}
-                </Row>
-                {index < incomes.length - 1 && (<hr />)}
-              </div>
+
+                  <Row>
+                    <Col xs={colXS} md={colMD} sm={colSM}>
+                      <InputGroup className={hasFieldError(index, "attachment") ? "mb-1" : "mb-3"} size="sm">
+                        <Form.Control
+                            placeholder="Add Attachment"
+                            aria-label="Add Attachment"
+                            aria-describedby="attachment"
+                            name="attachment"
+                            type="file"
+                            accept="image/*"
+                            className="file-input-secondary"
+                            style={{
+                              backgroundColor: theme.palette.background.paper,
+                              '--cms-secondary-bg': theme.palette.secondary.main,
+                              '--cms-secondary-contrast': theme.palette.getContrastText(theme.palette.secondary.main),
+                            }}
+                            onChange={(e) => handleFileInputChange(e, index, "attachment")}
+                        />
+                      </InputGroup>
+                      {renderFieldErrors(index, "attachment")}
+                      {(income.attachment || income.attachment_preview_url) && (
+                          <div style={{marginTop: 4}}>
+                            {income.attachment instanceof File ? (
+                                income.attachment_preview_url ? (
+                                    <img
+                                        src={income.attachment_preview_url}
+                                        alt="Uploaded"
+                                        style={{
+                                          width: "200px",
+                                          height: "200px",
+                                          borderRadius: "10px",
+                                          objectFit: "cover",
+                                        }}
+                                    />
+                                ) : (
+                                    <small>Selected file: {income.attachment.name}</small>
+                                )
+                            ) : (
+                                typeof income.attachment === "string" && income.attachment.trim() ? (
+                                    isImageUrl(income.attachment) ? (
+                                        <img
+                                            src={income.attachment}
+                                            alt="Uploaded"
+                                            style={{
+                                              width: "200px",
+                                              height: "200px",
+                                              borderRadius: "10px",
+                                              objectFit: "cover",
+                                            }}
+                                        />
+                                    ) : (
+                                        <small>
+                                          Current attachment: {" "}
+                                          <a href={income.attachment} target="_blank" rel="noopener noreferrer">View</a>
+                                        </small>
+                                    )
+                                ) : null
+                            )}
+                          </div>
+                      )}
+                    </Col>
+                    {index > 0 && (
+                        <Col xs={colXS} md={colMD}>
+                          <Button
+                              variant="danger"
+                              size="sm"
+                              onClick={() => removeIncomes(index)}
+                              className="flex-shrink-0 float-end"
+                          >
+                            <FontAwesomeIcon icon={faTrash}/>
+                          </Button>
+                        </Col>
+                    )}
+                  </Row>
+                  {index < incomes.length - 1 && (<hr/>)}
+                </div>
             ))}
+            <div ref={newRowRef}/>
+
           </div>
 
+
           {footerActions && (
-            <div
-              className="sidebar-fixed-footer"
-              style={{
-                position: "sticky",
-                bottom: 0,
-                backgroundColor: "transparent",
-                borderTop: "none",
-                padding: "12px",
-                display: "flex",
-                justifyContent: "flex-end",
-                gap: "8px",
-                zIndex: 2,
-              }}
-            >
-              {footerActions}
-            </div>
+              <div
+                  className="sidebar-fixed-footer"
+                  style={{
+                    position: "sticky",
+                    bottom: 0,
+                    backgroundColor: "transparent",
+                    borderTop: "none",
+                    padding: "12px",
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    gap: "8px",
+                    zIndex: 2,
+                  }}
+              >
+                {footerActions}
+              </div>
           )}
         </Form>
       </WizCard>

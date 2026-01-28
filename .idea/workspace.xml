@@ -5,19 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb82f29d-a946-4d7c-af4f-355ea30ae3ce" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/react/src/components/GlobalInvoiceLayout2.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/react/src/views/Transactions/Income/Components/Invoice.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/moneymate.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/moneymate.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easylife_sale.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/IncomeController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/IncomeController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/composer.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/routes/api.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/react/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/public/custom.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/public/custom.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/components/GlobalInvoice.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/components/GlobalInvoice.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Transactions/Income/IncomeList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Transactions/Income/IncomeList.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/react/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/components/table/CommonTable.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/components/table/CommonTable.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/helper/CommonTable.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/helper/CommonTable.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/test.html" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/test.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Transactions/Expense/Components/ExpenseFormSidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Transactions/Expense/Components/ExpenseFormSidebar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Transactions/Income/IncomeFormSidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Transactions/Income/IncomeFormSidebar.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -204,7 +199,7 @@
     &quot;WebServerToolWindowPanel.toolwindow.show.permissions&quot;: &quot;false&quot;,
     &quot;WebServerToolWindowPanel.toolwindow.show.size&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;saas&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Applications/XAMPP/xamppfiles/htdocs/moneymate/backendApi/storage/app/cache&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Applications/XAMPP/xamppfiles/htdocs/moneymate&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -218,11 +213,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/backendApi/storage/app/cache" />
       <recent name="$PROJECT_DIR$/backendApi/public/avatars" />
       <recent name="$PROJECT_DIR$/backendApi/public/passports" />
       <recent name="$PROJECT_DIR$/react/src/views/Settings/Users/ProfileTabs" />
-      <recent name="$PROJECT_DIR$/assets" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/react/src/views/Transactions/Expense/Components" />
@@ -255,9 +250,9 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="PHPUnit.Main" />
       <item itemvalue="npm.build" />
       <item itemvalue="npm.dev" />
-      <item itemvalue="PHPUnit.Main" />
     </list>
   </component>
   <component name="SharedIndexes">
@@ -290,6 +285,11 @@
       <workItem from="1759914034257" duration="23268000" />
       <workItem from="1764705581442" duration="30259000" />
       <workItem from="1764964769912" duration="37828000" />
+      <workItem from="1767126311909" duration="1522000" />
+      <workItem from="1767523339078" duration="5057000" />
+      <workItem from="1768077015366" duration="1478000" />
+      <workItem from="1768078590653" duration="8727000" />
+      <workItem from="1768387575557" duration="7625000" />
     </task>
     <servers />
   </component>
