@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useContext, useImperativeHandle, forwardRef, useRef } from "react";
-import WizCard from "../../../../components/WizCard.jsx";
 import MainLoader from "../../../../components/loader/MainLoader.jsx";
 import { notification } from "../../../../components/ToastNotification.jsx";
 import { Col, Form, Row, Button, InputGroup } from "react-bootstrap";
@@ -13,9 +12,9 @@ import { useGetCategoryListDataQuery } from "../../../../api/slices/categorySlic
 import { useSidebarActions } from "../../../../components/GlobalSidebar/index.js";
 import { SettingsContext } from "../../../../contexts/SettingsContext.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {  faTrash } from "@fortawesome/free-solid-svg-icons";
 import { isImageUrl } from "../../../../helper/media.js";
-import { useTheme, alpha } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import { createSelectStyles, createInputGroupTextStyle } from "../../../../styles/formThemeStyles.js";
 
 const _initialExpense = () => ({
@@ -262,40 +261,8 @@ const ExpenseFormSidebar = forwardRef(function ExpenseFormSidebar({
     setLoading(true);
     setSaveBtnTxt("Saving...");
 
-    // if (!expense?.account?.value) {
-    //   setSaveBtnTxt("Save");
-    //   setLoading(false);
-    //   setErrors((prev) => ({ ...prev, account: ["Account is required."] }));
-    //   notification("error", "Account required", "Please select an account.");
-    //   return;
-    // }
-    // if (!expense?.category?.value) {
-    //   setSaveBtnTxt("Save");
-    //   setLoading(false);
-    //   setErrors((prev) => ({ ...prev, category: ["Category is required."] }));
-    //   notification("error", "Category required", "Please select a category.");
-    //   return;
-    // }
-    // if (!expense?.date) {
-    //   setSaveBtnTxt("Save");
-    //   setLoading(false);
-    //   setErrors((prev) => ({ ...prev, date: ["Date is required."] }));
-    //   notification("error", "Date required", "Please select a date.");
-    //   return;
-    // }
-    // if (!expense?.amount || Number(expense.amount) <= 0) {
-    //   setSaveBtnTxt("Save");
-    //   setLoading(false);
-    //   setErrors((prev) => ({ ...prev, amount: ["Enter a positive amount."] }));
-    //   notification("error", "Amount invalid", "Please enter a valid amount.");
-    //   return;
-    // }
-
     const formData = new FormData();
 
-    // Build payloads per endpoint shape:
-    // - Create: send `expenses` array JSON with optional attachments_* files
-    // - Update: send flattened fields expected by UpdateExpenseRequest
     const isUpdate = Boolean(expenseId);
     if (isUpdate) {
       const row = expenses[0] || {};

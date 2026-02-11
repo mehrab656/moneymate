@@ -271,21 +271,24 @@ export default function AssetsList() {
       {/* Header with Add button and Filter toggle */}
       <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span className={"page-title-header"}>Assets</span>
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-          {checkPermission("asset_create") && (
-            <button className={"btn primary-theme-btn btn-sm ml-2"} onClick={showAssetFormFunc}>
-              <Iconify icon={"eva:plus-fill"} />
-            </button>
-          )}
+        <Box sx={{display: 'flex', gap: 1, alignItems: 'center'}}>
+          {/*{checkPermission("asset_create") && (*/}
+          {/*  <button className={"btn primary-theme-btn btn-sm ml-2"} onClick={showAssetFormFunc}>*/}
+          {/*    <Iconify icon={"eva:plus-fill"} />*/}
+          {/*  </button>*/}
+          {/*)}*/}
+          <button className={"btn primary-theme-btn btn-sm ml-2"} onClick={showAssetFormFunc}>
+            <Iconify icon={"eva:plus-fill"}/>
+          </button>
           <IconButton size="small" aria-label="toggle filter" onClick={() => setShowFilter((s) => !s)}>
-            <ArrowDropDownIcon />
+            <ArrowDropDownIcon/>
           </IconButton>
         </Box>
       </Box>
 
       {/* Collapsible filter */}
       <Collapse in={showFilter} timeout="auto" unmountOnExit>
-        <Box sx={{ px: 2, mb: 2 }}>{filter()}</Box>
+        <Box sx={{px: 2, mb: 2}}>{filter()}</Box>
       </Collapse>
 
       {/* Card-wrapped modern table to match Sectors */}

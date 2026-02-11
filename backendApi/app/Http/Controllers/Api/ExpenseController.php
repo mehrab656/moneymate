@@ -154,8 +154,13 @@ class ExpenseController extends Controller
             '*.reference' => 'nullable|string',
             '*.attachment' => 'nullable|string',
         ]);
+
+      
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return response()->json([
+                'message' => 'Please fill the required fields!',
+                'description' => $validator->errors()->first()
+            ], 422);
         }
         try {
             DB::beginTransaction();

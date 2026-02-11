@@ -22,10 +22,8 @@ class SectorContractUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'contract_start_date' => 'required',
-            'contract_end_date' => 'required',
-            'electricity_bill_month' => 'required',
-            'internet_bill_month' => 'required',
+            'contract_start_date' => 'required|date',
+            'contract_end_date' => 'required|date|after:contract_start_date',
             'payment_amount' => 'required|array|min:1',
             'payment_date' => 'required|array|min:1',
             'payment_number' => 'required|array|min:1',

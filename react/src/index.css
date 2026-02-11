@@ -3261,3 +3261,11 @@ body[data-theme='dark'] .custom-table tfoot td,
 body[data-theme='dark'] .custom-table tfoot th {
   border-top: 2px solid rgba(255, 255, 255, 0.12);
 }
+
+/*Contract Enxtend Sidebar*/
+.contract-extend-sidebar .input-group-text{
+    font-size: 0.8rem;
+}
+.swal2-toast-container {
+    z-index: 99999 !important;
+}

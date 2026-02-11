@@ -25,6 +25,8 @@ import ContractExtendForm from "./ContractExtendForm.jsx";
 import SectorDetails from "./SectorDetails.jsx";
 import SectorFormSidebar from "./SectorFormSidebar.jsx";
 import SectorFilter from "./SectorFilter.jsx";
+import AssetFormSidebar from "../Assets/AssetFormSidebar.jsx";
+import ContractExtendSidebar from "./Components/ContractExtendSidebar.jsx";
 
 const _initialSectorData = {
   contract_end_date: "",
@@ -375,6 +377,7 @@ export default function Sectors() {
   const showContractExtendFunc = (sector) => {
     setShowContractExtendModal(true);
     setSector(sector);
+
   };
   const closeContractExtendModal = () => {
     setShowContractExtendModal(false);
@@ -382,47 +385,6 @@ export default function Sectors() {
   
   // Sidebar actions
   const { showLargeContent, showQuickDetails } = useSidebarActions();
-  const actionParams = [
-    {
-      actionName: "Edit",
-      type: "modal",
-      route: "",
-      actionFunction: showEditModalFunc,
-      permission: "sector_edit",
-      textClass: "text-info",
-    },
-    {
-      actionName: "Extend Contract",
-      type: "modal",
-      route: "",
-      actionFunction: showContractExtendFunc,
-      permission: "sector_edit",
-      textClass: "text-info",
-    },
-    {
-      actionName: "View",
-      type: "modal",
-      route: "",
-      actionFunction: showViewModalFunc,
-      permission: "sector_view",
-      textClass: "text-warning",
-    },
-    {
-      actionName: "Delete",
-      type: "modal",
-      route: "",
-      actionFunction: onDelete,
-      permission: "sector_delete",
-      textClass: "text-danger",
-    },{
-      actionName: "WelcomeScreen",
-      type: "route",
-      route: "/manage-welcome-screen/",
-      actionFunction:"",
-      permission: "view_welcome_screen",
-      textClass: "text-danger",
-    },
-  ];
   const showSectorFormFunc = () => {
     const createRef = React.createRef();
     const formId = "sector-form-global";
@@ -460,6 +422,81 @@ export default function Sectors() {
     setShowSectorForm(false);
     setSector({});
   };
+
+
+  const showContractExtendSidebar = (sector) => {
+    const createRef = React.createRef();
+    const formId = "contract-extend-form";
+    showLargeContent(
+        `Extend Contract for ${sector.name}`,
+        <ContractExtendSidebar
+            ref={createRef}
+            element={sector}S
+            formId={formId}
+            hideInternalFooter={true}
+            onSuccess={() => {
+              // Refresh the assets list after successful creation
+              setIsPaginate(true);
+            }}
+        />, {
+          footerActions: (
+              <SidebarFooterButtons
+                  actions={[
+                    {
+                      label: "Update Contract",
+                      type: "submit",
+                      formId: formId,
+                    }
+                  ]}
+              />
+          )
+        }
+    );
+  };
+
+  const actionParams = [
+    {
+      actionName: "Edit",
+      type: "modal",
+      route: "",
+      actionFunction: showEditModalFunc,
+      permission: "sector_edit",
+      textClass: "text-info",
+    },
+    {
+      actionName: "Extend Contract",
+      type: "modal",
+      route: "",
+      // actionFunction: showContractExtendFunc,
+      actionFunction: showContractExtendSidebar,
+      permission: "sector_edit",
+      textClass: "text-info",
+    },
+    {
+      actionName: "View",
+      type: "modal",
+      route: "",
+      actionFunction: showViewModalFunc,
+      permission: "sector_view",
+      textClass: "text-warning",
+    },
+    {
+      actionName: "Delete",
+      type: "modal",
+      route: "",
+      actionFunction: onDelete,
+      permission: "sector_delete",
+      textClass: "text-danger",
+    },{
+      actionName: "WelcomeScreen",
+      type: "route",
+      route: "/manage-welcome-screen/",
+      actionFunction:"",
+      permission: "view_welcome_screen",
+      textClass: "text-danger",
+    },
+  ];
+
   // details sidebar manages its own close via context
   return (
     <div>

@@ -18,6 +18,7 @@ use App\Models\Investment;
 use App\Models\PaymentModel;
 use App\Models\SectorModel;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -852,30 +853,30 @@ class SectorModelController extends Controller
         $payment['numbers'] = $data['payment_number'];
         $payment['amount'] = $data['payment_amount'];
         $payment['date'] = $data['payment_date'];
+        $start =Carbon::parse( $data['contract_start_date']);
+        $end = Carbon::parse($data['contract_end_date']);
+
+        $period = CarbonPeriod::create($start, '1 month', $end);
 
         try {
             DB::beginTransaction();
             //first handel the billing dates
-            //for internets:
-            for ($i = 1; $i <= $data['internet_bill_month']; $i++) {
+            //for internets and electricity bills:
+            foreach ($period as $date) {
                 PaymentModel::create([
                     'sector_id' => $sector->id,
-                    'payment_number' => sprintf("%s internet bill for %s ",$sector->name,date('Y-m-d', strtotime("+$i month", strtotime($sector->internet_billing_date)))),
-                    'date' => date('Y-m-d', strtotime("+$i month", strtotime($sector->internet_billing_date))),
+                    'payment_number' => sprintf("%s internet bill for %s ",$sector->name,$date->format('F Y')),
+                    'date' => $date->format('Y-m-d'),
                     'amount' => 0,
                     'type' => 'internet',
-                    'note' => sprintf("After Contract has updated from %s to %s",$data['contract_start_date'],$data['contract_end_date']),
-                ]);
-            }
-            //now handel the electricity
-            for ($i = 1; $i <= $data['electricity_bill_month']; $i++) {
-                PaymentModel::create([
-                    'sector_id' => $sector['id'],
-                    'payment_number' => sprintf("%s electricity bill for %s ",$sector->name,date('Y-m-d', strtotime("+$i month", strtotime($sector->el_billing_date)))),
-                    'date' => date('Y-m-d', strtotime("+$i month", strtotime($sector->el_billing_date))),
+                    'note' => sprintf("After Contract has updated from %s to %s",$start->format('Y-m-d'),$end->format('Y-m-d')),
+                ],[
+                    'sector_id' => $sector->id,
+                    'payment_number' => sprintf("%s electricity bill for %s ",$sector->name,$date->format('F Y')),
+                    'date' => $date->format('Y-m-d'),
                     'amount' => 0,
                     'type' => 'electricity',
-                    'note' => sprintf("After Contract has updated from %s to %s",$data['contract_start_date'],$data['contract_end_date']),
+                    'note' => sprintf("After Contract has updated from %s to %s",$start->format('Y-m-d'),$end->format('Y-m-d')),
                 ]);
             }
             //now handel the cheques
@@ -894,8 +895,8 @@ class SectorModelController extends Controller
             }
 
             //now update sector for new contract data's
-            $sector->contract_start_date = $data['contract_start_date'];
-            $sector->contract_end_date = $data['contract_end_date'];
+            $sector->contract_start_date = $start->format('Y-m-d');
+            $sector->contract_end_date = $end->format('Y-m-d');
             $sector->rent = $data['rent'];
             $sector->save();
             storeActivityLog([
@@ -909,7 +910,6 @@ class SectorModelController extends Controller
             DB::commit();
         }catch (Exception $e){
             DB::rollBack();
-
             return response()->json([
                 'message' => 'Line Number:' . __LINE__ . ', ' . $e->getMessage(),
                 'error' => 'error'

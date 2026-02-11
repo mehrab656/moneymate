@@ -5,14 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb82f29d-a946-4d7c-af4f-355ea30ae3ce" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/easylife_sale.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/react/src/views/Sectors/Components/ContractExtendSidebar.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/react/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Requests/SectorContractUpdateRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Requests/SectorContractUpdateRequest.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/components/ToastNotification.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/components/ToastNotification.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/components/table/CommonTable.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/components/table/CommonTable.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/helper/CommonTable.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/helper/CommonTable.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/test.html" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/test.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/helper/ActionButtonHelpers.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/helper/ActionButtonHelpers.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Assets/AssetsList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Assets/AssetsList.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/views/Transactions/Expense/Components/ExpenseFormSidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Transactions/Expense/Components/ExpenseFormSidebar.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Transactions/Income/IncomeFormSidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Transactions/Income/IncomeFormSidebar.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -250,9 +254,9 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="PHPUnit.Main" />
       <item itemvalue="npm.build" />
       <item itemvalue="npm.dev" />
+      <item itemvalue="PHPUnit.Main" />
     </list>
   </component>
   <component name="SharedIndexes">
@@ -290,6 +294,9 @@
       <workItem from="1768077015366" duration="1478000" />
       <workItem from="1768078590653" duration="8727000" />
       <workItem from="1768387575557" duration="7625000" />
+      <workItem from="1769629378938" duration="2777000" />
+      <workItem from="1769940664042" duration="20792000" />
+      <workItem from="1770833941360" duration="7097000" />
     </task>
     <servers />
   </component>
@@ -309,9 +316,14 @@
           <line>319</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx</url>
+          <line>426</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
         <line-breakpoint enabled="true" type="php">
           <url>file://$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/ExpenseController.php</url>
-          <line>411</line>
+          <line>416</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="php">

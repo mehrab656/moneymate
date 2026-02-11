@@ -22,7 +22,8 @@ const ActionButtonHelpers = ({actionBtn, element}) => {
                        return (
                             <Dropdown.Item className={menu.textClass} key={Math.random().toString(36).substring(2)}
                                 onClick={(e) => menu.type==='modal'?menu.actionFunction(element):navigate(`${menu.route}${element.id}`)}>
-                                <FontAwesomeIcon icon={menu.icon}/> {menu.actionName}
+                                {/*<FontAwesomeIcon icon={menu.icon}/>*/}
+                                {menu.actionName}
                             </Dropdown.Item>
                         )
                     })

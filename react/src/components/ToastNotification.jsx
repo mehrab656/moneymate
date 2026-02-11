@@ -17,8 +17,12 @@ const notification = (iconText, title, text,timer=5000)=>{
         icon: iconText,
         title: title?title:iconText==='success'?'success':'Something went wrong!',
         text: text?text:'',
-        timer: timer
+        timer: timer,
+        customClass: {
+            container: 'swal2-toast-container'
+        },
     });
+
 }
 
 export {notification}

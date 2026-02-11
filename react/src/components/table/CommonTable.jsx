@@ -102,7 +102,7 @@ export default function StickyHeadTable( {data,isFetching,hasError,tableColumns,
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((data) => {
                                 return (
-                                    <TableRow hover role="checkbox" tabIndex={-1} key={data.code}>
+                                    <TableRow hover role="checkbox" tabIndex={-1} key={Math.random().toString(36).substring(2)}>
                                         {tableColumns.map((column) => {
                                             const value = data[column.id];
                                             return (
