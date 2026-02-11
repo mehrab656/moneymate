@@ -3262,6 +3262,22 @@ body[data-theme='dark'] .custom-table tfoot th {
   border-top: 2px solid rgba(255, 255, 255, 0.12);
 }
 
+body[data-theme='dark'] .custom-modal .modal-header {
+    background-color: var(--fundamental-color);
+}
+/*#0F1724 !important*/
+body[data-theme='dark'] .custom-modal .modal-body {
+    background-color: #0F1724;
+}
+
+body[data-theme='dark'] .custom-modal .modal-footer {
+    border-top: none;
+    padding: 15px;
+    background-color: var(--fundamental-color);
+}
+body[data-theme='dark'] .border{
+    border-color: #0B1220;
+}
 /*Contract Enxtend Sidebar*/
 .contract-extend-sidebar .input-group-text{
     font-size: 0.8rem;

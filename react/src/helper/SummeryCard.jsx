@@ -68,7 +68,7 @@ const SummeryCard = ({showModal, handelCloseModal, data, currency, modalType, To
                         {
                             modalType === 'electricity' &&
                             <>
-                                <Row className={'border p-2'}>
+                                <Row className={'p-2'}>
                                     <strong className={'text-primary'}>Account</strong>
                                     <Col xs={12} md={4}>
                                         <strong>{'Account No: '}</strong>{data.el_acc_no}
@@ -80,7 +80,7 @@ const SummeryCard = ({showModal, handelCloseModal, data, currency, modalType, To
                                         <strong>{'Premises Number: '}</strong>{data.el_premises_no}
                                     </Col>
                                 </Row>
-                                <Row className={'border p-2'}>
+                                <Row className={'p-2'}>
                                     <strong className={'text-primary'}>Notes</strong>
                                     <Col xs={12} md={6}>
                                         {data.el_note ?? 'Nothing Found!'}
@@ -91,7 +91,7 @@ const SummeryCard = ({showModal, handelCloseModal, data, currency, modalType, To
                         {
                             modalType === 'internet' &&
                             <>
-                                <Row className={'border p-2'}>
+                                <Row className={'p-2'}>
                                     <strong className={'text-primary'}>Account</strong>
                                     <Col xs={12} md={6}>
                                         <strong>{'Account No: '}</strong>{data.internet_acc_no}
@@ -100,7 +100,7 @@ const SummeryCard = ({showModal, handelCloseModal, data, currency, modalType, To
                                         <strong>{'Billing Date: '}</strong>{data.internet_billing_date}
                                     </Col>
                                 </Row>
-                                <Row className={'border p-2'}>
+                                <Row className={'p-2'}>
                                     <strong className={'text-primary'}>Notes</strong>
                                     <Col xs={12} md={6}>
                                         {data.int_note ?? 'Nothing Found!'}
@@ -109,10 +109,9 @@ const SummeryCard = ({showModal, handelCloseModal, data, currency, modalType, To
                             </>
                         }
 
-                        <Row className={'border p-2'}>
+                        <Row className={'p-2'}>
                             <strong className={'text-primary'}>Payment History</strong>
-                            <Table responsive striped bordered hover variant="light">
-
+                            <Table className={'table table-bordered custom-table'} responsive striped bordered hover variant="">
                                 <thead>
                                 <tr>
                                     <th>Payment Details</th>
