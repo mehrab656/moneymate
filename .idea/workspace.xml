@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="eb82f29d-a946-4d7c-af4f-355ea30ae3ce" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/helper/SummeryCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/helper/SummeryCard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/index.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -287,7 +287,7 @@
       <workItem from="1768387575557" duration="7625000" />
       <workItem from="1769629378938" duration="2777000" />
       <workItem from="1769940664042" duration="20792000" />
-      <workItem from="1770833941360" duration="9786000" />
+      <workItem from="1770833941360" duration="12565000" />
     </task>
     <servers />
   </component>

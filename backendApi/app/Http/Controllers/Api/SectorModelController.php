@@ -745,7 +745,7 @@ class SectorModelController extends Controller
             }
 
 
-        $bankAccount = BankAccount::find($sector->bank_account_id);
+        $bankAccount = BankAccount::find($sector->payment_account_id);
         if ($bankAccount->balance < $request->amount) {
             storeActivityLog([
                 'user_id' => Auth::user()->id,
@@ -769,7 +769,7 @@ class SectorModelController extends Controller
                 'slug'=>Uuid::uuid4(),
                 'company_id' => Auth::user()->primary_company,
                 'user_id' => Auth::user()->id,
-                'account_id' => $sector->bank_account_id,
+                'account_id' => $sector->payment_account_id,
                 'amount' => $request->amount,
                 'refundable_amount' => 0,
                 'category_id' => $category->id,
