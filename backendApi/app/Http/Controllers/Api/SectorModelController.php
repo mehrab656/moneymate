@@ -593,7 +593,7 @@ class SectorModelController extends Controller
             ], 404);
         }
 
-        $bankAccount = BankAccount::find($sector->bank_account_id);
+        $bankAccount = BankAccount::find($sector->payment_account_id);
         if (!$bankAccount) {
             storeActivityLog([
                 'user_id' => Auth::user()->id,
@@ -651,7 +651,7 @@ class SectorModelController extends Controller
         $expense = [
             'slug'=>Uuid::uuid4(),
             'user_id' => Auth::user()->id,
-            'account_id' => $sector->bank_account_id,
+            'account_id' => $sector->payment_account_id,
             'amount' => $paymentDetails->amount,
             'refundable_amount' => 0,
             'category_id' => $category->id,
@@ -692,7 +692,7 @@ class SectorModelController extends Controller
             'object_id' => $id,
             'log_type' => 'success',
             'module' => 'sectors',
-            'descriptions' => __('update_payment_details'),
+            'descriptions' => 'Payment details was updated',
             'data_records' => array_merge(json_decode(json_encode($expense), true), ['old_account_balance' => $oldAccountBalance, 'new_account_balance' => $bankAccount->balance]),
         ]);
 
@@ -700,7 +700,7 @@ class SectorModelController extends Controller
 
         return response()->json([
             'message' => 'Success!',
-            'description' => __('update_payment_details'),
+            'description' => 'Payment details was updated.',
         ]);
     }
 

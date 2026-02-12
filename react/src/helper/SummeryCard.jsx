@@ -25,7 +25,7 @@ const SummeryCard = ({showModal, handelCloseModal, data, currency, modalType, To
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'pay',
+            confirmButtonText: 'Pay',
             inputValidator: (value) => {
                 if (!value) {
                     return "Bill amount is required!";

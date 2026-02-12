@@ -27,6 +27,7 @@ import SectorFormSidebar from "./SectorFormSidebar.jsx";
 import SectorFilter from "./SectorFilter.jsx";
 import AssetFormSidebar from "../Assets/AssetFormSidebar.jsx";
 import ContractExtendSidebar from "./Components/ContractExtendSidebar.jsx";
+import Swal from "sweetalert2";
 
 const _initialSectorData = {
   contract_end_date: "",
