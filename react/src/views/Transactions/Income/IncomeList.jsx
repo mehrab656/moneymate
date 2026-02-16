@@ -18,7 +18,7 @@ import {
   faEdit,
   faThList,
   faTrash,
-  faEye,
+  faEye, faFileImport,
 } from "@fortawesome/free-solid-svg-icons";
 import { Form, Row, Col, Modal } from "react-bootstrap";
 import { Box, Card, Button, useTheme } from "@mui/material";
@@ -378,7 +378,7 @@ export default function IncomeList() {
         </Box>
         <Box>
           <button className={"btn primary-theme-btn btn-sm ml-2"}>
-            <FontAwesomeIcon icon={faDownload} />
+            <FontAwesomeIcon icon={faFileImport} onClick={()=>showCsvIncomeFormFunc()}/>
           </button>
           <IncomeExportButton />
           <button

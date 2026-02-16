@@ -14,6 +14,9 @@
     --light-muted: #9896a0;
     --fundamental-color: #022534;
     --custom-btn-border-color: #3794a7;
+    --modal-header:#022534;
+    --modal-footer:#022534;
+    --modal-body:#0F1724;
 
 }
 
@@ -667,9 +670,10 @@ section .details span {
 
 .loading-area .row .content {
     width: 100%;
-    margin-left: 15px;
 }
-
+.file-progress-area{
+    border-radius: 0 !important;
+}
 .loading-area .details {
     display: flex;
     align-items: center;

@@ -3289,7 +3289,31 @@ body[data-theme='dark'] .border{
     z-index: 99999 !important;
 }
 body[data-theme='dark'] .swal2-modal {
+    background-color: var(--modal-header);
+    color:#FFFFFF;
+}
+body[data-theme='dark'] .file-input-modal-header {
+    background-color: var(--modal-header);
+    color:#FFFFFF;
+}
+body[data-theme='dark'] .file-input-modal-footer {
+    background-color: var(--modal-footer);
+    color:#FFFFFF;
+}
+body[data-theme='dark'] .upload-box {
     background-color: var(--fundamental-color);
+    color:#FFFFFF;
+}
+body[data-theme='dark'] .content {
+    background-color: var(--modal-body);
+    color:#FFFFFF;
+}
+body[data-theme='dark'] .file-progress-area {
+    background-color: var(--modal-body);
+    color:#FFFFFF;
+}
+body[data-theme='dark'] .file-input-modal-body {
+    background-color: var(--modal-body);
     color:#FFFFFF;
 }
 .ellipsis {

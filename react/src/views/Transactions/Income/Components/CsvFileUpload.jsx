@@ -1,13 +1,20 @@
 import {Col, Container, Modal, Row} from "react-bootstrap";
 import React, {useEffect, useRef, useState} from "react";
 import {useGetCategoryListDataQuery} from "../../../../api/slices/categorySlice.js";
-import Button from "react-bootstrap/Button";
 import {notification} from "../../../../components/ToastNotification.jsx";
 import {
     useUploadCsvMutation,
 } from "../../../../api/slices/incomeSlice.js";
 import {faFileAlt, faSquareCheck} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import Papa from "papaparse"
+import TableContainer from "@mui/material/TableContainer";
+import Table from "@mui/material/Table";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import TableCell from "@mui/material/TableCell";
+import TableBody from "@mui/material/TableBody";
+import { Button, CircularProgress, Box } from "@mui/material";
 
 const defaultData = {
     account: [],
@@ -32,11 +39,14 @@ export default function CsvFileUpload({handelCloseModal}) {
     const [csvCategoryValue, setCsvCategoryValue] = useState("");
     const [channel, setChannel] = useState('airbnb')
     const [csvFile, setCSVFile] = useState({});
-    const [csvBtnTxt, setCsvBtnText] = useState("Upload");
     const fileInputRef = useRef(null);
     const [files, setFiles] = useState([]);
     const [uploadedFiles, setUploadedFiles] = useState([]);
-    const [showProgress, setShowProgress] = useState([]);
+    const [showProgress, setShowProgress] = useState(false);
+    const [buttonText, setButtonText]  = useState('Select CSV');
+    const [incomeHeaders, setIncomeHeaders] = useState([]); // array of header strings
+    const [incomeRows, setIncomeRows] = useState([]);       // array of objects
+    const [showLoading, setShowLoading] = useState(false)
     const {
         data: getCategoryListData,
         isFetching: categoryIsFetching,
@@ -45,32 +55,33 @@ export default function CsvFileUpload({handelCloseModal}) {
     });
 
     useEffect(() => {
-
         if (getCategoryListData?.data.length > 0) {
             setCategories(getCategoryListData?.data);
         }
     }, [ getCategoryListData]);
-
     const handleChangeToggle = (event) => {
         setChannel(event.target.value);
     };
+
+    useEffect(()=>{
+
+    },[incomeRows]);
 
     const [uploadCSV] = useUploadCsvMutation();
     const submitCSVFile = async (e) => {
         e.preventDefault();
         // e.currentTarget.disabled = true;
-        setCsvBtnText("Uploading...");
+        setButtonText("Uploading...");
         let csvFormData = new FormData();
         csvFormData.append("channel", channel);
-        csvFormData.append("csvFile", csvFile);
+        csvFormData.append("csvFile", files);
         csvFormData.append("category_id", channel === 'booking' ? csvCategoryValue.id : 0);
-
 
         try {
             const data = await uploadCSV({
                 url: '/income/add-csv', formData: {
                     channel: channel,
-                    csvFile: csvFile,
+                    csvFile: files,
                     category_id: csvCategoryValue.value
                 }
             }).unwrap();
@@ -91,7 +102,7 @@ export default function CsvFileUpload({handelCloseModal}) {
                 );
             }
         }
-        setCsvBtnText("Upload");
+        setButtonText("Upload");
     }
 
     const handleFileInput = () =>{
@@ -100,33 +111,118 @@ export default function CsvFileUpload({handelCloseModal}) {
     const uploadFile = (e)=>{
         const file = e.target.files[0];
         if (!file) return;
+        setShowLoading(true);
+        setShowProgress(true);
 
         const fileName = file.name.length>12
         ? `${file.name.substring(0,13)}... .${file.name.split('.')[1]}`
             :file.name;
-
         const formData = new FormData();
         formData.append('file',file);
         setFiles(prevState => [...prevState,{name:fileName,loading:0}]);
+        Papa.parse(file, {
+            header: true,           // uses first row as headers
+            skipEmptyLines: true,
+            transformHeader: (h) => h.trim(),
+            complete: (results) => {
+               setTimeout(()=>{
+                   setIncomeHeaders(results.meta.fields || []);
+                   setIncomeRows(results.data || []);
 
-        setShowProgress(true);
+                   setShowLoading(false)
+               },1200)
+            },
+            error: (err) => {
+                console.error("CSV Parse Error:", err);
+                setShowLoading(false)
+            },
+        });
 
     }
+    const handleChange = (e) => {
+        setChannel(e.target.value)
+    };
     return (<>
             <Modal show={true} centered onHide={handelCloseModal} backdrop="static"
                    keyboard={false}
                    size={"lg"}>
-                <Modal.Header closeButton>
+                <Modal.Header closeButton className={'file-input-modal-header'}>
                     <Modal.Title>
                         <span>Add new Income</span>
                     </Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body className={'file-input-modal-body'}>
 
                     <Container>
                         <Row>
-                            <Col sm={8}>sm=8</Col>
+                            <Col sm={8}>
+                                <TableContainer sx={{ maxHeight: { xs: 'none', md: 440 }, overflowX: 'auto', flexGrow: 1 }}>
+                                    <Table stickyHeader aria-label="sticky table" size="small">
+                                        <TableHead>
+                                            <TableRow>
+                                                {incomeHeaders.map((column,index) => (
+                                                    <TableCell
+                                                        key={`sticky-header-table${index}`}>
+                                                        {column}
+                                                    </TableCell>
+                                                ))}
+                                                {/*its needed to show the progress*/}
+                                                {/*<TableCell*/}
+                                                {/*    key={"action"}*/}
+                                                {/*    align={"left"}*/}
+                                                {/*    style={{ minWidth: "170" }}*/}
+                                                {/*>*/}
+                                                {/*    {"Actions"}*/}
+                                                {/*</TableCell>*/}
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {incomeRows.map((income,index) => {
+                                                    return (
+                                                        <TableRow hover role="checkbox" tabIndex={-1} key={Math.random().toString(36).substring(2)}>
+                                                            {
+                                                                incomeHeaders.map((header)=>(
+                                                                    <TableCell key={header}>
+                                                                        {income[header]}
+                                                                    </TableCell>
+                                                                ))
+                                                            }
+                                                            {/*<TableCell>*/}
+                                                            {/*    <ActionButtonHelpers*/}
+                                                            {/*        actionBtn={actionButtons}*/}
+                                                            {/*        element={data}/>*/}
+                                                            {/*</TableCell>*/}
+                                                        </TableRow>
+                                                    );
+                                                })}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+
+
+
+
+
+
+                            </Col>
                             <Col sm={4}>
+                                <div className="form-group">
+                                    <label className="custom-form-label" htmlFor="channel">
+                                        Channel
+                                    </label>
+                                    <select
+                                        className="form-control"
+                                        name="channel"
+                                        value={channel}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="airbnb">Airbnb</option>
+                                        <option value="booking">Booking.com</option>
+                                        <option value="expedia">Expedia</option>
+                                        <option value="vrbo">VRBO</option>
+                                        <option value="others">Others</option>
+                                    </select>
+                                </div>
                                 <div className="upload-box">
                                     <p>Upload your file</p>
                                     <form className="custom-form">
@@ -139,15 +235,15 @@ export default function CsvFileUpload({handelCloseModal}) {
                                             onChange={uploadFile}
                                         />
                                         <div className={'icon'} onClick={handleFileInput}>
-                                            <img src={'upload-file.svg'}/>
+                                            <img src={'upload-file.svg'} alt={'csv file'}/>
                                         </div>
                                     </form>
                                     {
                                         showProgress && (
                                             <section className={'loading-area'}>
                                                 {
-                                                    files.map((file,index)=> (
-                                                        <li className={'row'} key={index}>
+                                                    files.map((file, index) => (
+                                                        <li className={'row file-progress-area'} key={index}>
                                                             <div className={'content'}>
                                                                 <div className={'details'}>
                                                                     <div className={'name'}>
@@ -157,7 +253,8 @@ export default function CsvFileUpload({handelCloseModal}) {
                                                                         {`${file.loading}%`}
                                                                     </div>
                                                                     <div className={'loading-bar'}>
-                                                                        <div className={'loading'} style={{width: `${file.loading}%`}}></div>
+                                                                        <div className={'loading'}
+                                                                             style={{width: `${file.loading}%`}}></div>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -171,7 +268,7 @@ export default function CsvFileUpload({handelCloseModal}) {
 
                                     <section className={'upload-area'}>
                                         {
-                                            uploadedFiles.map((file,index)=> (
+                                            uploadedFiles.map((file, index) => (
                                                 <li className={'row'} key={index}>
                                                     <div className={"content upload"}>
                                                         <div className={'details'}>
@@ -180,7 +277,6 @@ export default function CsvFileUpload({handelCloseModal}) {
                                                         </div>
                                                     </div>
                                                     <FontAwesomeIcon className={'fileIcon'} icon={faFileAlt}/>
-
                                                 </li>
                                             ))
                                         }
@@ -245,10 +341,15 @@ export default function CsvFileUpload({handelCloseModal}) {
                     {/*</form>*/}
                     {/*<ProgressBar striped variant={"success"} now={csvProgressStatus} label={`${csvProgressStatus}%`}/>*/}
                 </Modal.Body>
-                <Modal.Footer>
-                    <Button className="primary-theme-btn btn-sm load" variant="primary"
+                <Modal.Footer className={'file-input-modal-footer'}>
+                    <Button className="primary-theme-btn btn-sm load"
+                            variant="contained"
+                            component={'span'}
+                            disabled={showLoading}
+                            startIcon={showLoading?<CircularProgress size={18} />:null }
+
                             onClick={submitCSVFile}>
-                        {csvBtnTxt}
+                        {showLoading ? "Analyzing..." : "Upload CSV"}
                     </Button>
                 </Modal.Footer>
             </Modal>

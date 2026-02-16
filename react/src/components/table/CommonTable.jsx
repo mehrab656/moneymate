@@ -80,7 +80,6 @@ export default function StickyHeadTable( {data,isFetching,hasError,tableColumns,
                                     <TableRow hover role="checkbox" tabIndex={-1} key={Math.random().toString(36).substring(2)}>
                                         {tableColumns.map((column) => {
                                             const value = data[column.id];
-                                            console.log(column)
                                             return (
                                                 <TableCell key={column.id} align={column.align} className={column.className}>
                                                     {column.id === 'description' ? (
