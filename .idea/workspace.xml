@@ -6,9 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="eb82f29d-a946-4d7c-af4f-355ea30ae3ce" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/SectorModelController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/helper/SummeryCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/helper/SummeryCard.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Sectors/Sectors.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/CategoryController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/CategoryController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/UserController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/UserController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/components/table/CommonTable.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/components/table/CommonTable.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Categories/Categories.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Categories/Categories.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/views/Transactions/Income/IncomeList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Transactions/Income/IncomeList.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -288,7 +291,7 @@
       <workItem from="1768387575557" duration="7625000" />
       <workItem from="1769629378938" duration="2777000" />
       <workItem from="1769940664042" duration="20792000" />
-      <workItem from="1770833941360" duration="14185000" />
+      <workItem from="1770833941360" duration="24803000" />
     </task>
     <servers />
   </component>

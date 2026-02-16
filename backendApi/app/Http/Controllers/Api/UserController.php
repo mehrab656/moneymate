@@ -179,7 +179,6 @@ class UserController extends Controller
             $permission_array = json_decode($permissions->permissions, true);
         }
 
-
         if ($user->role_as === 'admin') {
             $role = 'admin';
         } else {

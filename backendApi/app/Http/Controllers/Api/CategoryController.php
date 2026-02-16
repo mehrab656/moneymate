@@ -52,6 +52,7 @@ class CategoryController extends Controller {
         return response()->json([
             'data'  => CategoryResource::collection($categories),
             'total' => Category::count(),
+            'currentPage'=> (int) $page
         ]);
     }
 

@@ -1282,6 +1282,7 @@ body[data-theme='dark'] .input-group .form-control[type="file"]:focus {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    cursor: pointer;
 }
 @media (min-width: 768px) {
     .compact-desc {
@@ -3290,4 +3291,9 @@ body[data-theme='dark'] .border{
 body[data-theme='dark'] .swal2-modal {
     background-color: var(--fundamental-color);
     color:#FFFFFF;
+}
+.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

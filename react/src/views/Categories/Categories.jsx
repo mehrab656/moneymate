@@ -50,6 +50,7 @@ export default function Categories() {
   const [sectors, setSectors] = useState([]);
   const [showFilter, setShowFilter] = useState(false);
 
+  const [currentShowing,setCurrentShowing] = useState(1);
   const { applicationSettings, userRole, userPermission } =
     useContext(SettingsContext);
   const { num_data_per_page } = applicationSettings;
@@ -93,11 +94,12 @@ export default function Categories() {
       setCategories(normalized);
       setTotalCount(getCategoryData.total);
       setShowMainLoader(false);
+      setCurrentShowing(getCategoryData.data.currentPage);
     } else {
       setShowMainLoader(true);
     }
     setIsPaginate(false);
-  }, [getCategoryData, currentPage]);
+    }, [getCategoryData, currentPage]);
 
   // Populate sectors from sector list API
   useEffect(() => {
@@ -217,14 +219,6 @@ export default function Categories() {
       permission: "company_edit",
       textClass: "text-info",
     },
-    // {
-    //   actionName: "View",
-    //   type: "modal",
-    //   route: "",
-    //   actionFunction: showCategory,
-    //   permission: "company_view",
-    //   textClass: "text-warning",
-    // },
     {
       actionName: "Delete",
       type: "modal",
@@ -234,7 +228,6 @@ export default function Categories() {
       textClass: "text-danger",
     },
   ];
-
   return (
     <div>
       <MainLoader loaderVisible={categoryDataFetching} />

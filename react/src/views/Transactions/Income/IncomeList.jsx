@@ -50,11 +50,11 @@ const defaultQuery = {
   reference: [],
 };
 const TABLE_HEAD = [
-  { id: "date", label: "Date", align: "left" },
-  { id: "description", label: "Description", align: "left" },
-  { id: "sector", label: "Sector", align: "left" },
-  { id: "category_name", label: "Source", align: "left" },
-  { id: "amount", label: "Amount", align: "right" },
+  { id: "date", label: "Date", align: "left", className:'normal' },
+  { id: "description", label: "Description", align: "left", className: "compact-desc" },
+  { id: "amount", label: "Amount", align: "right", className: "normal" },
+  { id: "category_name", label: "Sector", align: "left", className: "normal" },
+  { id: "type", label: "Income Type", align: "left", className: "normal" },
 ];
 export default function IncomeList() {
   const theme = useTheme();
@@ -251,7 +251,7 @@ export default function IncomeList() {
         income?.income_type ??
         income?.type ??
         "";
-      return { ...income, sector: incomeTypeText };
+      return { ...income, type: incomeTypeText };
     });
 
     if (withSectorType.length > 0 || incomeDataFetching) {
