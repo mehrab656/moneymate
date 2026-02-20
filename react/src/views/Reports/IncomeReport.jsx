@@ -11,7 +11,7 @@ import { Row, Col, InputGroup, Form } from "react-bootstrap";
 import { useTheme } from "@mui/material/styles";
 import { createInputGroupTextStyle, createSelectStyles, createDateInputStyle } from "../../styles/formThemeStyles.js";
 import Select from "react-select";
-
+import {Tooltip} from "@mui/material";
 export default function IncomeReport() {
   const componentRef = useRef();
   const [loading, setLoading] = useState(false);
@@ -198,11 +198,11 @@ export default function IncomeReport() {
           <div className="table-scroll">
             <table className="table table-bordered custom-table">
               <thead>
-                <tr className={"text-center"}>
-                  <th>Income Date</th>
+                <tr>
+                  <th align={'center'}>Income Date</th>
                   <th>Income Description</th>
-                  <th>Income Category</th>
-                  <th>Income Amount</th>
+                  <th align={'center'}>Income Amount</th>
+                  <th align={'center'}>Income Category</th>
                 </tr>
               </thead>
               {loading && (
@@ -224,50 +224,65 @@ export default function IncomeReport() {
                     </tr>
                   ) : (
                     incomeReport.map((income, index) => (
-                      <tr key={income.id} className={"text-center"}>
-                        <td>{income.date}</td>
-                        <td>
+                        <tr key={income.id} className={"text-center"}>
+                          <td>{income.date}</td>
+                          <td className={'income-report-description'}>
+                            <Tooltip title={income?.description || ''} arrow>
+                            <span
+                                style={{
+                                  display: 'block',
+                                  maxWidth: 200,
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  cursor: 'pointer'
+                                }}>
                           {income.description}
-                          <a
-                            onClick={() => showIncomeDetails(income, index)}
-                            className={
-                              index === activeModal
-                                ? "text-primary fa-pull-right "
-                                : "text-muted fa-pull-right"
-                            }
-                            data-tooltip-id="expense-details"
-                            data-tooltip-content={"View details"}
-                          >
+                          </span>
+                            </Tooltip>
+
+                            <a
+                                onClick={() => showIncomeDetails(income, index)}
+                                className={
+                                  index === activeModal
+                                      ? "text-primary fa-pull-right "
+                                      : "text-muted fa-pull-right"
+                                }
+                                data-tooltip-id="expense-details"
+                                data-tooltip-content={"View details"}
+                            >
+
                             <span className="aside-menu-icon">
                               <FontAwesomeIcon
-                                icon={
-                                  index === activeModal ? faEye : faEyeSlash
-                                }
+                                  icon={
+                                    index === activeModal ? faEye : faEyeSlash
+                                  }
+                                  color={"white"}
                               />
                             </span>
-                          </a>
-                        </td>
-                        <td>{income.category_name}</td>
-                        <td className={"text-end"}>
-                          {default_currency + " " + +income.amount}
-                        </td>
-                      </tr>
+                            </a>
+                          </td>
+                          <td className={"text-end"}>
+                            {default_currency + " " + +income.amount}
+                          </td>
+                          <td>{income.category_name}</td>
+                        </tr>
                     ))
                   )}
                 </tbody>
               )}
 
               <tfoot>
-                <tr>
-                  <td className={"text-center fw-bold"} colSpan={3}>
-                    Total Income
-                  </td>
-                  <td className={"text-end fw-bold"}>
-                    {default_currency +
+              <tr>
+                <td className={"text-center fw-bold"} colSpan={3}>
+                  Total Income
+                </td>
+                <td className={"text-end fw-bold"}>
+                  {default_currency +
                       " " +
                       +parseFloat(totalIncome).toFixed(2)}
-                  </td>
-                </tr>
+                </td>
+              </tr>
               </tfoot>
             </table>
           </div>

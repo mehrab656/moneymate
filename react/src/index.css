@@ -3219,16 +3219,16 @@ body[data-theme='light'] .custom-table tbody tr:nth-child(even) {
 }
 
 /* Align numeric columns for readability */
-.custom-table tbody td:nth-child(2),
-.custom-table tbody td:nth-child(3),
-.custom-table thead th:nth-child(2),
-.custom-table thead th:nth-child(3) {
-  text-align: right;
-}
-.custom-table tr.text-center td:nth-child(2),
-.custom-table tr.text-center td:nth-child(3) {
-  text-align: right;
-}
+/*.custom-table tbody td:nth-child(2),*/
+/*.custom-table tbody td:nth-child(3),*/
+/*.custom-table thead th:nth-child(2),*/
+/*.custom-table thead th:nth-child(3) {*/
+/*  text-align: right;*/
+/*}*/
+/*.custom-table tr.text-center td:nth-child(2),*/
+/*.custom-table tr.text-center td:nth-child(3) {*/
+/*  text-align: right;*/
+/*}*/
 
 /* Utility: keep InputGroup label and control on one line */
 .input-group-nowrap {
@@ -3324,4 +3324,9 @@ body[data-theme='dark'] .file-input-modal-body {
 .footer-buttons{
     display: flex;
     gap: 12px;
+}
+.income-report-description{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
