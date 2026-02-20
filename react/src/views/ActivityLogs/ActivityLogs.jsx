@@ -85,7 +85,9 @@ export default function ActivityLogs() {
                                 </TableCell>
                             </TableRow>
                         }
-                        {logs.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                        {logs
+                            // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((row) => (
                             <ActivityLogRows key={Math.random().toString(36).substring(2)} row={row}/>
                         ))}
                     </TableBody>

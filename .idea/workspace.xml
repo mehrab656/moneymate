@@ -5,23 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb82f29d-a946-4d7c-af4f-355ea30ae3ce" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backendApi/Archive.zip" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backup from Main Server/expense-19022026.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backup from Main Server/incomes-19022026.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backup from Main Server/managebnb Backup 19022026.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/webServers.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/webServers.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/index-416fe090.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/index-acca69ac.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/IncomeController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Http/Controllers/Api/IncomeController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backendApi/app/Models/Income.php" beforeDir="false" afterPath="$PROJECT_DIR$/backendApi/app/Models/Income.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/dist/assets/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/dist/assets/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/dist/custom.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/dist/custom.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/dist/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/react/dist/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Transactions/Income/Components/CsvFileUpload.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Transactions/Income/Components/CsvFileUpload.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/react/src/views/Transactions/Income/Components/IncomeExportButton.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Transactions/Income/Components/IncomeExportButton.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/api/slices/incomeSlice.js" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/api/slices/incomeSlice.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react/src/components/table/CommonTable.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/components/table/CommonTable.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/react/src/views/Transactions/Income/IncomeList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react/src/views/Transactions/Income/IncomeList.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -302,7 +288,7 @@
       <workItem from="1768387575557" duration="7625000" />
       <workItem from="1769629378938" duration="2777000" />
       <workItem from="1769940664042" duration="20792000" />
-      <workItem from="1770833941360" duration="74616000" />
+      <workItem from="1770833941360" duration="81473000" />
     </task>
     <servers />
   </component>

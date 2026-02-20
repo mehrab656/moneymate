@@ -12,16 +12,14 @@ import IncomeFormSidebar from "./IncomeFormSidebar.jsx";
 import IncomeDetails from "./IncomeDetails.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faDownload,
   faFilter,
-  faPlus,
   faEdit,
   faThList,
   faTrash,
   faEye, faFileImport,
 } from "@fortawesome/free-solid-svg-icons";
-import { Form, Row, Col, Modal } from "react-bootstrap";
-import { Box, Card, Button, useTheme } from "@mui/material";
+import { Form, Row, Col } from "react-bootstrap";
+import { Box, Card, useTheme } from "@mui/material";
 import SidebarFooterButtons from "../../../components/SidebarFooterButtons.jsx";
 import CommonTable from "../../../components/table/CommonTable.jsx";
 import { useSidebarActions } from "../../../components/GlobalSidebar";
@@ -34,8 +32,8 @@ import Invoice from "./Components/Invoice.jsx"
 const defaultQuery = {
   type: "",
   income_type: [],
-  orderBy: "",
-  order: "",
+  orderBy: "id",
+  order: "DESC",
   limit: "",
   to_date: "",
   from_date: "",
@@ -48,6 +46,7 @@ const defaultQuery = {
   check_from: "",
   check_to: "",
   reference: [],
+  currentPage:1,
 };
 const TABLE_HEAD = [
   { id: "date", label: "Date", align: "left", className:'normal' },
@@ -59,19 +58,14 @@ const TABLE_HEAD = [
 export default function IncomeList() {
   const theme = useTheme();
   const { fire, confirmDelete } = useThemedSwal();
-  const [loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  const [searchTerm, setSearchTerm] = useState("");
-  const { applicationSettings, userRole, userPermission } =
+  const { applicationSettings } =
     useContext(SettingsContext);
   const [incomes, setIncomes] = useState([]);
-  const [income, setIncome] = useState({});
-  const [showIncomeForm, setShowIncomeForm] = useState(false);
   const [showCsvForm, setShowCsvForm] = useState(false);
   const [showMainLoader, setShowMainLoader] = useState(false);
   const [query, setQuery] = useState(defaultQuery);
-  const { num_data_per_page, default_currency } = applicationSettings;
+  const { num_data_per_page } = applicationSettings;
   const [isPaginate, setIsPaginate] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false); //important
   const [hasFilter, setHasFilter] = useState(true);
@@ -79,8 +73,6 @@ export default function IncomeList() {
   const { showLargeContent, showQuickDetails } = useSidebarActions();
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [invoiceIncome, setInvoiceIncome] = useState(null);
-  const [printData, setPrintData] = useState(null);
-
 
   useEffect(() => {
     if (num_data_per_page > 0) {
@@ -97,14 +89,15 @@ export default function IncomeList() {
       : num_data_per_page
       ? num_data_per_page
       : 10;
+
   const totalPages = Math.ceil(totalCount / pageSize);
 
   const handleRowsPerPageChange = (event) => {
     const newSize = parseInt(event.target.value, 10);
-    setQuery((prev) => ({ ...prev, limit: newSize }));
-    setCurrentPage(1);
+    setQuery((prev) => ({ ...prev, limit: newSize, currentPage: 1 }));
     setIsPaginate(true);
   };
+
 
   // api call
   const {
@@ -113,7 +106,7 @@ export default function IncomeList() {
     isError: incomeDataError,
     refetch,
   } = useGetIncomeDataQuery(
-    { currentPage, pageSize, query: query },
+    {  query: query },
     { skip: !hasFilter, refetchOnMountOrArgChange: isPaginate }
   );
   const [deleteIncome] = useDeleteIncomeMutation();
@@ -163,16 +156,11 @@ export default function IncomeList() {
   const showCsvIncomeFormFunc = () => {
     setShowCsvForm(true);
   };
-  const closeCreateModalFunc = () => {
-    setShowIncomeForm(false);
-    setIncome({});
-  };
+
   const closeCsvFileUploadModalFunc = () => {
     setShowCsvForm(false);
-    setIncome({});
   };
   const showEditModalFunc = (income) => {
-    setIncome(income);
     const formId = "income-form-global";
     showLargeContent(
       "Edit Income",
@@ -194,7 +182,6 @@ export default function IncomeList() {
   };
 
   const showViewModalFunc = (income) => {
-    setIncome(income);
     // Open details in GlobalSidebar quick details (consistent with Expense)
     showQuickDetails("Income Details", <IncomeDetails data={income} />);
   };
@@ -214,12 +201,8 @@ export default function IncomeList() {
   };
 
   const handlePageChange = (event, value) => {
-    setCurrentPage(value);
+    setQuery({...query,currentPage: value})
     setIsPaginate(true);
-  };
-
-  const handelFilter = () => {
-    setHasFilter(!hasFilter);
   };
 
   useEffect(() => {
@@ -265,7 +248,7 @@ export default function IncomeList() {
       setShowMainLoader(incomeDataFetching);
     }
     setIsPaginate(false);
-  }, [getIncomeData, incomeDataFetching, incomeDataError, currentPage]);
+  }, [getIncomeData, incomeDataFetching, incomeDataError, query.currentPage]);
 
   const filteredIncomes = incomes.filter((income) => {
     return income.description.toLowerCase().includes(searchTerms.toLowerCase());
@@ -345,7 +328,7 @@ export default function IncomeList() {
   const paginations = {
     totalPages: totalPages ?? 0,
     totalCount: totalCount,
-    currentPage: currentPage,
+    currentPage: query.currentPage,
     handlePageChange: handlePageChange,
     pageSize: pageSize,
     onRowsPerPageChange: handleRowsPerPageChange,
@@ -444,7 +427,7 @@ export default function IncomeList() {
               actionButtons={actionParams}
               loading={incomeDataFetching}
               pagination={paginations}
-              cardSubTitle={`Page-${currentPage} (showing ${filteredIncomes.length} results from ${totalCount})`}
+              cardSubTitle={`Page-${query.currentPage} (showing ${filteredIncomes.length} results from ${totalCount})`}
               isFetching={incomeDataFetching}
               hasError={incomeDataError}
             />

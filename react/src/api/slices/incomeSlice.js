@@ -8,9 +8,9 @@ export const incomeSlice = createApi({
   tagTypes: ["income"],
   endpoints: (builder) => ({
     getIncomeData: builder.query({
-      query: ({ currentPage, pageSize, query }) => {
+      query: ({ query }) => {
         return {
-          url: `/incomes?page=${currentPage}&pageSize=${pageSize}&order=${query?.order}
+          url: `/incomes?page=${query.currentPage}&pageSize=${query.limit}&order=${query?.order}
                     &limit=${query?.limit}&to_date=${query?.to_date}&from_date=${query?.from_date}
                     &type=${query?.type}&account_id=${query?.account_id}&sectorIDS=${query?.sectorIDS}
                     &check_for=${query?.check_for}&check_from=${query?.check_from}&check_to=${query?.check_to}

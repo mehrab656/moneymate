@@ -9,6 +9,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import ActionButtonHelpers from "../../helper/ActionButtonHelpers.jsx";
 import {Tooltip} from "@mui/material";
+import {useEffect} from "react";
 export default function StickyHeadTable( {data,isFetching,hasError,tableColumns,actionButtons,pagination,cardSubTitle}) {
     const [page, setPage] = React.useState(0); // 0-based index for MUI
     const initialRowsPerPage = typeof pagination?.pageSize === 'number'
@@ -74,7 +75,7 @@ export default function StickyHeadTable( {data,isFetching,hasError,tableColumns,
                     </TableHead>
                     <TableBody>
                         {data
-                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((data) => {
                                 return (
                                     <TableRow hover role="checkbox" tabIndex={-1} key={Math.random().toString(36).substring(2)}>
