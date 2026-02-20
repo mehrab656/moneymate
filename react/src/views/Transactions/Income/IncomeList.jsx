@@ -377,13 +377,14 @@ export default function IncomeList() {
          
         </Box>
         <Box>
-          <button className={"btn primary-theme-btn btn-sm ml-2"}>
+          <button className={"btn primary-theme-btn btn-sm ml-2"} title={'Import CSV File'}>
             <FontAwesomeIcon icon={faFileImport} onClick={()=>showCsvIncomeFormFunc()}/>
           </button>
           <IncomeExportButton />
           <button
             className={"btn primary-theme-btn btn-sm ml-2"}
             onClick={showIncomeFormFunc}
+            title={'Add new Income data'}
           >
             <Iconify icon={"eva:plus-fill"} />
           </button>

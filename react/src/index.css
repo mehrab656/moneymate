@@ -3321,3 +3321,7 @@ body[data-theme='dark'] .file-input-modal-body {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+.footer-buttons{
+    display: flex;
+    gap: 12px;
+}

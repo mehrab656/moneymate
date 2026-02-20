@@ -642,14 +642,16 @@ class IncomeController extends Controller
      */
     public function addIncomeFromCSV(Request $request): JsonResponse
     {
-        $files = $request->file('csvFile');
-        if (!$files) {
-            return response()->json([
-                'message' => 'Missing file!',
-                'description' => "Please upload a csv file.",
-            ], 400);
-        }
-        $file = $files['file'];
+
+        $data = $request->input();
+
+//        if (!$files) {
+//            return response()->json([
+//                'message' => 'Missing file!',
+//                'description' => "Please upload a csv file.",
+//            ], 400);
+//        }
+//        $file = $files['file'];
 
         //Fixme Sometimes it becomes confused and shows a csv file as a text file.
 //		if ( $file['file']->extension() !== 'csv' ) {
@@ -660,38 +662,21 @@ class IncomeController extends Controller
 //		}
 
 
-        $channel = $request->channel;
-        if (!$channel) {
-            return response()->json([
-                'message' => 'Specify Channel',
-                'description' => "Please select Channel.",
-            ], 400);
-        }
 
-        $fileContents = file($file->getPathname());
-        $category_id = $request->category_id;
 
-        $category = Category::where('slug', $category_id)->where('type', '=', 'income')->get()->first();
-        if (!$category) {
-            return response()->json([
-                'message' => 'Not Found!',
-                'description' => "Category was not Found!",
-            ], 400);
-        }
-        $status = (new Income())->extractIncomeFromCSV($fileContents, $category,$channel);
+//        $fileContents = file($file->getPathname());
 
-        if ($status['status_code'] != 200) {
-            return response()->json([
-                'success' => $status['status_code'],
-                'message' => $status['message'],
-            ], $status['status_code']);
-        }
-        $filename = date("F j, Y") . ' ' . $channel . '.' . 'csv';
-        $file->storeAs('files', $filename);
+
+
+
+        $status = (new Income())->extractIncomeFromCSV($data);
+
         return response()->json([
-            'message' => "Imported!",
-            'description' => "CSV has been Imported Successfully",
-        ]);
+            'success' => $status['status_code'],
+            'message' => $status['message'],
+        ], $status['status_code']);
+
+
     }
 
     public function incomeTypes()

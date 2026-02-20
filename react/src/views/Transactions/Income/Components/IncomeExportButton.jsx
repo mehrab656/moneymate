@@ -28,7 +28,7 @@ export default function IncomeExportButton() {
     };
 
     return (
-        <button className='btn primary-theme-btn btn-sm ml-2' onClick={handleExportCsv} disabled={loading}>
+        <button className='btn primary-theme-btn btn-sm ml-2' title={'Download Income Data'} onClick={handleExportCsv} disabled={loading}>
             <FontAwesomeIcon icon={faFileExport} />
         </button>
     );

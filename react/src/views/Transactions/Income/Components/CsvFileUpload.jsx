@@ -5,8 +5,6 @@ import {notification} from "../../../../components/ToastNotification.jsx";
 import {
     useUploadCsvMutation,
 } from "../../../../api/slices/incomeSlice.js";
-import {faFileAlt, faSquareCheck} from "@fortawesome/free-solid-svg-icons";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import Papa from "papaparse"
 import TableContainer from "@mui/material/TableContainer";
 import Table from "@mui/material/Table";
@@ -14,39 +12,37 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import TableBody from "@mui/material/TableBody";
-import { Button, CircularProgress, Box } from "@mui/material";
+import {Box, Button, CircularProgress} from "@mui/material";
+import Select from "react-select";
+import {createSelectStyles} from "../../../../styles/formThemeStyles.js";
+import {useTheme} from "@mui/material/styles";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faArrowRotateRight, faFilter} from "@fortawesome/free-solid-svg-icons";
+import FilteredParameters from "../../Expense/Components/FilteredParameters.jsx";
 
-const defaultData = {
-    account: [],
-    category: [],
-    income_type: [],
-    reference: [],
-    amount: "", // Set default value to an empty string
-    description: "",
-    date: "",
-    checkin_date: "",
-    checkout_date: "",
-    deposit: "",
-    note: "",
-    attachment: "",
+const _initialData = {
+    fileName:'',
+    file:null,
+    category:{
+        name:'',
+        value:''
+    },
+    channel:''
 }
-
 export default function CsvFileUpload({handelCloseModal}) {
 
-
-    const [income, setIncome] = useState(defaultData);
+    const [csvData, setCsvData] = useState(_initialData);
     const [categories, setCategories] = useState([]);
-    const [csvCategoryValue, setCsvCategoryValue] = useState("");
-    const [channel, setChannel] = useState('airbnb')
-    const [csvFile, setCSVFile] = useState({});
     const fileInputRef = useRef(null);
-    const [files, setFiles] = useState([]);
-    const [uploadedFiles, setUploadedFiles] = useState([]);
-    const [showProgress, setShowProgress] = useState(false);
-    const [buttonText, setButtonText]  = useState('Select CSV');
     const [incomeHeaders, setIncomeHeaders] = useState([]); // array of header strings
     const [incomeRows, setIncomeRows] = useState([]);       // array of objects
     const [showLoading, setShowLoading] = useState(false)
+    const theme = useTheme();
+
+    const inputFontSize = "0.875rem";
+    const selectStyles = createSelectStyles(theme, inputFontSize);
+
+
     const {
         data: getCategoryListData,
         isFetching: categoryIsFetching,
@@ -59,51 +55,21 @@ export default function CsvFileUpload({handelCloseModal}) {
             setCategories(getCategoryListData?.data);
         }
     }, [ getCategoryListData]);
-    const handleChangeToggle = (event) => {
-        setChannel(event.target.value);
+    const handelChangeInput = (e) => {
+        const {name,value} = e.target
+
+        setCsvData((prev) => ({ ...prev, [name]: value }));
+        // Clear error for the field being edited
     };
+    const handelCategoryChange =(e)=> {
+        setCsvData({...csvData,category:e})
+    }
 
     useEffect(()=>{
 
     },[incomeRows]);
 
     const [uploadCSV] = useUploadCsvMutation();
-    const submitCSVFile = async (e) => {
-        e.preventDefault();
-        // e.currentTarget.disabled = true;
-        setButtonText("Uploading...");
-        let csvFormData = new FormData();
-        csvFormData.append("channel", channel);
-        csvFormData.append("csvFile", files);
-        csvFormData.append("category_id", channel === 'booking' ? csvCategoryValue.id : 0);
-
-        try {
-            const data = await uploadCSV({
-                url: '/income/add-csv', formData: {
-                    channel: channel,
-                    csvFile: files,
-                    category_id: csvCategoryValue.value
-                }
-            }).unwrap();
-            // notification("success", data?.message, data?.description);
-
-            // handelCloseModal();
-        } catch (err) {
-            if (err.status === 406) {
-                setShowExistingTask(true);
-                setExistingTask(err?.errorData?.data);
-            } else if (err.status === 422) {
-                notification("error", err?.message);
-            } else {
-                notification(
-                    "error",
-                    err?.message || "An error occurred",
-                    err?.description || "Please try again later."
-                );
-            }
-        }
-        setButtonText("Upload");
-    }
 
     const handleFileInput = () =>{
         fileInputRef.current.click();
@@ -112,36 +78,104 @@ export default function CsvFileUpload({handelCloseModal}) {
         const file = e.target.files[0];
         if (!file) return;
         setShowLoading(true);
-        setShowProgress(true);
 
         const fileName = file.name.length>12
         ? `${file.name.substring(0,13)}... .${file.name.split('.')[1]}`
             :file.name;
+
+        const isCSVMime = file.type === "text/csv" || file.type==="application/vnd.ms-excel";
+        const isCsvExtension = file.name.toLowerCase().endsWith('.csv');
+
+        if (!isCsvExtension && !isCSVMime){
+            notification("warning", "Invalid File", "Please Upload a valid CSV file");
+            e.target.value = null;
+            return;
+        }
+
+
         const formData = new FormData();
         formData.append('file',file);
-        setFiles(prevState => [...prevState,{name:fileName,loading:0}]);
+        // @fixme in future for multiple file upload
+        // setFiles(prevState => [...prevState,{name:fileName,loading:0}]);
+        setCsvData((prevState)=>({
+            ...prevState, fileName: fileName, file:file
+        }));
+
         Papa.parse(file, {
             header: true,           // uses first row as headers
             skipEmptyLines: true,
-            transformHeader: (h) => h.trim(),
+            transformHeader: (h) => h.trim().toLowerCase(),
             complete: (results) => {
-               setTimeout(()=>{
-                   setIncomeHeaders(results.meta.fields || []);
-                   setIncomeRows(results.data || []);
-
-                   setShowLoading(false)
-               },1200)
+                const parseRows = (results.data || []).map((r,idx)=>({
+                    ...r,
+                    _rowID: `${Date.now()}-${idx}`, //unique id for react + updates
+                    _status:"pending", //pending | uploading | uploaded |failed
+                    _message:"", // error message optional.
+                }));
+                setIncomeHeaders([...(results.meta.fields || []),"_status"]); //an extra column for status show
+                setIncomeRows(parseRows);
+                setShowLoading(false);
             },
             error: (err) => {
                 console.error("CSV Parse Error:", err);
                 setShowLoading(false)
             },
         });
-
     }
-    const handleChange = (e) => {
-        setChannel(e.target.value)
+    const updateRowStatus = (rowID, status, message = "") => {
+        setIncomeRows(prev =>
+            prev.map(r =>
+                r._rowID === rowID ? { ...r, _status: status, _message: message } : r
+            )
+        );
     };
+
+    const submitCSVFile = async (e,rowID = null) => {
+        e.preventDefault();
+        setShowLoading(true);
+
+        let csvFormData = new FormData();
+        csvFormData.append("channel", csvData.channel);
+        csvFormData.append("csvFile", csvData.file);
+        csvFormData.append("category_id", csvData.category.value);
+
+        const rowsToBeUploaded = rowID
+        ? incomeRows.filter((r)=>r._rowID === rowID)
+            : incomeRows;
+
+        for (const row of rowsToBeUploaded){
+            if (row._status === "uploaded") continue;
+
+            updateRowStatus(row._rowID,"uploading");
+            try {
+                const payload = {...row};
+                delete payload._status;
+                delete payload._message;
+
+                payload.channel = csvData.channel;
+                payload.category_id=csvData.category.value;
+
+                 await uploadCSV({
+                    url: '/income/add-csv', formData:payload
+                }).unwrap();
+
+                updateRowStatus(row._rowID, "uploaded");
+
+            } catch (err) {
+                updateRowStatus(row._rowID, "failed",
+                err?.response?.data?.message || err.message || "Upload failed");
+            }
+        }
+    }
+
+    const resetModal = ()=>{
+        setCsvData(_initialData);
+        setIncomeHeaders([]);
+        setIncomeRows([])
+        setShowLoading(false);
+    }
+
+
     return (<>
             <Modal show={true} centered onHide={handelCloseModal} backdrop="static"
                    keyboard={false}
@@ -160,50 +194,50 @@ export default function CsvFileUpload({handelCloseModal}) {
                                     <Table stickyHeader aria-label="sticky table" size="small">
                                         <TableHead>
                                             <TableRow>
-                                                {incomeHeaders.map((column,index) => (
-                                                    <TableCell
-                                                        key={`sticky-header-table${index}`}>
-                                                        {column}
-                                                    </TableCell>
-                                                ))}
-                                                {/*its needed to show the progress*/}
-                                                {/*<TableCell*/}
-                                                {/*    key={"action"}*/}
-                                                {/*    align={"left"}*/}
-                                                {/*    style={{ minWidth: "170" }}*/}
-                                                {/*>*/}
-                                                {/*    {"Actions"}*/}
-                                                {/*</TableCell>*/}
+
+                                                {
+                                                    incomeHeaders.map(h=>(
+                                                        <TableCell
+                                                            key={`sticky-header-table${h}`}>
+                                                            {h.toUpperCase().replace('_','')}
+                                                        </TableCell>
+                                                    ))}
+
+                                                    {/*<TableCell>Status</TableCell>*/}
+
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {incomeRows.map((income,index) => {
+                                            {incomeRows.map((income) => {
                                                     return (
                                                         <TableRow hover role="checkbox" tabIndex={-1} key={Math.random().toString(36).substring(2)}>
                                                             {
-                                                                incomeHeaders.map((header)=>(
-                                                                    <TableCell key={header}>
-                                                                        {income[header]}
+                                                                incomeHeaders.filter(h=> h!=="_status").map((h)=>(
+                                                                    <TableCell key={h}>
+                                                                        {income[h]}
                                                                     </TableCell>
-                                                                ))
-                                                            }
-                                                            {/*<TableCell>*/}
-                                                            {/*    <ActionButtonHelpers*/}
-                                                            {/*        actionBtn={actionButtons}*/}
-                                                            {/*        element={data}/>*/}
-                                                            {/*</TableCell>*/}
+                                                                ))}
+                                                            <TableCell>{
+                                                                income._status ==='failed'?
+                                                                    <Box display="flex" alignItems="center">
+                                                                        <button
+                                                                            className={"btn primary-theme-btn btn-xs mr-2"}
+                                                                            onClick={(e)=>{submitCSVFile(e,income._rowID)}}
+                                                                        >
+                                                                            <FontAwesomeIcon icon={faArrowRotateRight} />
+                                                                            {" Retry"}
+                                                                        </button>
+                                                                    </Box>
+                                                                    :
+                                                                    income._status
+
+                                                            }</TableCell>
                                                         </TableRow>
                                                     );
                                                 })}
                                         </TableBody>
                                     </Table>
                                 </TableContainer>
-
-
-
-
-
-
                             </Col>
                             <Col sm={4}>
                                 <div className="form-group">
@@ -213,18 +247,39 @@ export default function CsvFileUpload({handelCloseModal}) {
                                     <select
                                         className="form-control"
                                         name="channel"
-                                        value={channel}
-                                        onChange={handleChange}
+                                        value={csvData.channel}
+                                        onChange={handelChangeInput}
                                     >
+                                        <option defaultValue>Select Channel</option>
                                         <option value="airbnb">Airbnb</option>
                                         <option value="booking">Booking.com</option>
                                         <option value="expedia">Expedia</option>
                                         <option value="vrbo">VRBO</option>
+                                        <option value="google">Google Vacation Rental</option>
                                         <option value="others">Others</option>
                                     </select>
                                 </div>
+                                <div className="form-group">
+                                    <label className="custom-form-label" htmlFor="channel">
+                                        Categories
+                                    </label>
+                                    <div style={{flex: 1}}>
+                                        <Select
+                                            classNamePrefix="select"
+                                            value={csvData.category}
+                                            isSearchable={false}
+                                            name="category"
+                                            isLoading={categoryIsFetching}
+                                            options={categories}
+                                            styles={selectStyles}
+                                            menuPortalTarget={document.body}
+                                            menuPosition="fixed"
+                                            placeholder={"Select Category"}
+                                            onChange={handelCategoryChange}
+                                        />
+                                    </div>
+                                </div>
                                 <div className="upload-box">
-                                    <p>Upload your file</p>
                                     <form className="custom-form">
                                         <input
                                             className='file-input'
@@ -235,122 +290,43 @@ export default function CsvFileUpload({handelCloseModal}) {
                                             onChange={uploadFile}
                                         />
                                         <div className={'icon'} onClick={handleFileInput}>
-                                            <img src={'upload-file.svg'} alt={'csv file'}/>
+                                        <img src={'upload-file.svg'} alt={'csv file'}/>
                                         </div>
                                     </form>
-                                    {
-                                        showProgress && (
-                                            <section className={'loading-area'}>
-                                                {
-                                                    files.map((file, index) => (
-                                                        <li className={'row file-progress-area'} key={index}>
-                                                            <div className={'content'}>
-                                                                <div className={'details'}>
-                                                                    <div className={'name'}>
-                                                                        {`${file.name} - uploading`}
-                                                                    </div>
-                                                                    <div className={'percent'}>
-                                                                        {`${file.loading}%`}
-                                                                    </div>
-                                                                    <div className={'loading-bar'}>
-                                                                        <div className={'loading'}
-                                                                             style={{width: `${file.loading}%`}}></div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-                                                    ))
-                                                }
-
-                                            </section>
-                                        )
-                                    }
-
-                                    <section className={'upload-area'}>
-                                        {
-                                            uploadedFiles.map((file, index) => (
-                                                <li className={'row'} key={index}>
-                                                    <div className={"content upload"}>
-                                                        <div className={'details'}>
-                                                            <span className={'name'}>{file.name}</span>
-                                                            <span className={'size'}>{file.size}</span>
-                                                        </div>
+                                    <section className={'loading-area'}>
+                                        <li className={'row file-progress-area'}>
+                                            <div className={'content'}>
+                                                <div className={'details'}>
+                                                    <div className={'name'}>
+                                                        {csvData.fileName}
                                                     </div>
-                                                    <FontAwesomeIcon className={'fileIcon'} icon={faFileAlt}/>
-                                                </li>
-                                            ))
-                                        }
-
+                                                </div>
+                                            </div>
+                                        </li>
                                     </section>
                                 </div>
                             </Col>
                         </Row>
                     </Container>
-
-                    {/*<form className="custom-form">*/}
-                    {/*    <div className="form-group">*/}
-                    {/*        <label className='custom-form-label' htmlFor='csv_file'>*/}
-                    {/*            Upload CSV file*/}
-                    {/*        </label>*/}
-                    {/*        <input*/}
-                    {/*            className='custom-form-control'*/}
-                    {/*            type='file'*/}
-                    {/*            id={"csv_file"}*/}
-                    {/*            onChange={handelCSVFileInputChange}*/}
-                    {/*            placeholder='Attach CSV file here'*/}
-                    {/*        />*/}
-                    {/*    </div>*/}
-                    {/*    <div className={"form-control"}>*/}
-                    {/*        <FormControl>*/}
-                    {/*            <FormLabel id="demo-controlled-radio-buttons-group">Channels</FormLabel>*/}
-                    {/*            <RadioGroup*/}
-                    {/*                aria-labelledby="demo-controlled-radio-buttons-group"*/}
-                    {/*                name="controlled-radio-buttons-group"*/}
-                    {/*                value={channel}*/}
-                    {/*                onChange={handleChangeToggle}*/}
-                    {/*            >*/}
-                    {/*                <Box display={'flex'}>*/}
-                    {/*                    <FormControlLabel value="airbnb" control={<Radio/>} label="Airbnb"/>*/}
-                    {/*                    <FormControlLabel value="booking" control={<Radio/>}*/}
-                    {/*                                      label="Booking.com"/>*/}
-                    {/*                    <FormControlLabel value="vrbo" control={<Radio/>} label="VRBO"/>*/}
-                    {/*                    <FormControlLabel value="experia" control={<Radio/>}*/}
-                    {/*                                      label="Expedia"/>*/}
-                    {/*                </Box>*/}
-                    {/*            </RadioGroup>*/}
-                    {/*        </FormControl></div>*/}
-
-                    {/*    <div className=''>*/}
-                    {/*        <Form.Group className="mb-1" controlId="category_id">*/}
-                    {/*            <Form.Label style={{marginBottom: '0px'}}*/}
-                    {/*                        className="custom-form-label">Category</Form.Label>*/}
-                    {/*            <Select*/}
-                    {/*                className="basic-single"*/}
-                    {/*                classNamePrefix="select"*/}
-                    {/*                value={csvCategoryValue}*/}
-                    {/*                isSearchable={true}*/}
-                    {/*                name="category_id"*/}
-                    {/*                isLoading={categoryIsFetching}*/}
-                    {/*                options={categories}*/}
-                    {/*                onChange={(event) => {*/}
-                    {/*                    setCsvCategoryValue(event)*/}
-                    {/*                }}*/}
-                    {/*            />*/}
-                    {/*        </Form.Group>*/}
-                    {/*    </div>*/}
-                    {/*</form>*/}
-                    {/*<ProgressBar striped variant={"success"} now={csvProgressStatus} label={`${csvProgressStatus}%`}/>*/}
                 </Modal.Body>
                 <Modal.Footer className={'file-input-modal-footer'}>
-                    <Button className="primary-theme-btn btn-sm load"
-                            variant="contained"
-                            component={'span'}
-                            disabled={showLoading}
-                            startIcon={showLoading?<CircularProgress size={18} />:null }
+                    <div className={'footer-buttons'}>
+                        <Button className="primary-theme-btn btn-sm load"
+                                variant="contained"
+                                component={'span'}
+                                disabled={showLoading}
+                                startIcon={showLoading?<CircularProgress size={18} />:null }
 
-                            onClick={submitCSVFile}>
-                        {showLoading ? "Analyzing..." : "Upload CSV"}
-                    </Button>
+                                onClick={submitCSVFile}>
+                            {"Upload CSV"}
+                        </Button>
+                        <Button className="btn-danger btn-sm"
+                                variant="secondary"
+                                component={'span'}
+                                onClick={resetModal}>
+                            {"Clear All"}
+                        </Button>
+                    </div>
                 </Modal.Footer>
             </Modal>
         </>

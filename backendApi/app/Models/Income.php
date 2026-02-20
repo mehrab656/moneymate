@@ -54,43 +54,53 @@ class Income extends Model
         return $this->belongsTo(Category::class, 'category_id', 'id');
     }
 
-    public function buildIncomeDatesetFromCSV($data,$channel)
+    public function buildIncomeDatesetFromCSV($data)
     {
 
-        $incomeAmount = str_replace('"', '', $data[12]);
-        $incomeCurrency = trim($data[17]);
-        $incomeDataSet = [
-            'date' => date('Y-m-d', strtotime(str_replace("\"", '', $data[2]))), // actually booking date,
-            'checkin_date' => date('Y-m-d', strtotime(str_replace("\"", '', $data[3]))),
-            'checkout_date' => date('Y-m-d', strtotime(str_replace("\"", '', $data[4]))),
-            'description' => str_replace("\"", '', $data[6]),
-            'amount' => str_replace('"', '', $data[12]),
-        ];
+        $incomeDataSet=[];
 
-        if ($incomeCurrency === 'USD') {
+        if ($data['channel']==='airbnb'){
+            if (strtolower($data['type'])!=='payout'){
+                $incomeDataSet = [
+                    'amount' => $data['amount'],
+                    'currency'=>trim($data["currency"]),
+                    'date' => date('Y-m-d', strtotime(str_replace("\"", '', $data["booking_date"]))), // actually payout date,
+                    'checkin_date' => date('Y-m-d', strtotime(str_replace("\"", '', $data["start_date"]))),
+                    'checkout_date' => date('Y-m-d', strtotime(str_replace("\"", '', $data["end_date"]))),
+                    'description' => sprintf("%s's reservation of %s nights on %s  from %s to %s",
+                        str_replace("\"", '', $data["guest"]),$data["nights"],$data["listing"],$data['start_date'],$data['end_date'] ),
+                    'income_type'=>strtolower($data["type"]),
+                    'reference' => sprintf("Airbnb booking reservation confirmation number: %s",$data["confirmation_code"]),
+                    'note' => json_encode($data),
+                ];
+            }
+        }
+
+
+        if ($data['channel']==='booking'){
+            $incomeDataSet = [
+                'amount' => $data['net'],
+                'currency'=>trim($data["currency"]),
+                'date' => date('Y-m-d', strtotime(str_replace("\"", '', $data["payout_date"]))), // actually payout date,
+                'checkin_date' => date('Y-m-d', strtotime(str_replace("\"", '', $data["check-in"]))),
+                'checkout_date' => date('Y-m-d', strtotime(str_replace("\"", '', $data["checkout"]))),
+                'description' => sprintf("%s's reservation on booking.com  from %s to %s",
+                    str_replace("\"", '', $data["guest_name"]),$data['check-in'],$data['checkout'] ),
+                'income_type'=>strtolower($data["type"]),
+                'reference' => sprintf("Booking.com reservation Number: %s",$data["reference_number"]),
+                'note' => json_encode($data),
+            ];
+        }
+
+
+        if ($incomeDataSet['currency'] === 'USD') {
             $req_url = 'https://v6.exchangerate-api.com/v6/34613ea34951b619f1ff2fde/latest/USD';
             $response_json = file_get_contents($req_url);
             $response = json_decode($response_json);
             $conversion_rates = $response->conversion_rates;
-            $incomeDataSet['amount'] = round($conversion_rates->AED * $incomeAmount, 2); //Amount in AED
+            $incomeDataSet['amount'] = round($conversion_rates->AED * $incomeDataSet['amount'], 2); //Amount in AED
+            $incomeDataSet['currency'] = "AED";
         }
-
-
-        if ($channel==='airbnb'){
-            $incomeDataSet += [
-                'income_type'=>$data[10],
-                'reference' => sprintf("Airbnb booking reservation Number: %s",$data[1]),
-                'note' => sprintf("This income was imported by CSV where Listing id  is '%s' and reservation reference is '%s'", $data[0], $data[1]),
-            ];
-        }
-        if ($channel==='booking'){
-            $incomeDataSet += [
-                'income_type'=>'reservation',
-                'reference' => sprintf("Booking.com reservation Number: %s",$data[0]),
-                'note' => sprintf("This income was imported by CSV where reservation reference id '%s' and invoice number '%s'", $data[0], $data[1]),
-            ];
-        }
-
 
         return $incomeDataSet;
     }
@@ -98,39 +108,50 @@ class Income extends Model
     /**
      * @throws Throwable
      */
-    public function extractIncomeFromCSV(array $files, $category,$channel='booking'): array
+    public function extractIncomeFromCSV(array $data): array
     {
-        unset($files[0]);
+
+        $channel = $data['channel'];
+        if (!$channel) {
+            return [
+                'message' => 'Specify Channel',
+                'description' => "Please select Channel.",
+                'status_code' => 400
+         ];
+        }
+        $category_id = $data['category_id'];
+
+        $category = Category::where('slug', $category_id)->where('type', '=', 'income')->get()->first();
+        if (!$category) {
+            return [
+                'message' => 'Not Found!',
+                'description' => "Category was not Found!",
+                'status_code' => 400
+            ];
+        }
+
         $sector = DB::table('sectors')->select('*')
             ->join('categories', 'categories.sector_id', '=', 'sectors.id')
             ->where('categories.id', '=', $category->id)
             ->first();
 
-        foreach ($files as $iteration=>$file) {
 
-            $incomeData = explode(',', str_replace('"', '', $file));
+        $income = $this->buildIncomeDatesetFromCSV($data);
 
-            $income = $this->buildIncomeDatesetFromCSV($incomeData,$channel);
-            $income += [
-                'user_id' => Auth::user()->id,
-                'account_id' => $sector->bank_account_id,
-                'category_id' => $category->id,
-                'attachment' => '',
-            ];
 
-            $isAdded = $this->incomeAdd($income, $category);
-            Cookie::queue('test', 55, 1);
+        $income += [
+            'user_id' => Auth::user()->id,
+            'account_id' => $sector->payment_account_id,
+            'category_id' => $category->id,
+            'attachment' => '',
+        ];
 
-            if ($isAdded['status_code'] != 200) {
-                return [
-                    'status_code' => $isAdded['status_code'],
-                    'message' => $isAdded['message']
-                ];
-            }
-        }
+
+        $isAdded = $this->incomeAdd($income, $category);
+
         return [
-            'status_code' => 200,
-            'message' => 'CSV has been successfully imported!',
+            'status_code' => $isAdded['status_code'],
+            'message' => $isAdded['message'],
         ];
 
     }
